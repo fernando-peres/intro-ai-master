@@ -1,0 +1,10 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@tanstack/history@1.162.5'
+  - '@tanstack/router-core@1.171.35'
+  - '@tanstack/router-generator@1.167.41'
+  - '@tanstack/router-plugin@1.168.43'

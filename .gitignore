@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Monorepo
+!**/src/lib/
+node_modules/
+.import_linter_cache/
+.vite/

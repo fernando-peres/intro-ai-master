@@ -1,0 +1,38 @@
+[project]
+name = "intro-ai-master"
+version = "0.1.0"
+description = "Monorepo root: apps/* and packages/* (uv workspace)."
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6", "import-linter>=2.1"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["apps/algo-server", "packages/algo"]
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["apps/algo-server/tests", "packages/algo/tests"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.importlinter]
+root_packages = ["algo", "algo_server"]
+
+[[tool.importlinter.contracts]]
+name = "packages/* never import apps/*"
+type = "forbidden"
+source_modules = ["algo"]
+forbidden_modules = ["algo_server"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["algo", "algo_server"]

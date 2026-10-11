@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neural networks: from perceptron to deep learning</title>
+<style>
+:root{--bg:#f4f6f9;--card:#ffffff;--ink:#141821;--mute:#5a6475;--line:#e2e6ee;--acc:#2563eb;--ok:#15803d;--bad:#b91c1c;--chip:#eef1f7;--codebg:#f1f4f9;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1017;--card:#161b25;--ink:#e8ecf4;--mute:#9aa5b8;--line:#272e3d;--acc:#6ea8fe;--ok:#4ade80;--bad:#f87171;--chip:#1e2533;--codebg:#10141c}}
+:root[data-theme="dark"]{--bg:#0d1017;--card:#161b25;--ink:#e8ecf4;--mute:#9aa5b8;--line:#272e3d;--acc:#6ea8fe;--ok:#4ade80;--bad:#f87171;--chip:#1e2533;--codebg:#10141c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 14px 40px}
+header h1{font-size:26px;margin:6px 0 4px;letter-spacing:-.3px}
+header p{margin:0 0 14px;color:var(--mute)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.tab{text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:1px;font:inherit}
+.tab small{color:var(--acc);font-weight:700;font-size:12px}.tab b{font-size:15px}.tab span{color:var(--mute);font-size:12.5px}.tab em{font-style:normal;color:var(--mute);font-size:11.5px;opacity:.85}
+.tab.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h3{margin:0 0 6px;font-size:17px}.lead{margin:4px 0 12px;color:var(--mute)}.lead b{color:var(--ink)}
+.small{font-size:12.5px;color:var(--mute);margin:6px 0}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:9px 0}
+.lbl{font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.4px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--card);color:var(--ink);padding:6px 11px;cursor:pointer;font:inherit;font-size:13px;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}.seg button.on{background:var(--acc);color:#fff}
+button{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:7px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.45;cursor:default}
+button.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+button.sm{padding:2px 9px;font-size:13px}
+select,input[type=range]{font:inherit;font-size:13px}select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px}
+input[type=range]{width:120px}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:3px 8px}
+.neu{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mute);border:1px solid var(--line);border-radius:8px;padding:2px 6px}.neu b{color:var(--ink);min-width:12px;text-align:center}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}.btns.top{margin-top:0}
+.grid2{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:18px;align-items:start;margin-top:10px}
+.heat{width:100%;max-width:360px;height:auto;border-radius:10px;border:1px solid var(--line);display:block}
+.legend{font-size:12px;color:var(--mute);margin-top:6px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 4px 0 8px;vertical-align:middle}.dot.b{background:#2563eb}.dot.o{background:#ea580c}
+.stats{display:flex;flex-wrap:wrap;gap:8px}.stats>div{background:var(--chip);border-radius:10px;padding:6px 10px;min-width:84px}
+.stats span{display:block;font-size:11px;color:var(--mute)}.stats b{font-size:17px;font-variant-numeric:tabular-nums}
+.chartbox{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:6px 8px}.ct{font-size:12.5px;font-weight:600;color:var(--mute);margin:4px 0}
+.chart{width:100%;height:auto;max-width:420px;display:block}.axis{stroke:var(--line);stroke-width:1}
+.tick{fill:var(--mute);font-size:9.5px}.ltitle{fill:var(--mute);font-size:10px;letter-spacing:.5px;font-weight:700}.wl{fill:var(--ink);font-size:11.5px}.wl.b{font-weight:800}.ntext{fill:var(--ink);font-size:15px;font-weight:700}
+.nodeFill{fill:var(--card);stroke:var(--acc);stroke-width:2}
+.diagram{width:100%;max-width:540px;height:auto;display:block;margin-bottom:6px}
+.call{margin:10px 0;padding:10px 12px;border-radius:10px;background:var(--chip);font-size:14px}
+.call.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ink);border:1px solid color-mix(in srgb,var(--ok) 45%,transparent)}
+.call.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 45%,transparent)}
+.call button{margin-top:8px}
+.scrollx{overflow-x:auto;max-width:100%}.mini{border-radius:6px;border:1px solid var(--line);display:block;background:#fff}
+.concepts{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.concept{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.concept h4{margin:0 0 3px;font-size:14px}.concept p{margin:0 0 6px;font-size:13px;color:var(--mute)}
+.live{display:block;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--codebg);border-radius:7px;padding:5px 7px;color:var(--ink);word-break:break-word}
+.gallery,.filters{display:flex;flex-wrap:wrap;gap:6px}.gi{display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--mute)}
+.digit{border:1px solid var(--line);border-radius:4px;display:block;image-rendering:pixelated}
+.probes{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.probe{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 6px;font-size:12px}.probe.sel{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 30%,transparent)}
+.okc{color:var(--ok)}.badc{color:var(--bad)}
+.dw{display:block}
+.cm{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));max-width:360px;font-size:11px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.cmc{text-align:center;padding:3px 0;border:1px solid var(--line);min-height:22px;font-variant-numeric:tabular-nums}.cmc.hd{color:var(--mute);font-weight:700;background:var(--chip)}
+.pipe{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0}.pipe i{color:var(--mute);font-style:normal}
+.chip{background:var(--chip);border-radius:999px;padding:4px 11px;font-size:12.5px;color:var(--mute)}.chip.on{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);font-weight:700}
+.code{background:var(--codebg);border-radius:10px;padding:9px 11px;font:12px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-all;margin:6px 0;overflow-x:auto}
+.pad{touch-action:none;cursor:crosshair;border:2px solid var(--acc);border-radius:8px;overflow:hidden;line-height:0;user-select:none;-webkit-user-select:none;background:#fff}
+.pad .digit{border:0;border-radius:0}
+.bigpred{display:flex;gap:14px;align-items:center;margin-bottom:8px}.bigpred>span{font-size:64px;font-weight:800;line-height:1;color:var(--acc);min-width:52px;text-align:center}
+.bars{display:flex;flex-direction:column;gap:3px}.bar{display:grid;grid-template-columns:14px 1fr 38px;gap:6px;align-items:center;font-size:12px}
+.track{background:var(--chip);height:9px;border-radius:5px;overflow:hidden}.fill{height:100%;background:#94a3b8}.bar.top .fill{background:var(--acc)}.bar.top span,.bar.top em{font-weight:800}.bar em{font-style:normal;text-align:right;color:var(--mute)}
+footer{color:var(--mute);font-size:13px;margin-top:8px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.tabs{grid-template-columns:1fr}header h1{font-size:21px}}
+.tabs{grid-template-columns:repeat(auto-fit,minmax(172px,1fr))}
+.tab.sel{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 14px}
+.blk{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center;font-size:12.5px}
+.blk b{font-size:13px}.blk span{color:var(--mute);font-size:11.5px}
+.blk.enc{border-color:#2563eb}.blk.dec{border-color:#ea580c}.blk.lat{border-color:#7c3aed;align-items:flex-start;text-align:left;font-family:ui-monospace,Menlo,monospace}.blk.lat b{font-size:11.5px;font-weight:600}.blk .zz{color:#7c3aed}
+.blk.hot{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}
+.arr{color:var(--mute);font-size:18px;text-align:center}.arr.v{margin:-2px 0}
+.seqrow{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.seqchip{padding:3px 7px;font-size:11.5px;border-radius:7px;font-variant-numeric:tabular-nums}.seqchip.cur{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 35%,transparent)}.seqchip.store{background:color-mix(in srgb,var(--ok) 18%,transparent);font-weight:700}
+.formula{font:600 16px ui-monospace,Menlo,monospace;background:var(--codebg);padding:12px 14px;border-radius:10px;margin:8px 0;overflow-x:auto;white-space:nowrap}
+.txt{flex:1;min-width:220px;font:inherit;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}.chip.tok{font-size:12px;color:var(--ink)}.chip.tok.on{background:var(--acc);color:#fff}
+.headsel{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:6px 0}
+.headbtn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;font-size:12px}.headbtn.sel{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 30%,transparent)}
+.qkv{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px}.qkv>div{overflow-x:auto}
+.grid2.tf{grid-template-columns:minmax(0,auto) minmax(0,1fr)}
+.stack{display:flex;flex-direction:column;align-items:stretch;max-width:520px;margin:8px auto;gap:2px}
+.stack .blk{width:100%}
+.loop{border:2px dashed var(--acc);border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:2px}.looplbl{font-size:11.5px;font-weight:700;color:var(--acc);text-align:center}
+.gi canvas+canvas{margin-top:3px}
+@media(max-width:760px){.grid2.tf{grid-template-columns:1fr}}
+.cols2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.cols2>.card{margin-bottom:14px}
+@media(max-width:900px){.cols2{grid-template-columns:1fr}}
+.tbl{border-collapse:collapse;font-size:13px;width:100%}.tbl th,.tbl td{border:1px solid var(--line);padding:6px 9px;text-align:left}.tbl th{background:var(--chip);font-size:12px;color:var(--mute)}.tbl tr.hl td{background:color-mix(in srgb,var(--bad) 9%,transparent)}
+.tbl.cmp td:first-child{font-weight:700}
+.code.py{white-space:pre;word-break:normal}
+.flowline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0;font-size:13px}.flowline span,.flowline b{background:var(--chip);border-radius:8px;padding:3px 9px}
+.sliders{display:flex;flex-direction:column;gap:6px}.slr{display:flex;flex-direction:column;font-size:12.5px;color:var(--mute)}.slr input{width:100%}.slr b{color:var(--ink)}
+.sbar{display:grid;grid-template-columns:110px 1fr 46px;gap:8px;align-items:center;margin:8px 0;font-size:13px}.sbar em{grid-column:2/4;font-style:normal;color:var(--mute);font-size:12px;margin-top:-4px}
+.track.big{height:16px;border-radius:8px}
+details summary{cursor:pointer;font-weight:600;margin-bottom:8px}
+.grid2.lc{grid-template-columns:minmax(0,440px) minmax(0,1fr)}@media(max-width:760px){.grid2.lc{grid-template-columns:1fr}}
+</style></head><body><div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+try{
+/* ===== core: RNG, activations, MLP with backprop, datasets ===== */
+function rng(seed){let a=seed>>>0;return function(){a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+function gauss(r){let u=0;while(u===0)u=r();const v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const ACT={
+  tanh:{f:x=>Math.tanh(x),d:a=>1-a*a},
+  relu:{f:x=>x>0?x:0,d:a=>a>0?1:0},
+  sigmoid:{f:x=>1/(1+Math.exp(-x)),d:a=>a*(1-a)},
+  linear:{f:x=>x,d:a=>1}
+};
+class MLP{
+  constructor(sizes,act,out,seed){
+    this.sizes=sizes;this.act=act;this.out=out;this.W=[];this.b=[];this.gn=[];
+    const r=rng(seed||1);
+    for(let l=1;l<sizes.length;l++){
+      const nin=sizes[l-1],nout=sizes[l];
+      const sc=act==='relu'?Math.sqrt(2/nin):Math.sqrt(1.2/nin);
+      this.W.push(Array.from({length:nout},()=>Array.from({length:nin},()=>gauss(r)*sc)));
+      this.b.push(new Array(nout).fill(0));
+    }
+  }
+  forward(x){
+    const A=[x],L=this.W.length,f=ACT[this.act].f;
+    for(let l=0;l<L;l++){
+      const prev=A[l],W=this.W[l],b=this.b[l],z=new Array(W.length);
+      for(let j=0;j<W.length;j++){let s=b[j];const w=W[j];for(let i=0;i<prev.length;i++)s+=w[i]*prev[i];z[j]=s;}
+      if(l===L-1){
+        if(this.out==='softmax'){let m=-1e9;for(const v of z)if(v>m)m=v;let S=0;const e=z.map(v=>{const q=Math.exp(v-m);S+=q;return q;});A.push(e.map(v=>v/S));}
+        else if(this.out==='linear')A.push(z);
+        else A.push(z.map(v=>1/(1+Math.exp(-v))));
+      }else A.push(z.map(f));
+    }
+    return A;
+  }
+  trainBatch(X,Y,lr){
+    const L=this.W.length,d=ACT[this.act].d;
+    const gW=this.W.map(M=>M.map(r=>new Array(r.length).fill(0)));
+    const gB=this.b.map(v=>new Array(v.length).fill(0));
+    let loss=0;
+    for(let n=0;n<X.length;n++){
+      const A=this.forward(X[n]);
+      let delta=A[L].map((a,j)=>a-Y[n][j]);               // dLoss/dz at output (CE + softmax/sigmoid)
+      if(this.out==='softmax')loss-=Math.log(Math.max(A[L][Y[n].indexOf(1)],1e-9));
+      else loss-=Y[n][0]*Math.log(Math.max(A[L][0],1e-9))+(1-Y[n][0])*Math.log(Math.max(1-A[L][0],1e-9));
+      for(let l=L-1;l>=0;l--){                              // walk backwards
+        const prev=A[l];
+        for(let j=0;j<delta.length;j++){gB[l][j]+=delta[j];const g=gW[l][j];const dj=delta[j];for(let i=0;i<prev.length;i++)g[i]+=dj*prev[i];}
+        if(l>0){
+          const nd=new Array(prev.length);
+          for(let i=0;i<prev.length;i++){let s=0;for(let j=0;j<delta.length;j++)s+=this.W[l][j][i]*delta[j];nd[i]=s*d(prev[i]);}
+          delta=nd;
+        }
+      }
+    }
+    const k=lr/X.length;
+    this.gn=gW.map(M=>{let s=0,c=0;for(const r of M)for(const v of r){s+=Math.abs(v);c++;}return s/c/X.length;});
+    for(let l=0;l<L;l++){
+      for(let j=0;j<this.W[l].length;j++){this.b[l][j]-=k*gB[l][j];const w=this.W[l][j],g=gW[l][j];for(let i=0;i<w.length;i++)w[i]-=k*g[i];}
+    }
+    return loss/X.length;
+  }
+  backward(A,delta){
+    const L=this.W.length,d=ACT[this.act].d,gW=this.W.map(M=>M.map(r=>new Array(r.length).fill(0))),gB=this.b.map(v=>new Array(v.length).fill(0));
+    let gIn=null;
+    for(let l=L-1;l>=0;l--){
+      const prev=A[l];
+      for(let j=0;j<delta.length;j++){gB[l][j]+=delta[j];for(let i=0;i<prev.length;i++)gW[l][j][i]+=delta[j]*prev[i];}
+      const nd=new Array(prev.length);
+      for(let i=0;i<prev.length;i++){let q=0;for(let j=0;j<delta.length;j++)q+=this.W[l][j][i]*delta[j];nd[i]=l>0?q*d(prev[i]):q;}
+      if(l===0)gIn=nd;else delta=nd;
+    }
+    return{gW,gB,gIn};
+  }
+  applyGrads(g,k){for(let l=0;l<this.W.length;l++)for(let j=0;j<this.W[l].length;j++){this.b[l][j]-=k*g.gB[l][j];const w=this.W[l][j],q=g.gW[l][j];for(let i=0;i<w.length;i++)w[i]-=k*q[i];}}
+  evaluate(X,Y){
+    let loss=0,ok=0;const L=this.W.length;
+    for(let n=0;n<X.length;n++){
+      const o=this.forward(X[n])[L];
+      if(this.out==='softmax'){const k=Y[n].indexOf(1);loss-=Math.log(Math.max(o[k],1e-9));let am=0;for(let j=1;j<o.length;j++)if(o[j]>o[am])am=j;if(am===k)ok++;}
+      else{const y=Y[n][0];loss-=y*Math.log(Math.max(o[0],1e-9))+(1-y)*Math.log(Math.max(1-o[0],1e-9));if((o[0]>0.5)===(y>0.5))ok++;}
+    }
+    return{loss:loss/X.length,acc:ok/X.length};
+  }
+  params(){let s=0;for(let l=0;l<this.W.length;l++)s+=this.W[l].length*this.W[l][0].length+this.b[l].length;return s;}
+  exportObj(){return{format:'mlp-v1',sizes:this.sizes,act:this.act,out:this.out,W:this.W,b:this.b};}
+  static from(o){const m=Object.create(MLP.prototype);m.sizes=o.sizes;m.act=o.act;m.out=o.out;m.W=o.W;m.b=o.b;m.gn=[];return m;}
+}
+/* ---- 2-D "playground" datasets ---- */
+const FEATS={x:{l:'x',fn:(x,y)=>x},y:{l:'y',fn:(x,y)=>y},xy:{l:'x·y',fn:(x,y)=>x*y},x2:{l:'x²',fn:(x,y)=>x*x},y2:{l:'y²',fn:(x,y)=>y*y},sinx:{l:'sin(πx)',fn:(x,y)=>Math.sin(Math.PI*x)}};
+const FORDER=['x','y','xy','x2','y2','sinx'];
+function makeData(kind,n,seed,noise){
+  const r=rng(seed),P=[];
+  for(let i=0;i<n;i++){
+    let x,y,c=i%2;
+    if(kind==='xor'){x=r()*2-1;y=r()*2-1;x+=x>0?0.12:-0.12;y+=y>0?0.12:-0.12;x*=0.88;y*=0.88;c=x*y>0?1:0;}
+    else if(kind==='circle'){const a=r()*6.2832,rad=c?r()*0.45:0.7+r()*0.3;x=rad*Math.cos(a);y=rad*Math.sin(a);}
+    else if(kind==='moons'){const t=r()*Math.PI;x=c?1-Math.cos(t):Math.cos(t);y=c?0.5-Math.sin(t):Math.sin(t);x=(x-0.5)*0.65;y=(y-0.25)*0.9;}
+    else if(kind==='spiral'){const t=0.1+0.9*r(),rad=t*0.95,ang=t*3*Math.PI+c*Math.PI;x=rad*Math.cos(ang);y=rad*Math.sin(ang);}
+    else{const m=c?0.5:-0.5;x=m+gauss(r)*0.2;y=m+gauss(r)*0.2;}
+    const sd=noise*0.5+(kind==='moons'?0.04:0);
+    P.push({x:x+gauss(r)*sd,y:y+gauss(r)*sd,c});
+  }
+  return P;
+}
+/* ---- 8x8 digits, generated with shifts + noise ---- */
+const GLYPHS=[
+["..####..",".##..##.","##....##","##....##","##....##","##....##",".##..##.","..####.."],
+["...##...","..###...","...##...","...##...","...##...","...##...","...##...",".######."],
+["..####..",".##..##.","......##",".....##.","...##...","..##....",".##.....","########"],
+[".#####..","##...##.",".....##.","...###..",".....##.",".....##.","##...##.",".#####.."],
+["....##..","...###..","..####..",".##.##..","##..##..","########","....##..","....##.."],
+["#######.","##......","##......","######..",".....##.",".....##.","##...##.",".#####.."],
+["..####..",".##.....","##......","######..","##...##.","##...##.","##...##.",".#####.."],
+["########","......##",".....##.","....##..","...##...","...##...","..##....","..##...."],
+[".#####..","##...##.","##...##.",".#####..","##...##.","##...##.","##...##.",".#####.."],
+[".#####..","##...##.","##...##.",".######.","......##",".....##.","....##..","..###..."]
+];
+const BASE=GLYPHS.map(g=>g.join('').split('').map(ch=>ch==='#'?1:0));
+function makeDigit(c,r,noise,noShift){
+  const sh=()=>{if(noShift)return 0;const q=r();return q<0.5?0:q<0.75?-1:1;};
+  const dx=sh(),dy=sh(),out=new Array(64);
+  for(let y=0;y<8;y++)for(let x=0;x<8;x++){
+    const sx=x-dx,sy=y-dy;
+    let v=(sx>=0&&sx<8&&sy>=0&&sy<8)?BASE[c][sy*8+sx]:0;
+    v=v?0.75+0.25*r():0;
+    v+=gauss(r)*noise*0.5;
+    if(r()<noise*0.12)v=1-v;
+    out[y*8+x]=Math.max(0,Math.min(1,v));
+  }
+  return out;
+}
+function makeDigitSet(per,seed,noise,noShift){
+  const r=rng(seed),X=[],Y=[],L=[];
+  for(let k=0;k<per;k++)for(let c=0;c<10;c++){X.push(makeDigit(c,r,noise,noShift));const y=new Array(10).fill(0);y[c]=1;Y.push(y);L.push(c);}
+  return{X,Y,L};
+}
+
+/* ---- tiny VAE (2-D latent) trained with Adam ---- */
+class VAE{
+  constructor(nin,nh,nz,seed,beta){
+    const r=rng(seed||1);this.nin=nin;this.nh=nh;this.nz=nz;this.beta=beta;this.t=0;
+    const init=(o,i,m)=>{const a=new Float64Array(o*i),s=Math.sqrt(2/i)*(m||1);for(let k=0;k<a.length;k++)a[k]=gauss(r)*s;return a;};
+    this.p={W1:init(nh,nin),b1:new Float64Array(nh),Wm:init(nz,nh,0.3),bm:new Float64Array(nz),Wl:init(nz,nh,0.1),bl:new Float64Array(nz),W3:init(nh,nz),b3:new Float64Array(nh),W4:init(nin,nh),b4:new Float64Array(nin)};
+    this.m={};this.v={};for(const k in this.p){this.m[k]=new Float64Array(this.p[k].length);this.v[k]=new Float64Array(this.p[k].length);}
+  }
+  lin(W,b,x,o,i){const y=new Float64Array(o);for(let j=0;j<o;j++){let s=b[j];for(let k=0;k<i;k++)s+=W[j*i+k]*x[k];y[j]=s;}return y;}
+  encode(x){const p=this.p,h=this.lin(p.W1,p.b1,x,this.nh,this.nin).map(v=>v>0?v:0),mu=this.lin(p.Wm,p.bm,h,this.nz,this.nh),lv=this.lin(p.Wl,p.bl,h,this.nz,this.nh).map(v=>Math.max(-8,Math.min(3,v)));return{h,mu,lv};}
+  decode(z){const p=this.p,d=this.lin(p.W3,p.b3,z,this.nh,this.nz).map(v=>v>0?v:0),o=this.lin(p.W4,p.b4,d,this.nin,this.nh).map(v=>1/(1+Math.exp(-v)));return{d,o};}
+  trainBatch(X,lr,r){
+    const p=this.p,g={};for(const k in p)g[k]=new Float64Array(p[k].length);
+    let rec=0,kl=0;const{nin,nh,nz}=this;
+    for(const x of X){
+      const e=this.encode(x),eps=Array.from({length:nz},()=>gauss(r)),sg=e.lv.map(v=>Math.exp(0.5*v)),z=e.mu.map((m,i)=>m+sg[i]*eps[i]),dd=this.decode(z);
+      for(let i=0;i<nin;i++){const o=Math.min(1-1e-6,Math.max(1e-6,dd.o[i]));rec-=x[i]*Math.log(o)+(1-x[i])*Math.log(1-o);}
+      for(let i=0;i<nz;i++)kl+=-0.5*(1+e.lv[i]-e.mu[i]*e.mu[i]-Math.exp(e.lv[i]));
+      const dO=dd.o.map((o,i)=>o-x[i]);                 // dL/dlogit (BCE+sigmoid)
+      const dD=new Float64Array(nh);
+      for(let i=0;i<nin;i++){g.b4[i]+=dO[i];for(let j=0;j<nh;j++){g.W4[i*nh+j]+=dO[i]*dd.d[j];dD[j]+=p.W4[i*nh+j]*dO[i];}}
+      for(let j=0;j<nh;j++)if(dd.d[j]<=0)dD[j]=0;
+      const dz=new Float64Array(nz);
+      for(let j=0;j<nh;j++){g.b3[j]+=dD[j];for(let k=0;k<nz;k++){g.W3[j*nz+k]+=dD[j]*z[k];dz[k]+=p.W3[j*nz+k]*dD[j];}}
+      const dMu=new Float64Array(nz),dLv=new Float64Array(nz);
+      for(let k=0;k<nz;k++){dMu[k]=dz[k]+this.beta*e.mu[k];dLv[k]=dz[k]*0.5*sg[k]*eps[k]+this.beta*0.5*(Math.exp(e.lv[k])-1);}
+      const dH=new Float64Array(nh);
+      for(let k=0;k<nz;k++){g.bm[k]+=dMu[k];g.bl[k]+=dLv[k];for(let j=0;j<nh;j++){g.Wm[k*nh+j]+=dMu[k]*e.h[j];g.Wl[k*nh+j]+=dLv[k]*e.h[j];dH[j]+=p.Wm[k*nh+j]*dMu[k]+p.Wl[k*nh+j]*dLv[k];}}
+      for(let j=0;j<nh;j++){if(e.h[j]<=0)continue;g.b1[j]+=dH[j];for(let i=0;i<nin;i++)g.W1[j*nin+i]+=dH[j]*x[i];}
+    }
+    this.t++;const n=X.length,b1=0.9,b2=0.999;
+    for(const k in p){const a=p[k],G=g[k],m=this.m[k],v=this.v[k];for(let i=0;i<a.length;i++){const q=G[i]/n;m[i]=b1*m[i]+(1-b1)*q;v[i]=b2*v[i]+(1-b2)*q*q;a[i]-=lr*(m[i]/(1-Math.pow(b1,this.t)))/(Math.sqrt(v[i]/(1-Math.pow(b2,this.t)))+1e-8);}}
+    return{rec:rec/n,kl:kl/n};
+  }
+}
+
+/* ---- lead-qualification simulator (hidden reality nobody writes down) ---- */
+function poisson(r,lam){const L=Math.exp(-lam);let k=0,p=1;do{k++;p*=r();}while(p>L);return k-1;}
+function trueP(l){
+  const mid=l.emp>50&&l.emp<500;
+  const p=0.03+0.45*((mid&&l.pages>=5)?1:0)+0.35*((l.replied===1&&l.budget>20000)?1:0)-0.20*(l.days>30?1:0);
+  return Math.min(0.95,Math.max(0.01,p));
+}
+function makeLeads(n,seed){
+  const r=rng(seed),out=[];
+  for(let i=0;i<n;i++){
+    const l={emp:Math.exp(4+1.2*gauss(r)),pages:poisson(r,4),replied:r()<0.5?1:0,budget:Math.exp(10+gauss(r)),days:Math.floor(r()*60)};
+    l.p=trueP(l);l.y=r()<l.p?1:0;out.push(l);
+  }
+  return out;
+}
+const leadFeat=l=>[Math.log(l.emp),l.pages,l.replied,Math.log(l.budget),l.days];
+function rulePred(l,o){
+  o=o||{};const bt=o.budget||10000,pt=o.pages||8;
+  if(l.replied&&l.budget>bt)return 1;
+  if(l.pages>=pt)return 1;
+  if(o.interaction&&l.emp>50&&l.emp<500&&l.pages>=5)return 1;
+  return 0;
+}
+function aucOf(scores,ys){
+  const idx=scores.map((s,i)=>i).sort((a,b)=>scores[a]-scores[b]);
+  let rank=1,sumPos=0,nP=0,i=0;
+  while(i<idx.length){let j=i;while(j+1<idx.length&&scores[idx[j+1]]===scores[idx[i]])j++;const avg=(i+j)/2+1;for(let k=i;k<=j;k++)if(ys[idx[k]]){sumPos+=avg;nP++;}i=j+1;}
+  const nN=ys.length-nP;return nP&&nN?(sumPos-nP*(nP+1)/2)/(nP*nN):0.5;
+}
+function scalerOf(X){const d=X[0].length,m=new Array(d).fill(0),s=new Array(d).fill(0);X.forEach(x=>x.forEach((v,i)=>m[i]+=v/X.length));X.forEach(x=>x.forEach((v,i)=>s[i]+=(v-m[i])**2/X.length));return{m,s:s.map(v=>Math.sqrt(v)||1)};}
+const applyScaler=(sc,x)=>x.map((v,i)=>(v-sc.m[i])/sc.s[i]);
+/* ===== UI helpers ===== */
+const {useState,useEffect,useRef,useMemo}=React;
+const h=React.createElement;
+const f2=(v,d=2)=>Number(v).toFixed(d);
+const sg=(v,d=2)=>(v>=0?'+':'−')+Math.abs(v).toFixed(d);
+const pct=v=>(v*100).toFixed(0)+'%';
+function mix(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];}
+const LIGHT=[238,240,244],BLUE=[59,130,246],ORANGE=[249,115,22];
+function divColor(p){const t=Math.max(-1,Math.min(1,(p-0.5)*2));return t>=0?mix(LIGHT,BLUE,t):mix(LIGHT,ORANGE,-t);}
+const rgb=c=>`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
+function sampleGrid(dom,N,fn){const o=new Array(N*N);for(let gy=0;gy<N;gy++)for(let gx=0;gx<N;gx++){const x=dom.x0+(gx+0.5)/N*(dom.x1-dom.x0),y=dom.y1-(gy+0.5)/N*(dom.y1-dom.y0);o[gy*N+gx]=fn(x,y,gx,gy);}return o;}
+const paramCount=sizes=>{let s=0;for(let l=1;l<sizes.length;l++)s+=sizes[l]*sizes[l-1]+sizes[l];return s;};
+
+function Heat({vals,N,size=340,dom,pts,test,showTest}){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const c=ref.current;if(!c)return;const ctx=c.getContext('2d');
+    const off=document.createElement('canvas');off.width=N;off.height=N;
+    const o=off.getContext('2d'),img=o.createImageData(N,N);
+    for(let i=0;i<N*N;i++){const col=divColor(vals[i]);img.data[i*4]=col[0];img.data[i*4+1]=col[1];img.data[i*4+2]=col[2];img.data[i*4+3]=255;}
+    o.putImageData(img,0,0);
+    ctx.clearRect(0,0,size,size);ctx.imageSmoothingEnabled=true;ctx.drawImage(off,0,0,size,size);
+    const P=p=>[(p.x-dom.x0)/(dom.x1-dom.x0)*size,(dom.y1-p.y)/(dom.y1-dom.y0)*size];
+    if(showTest&&test)test.forEach(p=>{const q=P(p);ctx.beginPath();ctx.arc(q[0],q[1],3.4,0,6.283);ctx.lineWidth=1.6;ctx.strokeStyle=p.c?'#1e40af':'#9a3412';ctx.stroke();});
+    pts.forEach(p=>{const q=P(p);ctx.beginPath();ctx.arc(q[0],q[1],4,0,6.283);ctx.fillStyle=p.c?'#2563eb':'#ea580c';ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle='#fff';ctx.stroke();});
+  });
+  return h('canvas',{ref,width:size,height:size,className:'heat'});
+}
+function LineChart({series,w=320,hgt=120,yMin,yMax,xMax,marker,xLabel}){
+  const all=series.flatMap(s=>s.data);
+  let lo=yMin!==undefined?yMin:(all.length?Math.min(...all,0):0),hi=yMax!==undefined?yMax:(all.length?Math.max(...all):1);
+  if(hi-lo<1e-9)hi=lo+1;
+  const n=Math.max(xMax||0,...series.map(s=>s.data.length),2);
+  const X=i=>38+(w-48)*i/(n-1),Y=v=>hgt-18-(hgt-32)*(v-lo)/(hi-lo);
+  return h('svg',{viewBox:`0 0 ${w} ${hgt}`,className:'chart'},
+    h('line',{x1:38,x2:w-10,y1:hgt-18,y2:hgt-18,className:'axis'}),
+    h('line',{x1:38,x2:38,y1:12,y2:hgt-18,className:'axis'}),
+    h('text',{x:34,y:18,textAnchor:'end',className:'tick'},hi.toFixed(2)),
+    h('text',{x:34,y:hgt-20,textAnchor:'end',className:'tick'},lo.toFixed(2)),
+    h('text',{x:w-10,y:hgt-5,textAnchor:'end',className:'tick'},(xLabel||'epochs →')),
+    marker!==undefined&&marker>=0?h('line',{x1:X(marker),x2:X(marker),y1:12,y2:hgt-18,stroke:'var(--mute)',strokeDasharray:'3 3'}):null,
+    ...series.map(s=>h('path',{key:s.name,d:s.data.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1)).join(''),fill:'none',stroke:s.color,strokeWidth:2})),
+    ...series.map((s,i)=>h('text',{key:'l'+s.name,x:w-12,y:16+i*11,textAnchor:'end',fill:s.color,className:'tick'},'● '+s.name)));
+}
+function Concepts({items,title}){
+  return h('section',{className:'card'},
+    h('h3',null,title||'Key concepts — with the live values from the chart above'),
+    h('div',{className:'concepts'},...items.map((it,i)=>h('div',{key:i,className:'concept'},
+      h('h4',null,it.t),h('p',null,it.d),it.live?h('code',{className:'live'},it.live):null))));
+}
+function Seg({options,value,onChange,render}){
+  return h('div',{className:'seg'},...options.map(o=>h('button',{key:o,className:o===value?'on':'',onClick:()=>onChange(o)},render?render(o):o)));
+}
+function Digit({v,size=48,mode='gray'}){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const c=ref.current;if(!c)return;const ctx=c.getContext('2d'),cell=size/8;
+    let m=1;if(mode==='div'){m=1e-6;for(const q of v)m=Math.max(m,Math.abs(q));}
+    for(let i=0;i<64;i++){
+      let col;if(mode==='gray'){const g=255*(1-v[i]);col=[g,g,g];}else col=divColor(0.5+0.5*v[i]/m);
+      ctx.fillStyle=rgb(col);ctx.fillRect((i%8)*cell,Math.floor(i/8)*cell,cell+0.6,cell+0.6);
+    }
+  });
+  return h('canvas',{ref,width:size,height:size,className:'digit',style:{width:size,height:size}});
+}
+/* ===== Tab 0: Rules vs learning (lead qualification) ===== */
+const NS=[25,50,100,250,500,1000,2000,5000];
+const EXAMPLES=[
+  {emp:120,pages:7,replied:1,budget:40000,days:3,y:1},
+  {emp:15,pages:2,replied:0,budget:5000,days:40,y:0},
+  {emp:800,pages:9,replied:0,budget:90000,days:12,y:0},
+  {emp:200,pages:6,replied:1,budget:25000,days:5,y:1},
+  {emp:60,pages:1,replied:1,budget:8000,days:20,y:0}
+];
+const eur=v=>'€'+Math.round(v).toLocaleString('en-US');
+const SKLEARN=`import numpy as np
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
+rng = np.random.default_rng(0); n = 5000
+employees = rng.lognormal(4, 1.2, n);  pages = rng.poisson(4, n)
+replied   = rng.integers(0, 2, n);     budget = rng.lognormal(10, 1, n)
+days_ago  = rng.integers(0, 60, n)
+
+# Hidden reality: the pattern the "world" follows. Nobody writes this down.
+mid_size = (employees > 50) & (employees < 500)
+p = (0.03 + 0.45 * (mid_size & (pages >= 5))
+          + 0.35 * ((replied == 1) & (budget > 20_000))
+          - 0.20 * (days_ago > 30))
+y = (rng.random(n) < np.clip(p, 0.01, 0.95)).astype(int)
+
+X = np.column_stack([np.log(employees), pages, replied,
+                     np.log(budget), days_ago])
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, random_state=0)
+
+scaler = StandardScaler().fit(X_tr)
+net = MLPClassifier(hidden_layer_sizes=(16, 8), max_iter=500, random_state=0)
+net.fit(scaler.transform(X_tr), y_tr)          # backpropagation happens here
+print(net.predict_proba(scaler.transform(new_lead))[0, 1])   # P(customer)`;
+function LeadTab({active}){
+  const pool=useMemo(()=>makeLeads(5000,1),[]),test=useMemo(()=>makeLeads(3000,2),[]);
+  const testF=useMemo(()=>test.map(leadFeat),[test]),ys=useMemo(()=>test.map(l=>l.y),[test]);
+  const base=useMemo(()=>1-ys.reduce((a,b)=>a+b,0)/ys.length,[ys]);
+  const oracle=useMemo(()=>aucOf(test.map(l=>l.p),ys),[test]);
+  const [ni,setNi]=useState(5);
+  const [ro,setRo]=useState({budget:10000,pages:8,interaction:false});
+  const [run,setRun]=useState(false);
+  const [busy,setBusy]=useState(false);
+  const [curve,setCurve]=useState({lr:[],nn:[]});
+  const [reveal,setReveal]=useState(false);
+  const [lead,setLead]=useState({emp:120,pages:7,replied:1,budget:40000,days:3});
+  const [,force]=useState(0);
+  const TOTAL=40;
+  const scoreNet=(s,net)=>testF.map(f=>net.forward(applyScaler(s.sc,f))[net.W.length][0]);
+  const mk=n=>{
+    const tr=pool.slice(0,n),sc=scalerOf(tr.map(leadFeat));
+    const s={n,sc,X:tr.map(l=>applyScaler(sc,leadFeat(l))),Y:tr.map(l=>[l.y]),lr:new MLP([5,1],'tanh','sigmoid',3),nn:new MLP([5,16,8,1],'tanh','sigmoid',3),epoch:0,rand:rng(5),aucLR:[],aucNN:[],loss:[]};
+    s.aucLR.push(aucOf(scoreNet(s,s.lr),ys));s.aucNN.push(aucOf(scoreNet(s,s.nn),ys));return s;
+  };
+  const st=useRef(null);if(!st.current)st.current=mk(NS[ni]);
+  useEffect(()=>{st.current=mk(NS[ni]);setRun(false);force(x=>x+1);},[ni]);
+  useEffect(()=>{if(!active)setRun(false);},[active]);
+  const step=()=>{
+    const s=st.current,idx=s.X.map((_,i)=>i);
+    for(let i=idx.length-1;i>0;i--){const j=Math.floor(s.rand()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+    let ls=0,nb=0;
+    for(let i=0;i<idx.length;i+=32){const b=idx.slice(i,i+32),xb=b.map(k=>s.X[k]),yb=b.map(k=>s.Y[k]);s.lr.trainBatch(xb,yb,0.05);ls+=s.nn.trainBatch(xb,yb,0.05);nb++;}
+    s.epoch++;s.loss.push(ls/nb);s.aucLR.push(aucOf(scoreNet(s,s.lr),ys));s.aucNN.push(aucOf(scoreNet(s,s.nn),ys));
+  };
+  const tick=useRef();tick.current=()=>{if(st.current.epoch>=TOTAL){setRun(false);return;}step();force(x=>x+1);if(st.current.epoch>=TOTAL)setRun(false);};
+  useEffect(()=>{if(!run)return;const id=setInterval(()=>tick.current(),140);return()=>clearInterval(id);},[run]);
+  const runCurve=()=>{
+    setBusy(true);setCurve({lr:[],nn:[]});setRun(false);const out={lr:[],nn:[]};let k=0;
+    const go=()=>{
+      const n=NS[k],tr=pool.slice(0,n),sc=scalerOf(tr.map(leadFeat)),X=tr.map(l=>applyScaler(sc,leadFeat(l))),Y=tr.map(l=>[l.y]);
+      const fit=net=>{const r=rng(5);for(let e=0;e<TOTAL;e++){const idx=X.map((_,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}for(let i=0;i<idx.length;i+=32){const b=idx.slice(i,i+32);net.trainBatch(b.map(q=>X[q]),b.map(q=>Y[q]),0.05);}}return aucOf(scoreNet({sc},net),ys);};
+      out.lr.push(fit(new MLP([5,1],'tanh','sigmoid',3)));out.nn.push(fit(new MLP([5,16,8,1],'tanh','sigmoid',3)));
+      setCurve({lr:[...out.lr],nn:[...out.nn]});k++;
+      if(k<NS.length)setTimeout(go,15);else setBusy(false);
+    };
+    setTimeout(go,15);
+  };
+  const s=st.current;
+  const rulesP=test.map(l=>rulePred(l,ro)),rAuc=aucOf(rulesP,ys),rAcc=rulesP.reduce((a,p,i)=>a+(p===ys[i]?1:0),0)/ys.length;
+  const rAuc2=useMemo(()=>aucOf(test.map(l=>rulePred(l,{budget:10000,pages:8,interaction:true})),ys),[test]);
+  const lastLR=s.aucLR[s.aucLR.length-1],lastNN=s.aucNN[s.aucNN.length-1];
+  const lf=l=>applyScaler(s.sc,leadFeat(l));
+  const prob=(net,l)=>net.forward(lf(l))[net.W.length][0];
+  const L2={...lead,emp:lead.emp,budget:lead.budget},pNN=prob(s.nn,L2),pLR=prob(s.lr,L2),rYes=rulePred(L2,ro),pTrue=trueP(L2);
+  const flat=v=>NS.map(()=>v);
+  const trained=s.epoch>0;
+  const bar=(label,p,color,note)=>h('div',{className:'sbar'},h('span',null,label),h('div',{className:'track big'},h('div',{className:'fill',style:{width:(p*100)+'%',background:color}})),h('b',null,pct(p)),note?h('em',null,note):null);
+  const sl=(label,min,max,step_,val,set,fmt)=>h('label',{className:'slr'},h('span',null,label+': ',h('b',null,fmt?fmt(val):val)),h('input',{type:'range',min,max,step:step_,value:val,onChange:e=>set(+e.target.value)}));
+  const lg=(v,lo,hi)=>Math.log(v/lo)/Math.log(hi/lo),unlg=(t,lo,hi)=>lo*Math.pow(hi/lo,t);
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'Start here: when nobody knows the formula'),
+      h('p',{className:'lead'},'Converting °C to °F is a poor example of machine learning, because a human already knows the rule. ',h('b',null,'Lead qualification'),' is a good one: no one can write the exact formula. All you have is history, i.e. leads you contacted and whether they became customers.'),
+      h('div',{className:'scrollx'},h('table',{className:'tbl'},
+        h('thead',null,h('tr',null,...['employees','pages visited','replied to email','budget','days since contact','became customer?','hand rules say',trained?'trained net: P(customer)':'trained net: P(customer)'].map((t,i)=>h('th',{key:i},t)))),
+        h('tbody',null,...EXAMPLES.map((e,i)=>{const rp=rulePred(e,ro),ok=rp===e.y;const pn=prob(s.nn,e);
+          return h('tr',{key:i,className:i===2?'hl':''},h('td',null,e.emp),h('td',null,e.pages),h('td',null,e.replied?'yes':'no'),h('td',null,eur(e.budget)),h('td',null,e.days),h('td',null,h('b',null,e.y)),
+            h('td',{className:ok?'okc':'badc'},(rp?'qualified':'not qualified')+(ok?' ✓':' ✗')),h('td',null,trained?pct(pn):'– (train it below)'));})))),
+      h('p',{className:'small'},'Looking at it, you can’t say why lead #3 failed despite a big budget and lots of visits. That is the point: the rule is hidden in the data, not in anyone’s head. (The last column fills in once you train the network below.)')),
+    h('div',{className:'cols2'},
+      h('section',{className:'card'},
+        h('h3',null,'① Traditional software: a human guesses the rules'),
+        h('pre',{className:'code py'},`def qualify(lead):
+    if lead.replied and lead.budget > ${ro.budget.toLocaleString('en-US').replace(/,/g,'_')}:
+        return True
+    if lead.pages_visited >= ${ro.pages}:
+        return True${ro.interaction?`
+    if 50 < lead.employees < 500 and lead.pages_visited >= 5:
+        return True   # ← a human had to SPOT this interaction`:''}
+    return False`),
+        h('div',{className:'flowline'},h('span',null,'Rules (guessed)'),'+',h('span',null,'Lead'),'→',h('b',null,'Qualified? yes / no')),
+        h('div',{className:'row'},h('span',{className:'lbl'},'Tune the rules like a developer would'),
+          h('label',{className:'chk'},'budget >',h('select',{value:ro.budget,onChange:e=>setRo({...ro,budget:+e.target.value})},...[5000,10000,20000,40000].map(v=>h('option',{key:v,value:v},v.toLocaleString('en-US'))))),
+          h('label',{className:'chk'},'pages ≥',h('select',{value:ro.pages,onChange:e=>setRo({...ro,pages:+e.target.value})},...[4,6,8,10].map(v=>h('option',{key:v,value:v},v)))),
+          h('label',{className:'chk'},h('input',{type:'checkbox',checked:ro.interaction,onChange:e=>setRo({...ro,interaction:e.target.checked})}),'add the “mid-size + engaged” rule')),
+        h('div',{className:'stats'},
+          h('div',null,h('span',null,'ranking quality (AUC)'),h('b',null,f2(rAuc,3))),
+          h('div',null,h('span',null,'accuracy'),h('b',null,pct(rAcc)))),
+        h('p',{className:'small'},'You test it, find mistakes, add more if-statements, and the rules never stop growing. Interactions like “mid-size company and high engagement” are hard to spot by eye; try the checkbox to see what one extra spotted rule is worth (AUC '+f2(rAuc2,3)+').')),
+      h('section',{className:'card'},
+        h('h3',null,'② Machine learning: the model finds the rules from outcomes'),
+        h('div',{className:'flowline'},h('span',null,'Data'),'+',h('span',null,'Outcomes'),'→',h('span',null,'Learn patterns (weights)'),'→',h('b',null,'P(customer)')),
+        h('p',{className:'small'},'A neural net with two hidden layers (5 → 16 → 8 → 1) is trained by ',h('b',null,'backpropagation'),': score each historical lead, measure the error against what really happened, and nudge every weight to reduce it. Compared with a single neuron (logistic regression).'),
+        h('div',{className:'row'},h('span',{className:'lbl'},'Training leads '+NS[ni].toLocaleString('en-US')),h('input',{type:'range',min:0,max:NS.length-1,value:ni,onChange:e=>setNi(+e.target.value)}),
+          h('button',{className:'primary',disabled:s.epoch>=TOTAL,onClick:()=>setRun(r=>!r)},run?'⏸ Pause':'▶ Train'),h('button',{onClick:()=>{setRun(false);st.current=mk(NS[ni]);force(x=>x+1);}},'↺ Reset')),
+        h('div',{className:'stats'},
+          h('div',null,h('span',null,'epoch'),h('b',null,s.epoch+' / '+TOTAL)),
+          h('div',null,h('span',null,'neural net AUC'),h('b',null,f2(lastNN,3))),
+          h('div',null,h('span',null,'single neuron AUC'),h('b',null,f2(lastLR,3)))),
+        h('div',{className:'chartbox'},h('div',{className:'ct'},'Ranking quality on 3,000 unseen leads, during training'),
+          h(LineChart,{series:[{name:'neural net',color:'#2563eb',data:s.aucNN},{name:'single neuron',color:'#7c3aed',data:s.aucLR},{name:'your rules',color:'#ea580c',data:Array(s.aucNN.length).fill(rAuc)}],yMin:0.45,yMax:0.9,xMax:TOTAL+1,w:380,hgt:140})))),
+    h('section',{className:'card'},
+      h('h3',null,'More data → better model. Hand-written rules stay where they are'),
+      h('p',{className:'lead'},'Train the same network on 25, 50 … 5,000 historical leads and measure it on 3,000 leads it has never seen. This takes a few seconds.'),
+      h('div',{className:'btns'},h('button',{className:'primary',disabled:busy,onClick:runCurve},busy?'⏳ Training '+(curve.nn.length+1)+' of '+NS.length+'…':'▶ Run the learning curve')),
+      h('div',{className:'grid2 lc'},
+        h('div',{className:'chartbox'},h(LineChart,{series:[
+          {name:'best possible (knows hidden formula)',color:'#15803d',data:flat(oracle)},
+          {name:'neural net (16, 8)',color:'#2563eb',data:curve.nn},
+          {name:'single neuron',color:'#7c3aed',data:curve.lr},
+          {name:'your hand rules',color:'#ea580c',data:flat(rAuc)}],yMin:0.5,yMax:0.9,xMax:NS.length,w:420,hgt:200,xLabel:'training leads: 25 → 5,000 →'})),
+        h('div',null,
+          h('div',{className:'stats'},
+            h('div',null,h('span',null,'rules'),h('b',null,f2(rAuc,3))),
+            h('div',null,h('span',null,'single neuron'),h('b',null,curve.lr.length?f2(curve.lr[curve.lr.length-1],3):'–')),
+            h('div',null,h('span',null,'neural net'),h('b',null,curve.nn.length?f2(curve.nn[curve.nn.length-1],3):'–')),
+            h('div',null,h('span',null,'ceiling'),h('b',null,f2(oracle,3)))),
+          h('div',{className:'call'},h('b',null,'How to read it: '),'AUC is the chance that a random customer gets a higher score than a random non-customer (0.5 = coin flip, 1 = perfect). I use it because only '+pct(1-base)+' of leads convert, so plain accuracy misleads: always answering “no” already scores '+pct(base)+' while being useless.'),
+          h('div',{className:'call'},'The single neuron stops improving: the pattern is not a straight line, so adding data cannot fix it. Hidden layers capture “mid-size AND browses a lot”. That is why we need them.')))),
+    h('section',{className:'card'},
+      h('h3',null,'Score a new lead: a probability, not just yes/no'),
+      h('div',{className:'grid2 lc'},
+        h('div',{className:'sliders'},
+          sl('Employees',0,1,0.01,lg(lead.emp,10,3000),t=>setLead({...lead,emp:Math.round(unlg(t,10,3000))}),t=>Math.round(unlg(t,10,3000))),
+          sl('Pages visited',0,12,1,lead.pages,v=>setLead({...lead,pages:v})),
+          sl('Replied to email',0,1,1,lead.replied,v=>setLead({...lead,replied:v}),v=>v?'yes':'no'),
+          sl('Budget',0,1,0.01,lg(lead.budget,2000,200000),t=>setLead({...lead,budget:Math.round(unlg(t,2000,200000))}),t=>eur(unlg(t,2000,200000))),
+          sl('Days since contact',0,59,1,lead.days,v=>setLead({...lead,days:v}))),
+        h('div',null,
+          h('div',{className:'sbar'},h('span',null,'Your rules'),h('b',{className:rYes?'okc':'badc',style:{width:'auto'}},rYes?'Qualified: yes':'Qualified: no')),
+          bar('Single neuron',pLR,'#7c3aed'),
+          bar('Neural network',pNN,'#2563eb',pNN>0.4?'hot lead':pNN>0.2?'warm':'cold'),
+          reveal?bar('Hidden truth',pTrue,'#15803d','the real probability'):null,
+          !trained?h('div',{className:'call'},'The network is untrained, so its scores are meaningless. Press Train above (or run the learning curve) first.'):null,
+          h('div',{className:'btns'},h('button',{onClick:()=>setReveal(r=>!r)},reveal?'Hide the hidden formula':'🔍 Reveal the hidden formula the world follows')),
+          reveal?h('pre',{className:'code'},'p(convert) = 3%\n  + 45 pts if employees in 50–500 AND pages ≥ 5\n  + 35 pts if replied AND budget > €20,000\n  − 20 pts if > 30 days since contact\n(clipped to 1%–95%). Nobody writes this down, yet the net recovers most of it.'):null))),
+    h('section',{className:'card'},
+      h('details',null,h('summary',null,'The same experiment in Python (scikit-learn) — replace the simulated block with your CRM export'),h('pre',{className:'code py'},SKLEARN)),
+      h('div',{className:'scrollx'},h('table',{className:'tbl cmp'},
+        h('thead',null,h('tr',null,h('th',null,''),h('th',null,'Traditional'),h('th',null,'Neural network'))),
+        h('tbody',null,
+          h('tr',null,h('td',null,'Input from human'),h('td',null,'Rules'),h('td',null,'Labeled history')),
+          h('tr',null,h('td',null,'Handles interactions'),h('td',null,'Only if you spot them'),h('td',null,'Learns them')),
+          h('tr',null,h('td',null,'Output'),h('td',null,'Yes / No'),h('td',null,'Probability')),
+          h('tr',null,h('td',null,'Weakness'),h('td',null,'Rules pile up and go stale'),h('td',null,'Needs enough data, and is harder to explain')))))),
+    h(Concepts,{title:'What to notice',items:[
+      {t:'Your code never says the rule',d:'Nowhere does the training code contain “mid-size companies that browse a lot convert”. The network picks up that interaction from outcomes alone.',live:`net AUC ${f2(lastNN,3)} vs rules ${f2(rAuc,3)}`},
+      {t:'Labeled history = the teacher',d:'Each past lead has a label (customer or not). The loss compares the model’s probability with that label; backpropagation turns the error into weight changes.',live:`${NS[ni].toLocaleString('en-US')} leads · epoch ${s.epoch}`},
+      {t:'Probability output',d:'0.82 means “hot lead”. A probability lets sales rank and prioritise, instead of a hard yes/no that treats a 51% lead like a 99% lead.',live:`this lead: ${pct(pNN)}`},
+      {t:'Why hidden layers',d:'A single neuron draws one straight line through the feature space. Its AUC plateaus around 0.77 whatever the data size; the network keeps improving.',live:`single neuron ${f2(lastLR,3)} · network ${f2(lastNN,3)}`},
+      {t:'Scaling the features',d:'Inputs are standardised (and log-transformed for size and budget) so that no feature dominates just because its numbers are big.',live:'x′ = (x − mean) / std'},
+      {t:'Train on past, test on unseen',d:'The score that matters is on leads the model never saw. Otherwise it could just memorise.',live:'3,000 held-out leads'},
+      {t:'Rules go stale',d:'When the market changes, someone has to rediscover and rewrite the rules. A model is simply retrained on fresh outcomes (as long as you keep collecting them).',live:'retrain, don’t rewrite'},
+      {t:'The trade-off',d:'The network needs enough data and is harder to explain. In practice you monitor it, and keep a simple model as a baseline.',live:'explainability ↔ accuracy'}
+    ]}));
+}
+/* ===== Tab 1: Perceptron (step or sigmoid) ===== */
+const BOOL_DOM={x0:-0.4,x1:1.4,y0:-0.4,y1:1.4},MOON_DOM={x0:-1.3,x1:1.3,y0:-1.3,y1:1.3};
+const pdom=k=>k==='moons'?MOON_DOM:BOOL_DOM;
+function perceptronData(kind){
+  const r=rng(7),pts=[];
+  if(kind==='moons')return makeData('moons',60,7,0.04);
+  if(kind==='blobs'){for(let i=0;i<40;i++){const c=i%2;pts.push({x:(c?0.95:0.15)+gauss(r)*0.16,y:(c?0.9:0.2)+gauss(r)*0.16,c});}return pts;}
+  [[0,0],[0,1],[1,0],[1,1]].forEach(([cx,cy])=>{
+    const c=kind==='and'?(cx&&cy?1:0):kind==='or'?(cx||cy?1:0):(cx!==cy?1:0);
+    for(let k=0;k<10;k++)pts.push({x:cx+gauss(r)*0.07,y:cy+gauss(r)*0.07,c});
+  });
+  return pts;
+}
+const P0={w1:-0.3,w2:0.2,b:0.1,epoch:0,hist:[],last:-1};
+const sigm=z=>1/(1+Math.exp(-z));
+function pEpoch(s,pts,act){
+  let{w1,w2,b}=s;const r=rng(s.epoch+3),idx=pts.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  for(const k of idx){
+    const p=pts[k],z=w1*p.x+w2*p.y+b;
+    if(act==='step'){const e=p.c-(z>=0?1:0);if(e){w1+=0.1*e*p.x;w2+=0.1*e*p.y;b+=0.1*e;}}
+    else{const e=p.c-sigm(z);w1+=0.5*e*p.x;w2+=0.5*e*p.y;b+=0.5*e;}
+  }
+  const errs=pts.filter(p=>((w1*p.x+w2*p.y+b)>=0?1:0)!==p.c).length;
+  return{w1,w2,b,epoch:s.epoch+1,hist:[...s.hist,errs],last:errs};
+}
+function PerceptronDiagram({s,act}){
+  const L=(x1,y1,x2,y2,w)=>h('line',{x1,y1,x2,y2,stroke:w>=0?'#2563eb':'#ea580c',strokeWidth:Math.min(7,1+Math.abs(w)*5),opacity:.8});
+  const node=(x,y,t,sub)=>[h('circle',{key:'c'+t,cx:x,cy:y,r:22,className:'nodeFill'}),h('text',{key:'t'+t,x,y:y+4,textAnchor:'middle',className:'ntext'},t),sub?h('text',{key:'s'+t,x,y:y+38,textAnchor:'middle',className:'tick'},sub):null];
+  return h('svg',{viewBox:'0 0 520 200',className:'diagram'},
+    h('text',{x:50,y:14,textAnchor:'middle',className:'ltitle'},'INPUT LAYER'),
+    h('text',{x:230,y:14,textAnchor:'middle',className:'ltitle'},'WEIGHTED SUM'),
+    h('text',{x:350,y:14,textAnchor:'middle',className:'ltitle'},'ACTIVATION'),
+    h('text',{x:470,y:14,textAnchor:'middle',className:'ltitle'},'OUTPUT'),
+    L(72,50,208,100,s.w1),L(72,100,208,100,s.w2),L(72,150,208,100,s.b),
+    h('text',{x:130,y:64,className:'wl'},'w₁='+f2(s.w1)),h('text',{x:130,y:93,className:'wl'},'w₂='+f2(s.w2)),h('text',{x:130,y:162,className:'wl'},'b='+f2(s.b)),
+    ...node(50,50,'x'),...node(50,100,'y'),...node(50,150,'1','bias'),
+    ...node(230,100,'Σ'),
+    h('rect',{x:310,y:80,width:80,height:40,rx:8,className:'nodeFill'}),
+    h('path',{d:act==='step'?'M322,108 L345,108 L345,92 L378,92':'M322,110 C338,110 340,92 350,92 C360,92 362,74 378,74',fill:'none',stroke:'var(--acc)',strokeWidth:2.5}),
+    h('text',{x:350,y:138,textAnchor:'middle',className:'tick'},act==='step'?'step(z) = 1 if z ≥ 0':'σ(z) = 1 / (1 + e⁻ᶻ)'),
+    L(252,100,310,100,0.4),L(390,100,448,100,0.4),
+    ...node(470,100,'ŷ',act==='step'?'0 or 1':'probability'));
+}
+function Perceptron({onJump}){
+  const [kind,setKind]=useState('or');
+  const [act,setAct]=useState('step');
+  const [s,setS]=useState(P0);
+  const [run,setRun]=useState(false);
+  const pts=useMemo(()=>perceptronData(kind),[kind]),dom=pdom(kind);
+  useEffect(()=>{setS(P0);setRun(false);},[kind,act]);
+  useEffect(()=>{
+    if(!run)return;
+    const id=setInterval(()=>setS(p=>(p.last===0||p.epoch>=60)?p:pEpoch(p,pts,act)),140);
+    return()=>clearInterval(id);
+  },[run,pts,act]);
+  useEffect(()=>{if(run&&(s.last===0||s.epoch>=60))setRun(false);},[s,run]);
+  const acc=pts.filter(p=>((s.w1*p.x+s.w2*p.y+s.b)>=0?1:0)===p.c).length/pts.length;
+  const vals=useMemo(()=>sampleGrid(dom,60,(x,y)=>{const z=s.w1*x+s.w2*y+s.b;return act==='step'?(z>=0?0.85:0.15):sigm(z);}),[s,kind,act]);
+  const solved=s.epoch>0&&s.last===0,failed=s.epoch>=25&&s.last>0;
+  const names={and:'AND',or:'OR',xor:'XOR',blobs:'2 clusters',moons:'Moons'};
+  const bad=k=>k==='xor'||k==='moons';
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'The problem: separate the blue class from the orange class'),
+      h('p',{className:'lead'},'One artificial neuron = a weighted sum followed by an activation. Geometrically it can only draw ',h('b',null,'one straight line'),'. Pick a dataset and an activation and let it learn the weights. ',h('b',null,'Step'),' uses the 1958 perceptron rule; ',h('b',null,'sigmoid'),' is a smooth neuron trained by gradient descent (a.k.a. logistic regression).'),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Dataset'),
+        h(Seg,{options:['or','and','blobs','xor','moons'],value:kind,onChange:setKind,render:o=>names[o]+(bad(o)?' ⚠':'')}),
+        h('span',{className:'lbl'},'Activation'),h(Seg,{options:['step','sigmoid'],value:act,onChange:setAct}))),
+    h('section',{className:'card'},
+      h('div',{className:'grid2'},
+        h('div',null,
+          h(Heat,{vals,N:60,size:340,dom,pts}),
+          h('div',{className:'btns'},
+            h('button',{className:'primary',onClick:()=>setRun(r=>!r),disabled:solved},run?'⏸ Pause':'▶ Train'),
+            h('button',{onClick:()=>{setRun(false);setS(p=>pEpoch(p,pts,act));},disabled:solved},'Step 1 epoch'),
+            h('button',{onClick:()=>{setRun(false);setS(P0);}},'↺ Reset'))),
+        h('div',null,
+          h(PerceptronDiagram,{s,act}),
+          h('div',{className:'stats'},
+            h('div',null,h('span',null,'epoch'),h('b',null,s.epoch)),
+            h('div',null,h('span',null,'misclassified'),h('b',null,s.last<0?'–':s.last)),
+            h('div',null,h('span',null,'accuracy'),h('b',null,pct(acc)))),
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'Misclassified points per epoch (goal: 0)'),h(LineChart,{series:[{name:'errors',color:'#ea580c',data:s.hist}],yMin:0,xMax:12})),
+          solved?h('div',{className:'call ok'},'✓ Converged in '+s.epoch+' epochs. The data is linearly separable, so one line is enough.'):null,
+          failed?h('div',{className:'call bad'},
+            h('b',null,'✗ Still '+s.last+' of '+pts.length+' points misclassified after '+s.epoch+' epochs. '),
+            kind==='moons'?'The two moons interlock: any straight line cuts through both. ':'No single line separates XOR — any line you move fixes some points and breaks others. ',
+            act==='sigmoid'?'Swapping the step for a smooth sigmoid lets us use gradient descent, but the boundary is still ONE straight line, so it fails just the same. ':'Minsky & Papert proved this limit in 1969, and funding for neural nets dried up (the first “AI winter”). ',
+            h('div',null,h('button',{className:'primary',onClick:()=>onJump(kind==='moons'?'moons':'xor')},'Fix it with a hidden layer →'))):null,
+          (!solved&&!failed)?h('div',{className:'call'},s.epoch===0?'Press Train: '+(act==='step'?'for every wrong point the rule nudges the line toward it.':'every point nudges the line a little, in proportion to how wrong the probability was.'):'Learning… the line moves a little after every update.'):null))),
+    h(Concepts,{items:[
+      {t:'Input layer',d:'The raw numbers the neuron sees. Here just two coordinates (x, y) plus a constant 1 that carries the bias.',live:'inputs = [x, y, 1]'},
+      {t:'Weights (w)',d:'How much each input matters, and in which direction. Learning = finding good weights.',live:`w₁ = ${f2(s.w1,3)}   w₂ = ${f2(s.w2,3)}`},
+      {t:'Bias (b)',d:'Shifts the line away from the origin. Without it the boundary would be forced through (0,0).',live:`b = ${f2(s.b,3)}`},
+      {t:'Weighted sum z',d:'z = w₁·x + w₂·y + b. The decision boundary is exactly the line where z = 0 — whatever the activation is.',live:`z = ${f2(s.w1)}·x ${sg(s.w2)}·y ${sg(s.b)}`},
+      act==='step'
+        ?{t:'Activation: step',d:'Hard decision: 1 if z ≥ 0 else 0. Not differentiable, so gradients can’t be used — only the perceptron rule.',live:'ŷ = step(z)'}
+        :{t:'Activation: sigmoid',d:'Squashes z into a probability (0–1), smooth and differentiable, so we can follow the gradient of a loss. The 0.5 contour is still a straight line.',live:'ŷ = 1 / (1 + e^(−z))'},
+      act==='step'
+        ?{t:'Perceptron rule',d:'For each wrong prediction: w ← w + η·(target − ŷ)·x. Guaranteed to converge when the classes are linearly separable.',live:'learning rate η = 0.1'}
+        :{t:'Gradient descent (delta rule)',d:'For every point: w ← w + η·(target − ŷ)·x, where ŷ is now a probability. It is the gradient of cross-entropy loss — the seed of backpropagation.',live:'learning rate η = 0.5'},
+      {t:'Epoch',d:'One full pass over all training points.',live:`epoch ${s.epoch} · ${pts.length} points`},
+      {t:'Linear separability',d:'AND, OR and two clusters can be split by a line. XOR and the two moons cannot — and a smooth activation does not change that, only hidden layers do.',live:`dataset = ${names[kind]} → ${bad(kind)?'NOT separable':'separable'}`}
+    ]}));
+}
+/* ===== Tab 2: Multi-layer network + backprop playground ===== */
+const GDOM={x0:-1.15,x1:1.15,y0:-1.15,y1:1.15};
+const GN=40;
+function MiniMap({grid,l,j,last,act,size=34}){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const c=ref.current;if(!c)return;const ctx=c.getContext('2d'),img=ctx.createImageData(10,10);
+    for(let gy=0;gy<10;gy++)for(let gx=0;gx<10;gx++){
+      const v=grid[(gy*4+2)*GN+(gx*4+2)][l][j];
+      let p;if(last)p=v;else if(l===0)p=0.5+0.5*Math.max(-1,Math.min(1,v));else if(act==='tanh')p=0.5+0.5*v;else if(act==='sigmoid')p=v;else p=0.5+0.5*Math.tanh(v);
+      const col=divColor(p),k=(gy*10+gx)*4;img.data[k]=col[0];img.data[k+1]=col[1];img.data[k+2]=col[2];img.data[k+3]=255;
+    }
+    ctx.putImageData(img,0,0);
+  });
+  return h('canvas',{ref,width:10,height:10,className:'mini',style:{width:size,height:size}});
+}
+function NetDiagram({net,grid,feats,act}){
+  const sizes=net.sizes,Ln=sizes.length,W=700,H=340,S=34;
+  const xs=l=>70+l*(W-70-50)/(Ln-1);
+  const ys=(l,j)=>{const n=sizes[l],sp=Math.min(48,(H-60)/n);return H/2+12+(j-(n-1)/2)*sp;};
+  const edges=[];
+  for(let l=0;l<Ln-1;l++)for(let j=0;j<sizes[l+1];j++)for(let i=0;i<sizes[l];i++){
+    const w=net.W[l][j][i];
+    edges.push(h('line',{key:`${l}-${j}-${i}`,x1:xs(l)+S/2,y1:ys(l,i),x2:xs(l+1)-S/2,y2:ys(l+1,j),stroke:w>=0?'#2563eb':'#ea580c',strokeWidth:Math.min(7,0.4+Math.abs(w)*2.2),opacity:0.7}));
+  }
+  const titles=sizes.map((n,l)=>h('text',{key:'t'+l,x:xs(l),y:16,textAnchor:'middle',className:'ltitle'},l===0?'INPUT LAYER':l===Ln-1?'OUTPUT LAYER':'HIDDEN '+l+' ('+n+')'));
+  const labels=feats.map((f,i)=>h('text',{key:'f'+i,x:xs(0)-S/2-6,y:ys(0,i)+4,textAnchor:'end',className:'wl'},FEATS[f].l));
+  const maps=[];
+  sizes.forEach((n,l)=>{for(let j=0;j<n;j++)maps.push(h('div',{key:l+'-'+j,style:{position:'absolute',left:xs(l)-S/2,top:ys(l,j)-S/2}},h(MiniMap,{grid,l,j,last:l===Ln-1,act,size:S})));});
+  return h('div',{className:'scrollx'},h('div',{style:{position:'relative',width:W,height:H}},
+    h('svg',{width:W,height:H,style:{position:'absolute',left:0,top:0}},...edges,...titles,...labels,
+      h('text',{x:xs(Ln-1),y:ys(Ln-1,0)+S/2+14,textAnchor:'middle',className:'tick'},'P(blue)')),
+    ...maps));
+}
+const ACT_TXT={
+  tanh:'Squashes z into (−1, 1), zero-centred and smooth. Saturates for large |z|.',
+  relu:'max(0, z). Cheap and doesn’t saturate for z > 0 — the default in modern deep nets.',
+  sigmoid:'Squashes z into (0, 1). Saturates fast, so gradients shrink layer after layer (vanishing gradient).',
+  linear:'a = z. No non-linearity: a stack of linear layers is mathematically ONE linear layer.'
+};
+function Playground({startKind,active}){
+  const [kind,setKind]=useState(startKind||'xor');
+  const [noise,setNoise]=useState(0.05);
+  const [feats,setFeats]=useState(['x','y']);
+  const [hid,setHid]=useState([4,2]);
+  const [act,setAct]=useState('tanh');
+  const [lr,setLr]=useState(0.1);
+  const [seed,setSeed]=useState(1);
+  const [run,setRun]=useState(false);
+  const [showTest,setShowTest]=useState(false);
+  const [,force]=useState(0);
+  const data=useMemo(()=>({tr:makeData(kind,200,11,noise),te:makeData(kind,100,23,noise)}),[kind,noise]);
+  const fv=(x,y)=>feats.map(f=>FEATS[f].fn(x,y));
+  const Xtr=useMemo(()=>data.tr.map(p=>feats.map(f=>FEATS[f].fn(p.x,p.y))),[data,feats]);
+  const Xte=useMemo(()=>data.te.map(p=>feats.map(f=>FEATS[f].fn(p.x,p.y))),[data,feats]);
+  const Ytr=useMemo(()=>data.tr.map(p=>[p.c]),[data]),Yte=useMemo(()=>data.te.map(p=>[p.c]),[data]);
+  const mk=()=>({net:new MLP([feats.length,...hid,1],act,'sigmoid',seed),epoch:0,tr:[],te:[],rand:rng(seed+100)});
+  const st=useRef(null);if(!st.current)st.current=mk();
+  useEffect(()=>{if(!active)setRun(false);},[active]);
+  useEffect(()=>{st.current=mk();setRun(false);force(n=>n+1);},[kind,noise,feats.join(),hid.join(),act,seed]);
+  const step=()=>{
+    const s=st.current,net=s.net,idx=Xtr.map((_,i)=>i);
+    for(let i=idx.length-1;i>0;i--){const j=Math.floor(s.rand()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+    for(let i=0;i<idx.length;i+=10){const b=idx.slice(i,i+10);net.trainBatch(b.map(k=>Xtr[k]),b.map(k=>Ytr[k]),lr);}
+    s.epoch++;s.tr.push(net.evaluate(Xtr,Ytr).loss);s.te.push(net.evaluate(Xte,Yte).loss);
+  };
+  const stepRef=useRef(step);stepRef.current=step;
+  useEffect(()=>{
+    if(!run)return;
+    const id=setInterval(()=>{stepRef.current();stepRef.current();if(st.current.epoch>=1500)setRun(false);force(n=>n+1);},40);
+    return()=>clearInterval(id);
+  },[run]);
+  const s=st.current,net=s.net;
+  if(net.sizes[0]!==feats.length||net.sizes.length!==hid.length+2)return h('div',null,'…');
+  const evTr=net.evaluate(Xtr,Ytr),evTe=net.evaluate(Xte,Yte);
+  const grid=sampleGrid(GDOM,GN,(x,y)=>net.forward(fv(x,y)));
+  const vals=grid.map(A=>A[A.length-1][0]);
+  const names={xor:'XOR',circle:'Circle',moons:'Moons',spiral:'Spiral',linear:'Linear'};
+  const linearFeats=feats.every(f=>f==='x'||f==='y');
+  let msg;
+  if(s.epoch<5)msg='Press ▶ Play. Each small square is what one neuron “sees” across the input plane; the big map is the final decision.';
+  else if(hid.length===0&&evTe.acc<0.9&&linearFeats)msg='No hidden layer = a single neuron (logistic regression): the boundary is a straight line. Add a hidden layer — or hand it a curved feature such as x·y or x².';
+  else if(act==='linear'&&hid.length>0&&evTe.acc<0.9&&linearFeats)msg='Linear activation: the hidden layers collapse into one linear map, so depth adds nothing. The non-linear activation is what makes hidden layers useful.';
+  else if(evTe.acc>=0.95)msg='✓ Solved — test accuracy '+pct(evTe.acc)+'. '+(hid.length===0?'Note: this worked only because the features already made the problem linear.':'The hidden neurons built their own features, bending the boundary.');
+  else if(s.epoch>300&&evTe.acc<0.9)msg='Still struggling after '+s.epoch+' epochs. Try more neurons/layers, extra features, a different activation, or a lower learning rate.';
+  else msg='Training… watch the loss fall and the regions reshape.';
+  const toggleF=f=>setFeats(p=>{const n=p.includes(f)?p.filter(q=>q!==f):[...p,f];return n.length?FORDER.filter(q=>n.includes(q)):p;});
+  const setN=(i,d)=>setHid(p=>p.map((n,k)=>k===i?Math.max(1,Math.min(8,n+d)):n));
+  const sizes=net.sizes,np=paramCount(sizes);
+  const gn=net.gn&&net.gn.length?net.gn.map(v=>f2(v,3)).join(' · '):'– (train first)';
+  const meanW=(()=>{let a=0,c=0;net.W.forEach(M=>M.forEach(r=>r.forEach(v=>{a+=Math.abs(v);c++;})));return a/c;})();
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'The problem: data that one straight line cannot separate'),
+      h('p',{className:'lead'},'Add hidden layers and a smooth activation, and train every weight with ',h('b',null,'backpropagation'),' (1986): compute the error at the output, then push it backwards with the chain rule to find how each weight should change.'),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Dataset'),h(Seg,{options:['xor','circle','moons','spiral','linear'],value:kind,onChange:setKind,render:o=>names[o]})),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Input features'),
+        ...FORDER.map(f=>h('label',{key:f,className:'chk'},h('input',{type:'checkbox',checked:feats.includes(f),onChange:()=>toggleF(f)}),FEATS[f].l))),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Hidden layers'),
+        h('button',{className:'sm',disabled:hid.length>=4,onClick:()=>setHid(p=>[...p,3])},'+ layer'),
+        h('button',{className:'sm',disabled:!hid.length,onClick:()=>setHid(p=>p.slice(0,-1))},'− layer'),
+        ...hid.map((n,i)=>h('span',{key:i,className:'neu'},'L'+(i+1),h('button',{className:'sm',disabled:n<=1,onClick:()=>setN(i,-1)},'−'),h('b',null,n),h('button',{className:'sm',disabled:n>=8,onClick:()=>setN(i,1)},'+')))),
+      h('div',{className:'row'},
+        h('span',{className:'lbl'},'Activation'),h(Seg,{options:['tanh','relu','sigmoid','linear'],value:act,onChange:setAct}),
+        h('span',{className:'lbl'},'Learning rate'),h('select',{value:lr,onChange:e=>setLr(+e.target.value)},...[0.003,0.01,0.03,0.1,0.3,1,3].map(v=>h('option',{key:v,value:v},v))),
+        h('span',{className:'lbl'},'Noise '+noise.toFixed(2)),h('input',{type:'range',min:0,max:0.4,step:0.05,value:noise,onChange:e=>setNoise(+e.target.value)}))),
+    h('section',{className:'card'},
+      h('div',{className:'btns top'},
+        h('button',{className:'primary',onClick:()=>setRun(r=>!r)},run?'⏸ Pause':'▶ Play'),
+        h('button',{onClick:()=>{setRun(false);step();force(n=>n+1);}},'Step 1 epoch'),
+        h('button',{onClick:()=>setSeed(q=>q+1)},'↺ Reset weights'),
+        h('label',{className:'chk'},h('input',{type:'checkbox',checked:showTest,onChange:e=>setShowTest(e.target.checked)}),'show test points (rings)')),
+      h(NetDiagram,{net,grid,feats,act}),
+      h('div',{className:'grid2'},
+        h('div',null,h(Heat,{vals,N:GN,size:340,dom:GDOM,pts:data.tr,test:data.te,showTest}),
+          h('div',{className:'legend'},h('span',{className:'dot b'}),'class 1',h('span',{className:'dot o'}),'class 0 · background = what the network predicts')),
+        h('div',null,
+          h('div',{className:'stats'},
+            h('div',null,h('span',null,'epoch'),h('b',null,s.epoch)),
+            h('div',null,h('span',null,'train loss'),h('b',null,f2(evTr.loss,3))),
+            h('div',null,h('span',null,'test loss'),h('b',null,f2(evTe.loss,3))),
+            h('div',null,h('span',null,'train acc'),h('b',null,pct(evTr.acc))),
+            h('div',null,h('span',null,'test acc'),h('b',null,pct(evTe.acc)))),
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'Loss over epochs (lower is better)'),
+            h(LineChart,{series:[{name:'train',color:'#2563eb',data:s.tr},{name:'test',color:'#ea580c',data:s.te}],yMin:0,xMax:30})),
+          h('div',{className:'call'},msg)))),
+    h(Concepts,{items:[
+      {t:'Input layer',d:'The numbers fed to the network. Each checked feature is one input neuron. A curved feature like x·y lets even a single neuron solve XOR — that’s “feature engineering”, which deep nets later learn on their own.',live:`${feats.length} inputs: ${feats.map(f=>FEATS[f].l).join(', ')}`},
+      {t:'Hidden layers',d:'Layers between input and output. Each neuron computes a·(w·inputs + b), and the next layer combines those into more abstract features.',live:`architecture ${sizes.join(' → ')} · ${np} trainable parameters`},
+      {t:'Weights & biases',d:'The learnable numbers. Edge colour = sign (blue +, orange −), thickness = magnitude. Learning is just moving them.',live:`mean |w| = ${f2(meanW,3)}`},
+      {t:'Activation function',d:ACT_TXT[act],live:`a = ${act}(z),  z = Σ wᵢ·aᵢ + b`},
+      {t:'Output layer',d:'One sigmoid neuron → probability of class “blue”. Predict blue if it is above 0.5.',live:'ŷ = σ(z) ∈ (0,1)'},
+      {t:'Forward pass',d:'Inputs flow left→right through every layer until the output is produced. This is also all that’s needed at prediction time.',live:`${sizes.length-1} weight layers`},
+      {t:'Loss',d:'How wrong the network is. Binary cross-entropy punishes confident mistakes heavily. Training = minimising it.',live:`train ${f2(evTr.loss,3)} · test ${f2(evTe.loss,3)}`},
+      {t:'Backpropagation',d:'Chain rule from the loss back to every weight, layer by layer. Small gradients in early layers (esp. with sigmoid/tanh) = vanishing gradient.',live:`mean |∂L/∂w| per layer: ${gn}`},
+      {t:'Gradient descent & learning rate',d:'w ← w − η·∂L/∂w. Too small: slow. Too large: loss bounces or explodes. Try η = 3.',live:`η = ${lr}`},
+      {t:'Epoch & mini-batch',d:'An epoch is one pass over the 200 training points. Weights update after every mini-batch of 10.',live:`epoch ${s.epoch} → ${s.epoch*20} weight updates`},
+      {t:'Generalisation',d:'Test points are never used for training. If train accuracy ≫ test accuracy the network memorised noise (overfitting). Raise the noise slider to see it.',live:`gap = ${pct(evTr.acc-evTe.acc)} (train − test)`}
+    ]}));
+}
+/* ===== Tab 3: Deep learning on digits + deployment ===== */
+const ARCH={linear:[],small:[16],deep:[24,12]};
+const ARCH_NAME={linear:'No hidden layer',small:'1 hidden (16)',deep:'2 hidden (24→12)'};
+const argmax=a=>{let m=0;for(let i=1;i<a.length;i++)if(a[i]>a[m])m=i;return m;};
+
+function DeepDiagram({net,x}){
+  const A=net.forward(x),L=A.length,W=700,H=330,K=L-1,cy0=H/2+8;
+  const xc=l=>K===1?W-120:175+(l-1)*((W-175-125)/(K-1));
+  const yc=(l,j)=>{const n=A[l].length,sp=Math.min(27,(H-56)/n);return cy0+(j-(n-1)/2)*sp;};
+  const rad=l=>l===L-1?10:(A[l].length>16?7:9);
+  const el=[];
+  for(let j=0;j<A[1].length;j++)el.push(h('line',{key:'in'+j,x1:100,y1:cy0,x2:xc(1)-rad(1),y2:yc(1,j),stroke:'var(--mute)',opacity:0.18}));
+  for(let l=2;l<L;l++)for(let j=0;j<A[l].length;j++)for(let i=0;i<A[l-1].length;i++){
+    const c=net.W[l-1][j][i]*A[l-1][i];
+    el.push(h('line',{key:`e${l}-${j}-${i}`,x1:xc(l-1)+rad(l-1),y1:yc(l-1,i),x2:xc(l)-rad(l),y2:yc(l,j),stroke:c>=0?'#2563eb':'#ea580c',opacity:0.03+Math.min(0.65,Math.abs(c)*0.6),strokeWidth:1.2}));
+  }
+  const best=argmax(A[L-1]);
+  for(let l=1;l<L;l++){
+    let mx=1e-6;for(const v of A[l])mx=Math.max(mx,v);
+    const last=l===L-1;
+    A[l].forEach((v,j)=>{
+      const t=last?v:v/mx,col=mix(LIGHT,BLUE,Math.min(1,t));
+      el.push(h('circle',{key:`n${l}-${j}`,cx:xc(l),cy:yc(l,j),r:rad(l),fill:rgb(col),stroke:(last&&j===best)?'var(--ink)':'var(--mute)',strokeWidth:(last&&j===best)?3:1}));
+      if(last)el.push(h('text',{key:`o${j}`,x:xc(l)+rad(l)+8,y:yc(l,j)+4,className:j===best?'wl b':'wl'},`${j}  ${pct(v)}`));
+    });
+    el.push(h('text',{key:'T'+l,x:xc(l),y:16,textAnchor:'middle',className:'ltitle'},last?'OUTPUT · softmax (10)':`HIDDEN ${l} · ReLU (${A[l].length})`));
+  }
+  const rects=x.map((v,i)=>h('rect',{key:'p'+i,x:20+(i%8)*10,y:cy0-40+Math.floor(i/8)*10,width:10,height:10,fill:rgb([255*(1-v)*0.92+8,255*(1-v)*0.92+8,255*(1-v)*0.92+8])}));
+  return h('div',{className:'scrollx'},h('svg',{width:W,height:H,className:'dw'},
+    h('text',{x:60,y:16,textAnchor:'middle',className:'ltitle'},'INPUT · 8×8 = 64 px'),...rects,...el));
+}
+function Pad({v,onChange,pen,size=208}){
+  const box=useRef(null),down=useRef(false),cur=useRef(v);cur.current=v;
+  const paint=e=>{
+    const r=box.current.getBoundingClientRect(),cx=Math.floor((e.clientX-r.left)/r.width*8),cy=Math.floor((e.clientY-r.top)/r.height*8);
+    if(cx<0||cy<0||cx>7||cy>7)return;
+    const nv=cur.current.slice();
+    const set=(x,y,val)=>{if(x<0||y<0||x>7||y>7)return;const i=y*8+x;nv[i]=pen?Math.max(nv[i],val):0;};
+    set(cx,cy,1);set(cx+1,cy,0.55);set(cx-1,cy,pen?0.3:0);set(cx,cy+1,0.55);set(cx,cy-1,pen?0.3:0);
+    cur.current=nv;onChange(nv);
+  };
+  return h('div',{ref:box,className:'pad',style:{width:size,height:size},
+    onPointerDown:e=>{down.current=true;e.currentTarget.setPointerCapture(e.pointerId);paint(e);},
+    onPointerMove:e=>{if(down.current)paint(e);},
+    onPointerUp:()=>{down.current=false;},onPointerCancel:()=>{down.current=false;}},
+    h(Digit,{v,size}));
+}
+function Deep({active}){
+  const data=useMemo(()=>({tr:makeDigitSet(60,101,0.3),te:makeDigitSet(20,202,0.3)}),[]);
+  const [arch,setArch]=useState('deep');
+  const [lr,setLr]=useState(0.2);
+  const [total,setTotal]=useState(15);
+  const [run,setRun]=useState(false);
+  const [sel,setSel]=useState(3);
+  const [exported,setExported]=useState(null);
+  const [deployed,setDeployed]=useState(null);
+  const [loading,setLoading]=useState(false);
+  const [padV,setPadV]=useState(()=>new Array(64).fill(0));
+  const [pen,setPen]=useState(true);
+  const [fnoise,setFnoise]=useState(0.3);
+  const [stress,setStress]=useState(null);
+  const [ver,setVer]=useState(0);
+  const [,force]=useState(0);
+  const rnd=useRef(rng(Date.now()%100000));
+  const mk=a=>{const net=new MLP([64,...ARCH[a],10],'relu','softmax',3);const e1=net.evaluate(data.tr.X,data.tr.Y),e2=net.evaluate(data.te.X,data.te.Y);
+    return{net,epoch:0,rand:rng(9),loss:[e1.loss],tacc:[e1.acc],acc:[e2.acc]};};
+  const st=useRef(null);if(!st.current)st.current=mk('deep');
+  useEffect(()=>{st.current=mk(arch);setRun(false);force(n=>n+1);},[arch]);
+  useEffect(()=>{if(!active)setRun(false);},[active]);
+  const step=()=>{
+    const s=st.current,net=s.net,idx=data.tr.X.map((_,i)=>i);
+    for(let i=idx.length-1;i>0;i--){const j=Math.floor(s.rand()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+    for(let i=0;i<idx.length;i+=16){const b=idx.slice(i,i+16);net.trainBatch(b.map(k=>data.tr.X[k]),b.map(k=>data.tr.Y[k]),lr);}
+    s.epoch++;const a=net.evaluate(data.tr.X,data.tr.Y),b=net.evaluate(data.te.X,data.te.Y);
+    s.loss.push(a.loss);s.tacc.push(a.acc);s.acc.push(b.acc);
+  };
+  const tick=useRef();tick.current=()=>{if(st.current.epoch>=total){setRun(false);return;}step();force(n=>n+1);if(st.current.epoch>=total)setRun(false);};
+  useEffect(()=>{if(!run)return;const id=setInterval(()=>tick.current(),380);return()=>clearInterval(id);},[run]);
+  const s=st.current,net=s.net;
+  if(net.sizes.length!==ARCH[arch].length+2)return h('div',null,'…');
+  const L=net.sizes.length-1;
+  const probe=data.te.X.slice(0,10).map(x=>{const o=net.forward(x)[L];const p=argmax(o);return{p,c:o[p]};});
+  const cm=Array.from({length:10},()=>new Array(10).fill(0));
+  data.te.X.forEach((x,i)=>{cm[data.te.L[i]][argmax(net.forward(x)[L])]++;});
+  const accNow=s.acc[s.acc.length-1],np=net.params();
+  /* deployment */
+  const doExport=()=>{
+    const js=JSON.stringify(net.exportObj(),(k,v)=>typeof v==='number'?Math.round(v*1e4)/1e4:v);
+    setExported({json:js,bytes:js.length,params:np,epochs:s.epoch,acc:accNow,ver:ver+1,name:ARCH_NAME[arch]});setVer(v=>v+1);
+  };
+  const doDeploy=()=>{
+    setLoading(true);
+    setTimeout(()=>{const m=MLP.from(JSON.parse(exported.json));setDeployed({model:m,ver:exported.ver,bytes:exported.bytes,params:exported.params,acc:exported.acc,epochs:exported.epochs});setLoading(false);},650);
+  };
+  let pred=null;
+  if(deployed){
+    const t0=performance.now();const A=deployed.model.forward(padV);const t1=performance.now();
+    const probs=A[A.length-1],best=argmax(probs);
+    const top=probs.map((p,i)=>({label:i,p})).sort((a,b)=>b.p-a.p).slice(0,3);
+    pred={probs,best,top,lat:t1-t0,empty:padV.every(v=>v<0.05)};
+  }
+  const gen=c=>{setPadV(makeDigit(c,rnd.current,fnoise));};
+  const runStress=()=>{const set=makeDigitSet(30,(Date.now()%90000)+7,fnoise);setStress({acc:deployed.model.evaluate(set.X,set.Y).acc,noise:fnoise,n:set.X.length});};
+  const chip=(t,on)=>h('span',{className:'chip'+(on?' on':'')},(on?'✓ ':'')+t);
+  const respJSON=pred?JSON.stringify({model:'digits-mlp-v'+deployed.ver,label:pred.best,confidence:+pred.probs[pred.best].toFixed(3),top3:pred.top.map(t=>({label:t.label,p:+t.p.toFixed(3)})),latency_ms:+pred.lat.toFixed(3)}):'';
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'The problem: read handwritten-style digits (0–9) from 8×8 pixel images'),
+      h('p',{className:'lead'},'Deep learning means many layers that ',h('b',null,'learn their own features'),' from raw pixels — no hand-made features like x·y. We use digits instead of cat photos on purpose: photos need convolutional layers, thousands of images and a GPU, while these 64-pixel digits train in seconds in your browser. The principle is identical.'),
+      h('div',{className:'gallery'},...data.tr.X.slice(0,20).map((x,i)=>h('div',{key:i,className:'gi'},h(Digit,{v:x,size:40}),h('span',null,data.tr.L[i])))),
+      h('p',{className:'small'},'Training examples (600 total): every digit is shifted by up to 1 px and corrupted with noise. A separate set of 200 images is held out to measure how the model does on images it has never seen.'),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Architecture'),h(Seg,{options:['linear','small','deep'],value:arch,onChange:setArch,render:o=>ARCH_NAME[o]}),
+        h('span',{className:'lbl'},'Learning rate'),h('select',{value:lr,onChange:e=>setLr(+e.target.value)},...[0.05,0.1,0.2,0.4].map(v=>h('option',{key:v,value:v},v))),
+        h('span',{className:'lbl'},'Epochs '+total),h('input',{type:'range',min:3,max:30,value:total,onChange:e=>setTotal(+e.target.value)}))),
+    h('section',{className:'card'},
+      h('div',{className:'btns top'},
+        h('button',{className:'primary',disabled:s.epoch>=total,onClick:()=>setRun(r=>!r)},run?'⏸ Pause':`▶ Train to epoch ${total}`),
+        h('button',{disabled:s.epoch>=total,onClick:()=>{setRun(false);step();force(n=>n+1);}},'Step 1 epoch'),
+        h('button',{onClick:()=>{setRun(false);st.current=mk(arch);force(n=>n+1);}},'↺ Reset')),
+      h('div',{className:'ct'},'Watch it learn — the same 10 unseen test digits, classified after every epoch (click one to inspect the network)'),
+      h('div',{className:'probes'},...probe.map((pr,c)=>h('button',{key:c,className:'probe'+(sel===c?' sel':''),onClick:()=>setSel(c)},
+        h(Digit,{v:data.te.X[c],size:44}),h('b',{className:pr.p===c?'okc':'badc'},'→ '+pr.p),h('span',null,pct(pr.c))))),
+      h(DeepDiagram,{net,x:data.te.X[sel]}),
+      h('div',{className:'grid2'},
+        h('div',null,
+          h('div',{className:'stats'},
+            h('div',null,h('span',null,'epoch'),h('b',null,s.epoch+' / '+total)),
+            h('div',null,h('span',null,'train loss'),h('b',null,f2(s.loss[s.loss.length-1],3))),
+            h('div',null,h('span',null,'train acc'),h('b',null,pct(s.tacc[s.tacc.length-1]))),
+            h('div',null,h('span',null,'test acc (unseen)'),h('b',null,pct(accNow)))),
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'Loss'),h(LineChart,{series:[{name:'train loss',color:'#ea580c',data:s.loss}],yMin:0,xMax:total+1})),
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'Accuracy'),h(LineChart,{series:[{name:'train',color:'#2563eb',data:s.tacc},{name:'test (unseen)',color:'#15803d',data:s.acc}],yMin:0,yMax:1,xMax:total+1}))),
+        h('div',null,
+          h('div',{className:'ct'},arch==='linear'?'Learned template for each digit (blue = pixel evidence for, orange = against)':'What the first hidden layer learned — each tile is one neuron’s weights over the 8×8 image'),
+          h('div',{className:'filters'},...net.W[0].map((row,j)=>h('div',{key:j,className:'gi'},h(Digit,{v:row,size:44,mode:'div'}),h('span',null,arch==='linear'?j:'n'+(j+1))))),
+          h('div',{className:'ct',style:{marginTop:14}},'Confusion matrix on unseen digits (rows = true, columns = predicted)'),
+          h('div',{className:'cm'},
+            h('div',{className:'cmc hd'}),...[...Array(10).keys()].map(j=>h('div',{key:'h'+j,className:'cmc hd'},j)),
+            ...cm.flatMap((row,i)=>[h('div',{key:'r'+i,className:'cmc hd'},i),...row.map((v,j)=>h('div',{key:i+'-'+j,className:'cmc',style:{background:v?`rgba(${i===j?'37,99,235':'234,88,12'},${Math.min(1,0.15+v/20)})`:'transparent',color:v&&v>10?'#fff':'var(--ink)'}},v||''))]))))),
+    h('section',{className:'card'},
+      h('h3',null,'Model delivery: ship the trained model and classify digits it has never seen'),
+      h('p',{className:'lead'},'Training is expensive; ',h('b',null,'prediction is just one forward pass'),'. In production you export the learned weights, ship them, load them in a service and call it. Here the “server” is a separate model object rebuilt from the exported JSON only.'),
+      h('div',{className:'pipe'},chip('1 Train',s.epoch>0),h('i',null,'→'),chip('2 Export model.json',!!exported),h('i',null,'→'),chip('3 Load in service',!!deployed),h('i',null,'→'),chip('4 Predict',!!deployed&&pred&&!pred.empty)),
+      h('div',{className:'btns'},
+        h('button',{className:'primary',disabled:s.epoch===0,onClick:doExport},'📦 Export model.json'),
+        h('button',{className:'primary',disabled:!exported||loading,onClick:doDeploy},loading?'⏳ Loading into service…':deployed&&exported&&deployed.ver===exported.ver?'🚀 Deployed (redeploy)':'🚀 Deploy v'+(exported?exported.ver:'–')),
+        s.epoch===0?h('span',{className:'small'},'Train a few epochs first.'):null),
+      exported?h('div',{className:'grid2'},
+        h('div',{className:'stats'},
+          h('div',null,h('span',null,'file size'),h('b',null,(exported.bytes/1024).toFixed(1)+' KB')),
+          h('div',null,h('span',null,'parameters'),h('b',null,exported.params)),
+          h('div',null,h('span',null,'trained epochs'),h('b',null,exported.epochs)),
+          h('div',null,h('span',null,'test acc at export'),h('b',null,pct(exported.acc)))),
+        h('pre',{className:'code'},exported.json.slice(0,230)+' … ('+exported.bytes.toLocaleString()+' chars)')):null,
+      deployed?h('div',null,
+        h('div',{className:'call ok'},'● Serving digits-mlp-v'+deployed.ver+' ('+deployed.model.sizes.join('→')+'). Draw a digit, or generate one the model has never seen. Prediction happens live on every change.'),
+        h('div',{className:'grid2'},
+          h('div',null,
+            h('div',{className:'ct'},'Input canvas (8×8) — draw with the mouse or finger'),
+            h(Pad,{v:padV,onChange:setPadV,pen}),
+            h('div',{className:'btns'},
+              h('button',{className:pen?'on':'',onClick:()=>setPen(true)},'✏️ Pen'),h('button',{className:!pen?'on':'',onClick:()=>setPen(false)},'🧽 Erase'),h('button',{onClick:()=>setPadV(new Array(64).fill(0))},'Clear')),
+            h('div',{className:'ct',style:{marginTop:10}},'Or generate a brand-new noisy digit:'),
+            h('div',{className:'btns'},...[...Array(10).keys()].map(c=>h('button',{key:c,className:'sm',onClick:()=>gen(c)},c))),
+            h('div',{className:'row'},h('span',{className:'lbl'},'Noise '+fnoise.toFixed(2)),h('input',{type:'range',min:0,max:1,step:0.05,value:fnoise,onChange:e=>setFnoise(+e.target.value)}))),
+          h('div',null,
+            pred.empty?h('div',{className:'call'},'Draw something on the canvas →'):h('div',null,
+              h('div',{className:'bigpred'},h('span',null,pred.best),h('div',null,h('b',null,pct(pred.probs[pred.best])),' confidence',h('div',{className:'small'},'forward pass took '+pred.lat.toFixed(3)+' ms'))),
+              h('div',{className:'bars'},...pred.probs.map((p,i)=>h('div',{key:i,className:'bar'+(i===pred.best?' top':'')},h('span',null,i),h('div',{className:'track'},h('div',{className:'fill',style:{width:(p*100)+'%'}})),h('em',null,pct(p)))))),
+            h('div',{className:'ct',style:{marginTop:10}},'API view'),
+            h('pre',{className:'code'},'POST /v1/classify\n{"pixels":['+padV.slice(0,10).map(v=>+v.toFixed(2)).join(',')+', … 54 more]}\n\n200 OK\n'+(pred.empty?'{ … }':respJSON)))),
+        h('div',{className:'ct',style:{marginTop:12}},'Inside the deployed model for this input (only a forward pass — no learning)'),
+        h(DeepDiagram,{net:deployed.model,x:padV}),
+        h('div',{className:'row'},h('button',{onClick:runStress},'Stress-test on 300 fresh digits at noise '+fnoise.toFixed(2)),
+          stress?h('span',{className:'call '+(stress.acc>=0.8?'ok':'bad'),style:{margin:0}},'Accuracy on '+stress.n+' never-seen digits (noise '+stress.noise.toFixed(2)+'): '+pct(stress.acc)):null)):null),
+    h(Concepts,{items:[
+      {t:'Input layer',d:'64 numbers: the brightness of each pixel of the 8×8 image, flattened into one list. The network has no idea which pixels are neighbours.',live:'64 inputs in [0, 1]'},
+      {t:'Hidden layers = learned features',d:'Layer 1 neurons become stroke/edge detectors (see the tiles). Layer 2 combines strokes into parts of digits. Stacking layers = building abstractions. “Deep” just means several of them.',live:`${net.sizes.join(' → ')} · ${np} parameters`},
+      {t:'ReLU activation',d:'a = max(0, z). Passes positive signals unchanged, zeros the rest. Fast, and its gradient doesn’t vanish for active neurons, which made deep nets trainable.',live:'a = max(0, z)'},
+      {t:'Output layer + softmax',d:'10 output neurons, one per digit. Softmax turns the 10 raw scores into probabilities that sum to 1. The biggest one is the prediction.',live:`sum of outputs = 1.00 · e.g. [${net.forward(data.te.X[sel])[L].slice(0,3).map(v=>f2(v,2)).join(', ')}, …]`},
+      {t:'Loss: cross-entropy',d:'−log(probability given to the correct digit). Perfect confidence = 0; confidently wrong = huge.',live:`train loss = ${f2(s.loss[s.loss.length-1],3)} (random guess ≈ 2.303)`},
+      {t:'Backprop + mini-batch SGD',d:'Weights are updated after each mini-batch of 16 images by moving them against the gradient of the loss.',live:`η = ${lr} · ${Math.ceil(600/16)} updates per epoch · ${s.epoch*Math.ceil(600/16)} so far`},
+      {t:'Epoch',d:'One pass over all 600 training images. Notice how few epochs are needed for this problem.',live:`epoch ${s.epoch} of ${total}`},
+      {t:'Generalisation: train vs unseen',d:'What matters is accuracy on images the model never trained on. A big gap = memorising instead of learning.',live:`train ${pct(s.tacc[s.tacc.length-1])} · unseen ${pct(accNow)}`},
+      {t:'Limitation of this MLP',d:'Fully-connected layers learn each pixel position separately, so a digit shifted by a pixel looks like a new pattern (check the confusion matrix). Convolutional nets (LeNet 1998, AlexNet 2012) share one small filter across the whole image — that’s what you need for real photos such as cats.',live:'next step: CNN'},
+      {t:'Model delivery',d:'A trained model is just the numbers W and b plus the architecture. Exporting them (JSON here; ONNX, SavedModel, TF.js or safetensors in practice) lets another program predict without any training code.',live:exported?`model.json = ${(exported.bytes/1024).toFixed(1)} KB`:'press Export model.json'}
+    ]}));
+}
+/* ===== LSTM tab: gated memory vs plain RNN ===== */
+const sig=x=>1/(1+Math.exp(-x));
+function mkSeq(seed,T,bit){
+  const r=rng(seed),seq=[{x:bit,flag:1}];
+  for(let t=1;t<T;t++)seq.push({x:(r()*2-1)*0.9,flag:0});
+  return seq;
+}
+function lstmSim(seq,P){
+  let c=0,h=0,hr=0;const rows=[];
+  for(let t=0;t<seq.length;t++){
+    const{x,flag}=seq[t],f=sig(P.bf),i=sig(10*flag-5),g=Math.tanh(2*x),o=sig(P.bo),cp=c;
+    c=f*c+i*g;h=o*Math.tanh(c);hr=Math.tanh(P.wr*hr+x);
+    rows.push({t,x,flag,f,i,g,o,cp,c,h,hr});
+  }
+  return rows;
+}
+function GateBox({x,y,name,sym,v,range}){
+  const frac=range===2?(v+1)/2:v;
+  return h('g',null,
+    h('rect',{x:x-42,y:y-26,width:84,height:56,rx:9,className:'nodeFill'}),
+    h('text',{x,y:y-10,textAnchor:'middle',className:'wl b'},name),
+    h('text',{x,y:y+6,textAnchor:'middle',className:'tick'},sym),
+    h('rect',{x:x-32,y:y+13,width:64,height:6,rx:3,fill:'var(--chip)'}),
+    h('rect',{x:x-32,y:y+13,width:64*Math.max(0,Math.min(1,frac)),height:6,rx:3,fill:'var(--acc)'}),
+    h('text',{x,y:y+44,textAnchor:'middle',className:'wl b'},f2(v)));
+}
+function LSTMCell({r}){
+  const Y=40,G=150,cx=(x)=>h('circle',{cx:x,cy:Y,r:11,className:'nodeFill'});
+  const ln=(x1,y1,x2,y2,w,c)=>h('line',{x1,y1,x2,y2,stroke:c||'var(--mute)',strokeWidth:w||1.5});
+  return h('div',{className:'scrollx'},h('svg',{width:640,height:262,className:'dw'},
+    h('text',{x:8,y:14,className:'ltitle'},'CELL STATE  (the long-term memory “highway”)'),
+    ln(30,Y,610,Y,4,'var(--acc)'),
+    h('text',{x:30,y:Y-12,className:'wl'},'c(t−1) = '+f2(r.cp)),h('text',{x:610,y:Y-12,textAnchor:'end',className:'wl b'},'c(t) = '+f2(r.c)),
+    ln(120,G-26,120,Y+11),ln(240,G-26,240,95),ln(350,G-26,350,95),ln(295,95,295,Y+11),ln(240,95,350,95),ln(510,G-26,510,Y+11),
+    cx(120),h('text',{x:120,y:Y+4,textAnchor:'middle',className:'wl b'},'×'),
+    cx(295),h('text',{x:295,y:Y+4,textAnchor:'middle',className:'wl b'},'+'),
+    h('circle',{cx:295,cy:95,r:11,className:'nodeFill'}),h('text',{x:295,y:99,textAnchor:'middle',className:'wl b'},'×'),
+    h('rect',{x:395,y:Y-12,width:48,height:24,rx:6,className:'nodeFill'}),h('text',{x:419,y:Y+4,textAnchor:'middle',className:'tick'},'tanh'),
+    cx(510),h('text',{x:510,y:Y+4,textAnchor:'middle',className:'wl b'},'×'),
+    h('text',{x:610,y:Y+30,textAnchor:'end',className:'wl b'},'h(t) = '+f2(r.h)),
+    ln(510,Y+11,590,Y+22,1.5),
+    h(GateBox,{x:120,y:G,name:'forget gate',sym:'σ → keep how much?',v:r.f}),
+    h(GateBox,{x:240,y:G,name:'input gate',sym:'σ → write now?',v:r.i}),
+    h(GateBox,{x:350,y:G,name:'candidate',sym:'tanh → new info',v:r.g,range:2}),
+    h(GateBox,{x:510,y:G,name:'output gate',sym:'σ → reveal how much?',v:r.o}),
+    ln(100,222,540,222,1.5),
+    ...[120,240,350,510].map(x=>ln(x,222,x,G+30,1)),
+    h('text',{x:320,y:244,textAnchor:'middle',className:'wl'},'inputs: x(t) = '+f2(r.x)+'   store-flag = '+r.flag+'   h(t−1)')));
+}
+function LSTMTab({active}){
+  const [bit,setBit]=useState(1);
+  const [T,setT]=useState(20);
+  const [bf,setBf]=useState(4);
+  const [bo,setBo]=useState(2);
+  const [wr,setWr]=useState(0.9);
+  const [seed,setSeed]=useState(1);
+  const [t,setTt]=useState(0);
+  const [play,setPlay]=useState(false);
+  useEffect(()=>{if(!active)setPlay(false);},[active]);
+  useEffect(()=>{if(t>=T)setTt(T-1);},[T]);
+  useEffect(()=>{if(!play)return;const id=setInterval(()=>setTt(q=>{if(q>=T-1){setPlay(false);return q;}return q+1;}),260);return()=>clearInterval(id);},[play,T]);
+  const P={bf,bo,wr};
+  const seq=useMemo(()=>mkSeq(seed,T,bit),[seed,T,bit]);
+  const rows=useMemo(()=>lstmSim(seq,P),[seq,bf,bo,wr]);
+  const rate=useMemo(()=>{let a=0,b=0;const N=200;for(let k=0;k<N;k++){const bb=k%2?1:-1,rr=lstmSim(mkSeq(1000+k,T,bb),P),l=rr[rr.length-1];if((l.h>0?1:-1)===bb)a++;if((l.hr>0?1:-1)===bb)b++;}return{lstm:a/N,rnn:b/N};},[T,bf,bo,wr]);
+  const r=rows[Math.min(t,T-1)],last=rows[T-1];
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'The problem: remember something from the distant past'),
+      h('p',{className:'lead'},'Feed-forward nets see one input at a time. For sequences (speech, text, sensors) the network needs ',h('b',null,'memory'),'. A plain RNN (1980s) keeps a hidden state but overwrites it at every step and its gradients vanish over long ranges. The ',h('b',null,'LSTM'),' (Hochreiter & Schmidhuber, 1997) adds a protected ',h('b',null,'cell state'),' controlled by gates.'),
+      h('p',{className:'lead'},h('b',null,'Task: '),'a bit (+1 or −1) arrives at step 0, followed by random noise. At the last step the model must say which bit it was. The gate weights below are hand-set to show the mechanism; real LSTMs learn them with backpropagation through time.'),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Bit to remember'),h(Seg,{options:['+1','−1'],value:bit===1?'+1':'−1',onChange:v=>setBit(v==='+1'?1:-1)}),
+        h('span',{className:'lbl'},'Sequence length '+T),h('input',{type:'range',min:5,max:40,value:T,onChange:e=>setT(+e.target.value)}),
+        h('button',{onClick:()=>setSeed(q=>q+1)},'🎲 New noise')),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Forget-gate bias '+bf.toFixed(1)),h('input',{type:'range',min:-2,max:8,step:0.5,value:bf,onChange:e=>setBf(+e.target.value)}),
+        h('span',{className:'lbl'},'Output-gate bias '+bo.toFixed(1)),h('input',{type:'range',min:-1,max:5,step:0.5,value:bo,onChange:e=>setBo(+e.target.value)}),
+        h('span',{className:'lbl'},'RNN recurrent weight '+wr.toFixed(2)),h('input',{type:'range',min:0,max:1.3,step:0.05,value:wr,onChange:e=>setWr(+e.target.value)}))),
+    h('section',{className:'card'},
+      h('div',{className:'ct'},'Input sequence (step t = '+t+')'),
+      h('div',{className:'seqrow'},...seq.map((q,i)=>h('button',{key:i,className:'seqchip'+(i===t?' cur':'')+(q.flag?' store':''),onClick:()=>{setPlay(false);setTt(i);}},q.flag?'STORE '+(q.x>0?'+1':'−1'):f2(q.x,1)))),
+      h('div',{className:'btns'},h('button',{className:'primary',onClick:()=>{if(t>=T-1)setTt(0);setPlay(p=>!p);}},play?'⏸ Pause':'▶ Play through time'),
+        h('input',{type:'range',min:0,max:T-1,value:Math.min(t,T-1),onChange:e=>{setPlay(false);setTt(+e.target.value);},style:{width:220}})),
+      h(LSTMCell,{r}),
+      h('div',{className:'grid2'},
+        h('div',null,
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'Memory over time vs the bit to remember'),
+            h(LineChart,{series:[{name:'LSTM cell c(t)',color:'#2563eb',data:rows.map(q=>q.c)},{name:'plain RNN h(t)',color:'#ea580c',data:rows.map(q=>q.hr)},{name:'target bit',color:'#15803d',data:rows.map(()=>bit)}],yMin:-1.3,yMax:1.3,xMax:T,marker:t,w:360,hgt:150,xLabel:'time step →'}))),
+        h('div',null,
+          h('div',{className:'stats'},
+            h('div',null,h('span',null,'LSTM final h'),h('b',null,sg(last.h))),
+            h('div',null,h('span',null,'RNN final h'),h('b',null,sg(last.hr)))),
+          h('div',{className:'call '+((last.h>0?1:-1)===bit?'ok':'bad')},'LSTM answer: '+(last.h>0?'+1':'−1')+((last.h>0?1:-1)===bit?' ✓':' ✗')),
+          h('div',{className:'call '+((last.hr>0?1:-1)===bit?'ok':'bad')},'RNN answer: '+(last.hr>0?'+1':'−1')+((last.hr>0?1:-1)===bit?' ✓':' ✗')),
+          h('div',{className:'call'},h('b',null,'Over 200 random sequences of length '+T+': '),'LSTM correct '+pct(rate.lstm)+' · plain RNN correct '+pct(rate.rnn)+'. Lower the forget-gate bias and the LSTM forgets too; lengthen the sequence and the RNN gets worse.')))),
+    h(Concepts,{items:[
+      {t:'Sequence & hidden state',d:'The network processes one element at a time and carries a state forward, so earlier inputs can influence later outputs.',live:`step ${t} of ${T}`},
+      {t:'Cell state c(t)',d:'The LSTM’s long-term memory: a vector that flows through time with only small, gated edits (additive updates), which is what keeps gradients alive.',live:`c(t) = f·c(t−1) + i·c̃ = ${f2(r.f)}·${f2(r.cp)} + ${f2(r.i)}·${f2(r.g)} = ${f2(r.c)}`},
+      {t:'Forget gate f',d:'σ(…) ∈ (0,1): how much of the old memory to keep. Near 1 = remember, near 0 = erase.',live:`f = σ(${f2(bf,1)}) = ${f2(r.f)}`},
+      {t:'Input gate i & candidate c̃',d:'The candidate (tanh) proposes new content; the input gate decides whether to write it. Here it opens only on the “store” step so noise can’t overwrite the bit.',live:`i = ${f2(r.i)}   c̃ = tanh(2·x) = ${f2(r.g)}`},
+      {t:'Output gate o & hidden state h',d:'What part of the memory to expose to the rest of the network at this step: h(t) = o · tanh(c(t)).',live:`h = ${f2(r.o)}·tanh(${f2(r.c)}) = ${f2(r.h)}`},
+      {t:'Plain RNN',d:'h(t) = tanh(w·h(t−1) + x). Every step mixes in new input, so old information fades roughly like wᵗ — the vanishing-gradient problem.',live:`h = tanh(${f2(wr)}·${f2(r.t?rows[r.t-1].hr:0)} + ${f2(r.x)}) = ${f2(r.hr)}`},
+      {t:'Parameters',d:'Four sets of weights (3 gates + candidate), each acting on [x, h(t−1)]: 4·(n_h·(n_x+n_h)+n_h) parameters. A 128-unit LSTM on 64 inputs has about 98 k.',live:'4·(128·(64+128)+128) = 98,816'},
+      {t:'Why it was replaced',d:'LSTMs read tokens strictly one after another (slow to train, can’t parallelise) and still struggle with very long contexts. Attention (see the Transformer tab) links any two positions directly.',live:'next: Transformer (2017)'}
+    ]}));
+}
+/* ===== VAE tab ===== */
+function pick(rr,n,len){return Array.from({length:n},()=>gauss(rr));}
+function tile(c,i){return `hsl(${c*36},75%,45%)`;}
+function LatentPlot({vae,te,R,zc,onPick,size=320}){
+  const ref=useRef(null);
+  const to=(v)=>(v+R)/(2*R)*size;
+  useEffect(()=>{
+    const c=ref.current;if(!c)return;const ctx=c.getContext('2d');
+    ctx.clearRect(0,0,size,size);ctx.fillStyle='#f4f6fa';ctx.fillRect(0,0,size,size);
+    ctx.strokeStyle='#cbd2de';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(size/2,0);ctx.lineTo(size/2,size);ctx.moveTo(0,size/2);ctx.lineTo(size,size/2);ctx.stroke();
+    ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    te.X.forEach((x,i)=>{const m=vae.encode(x).mu;ctx.fillStyle=tile(te.L[i]);ctx.fillText(te.L[i],to(m[0]),size-to(m[1]));});
+    if(zc){ctx.strokeStyle='#111';ctx.lineWidth=2;ctx.beginPath();ctx.arc(to(zc[0]),size-to(zc[1]),9,0,6.283);ctx.stroke();}
+  });
+  const ev=e=>{const r=ref.current.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*2*R-R,y=R-(e.clientY-r.top)/r.height*2*R;onPick([x,y]);};
+  return h('canvas',{ref,width:size,height:size,className:'heat',style:{cursor:'crosshair',touchAction:'none'},onPointerDown:e=>{e.currentTarget.setPointerCapture(e.pointerId);ev(e);},onPointerMove:e=>{if(e.buttons)ev(e);}});
+}
+function Atlas({vae,R,n=11}){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const c=ref.current;if(!c)return;const off=document.createElement('canvas');off.width=n*8;off.height=n*8;
+    const o=off.getContext('2d'),img=o.createImageData(n*8,n*8);
+    for(let gy=0;gy<n;gy++)for(let gx=0;gx<n;gx++){
+      const z=[-R+(gx+0.5)/n*2*R,R-(gy+0.5)/n*2*R],d=vae.decode(z).o;
+      for(let i=0;i<64;i++){const px=gx*8+(i%8),py=gy*8+Math.floor(i/8),k=(py*n*8+px)*4,g=255*(1-d[i]);img.data[k]=img.data[k+1]=img.data[k+2]=g;img.data[k+3]=255;}
+    }
+    o.putImageData(img,0,0);const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(off,0,0,320,320);
+  });
+  return h('canvas',{ref,width:320,height:320,className:'heat'});
+}
+function VAETab({active}){
+  const data=useMemo(()=>({tr:makeDigitSet(100,5,0.1,true),te:makeDigitSet(20,6,0.1,true)}),[]);
+  const TOTAL=40;
+  const [beta,setBeta]=useState(1);
+  const [run,setRun]=useState(false);
+  const [sel,setSel]=useState(3);
+  const [zc,setZc]=useState(null);
+  const [gens,setGens]=useState(null);
+  const [eps,setEps]=useState(1);
+  const [,force]=useState(0);
+  const mk=()=>({vae:new VAE(64,64,2,1,beta),epoch:0,rand:rng(3),rec:[],kl:[]});
+  const st=useRef(null);if(!st.current)st.current=mk();
+  useEffect(()=>{st.current=mk();setRun(false);setZc(null);setGens(null);force(n=>n+1);},[beta]);
+  useEffect(()=>{if(!active)setRun(false);},[active]);
+  const step=()=>{
+    const s=st.current,idx=data.tr.X.map((_,i)=>i);
+    for(let i=idx.length-1;i>0;i--){const j=Math.floor(s.rand()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+    let rc=0,kl=0,nb=0;
+    for(let i=0;i<idx.length;i+=32){const o=s.vae.trainBatch(idx.slice(i,i+32).map(k=>data.tr.X[k]),0.005,s.rand);rc+=o.rec;kl+=o.kl;nb++;}
+    s.epoch++;s.rec.push(rc/nb);s.kl.push(kl/nb);
+  };
+  const tick=useRef();tick.current=()=>{if(st.current.epoch>=TOTAL){setRun(false);return;}step();force(n=>n+1);if(st.current.epoch>=TOTAL)setRun(false);};
+  useEffect(()=>{if(!run)return;const id=setInterval(()=>tick.current(),160);return()=>clearInterval(id);},[run]);
+  const s=st.current,vae=s.vae;
+  const x=data.te.X[sel],enc=vae.encode(x),er=rng(eps*7+1),e2=[gauss(er),gauss(er)],sd=Array.from(enc.lv).map(v=>Math.exp(0.5*v)),z=[enc.mu[0]+sd[0]*e2[0],enc.mu[1]+sd[1]*e2[1]],rec=Array.from(vae.decode(z).o);
+  let mx=0;data.te.X.forEach(q=>{const m=vae.encode(q).mu;mx=Math.max(mx,Math.abs(m[0]),Math.abs(m[1]));});
+  const R=Math.max(2.5,Math.ceil(mx*2+1)/2);
+  const dz=zc?Array.from(vae.decode(zc).o):null;
+  const gen=()=>{const rr=rng(Date.now()%100000);setGens(Array.from({length:12},()=>Array.from(vae.decode([gauss(rr),gauss(rr)]).o)));};
+  const trained=s.epoch>0;
+  const box=(t,sub,cls)=>h('div',{className:'blk '+(cls||'')},h('b',null,t),h('span',null,sub));
+  const arrow=h('div',{className:'arr'},'→');
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'The problem: not just recognising data, but generating new data'),
+      h('p',{className:'lead'},'A classifier maps image → label. A ',h('b',null,'Variational Autoencoder'),' (Kingma & Welling, 2013) learns to compress an image into a tiny ',h('b',null,'latent code'),' and to rebuild the image from it. Because the latent space is forced to be smooth and centred (KL term), you can ',h('b',null,'sample a random code and decode a brand-new digit'),'. Here the code has only 2 numbers so we can see the whole space.'),
+      h('div',{className:'row'},h('span',{className:'lbl'},'KL weight β '+beta.toFixed(1)),h('input',{type:'range',min:0.1,max:4,step:0.1,value:beta,onChange:e=>setBeta(+e.target.value)}),
+        h('span',{className:'small'},'(changing β restarts training)'))),
+    h('section',{className:'card'},
+      h('div',{className:'btns top'},
+        h('button',{className:'primary',disabled:s.epoch>=TOTAL,onClick:()=>setRun(r=>!r)},run?'⏸ Pause':`▶ Train to epoch ${TOTAL}`),
+        h('button',{disabled:s.epoch>=TOTAL,onClick:()=>{setRun(false);step();force(n=>n+1);}},'Step 1 epoch'),
+        h('button',{onClick:()=>{setRun(false);st.current=mk();setZc(null);setGens(null);force(n=>n+1);}},'↺ Reset')),
+      h('div',{className:'ct'},'Architecture, live for one test digit (pick a class)'),
+      h('div',{className:'probes'},...[...Array(10).keys()].map(c=>h('button',{key:c,className:'probe'+(sel===c?' sel':''),onClick:()=>setSel(c)},h(Digit,{v:data.te.X[c],size:34}),h('b',null,c)))),
+      h('div',{className:'flow'},
+        h('div',{className:'blk img'},h(Digit,{v:x,size:72}),h('span',null,'input x (64 px)')),arrow,
+        box('Encoder','64 → 64 (ReLU)','enc'),arrow,
+        h('div',{className:'blk lat'},h('b',null,'μ = ('+f2(enc.mu[0])+', '+f2(enc.mu[1])+')'),h('b',null,'σ = ('+f2(sd[0])+', '+f2(sd[1])+')'),h('span',null,'ε ~ N(0,1) = ('+f2(e2[0])+', '+f2(e2[1])+')'),h('b',{className:'zz'},'z = μ + σ·ε = ('+f2(z[0])+', '+f2(z[1])+')'),h('button',{className:'sm',onClick:()=>setEps(q=>q+1)},'🎲 resample ε')),arrow,
+        box('Decoder','2 → 64 (ReLU) → 64 (σ)','dec'),arrow,
+        h('div',{className:'blk img'},h(Digit,{v:rec,size:72}),h('span',null,'reconstruction x̂'))),
+      h('div',{className:'grid2'},
+        h('div',null,
+          h('div',{className:'ct'},'Latent space: where the encoder puts each unseen test digit (click or drag to decode a point)'),
+          h(LatentPlot,{vae,te:data.te,R,zc,onPick:setZc}),
+          h('div',{className:'ct',style:{marginTop:8}},zc?`Decoded at z = (${f2(zc[0])}, ${f2(zc[1])})`:'Click the plot →'),
+          dz?h(Digit,{v:dz,size:96}):null),
+        h('div',null,
+          h('div',{className:'ct'},'Decoder atlas: what the decoder draws on an 11×11 grid of the same plane'),
+          h(Atlas,{vae,R}))),
+      h('div',{className:'grid2'},
+        h('div',null,
+          h('div',{className:'stats'},
+            h('div',null,h('span',null,'epoch'),h('b',null,s.epoch+' / '+TOTAL)),
+            h('div',null,h('span',null,'reconstruction loss'),h('b',null,s.rec.length?f2(s.rec[s.rec.length-1],1):'–')),
+            h('div',null,h('span',null,'KL'),h('b',null,s.kl.length?f2(s.kl[s.kl.length-1],2):'–'))),
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'Loss = reconstruction + β · KL'),
+            h(LineChart,{series:[{name:'reconstruction',color:'#2563eb',data:s.rec},{name:'KL',color:'#ea580c',data:s.kl}],yMin:0,xMax:TOTAL+1}))),
+        h('div',null,
+          h('div',{className:'ct'},'Originals (top) vs reconstructions from μ (bottom)'),
+          h('div',{className:'gallery'},...data.te.X.slice(0,10).map((q,i)=>h('div',{key:i,className:'gi'},h(Digit,{v:q,size:32}),h(Digit,{v:Array.from(vae.decode(vae.encode(q).mu).o),size:32})))),
+          h('div',{className:'btns'},h('button',{className:'primary',disabled:!trained,onClick:gen},'✨ Generate 12 new digits from random z ~ N(0, I)')),
+          gens?h('div',{className:'gallery'},...gens.map((g,i)=>h(Digit,{key:i,v:g,size:44}))):null))),
+    h(Concepts,{items:[
+      {t:'Encoder (recognition network)',d:'Maps an input to a probability distribution over latent codes, described by a mean μ and a spread σ — not one point.',live:`x → μ=(${f2(enc.mu[0])}, ${f2(enc.mu[1])}), σ=(${f2(sd[0])}, ${f2(sd[1])})`},
+      {t:'Latent space',d:'A tiny code (2 numbers here; hundreds in real models) that must capture what matters about the image. Similar digits land near each other.',live:'64 pixels → 2 numbers'},
+      {t:'Reparameterisation trick',d:'Sampling is random, so gradients can’t flow through it. Write z = μ + σ·ε with ε ~ N(0,1): the randomness moves outside the network and backprop works.',live:`z = ${f2(enc.mu[0])} + ${f2(sd[0])}·${f2(e2[0])} = ${f2(z[0])}`},
+      {t:'Decoder (generator)',d:'Maps a latent code back to a 64-pixel image. After training you can throw the encoder away and feed random codes to generate new digits.',live:'z → 64 pixels in [0,1]'},
+      {t:'Loss: reconstruction + KL',d:'Reconstruction (cross-entropy per pixel) wants faithful copies; KL(q(z|x) ‖ N(0,I)) pulls every code toward a standard Gaussian so the space has no holes.',live:`β = ${beta.toFixed(1)} · recon ${s.rec.length?f2(s.rec[s.rec.length-1],1):'–'} · KL ${s.kl.length?f2(s.kl[s.kl.length-1],2):'–'}`},
+      {t:'The β trade-off',d:'Small β: sharper reconstructions but a patchy latent space. Large β: smooth space but blurrier, less distinct digits (try 4).',live:`β = ${beta.toFixed(1)}`},
+      {t:'Generating',d:'Sample z ~ N(0, I), decode. Moving smoothly in z morphs one digit into another (drag across the plot).',live:'x̂ = decoder(z), z ~ N(0, I)'},
+      {t:'Limitations & use',d:'VAE samples tend to be blurry because the loss averages over possibilities. GANs (next tab) trade that for sharpness but are harder to train. VAE-style autoencoders still compress images for modern diffusion models.',live:'next: GAN (2014)'}
+    ]}));
+}
+/* ===== GAN tab ===== */
+function GANDiagram(){
+  const box=(x,y,w,hh,t,s,c)=>[h('rect',{key:'r'+t,x,y,width:w,height:hh,rx:9,className:'nodeFill',style:c?{stroke:c}:null}),h('text',{key:'a'+t,x:x+w/2,y:y+hh/2-2,textAnchor:'middle',className:'wl b'},t),h('text',{key:'b'+t,x:x+w/2,y:y+hh/2+13,textAnchor:'middle',className:'tick'},s)];
+  const arr=(x1,y1,x2,y2,c,d)=>h('line',{x1,y1,x2,y2,stroke:c,strokeWidth:2.2,strokeDasharray:d||null,markerEnd:'url(#ah)'});
+  return h('div',{className:'scrollx'},h('svg',{width:660,height:200,className:'dw'},
+    h('defs',null,h('marker',{id:'ah',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:6,markerHeight:6,orient:'auto'},h('path',{d:'M0,0 L10,5 L0,10 z',fill:'#8a93a6'}))),
+    ...box(10,30,110,50,'noise z','z ~ N(0, I)'),
+    ...box(165,30,130,50,'Generator G','2→16→16→2','#ea580c'),
+    ...box(165,125,130,50,'Real data x','samples of the target','#2563eb'),
+    ...box(365,75,140,56,'Discriminator D','2→16→16→1 (σ)','#7c3aed'),
+    ...box(550,82,100,42,'P(real)','0 … 1'),
+    arr(120,55,165,55,'#ea580c'),arr(295,55,365,92,'#ea580c'),h('text',{x:322,y:62,className:'tick'},'fake G(z)'),
+    arr(295,150,365,115,'#2563eb'),arr(505,103,550,103,'#7c3aed'),
+    h('path',{d:'M600,82 C600,10 230,6 230,30',fill:'none',stroke:'#ea580c',strokeWidth:2,strokeDasharray:'5 4',markerEnd:'url(#ah)'}),
+    h('text',{x:415,y:16,textAnchor:'middle',className:'tick'},'G learns from D’s feedback: “make D say real”'),
+    h('path',{d:'M600,124 C600,190 430,190 430,131',fill:'none',stroke:'#7c3aed',strokeWidth:2,strokeDasharray:'5 4',markerEnd:'url(#ah)'}),
+    h('text',{x:520,y:196,textAnchor:'middle',className:'tick'},'D learns: real → 1, fake → 0')));
+}
+function GANTab({active}){
+  const [kind,setKind]=useState('moons');
+  const [lr,setLr]=useState(0.05);
+  const [run,setRun]=useState(false);
+  const [seed,setSeed]=useState(1);
+  const [,force]=useState(0);
+  const mk=()=>{
+    const r=rng(seed*13+5),real=makeData(kind,300,3,0.02).map(p=>({x:p.x,y:p.y,c:1}));
+    const Z=Array.from({length:150},()=>[gauss(r),gauss(r)]);
+    return{G:new MLP([2,16,16,2],'tanh','linear',seed*2),D:new MLP([2,16,16,1],'tanh','sigmoid',seed*2+1),real,Z,it:0,rand:r,dl:[],gl:[],dr:[],df:[]};
+  };
+  const st=useRef(null);if(!st.current)st.current=mk();
+  useEffect(()=>{st.current=mk();setRun(false);force(n=>n+1);},[kind,seed]);
+  useEffect(()=>{if(!active)setRun(false);},[active]);
+  const iterate=n=>{
+    const s=st.current,{G,D,real,rand:r}=s;let dl=0,gl=0;
+    for(let k=0;k<n;k++){
+      const X=[],Y=[];
+      for(let i=0;i<16;i++){const p=real[Math.floor(r()*real.length)];X.push([p.x,p.y]);Y.push([1]);X.push(G.forward([gauss(r),gauss(r)])[3]);Y.push([0]);}
+      dl+=D.trainBatch(X,Y,lr);
+      let acc=null;const B=32;
+      for(let i=0;i<B;i++){
+        const Ag=G.forward([gauss(r),gauss(r)]),Ad=D.forward(Ag[3]);
+        gl+=-Math.log(Math.max(Ad[3][0],1e-9))/B;
+        const bd=D.backward(Ad,[Ad[3][0]-1]),gg=G.backward(Ag,bd.gIn);
+        if(!acc)acc=gg;else for(let l=0;l<gg.gW.length;l++){gg.gW[l].forEach((row,j)=>row.forEach((v,q)=>acc.gW[l][j][q]+=v));gg.gB[l].forEach((v,j)=>acc.gB[l][j]+=v);}
+      }
+      G.applyGrads(acc,lr/B);
+    }
+    s.it+=n;s.dl.push(dl/n);s.gl.push(gl/n);
+    s.dr.push(s.real.reduce((a,p)=>a+D.forward([p.x,p.y])[3][0],0)/s.real.length);
+    s.df.push(s.Z.reduce((a,z)=>a+D.forward(G.forward(z)[3])[3][0],0)/s.Z.length);
+  };
+  const tick=useRef();tick.current=()=>{iterate(15);force(n=>n+1);if(st.current.it>=6000)setRun(false);};
+  useEffect(()=>{if(!run)return;const id=setInterval(()=>tick.current(),50);return()=>clearInterval(id);},[run]);
+  const s=st.current,{G,D}=s;
+  const fakes=s.Z.map(z=>{const o=G.forward(z)[3];return{x:o[0],y:o[1],c:0};});
+  const vals=sampleGrid(GDOM,GN,(x,y)=>D.forward([x,y])[3][0]);
+  const last=a=>a.length?a[a.length-1]:NaN;
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'The problem: generate realistic samples without ever writing down the probability'),
+      h('p',{className:'lead'},'A ',h('b',null,'Generative Adversarial Network'),' (Goodfellow et al., 2014) is a game between two networks. The ',h('b',null,'generator'),' turns random noise into fake samples; the ',h('b',null,'discriminator'),' tries to tell fake from real. Each improves because of the other. Below the “data” are 2-D points so you can watch the fakes (orange) migrate onto the real distribution (blue).'),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Target distribution'),h(Seg,{options:['moons','circle','spiral'],value:kind,onChange:setKind,render:o=>({moons:'Moons',circle:'Circle',spiral:'Spiral (hard)'})[o]}),
+        h('span',{className:'lbl'},'Learning rate'),h('select',{value:lr,onChange:e=>setLr(+e.target.value)},...[0.01,0.03,0.05,0.1].map(v=>h('option',{key:v,value:v},v))))),
+    h('section',{className:'card'},
+      h(GANDiagram),
+      h('div',{className:'btns'},
+        h('button',{className:'primary',disabled:s.it>=6000,onClick:()=>setRun(r=>!r)},run?'⏸ Pause':'▶ Train'),
+        h('button',{onClick:()=>{setRun(false);iterate(15);force(n=>n+1);}},'Step 15 iterations'),
+        h('button',{onClick:()=>setSeed(q=>q+1)},'↺ Reset (new random weights)')),
+      h('div',{className:'grid2'},
+        h('div',null,h(Heat,{vals,N:GN,size:340,dom:GDOM,pts:[...s.real,...fakes]}),
+          h('div',{className:'legend'},h('span',{className:'dot b'}),'real data',h('span',{className:'dot o'}),'fake (generator) · background = D’s belief “this is real” (blue) vs “fake” (orange)')),
+        h('div',null,
+          h('div',{className:'stats'},
+            h('div',null,h('span',null,'iterations'),h('b',null,s.it)),
+            h('div',null,h('span',null,'D(real)'),h('b',null,isNaN(last(s.dr))?'–':f2(last(s.dr)))),
+            h('div',null,h('span',null,'D(fake)'),h('b',null,isNaN(last(s.df))?'–':f2(last(s.df))))),
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'What D believes (equilibrium ≈ 0.5 for both)'),
+            h(LineChart,{series:[{name:'D(real)',color:'#2563eb',data:s.dr},{name:'D(fake)',color:'#ea580c',data:s.df}],yMin:0,yMax:1,xMax:60,xLabel:'time (×15 iterations) →'})),
+          h('div',{className:'chartbox'},h('div',{className:'ct'},'Losses'),
+            h(LineChart,{series:[{name:'D loss',color:'#7c3aed',data:s.dl},{name:'G loss',color:'#ea580c',data:s.gl}],yMin:0,xMax:60,xLabel:'time (×15 iterations) →'})),
+          h('div',{className:'call'},s.it===0?'Press Train. At first the fakes sit in a random blob and D easily separates them.':(Math.abs(last(s.df)-0.5)<0.12&&Math.abs(last(s.dr)-0.5)<0.12)?'D can barely tell real from fake: close to the game’s equilibrium. Note the points are only as good as G’s coverage — a GAN may also collapse onto part of the shape (mode collapse).':'Watch the orange points chase the blue shape while D’s blue/orange map keeps re-drawing the boundary between them.')))),
+    h(Concepts,{items:[
+      {t:'Generator G',d:'Network that maps random noise z to a sample. It never sees real data directly — it only receives gradients that flow back through D.',live:`G: 2 → 16 → 16 → 2 · ${paramCount([2,16,16,2])} params`},
+      {t:'Discriminator D',d:'A classifier (sigmoid output) trained to output 1 on real samples and 0 on generated ones.',live:`D(real) = ${isNaN(last(s.dr))?'–':f2(last(s.dr))}   D(fake) = ${isNaN(last(s.df))?'–':f2(last(s.df))}`},
+      {t:'Adversarial game',d:'min over G, max over D of E[log D(x)] + E[log(1 − D(G(z)))]. D wants to spot fakes; G wants to fool D. At the ideal equilibrium G’s samples match the data and D outputs 0.5 everywhere.',live:'min_G max_D  V(D, G)'},
+      {t:'Training step',d:'Alternate: (1) update D on a mini-batch of real + fake; (2) update G so that D(G(z)) moves toward 1 (the “non-saturating” loss −log D(G(z)), which gives stronger gradients early on).',live:`D loss ${isNaN(last(s.dl))?'–':f2(last(s.dl),3)} · G loss ${isNaN(last(s.gl))?'–':f2(last(s.gl),3)}`},
+      {t:'Backprop through D into G',d:'The gradient of D’s output w.r.t. its input tells each fake point which direction would look “more real”; that signal then backpropagates into G’s weights.',live:'∂L/∂θ_G = ∂L/∂G(z) · ∂G(z)/∂θ_G'},
+      {t:'Instability & mode collapse',d:'Two networks chasing each other can oscillate or collapse onto a few modes. Try the spiral or a high learning rate. Tricks: better losses (WGAN), spectral norm, careful tuning.',live:`learning rate = ${lr}`},
+      {t:'No explicit likelihood',d:'Unlike the VAE, a GAN has no reconstruction loss or density; sharpness comes from D’s ability to spot anything unrealistic. Great for photos (StyleGAN faces), hard to evaluate.',live:'implicit generative model'},
+      {t:'What came next',d:'Diffusion models (2020+) usually replaced GANs for image generation: more stable training, better coverage. Transformers dominate text.',live:'next: Transformer (2017)'}
+    ]}));
+}
+/* ===== Transformer tab: the main function = scaled dot-product attention ===== */
+const SEM=['noun','verb','animate','thing','adj','func','pron','punct'];
+const LEX={};
+const addLex=(words,feats)=>words.split(' ').forEach(w=>LEX[w]=feats);
+addLex('cat dog bird fish mouse horse child boy girl',{0:1,2:1});
+addLex('mat table box ball sofa house garden bed floor roof',{0:1,3:1});
+addLex('sat sleeps slept ran chased ate jumped was is saw likes looked sits runs',{1:1});
+addLex('tired big small red happy hungry soft old',{4:1});
+addLex('the a an on in of and because with to at under over but',{5:1});
+addLex('it he she they',{6:1,2:0.3});
+addLex('. , ! ?',{7:1});
+const FREQ=[1.3,0.6,0.25,0.1];
+function lexVec(w){
+  const v=new Array(8).fill(0),e=LEX[w];
+  if(e){for(const k in e)v[k]=e[k];return v;}
+  let hs=0;for(const ch of w)hs=(hs*31+ch.charCodeAt(0))%97;
+  v[0]=0.8;v[hs%2?3:2]=0.8;return v;               // unknown word: treat as a noun
+}
+function embed(tokens){
+  return tokens.map((w,p)=>{const pos=[];FREQ.forEach(f=>{pos.push(Math.sin(f*p),Math.cos(f*p));});return[...lexVec(w),1,p===0?1:0,...pos];});
+}
+const EDIM=18,EL=[...SEM,'bias','first','sin₀','cos₀','sin₁','cos₁','sin₂','cos₂','sin₃','cos₃'];
+function mkHeads(){
+  const Z=()=>Array.from({length:4},()=>new Array(EDIM).fill(0));
+  const hd=[];
+  { // 1: previous token (positional, uses rotation = shift by one position)
+    const Q=Z(),K=Z();
+    for(let m=0;m<2;m++){const w=FREQ[m],s=10+2*m,c=s+1,A=2.2;
+      Q[2*m][s]=A;Q[2*m+1][c]=A;
+      K[2*m][s]=A*Math.cos(w);K[2*m][c]=A*Math.sin(w);K[2*m+1][s]=-A*Math.sin(w);K[2*m+1][c]=A*Math.cos(w);}
+    hd.push({name:'Previous token',desc:'Uses only positional encoding: the key is the position rotated by one step, so each token attends to the token just before it.',Q,K});}
+  { // 2: semantic / coreference
+    const Q=Z(),K=Z();Q[0][6]=3;K[0][2]=1.5;Q[1][0]=1.5;K[1][0]=1.5;Q[2][1]=1.5;K[2][1]=1.5;Q[3][4]=1.5;K[3][4]=1.5;
+    hd.push({name:'Meaning / coreference',desc:'Pronouns look for animate nouns (“it” → “cat”); nouns attend to nouns, verbs to verbs, adjectives to adjectives.',Q,K});}
+  { // 3: verbs
+    const Q=Z(),K=Z();Q[0][8]=2.4;K[0][1]=2.4;
+    hd.push({name:'Verb finder',desc:'Every token asks “where is the verb?” — a constant query matched against a “verb” feature in the keys.',Q,K});}
+  { // 4: first token
+    const Q=Z(),K=Z();Q[0][8]=2.4;K[0][9]=2.4;
+    hd.push({name:'First token',desc:'All tokens attend to the first position, which acts as a resting place (“attention sink”) when nothing else is relevant.',Q,K});}
+  hd.forEach((H,i)=>{const r=rng(40+i);H.V=Array.from({length:4},()=>Array.from({length:EDIM},()=>gauss(r)*0.6));});
+  return hd;
+}
+const HEADS=mkHeads();
+const mv=(M,e)=>M.map(row=>row.reduce((s,w,i)=>s+w*e[i],0));
+function attend(E,H,causal,temp){
+  const Q=E.map(e=>mv(H.Q,e)),K=E.map(e=>mv(H.K,e)),V=E.map(e=>mv(H.V,e)),T=E.length,dk=4;
+  const S=Q.map(q=>K.map(k=>q.reduce((s,x,i)=>s+x*k[i],0)/Math.sqrt(dk)));
+  const A=S.map((row,i)=>{const z=row.map((v,j)=>(causal&&j>i)?-Infinity:v/temp);let m=-Infinity;z.forEach(v=>{if(v>m)m=v;});const ex=z.map(v=>v===-Infinity?0:Math.exp(v-m)),sum=ex.reduce((a,b)=>a+b,0);return ex.map(v=>v/sum);});
+  const O=A.map(a=>[0,1,2,3].map(d=>a.reduce((s,w,j)=>s+w*V[j][d],0)));
+  return{Q,K,V,S,A,O};
+}
+function Mat({data,rowLabels,colLabels,cell=26,mode='div',fmt,onRow,selRow,maskUpper}){
+  const R=data.length,C=data[0].length,L=rowLabels.every(x=>!x)?4:84,Tp=colLabels?34:0,W=L+C*cell+4,H=Tp+R*cell+4;
+  let mx=1e-6;if(mode==='div')data.forEach(r=>r.forEach(v=>{if(isFinite(v))mx=Math.max(mx,Math.abs(v));}));
+  const els=[];
+  if(colLabels)colLabels.forEach((t,j)=>els.push(h('text',{key:'c'+j,x:L+j*cell+cell/2,y:Tp-6,textAnchor:'middle',className:'tick',transform:`rotate(-35 ${L+j*cell+cell/2} ${Tp-6})`},t)));
+  data.forEach((row,i)=>{
+    els.push(h('text',{key:'r'+i,x:L-6,y:Tp+i*cell+cell/2+4,textAnchor:'end',className:i===selRow?'wl b':'wl',style:onRow?{cursor:'pointer'}:null,onClick:onRow?()=>onRow(i):null},rowLabels[i]));
+    row.forEach((v,j)=>{
+      const masked=!isFinite(v),col=masked?[225,228,235]:(mode==='div'?divColor(0.5+0.5*v/mx):mix(LIGHT,BLUE,Math.min(1,v)));
+      els.push(h('rect',{key:i+'-'+j,x:L+j*cell,y:Tp+i*cell,width:cell-1,height:cell-1,rx:3,fill:rgb(col),stroke:i===selRow?'var(--ink)':'none',strokeWidth:i===selRow?1.5:0,style:onRow?{cursor:'pointer'}:null,onClick:onRow?()=>onRow(i):null}));
+      if(fmt&&cell>=26&&!masked)els.push(h('text',{key:'t'+i+'-'+j,x:L+j*cell+cell/2-0.5,y:Tp+i*cell+cell/2+3.5,textAnchor:'middle',style:{fontSize:cell>=30?10:9,fill:(mode==='seq'&&v>0.55)?'#fff':'#1f2430',pointerEvents:'none'}},fmt(v)));
+    });
+  });
+  return h('svg',{width:W,height:H,className:'dw'},...els);
+}
+function TransformerTab(){
+  const [text,setText]=useState('the cat sat on the mat because it was tired');
+  const [head,setHead]=useState(1);
+  const [qi,setQi]=useState(7);
+  const [causal,setCausal]=useState(false);
+  const [temp,setTemp]=useState(1);
+  const [view,setView]=useState('weights');
+  const tokens=useMemo(()=>{const t=text.toLowerCase().replace(/([.,!?])/g,' $1 ').trim().split(/\s+/).filter(Boolean).slice(0,12);return t.length?t:['the'];},[text]);
+  const E=useMemo(()=>embed(tokens),[tokens]);
+  const all=useMemo(()=>HEADS.map(H=>attend(E,H,causal,temp)),[E,causal,temp]);
+  const T=tokens.length,i=Math.min(qi,T-1),H=HEADS[head],R=all[head];
+  const top=R.A[i].map((a,j)=>({a,j})).sort((x,y)=>y.a-x.a).slice(0,3);
+  const fm=v=>v.toFixed(2).replace(/^0\./,'.').replace(/^-0\./,'-.');
+  const blk=(t,sub,cls)=>h('div',{className:'blk '+(cls||'')},h('b',null,t),h('span',null,sub));
+  return h('div',null,
+    h('section',{className:'card'},
+      h('h3',null,'The problem: let every word look at every other word — in parallel'),
+      h('p',{className:'lead'},'LSTMs read one token at a time and squeeze the past into one state. The ',h('b',null,'Transformer'),' (Vaswani et al., 2017, “Attention Is All You Need”) lets each token directly ',h('b',null,'attend'),' to any other token. Its core is one function:'),
+      h('div',{className:'formula'},'Attention(Q, K, V) = softmax( Q·Kᵀ / √d',h('sub',null,'k'),' + mask ) · V'),
+      h('p',{className:'small'},'This page shows only that main function, stepping through it on a short text. Real models learn the weights W',h('sub',null,'Q'),', W',h('sub',null,'K'),', W',h('sub',null,'V'),' from billions of words; ',h('b',null,'here four heads are hand-set'),' to show the kinds of patterns heads typically learn (the value projections are random). Nothing is trained, and no next word is predicted. For that, see the interactive GPT-2 demo at poloclub.github.io/transformer-explainer.'),
+      h('div',{className:'row'},h('span',{className:'lbl'},'Input text'),h('input',{type:'text',value:text,onChange:e=>setText(e.target.value),className:'txt',maxLength:90}),h('span',{className:'small'},'(first 12 words used)'))),
+    h('section',{className:'card'},
+      h('div',{className:'ct'},'1 · Tokens → embeddings + positional encoding (each row = one token, 18 numbers)'),
+      h('div',{className:'chips'},...tokens.map((t,k)=>h('span',{key:k,className:'chip tok'+(k===i?' on':'')},k+' · '+t))),
+      h('div',{className:'scrollx'},h(Mat,{data:E,rowLabels:tokens,colLabels:EL,cell:22,mode:'div'})),
+      h('p',{className:'small'},'Left block: what the word is (here a tiny hand-made lexicon: noun, verb, animate…). Right block: sin/cos waves of the position, so the model knows word order (without it attention sees a bag of words).')),
+    h('section',{className:'card'},
+      h('div',{className:'ct'},'2 · Pick an attention head. Each head has its own W_Q, W_K, W_V, so it looks for something different'),
+      h('div',{className:'headsel'},...HEADS.map((hd,k)=>h('button',{key:k,className:'headbtn'+(k===head?' sel':''),onClick:()=>setHead(k)},
+        h('b',null,'Head '+(k+1)+' · '+hd.name),h(Mat,{data:all[k].A,rowLabels:tokens.map(()=>''),cell:Math.max(8,Math.floor(120/T)),mode:'seq'})))),
+      h('p',{className:'small'},h('b',null,'Head '+(head+1)+': '),H.desc),
+      h('div',{className:'qkv'},
+        h('div',null,h('div',{className:'ct'},'Q = E·W_Q  (“what am I looking for?”)'),h(Mat,{data:R.Q,rowLabels:tokens,colLabels:['q₁','q₂','q₃','q₄'],cell:26,mode:'div',fmt:fm})),
+        h('div',null,h('div',{className:'ct'},'K = E·W_K  (“what do I contain?”)'),h(Mat,{data:R.K,rowLabels:tokens,colLabels:['k₁','k₂','k₃','k₄'],cell:26,mode:'div',fmt:fm})),
+        h('div',null,h('div',{className:'ct'},'V = E·W_V  (“what do I pass on?”)'),h(Mat,{data:R.V,rowLabels:tokens,colLabels:['v₁','v₂','v₃','v₄'],cell:26,mode:'div',fmt:fm})))),
+    h('section',{className:'card'},
+      h('div',{className:'ct'},'3 · Scores → softmax → attention weights (click a row to follow one token)'),
+      h('div',{className:'row'},
+        h('span',{className:'lbl'},'Show'),h(Seg,{options:['scores','weights'],value:view,onChange:setView,render:o=>o==='scores'?'scores  Q·Kᵀ/√d':'weights  softmax'}),
+        h('label',{className:'chk'},h('input',{type:'checkbox',checked:causal,onChange:e=>setCausal(e.target.checked)}),'causal mask (GPT-style: no peeking ahead)'),
+        h('span',{className:'lbl'},'Temperature '+temp.toFixed(1)),h('input',{type:'range',min:0.2,max:3,step:0.1,value:temp,onChange:e=>setTemp(+e.target.value)})),
+      h('div',{className:'grid2 tf'},
+        h('div',{className:'scrollx'},view==='weights'
+          ?h(Mat,{data:R.A,rowLabels:tokens,colLabels:tokens,cell:T>8?30:36,mode:'seq',fmt:fm,onRow:setQi,selRow:i})
+          :h(Mat,{data:R.S.map((row,a)=>row.map((v,b)=>(causal&&b>a)?-Infinity:v)),rowLabels:tokens,colLabels:tokens,cell:T>8?30:36,mode:'div',fmt:v=>v.toFixed(1),onRow:setQi,selRow:i})),
+        h('div',null,
+          h('div',{className:'ct'},'Query token “'+tokens[i]+'” attends to:'),
+          h('div',{className:'bars'},...R.A[i].map((a,j)=>h('div',{key:j,className:'bar'+(top[0].j===j?' top':''),style:{gridTemplateColumns:'64px 1fr 38px'}},h('span',{style:{textAlign:'right'}},tokens[j]),h('div',{className:'track'},h('div',{className:'fill',style:{width:(a*100)+'%'}})),h('em',null,pct(a))))),
+          h('div',{className:'code'},'output(“'+tokens[i]+'”) = Σⱼ aᵢⱼ · vⱼ\n= '+top.filter(t=>t.a>0.005).map(t=>f2(t.a)+'·v('+tokens[t.j]+')').join(' + ')+(R.A[i].filter(a=>a>0.005).length>3?' + …':'')+'\n= ['+R.O[i].map(v=>sg(v)).join(', ')+']'))),
+      h('p',{className:'small'},'Every row sums to 1 (softmax). The output for each token is a weighted average of the value vectors: information is copied from the tokens it attends to. In a real model this happens in many heads at once, in every layer.')),
+    h('section',{className:'card'},
+      h('h3',null,'Where attention sits in the full architecture'),
+      h('div',{className:'stack'},
+        blk('Input tokens','“'+tokens.slice(0,4).join(' ')+(T>4?' …':'')+'” → integer ids (sub-word tokenizer)'),h('div',{className:'arr v'},'↓'),
+        blk('Token embedding + positional encoding','vector per token (here 18 numbers; GPT-2: 768)'),h('div',{className:'arr v'},'↓'),
+        h('div',{className:'loop'},h('div',{className:'looplbl'},'Transformer block  ×N  (GPT-2 small: 12)'),
+          blk('Multi-head self-attention  ← the function above','h heads in parallel, concatenated, then W_O',' hot'),h('div',{className:'arr v'},'↓'),
+          blk('Add & LayerNorm','residual connection: x + Attention(x)'),h('div',{className:'arr v'},'↓'),
+          blk('Feed-forward network','Linear → GELU → Linear, applied to each token separately (holds much of the “knowledge”)'),h('div',{className:'arr v'},'↓'),
+          blk('Add & LayerNorm','residual: x + FFN(x)')),
+        h('div',{className:'arr v'},'↓'),
+        blk('Linear + softmax','scores for every word in the vocabulary → probability of the next token'))),
+    h(Concepts,{items:[
+      {t:'Tokens & embeddings',d:'Text is cut into tokens, each mapped to a vector. Similar words get similar vectors (learned in real models).',live:`${T} tokens × ${EDIM} dims here`},
+      {t:'Positional encoding',d:'Attention itself ignores order, so we add sin/cos waves of different frequencies per position. Shifting by one step is a simple rotation of these waves, which Head 1 exploits.',live:'PE(p, 2m) = sin(ω_m·p),  PE(p, 2m+1) = cos(ω_m·p)'},
+      {t:'Query, Key, Value',d:'Each token is projected three ways. The query of token i is compared with the key of every token j to decide how much of j’s value to read. Think: library search term, book index, book content.',live:`d_k = 4 · Q,K,V are ${T}×4`},
+      {t:'Scaled dot-product',d:'Score(i,j) = q_i · k_j / √d_k. Dividing by √d_k stops large dot products from saturating the softmax.',live:`score(${tokens[i]}→${tokens[top[0].j]}) = ${f2(R.S[i][top[0].j],2)}`},
+      {t:'Softmax & temperature',d:'Turns scores into positive weights summing to 1. Low temperature = sharper focus on one token, high = spread out evenly.',live:`temperature ${temp.toFixed(1)} → max weight ${pct(top[0].a)}`},
+      {t:'Causal mask',d:'Decoder models (GPT) must not see the future when predicting the next word, so scores for j > i are set to −∞ before softmax.',live:causal?'mask ON: upper triangle = 0':'mask OFF (bidirectional, like BERT)'},
+      {t:'Multi-head attention',d:'Several heads with different projections run in parallel (relations, positions, syntax…); their outputs are concatenated and mixed by W_O.',live:`4 heads here · head ${head+1} = “${H.name}”`},
+      {t:'Residuals, LayerNorm, FFN',d:'Each sub-layer is wrapped as x + Sublayer(x) then normalised, which makes very deep stacks trainable. The feed-forward net processes every token independently.',live:'x → LN(x + MHA(x)) → LN(· + FFN(·))'},
+      {t:'Why it won',d:'All positions are computed at once (GPU-friendly) and any two tokens are one step apart, so long-range links are easy. The cost: compute and memory grow with T² for T tokens.',live:`attention matrix = ${T}×${T} = ${T*T} weights per head`}
+    ]}));
+}
+/* ===== App ===== */
+function App(){
+  const [tab,setTab]=useState(0);
+  const [seen,setSeen]=useState({0:true});
+  const [jump,setJump]=useState({key:0,kind:'xor'});
+  const go=i=>{setTab(i);setSeen(s=>s[i]?s:{...s,[i]:true});};
+  const tabs=[
+    {y:'Start here',t:'Rules vs learning',s:'lead scoring: nobody knows the formula',lim:'Hand-written rules vs backprop'},
+    {y:'1958',t:'Perceptron',s:'one neuron · one line',lim:'Limit: XOR, moons'},
+    {y:'1986',t:'Hidden layers + backprop',s:'curved boundaries',lim:'Limit: no memory, hand-made features'},
+    {y:'1997',t:'LSTM',s:'gated memory for sequences',lim:'Limit: sequential, slow'},
+    {y:'2012 →',t:'Deep learning',s:'features learned from raw pixels',lim:'Train · export · deploy'},
+    {y:'2013',t:'VAE',s:'learn a latent space, generate',lim:'Limit: blurry samples'},
+    {y:'2014',t:'GAN',s:'generator vs discriminator',lim:'Limit: unstable training'},
+    {y:'2017',t:'Transformer',s:'attention: every token sees every token',lim:'Main function only'}
+  ];
+  const panes=[
+    ()=>h(LeadTab,{active:tab===0}),
+    ()=>h(Perceptron,{onJump:k=>{setJump(j=>({key:j.key+1,kind:k}));go(2);}}),
+    ()=>h(Playground,{key:jump.key,startKind:jump.kind,active:tab===2}),
+    ()=>h(LSTMTab,{active:tab===3}),
+    ()=>h(Deep,{active:tab===4}),
+    ()=>h(VAETab,{active:tab===5}),
+    ()=>h(GANTab,{active:tab===6}),
+    ()=>h(TransformerTab)
+  ];
+  return h('div',{className:'wrap'},
+    h('header',null,h('h1',null,'How neural networks evolved — see them learn'),
+      h('p',null,'Eight stops, each solving a problem the previous ones could not. Everything below runs live in your browser.')),
+    h('nav',{className:'tabs'},...tabs.map((t,i)=>h('button',{key:i,className:'tab'+(tab===i?' sel':''),onClick:()=>go(i)},h('small',null,t.y),h('b',null,t.t),h('span',null,t.s),h('em',null,t.lim)))),
+    ...panes.map((P,i)=>seen[i]||tab===i?h('div',{key:i,style:{display:tab===i?'block':'none'}},P()):null),
+    h('footer',null,'Same ingredients throughout — weights, activations, a loss and gradient descent — arranged differently: one neuron → layers → memory → learned features → generative models → attention.'));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+}catch(e){document.getElementById("root").textContent="Error: "+e.message;console.error(e);}
+</script></body></html>

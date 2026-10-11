@@ -1,0 +1,184 @@
+@import "tailwindcss";
+@source "../node_modules/@blocknote/shadcn";
+@import "tw-animate-css";
+@import "@xyflow/react/dist/style.css";
+@import "@fontsource/cormorant-garamond/400.css";
+@import "@fontsource/cormorant-garamond/400-italic.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+
+/* violet, mint and cobalt are dark themes too. */
+@custom-variant dark (&:is(.dark *, .violet *, .mint *, .cobalt *));
+
+@theme inline {
+  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-ui: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Design tokens (aiexplained.pen) */
+  --color-canvas: var(--ae-bg);
+  --color-surface: var(--ae-bg-surface);
+  --color-elevated: var(--ae-bg-elevated);
+  --color-fg: var(--ae-text-primary);
+  --color-fg-secondary: var(--ae-text-secondary);
+  --color-fg-muted: var(--ae-text-muted);
+  --color-brand: var(--ae-accent);
+  --color-brand-soft: var(--ae-accent-soft);
+  --color-line: var(--ae-border);
+  --color-divider: var(--ae-divider);
+  --color-chart-cool: var(--ae-chart-cool);
+  --color-chart-warm: var(--ae-chart-warm);
+
+  /* shadcn tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+}
+
+/* Data-series color, constant across themes (unlike the UI chrome tokens below). */
+:root {
+  --ae-chart-cool: #5b8def;
+  --ae-chart-warm: #d9742e;
+}
+
+:root,
+.dark {
+  --ae-bg: #0d0a06;
+  --ae-bg-surface: #140d08;
+  --ae-bg-elevated: #20150d;
+  --ae-text-primary: #f5ece0;
+  --ae-text-secondary: #d9cac1;
+  --ae-text-muted: #8c8378;
+  --ae-accent: #df753e;
+  --ae-accent-soft: #f39973;
+  --ae-border: #554c42;
+  --ae-divider: #35291f;
+  color-scheme: dark;
+}
+
+.light {
+  --ae-bg: #f5ece0;
+  --ae-bg-surface: #fff9f3;
+  --ae-bg-elevated: #ffffff;
+  --ae-text-primary: #1c120c;
+  --ae-text-secondary: #49392f;
+  --ae-text-muted: #76675d;
+  --ae-accent: #d96832;
+  --ae-accent-soft: #e98a5d;
+  --ae-border: #d9cac1;
+  --ae-divider: #e8ddd5;
+  color-scheme: light;
+}
+
+.violet {
+  --ae-bg: #0b0a10;
+  --ae-bg-surface: #110f1a;
+  --ae-bg-elevated: #1a1726;
+  --ae-text-primary: #f2f0fa;
+  --ae-text-secondary: #c9c4dd;
+  --ae-text-muted: #837e9b;
+  --ae-accent: #8b5cf6;
+  --ae-accent-soft: #b69aff;
+  --ae-border: #352f4c;
+  --ae-divider: #221e33;
+  color-scheme: dark;
+}
+
+.mint {
+  --ae-bg: #080a0a;
+  --ae-bg-surface: #0e1313;
+  --ae-bg-elevated: #16201e;
+  --ae-text-primary: #e9f4ef;
+  --ae-text-secondary: #bfd4cc;
+  --ae-text-muted: #7c8f89;
+  --ae-accent: #2dd4a7;
+  --ae-accent-soft: #6fe9c6;
+  --ae-border: #2a3b36;
+  --ae-divider: #17241f;
+  color-scheme: dark;
+}
+
+.cobalt {
+  --ae-bg: #060910;
+  --ae-bg-surface: #0c111c;
+  --ae-bg-elevated: #131b2b;
+  --ae-text-primary: #eaeff9;
+  --ae-text-secondary: #bcc7dc;
+  --ae-text-muted: #7b879e;
+  --ae-accent: #4f7cff;
+  --ae-accent-soft: #8faeff;
+  --ae-border: #28334c;
+  --ae-divider: #161f33;
+  color-scheme: dark;
+}
+
+/* shadcn components follow the active design theme. */
+:root {
+  --radius: 0.25rem;
+  --background: var(--ae-bg);
+  --foreground: var(--ae-text-primary);
+  --card: var(--ae-bg-surface);
+  --card-foreground: var(--ae-text-primary);
+  --popover: var(--ae-bg-elevated);
+  --popover-foreground: var(--ae-text-primary);
+  --primary: var(--ae-accent);
+  --primary-foreground: var(--ae-bg);
+  --secondary: var(--ae-bg-elevated);
+  --secondary-foreground: var(--ae-text-primary);
+  --muted: var(--ae-bg-elevated);
+  --muted-foreground: var(--ae-text-muted);
+  --accent: var(--ae-bg-elevated);
+  --accent-foreground: var(--ae-text-primary);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: var(--ae-border);
+  --input: var(--ae-border);
+  --ring: var(--ae-accent);
+}
+
+/* Uppercase mono label used across the design: 10px, 1.8px tracking. */
+@utility label-ui {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-canvas text-fg antialiased;
+  }
+}
+
+/*
+ * Shiki dual-theme output (CodeBlock): every token gets both `--shiki-light` and
+ * `--shiki-dark`, and we pick which one is visible per our existing dark/light bucket
+ * (violet/mint/cobalt are dark themes too, matching @custom-variant dark above).
+ */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+}
+:is(.dark, .violet, .mint, .cobalt) .shiki,
+:is(.dark, .violet, .mint, .cobalt) .shiki span {
+  color: var(--shiki-dark);
+}
