@@ -30,6 +30,8 @@ To write a lesson, create `src/lessons/<chapter>/<lesson>.tsx` using `LessonArti
 
 Themes: dark (default), light, violet, mint and cobalt. They're switched by the chip in the top bar and defined as `--ae-*` variables in `src/index.css`. Tailwind exposes them as `canvas`, `surface`, `elevated`, `fg`, `fg-secondary`, `fg-muted`, `brand`, `line` and `divider`, plus `font-display`, `font-ui` and the `label-ui` utility.
 
+Chart and diagram colors follow one of four meanings — app brand, data class, misc, or semantic (success/error) — documented in `../../docs/branding.md`. Pick a color by what it means before adding one to a lesson.
+
 Focus mode: the maximize icon at the right of the lesson header (after `EN-US` / `PT-BR`) hides the top bar and sidebar; in focus mode the header adds previous/next icons, and the same icon (or Escape) returns to the standard layout. Spec: `../../docs/specs/26-10-11-focus-mode.md`.
 
 Languages: the Programming vs ML and Machine Learning chapters, and the Perceptron lesson, include English and Brazilian Portuguese. Use `EN-US` / `PT-BR` in the lesson header; the selection persists across visits. Copy maintenance is documented in `../../docs/localization.md`.
@@ -76,3 +78,18 @@ If the CLI fails while installing dependencies, `pnpm dlx shadcn@latest view <na
 ## Chat
 
 `/chat` is UI only. [Chat SDK](https://chat-sdk.dev) is a server-side bot SDK (Slack, Teams, Discord…), so it belongs in a separate Node app (for example `apps/chat-bot`), which this UI would call through the `reply` prop of `Chat`.
+
+## Editable Generalization Summary
+
+Open `/learn/machine-learning/summary` for an editable concept reference.
+BlockNote loads only when this lesson opens. Type `/` for blocks, select text
+for formatting, or use the Move block buttons to reorder with the keyboard.
+
+English and Portuguese have independent browser-local copies. Autosave runs
+after 500ms and flushes when leaving the page. Restore original confirms before
+replacing only the current language. Clearing browser data removes saved notes;
+there is no cross-device sync. If saving fails, keep the tab open until it can
+save again. The authored reference is maintained in `summary/content.ts`.
+
+Page titles flow inline and wrap naturally when their available width runs out;
+accented title text retains its color and italics without forcing a second line.

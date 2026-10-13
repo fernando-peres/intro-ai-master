@@ -109,7 +109,7 @@ test("changing configuration restarts the run but keeps disclosure toggles", () 
   expect(state.runId).not.toBe(trained.runId)
 })
 
-test("reset restores every default and the initial metrics", () => {
+test("reset restarts training but keeps dataset, activation and toggles", () => {
   const changed = apply(
     initialRunState(),
     { type: "selectDataset", dataset: "moons" },
@@ -120,7 +120,13 @@ test("reset restores every default and the initial metrics", () => {
   )
   const reset = apply(changed, { type: "reset" })
   const { runId, ...rest } = reset
-  const { runId: _initialRunId, ...initial } = initialRunState()
-  expect(rest).toEqual(initial)
+  const { runId: _freshRunId, ...fresh } = apply(
+    initialRunState(),
+    { type: "selectDataset", dataset: "moons" },
+    { type: "selectActivation", activation: "sigmoid" },
+    { type: "toggleWeights" },
+  )
+  expect(rest).toEqual(fresh)
+  expect(reset.epoch).toBe(0)
   expect(runId).not.toBe(changed.runId)
 })

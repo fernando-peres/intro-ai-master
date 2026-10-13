@@ -32,7 +32,38 @@ import {
 import { FoldDiagram, MetricSection, OptionList, Slider, StatRow, Takeaway } from "./metric-section"
 import { RUN_COLORS } from "./run-colors"
 
-const BRAND = "var(--color-brand)"
+/** Human/data biases a model can inherit — a different concept from the statistical bias above. */
+const BIAS_TYPES = [
+  {
+    name: "Reporting bias",
+    body: "What gets recorded doesn't match real-world frequency — unusual cases get noted, ordinary ones don't.",
+  },
+  {
+    name: "Automation bias",
+    body: "Favoring an automated system's output over a human's, regardless of which is actually more accurate.",
+  },
+  {
+    name: "Selection bias",
+    body: "The examples collected don't reflect the real-world distribution (coverage, non-response, and sampling bias are its usual causes).",
+  },
+  {
+    name: "Group attribution bias",
+    body: "Generalizing from a few individuals to their whole group — favoring one's own group, or flattening every other group into a stereotype.",
+  },
+  {
+    name: "Implicit bias",
+    body: "Assuming your own experience generalizes, without checking.",
+  },
+  {
+    name: "Confirmation bias",
+    body: "Unconsciously favoring data or readings that support what you already believed.",
+  },
+  {
+    name: "Experimenter's bias",
+    body: "Retraining or re-tuning until the result matches the hypothesis you started with.",
+  },
+]
+
 const COOL = "var(--color-chart-cool)"
 const FG = "var(--color-fg)"
 const MUTED = "var(--color-fg-muted)"
@@ -208,14 +239,14 @@ export function BiasAndVarianceLesson({ entry }: { entry: LessonEntry }) {
         <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-[1.4fr_1fr]">
           <BiasVarianceTargets />
           <div className="flex flex-col gap-3">
-            <blockquote className="border-l-2 border-brand pl-4 text-fg-secondary">
+            <blockquote className="border-l-2 border-chart-warm pl-4 text-fg-secondary">
               <span className="font-display text-xl text-fg">{t("Bias")}</span>{" "}
               {t(" — how far the")} <em>{t("average")}</em>{" "}
               {t(
                 " prediction lands from the truth. A systematic error: the model aims at the wrong spot, usually because it is too simple to capture the pattern. ",
               )}
             </blockquote>
-            <blockquote className="border-l-2 border-chart-cool pl-4 text-fg-secondary">
+            <blockquote className="border-l-2 border-fg-secondary pl-4 text-fg-secondary">
               <span className="font-display text-xl text-fg">{t("Variance")}</span>{" "}
               {t(
                 " — how much the predictions scatter when the training data changes. An inconsistency error: the model is so flexible it chases the noise in whatever sample it saw. ",
@@ -396,13 +427,13 @@ export function BiasAndVarianceLesson({ entry }: { entry: LessonEntry }) {
             {
               key: "train",
               label: t("training error"),
-              color: COOL,
+              color: "var(--color-chart-warm)",
               points: errorByDegree.map((r) => ({ x: r.degree, y: r.train })),
             },
             {
               key: "test",
               label: t("test error"),
-              color: BRAND,
+              color: "var(--color-fg-secondary)",
               points: errorByDegree.map((r) => ({ x: r.degree, y: r.test })),
             },
           ]}
@@ -444,13 +475,13 @@ export function BiasAndVarianceLesson({ entry }: { entry: LessonEntry }) {
             {
               key: "bias",
               label: t("bias²"),
-              color: COOL,
+              color: "var(--color-chart-warm)",
               points: decomposition.map((r) => ({ x: r.degree, y: r.bias2 })),
             },
             {
               key: "variance",
               label: t("variance"),
-              color: BRAND,
+              color: "var(--color-fg-secondary)",
               points: decomposition.map((r) => ({ x: r.degree, y: r.variance })),
             },
             {
@@ -526,7 +557,7 @@ export function BiasAndVarianceLesson({ entry }: { entry: LessonEntry }) {
             {
               key: "test",
               label: t("true test error"),
-              color: BRAND,
+              color: "var(--color-fg-secondary)",
               dashed: true,
               points: errorByDegree
                 .filter((r) => r.degree <= CV_MAX_DEGREE)
@@ -561,26 +592,26 @@ export function BiasAndVarianceLesson({ entry }: { entry: LessonEntry }) {
             {
               key: "s-test",
               label: t("degree 1, test"),
-              color: COOL,
+              color: "var(--color-chart-warm)",
               points: curveSimple.map((r) => ({ x: r.n, y: r.test })),
             },
             {
               key: "s-train",
               label: t("degree 1, train"),
-              color: COOL,
+              color: "var(--color-chart-warm)",
               dashed: true,
               points: curveSimple.map((r) => ({ x: r.n, y: r.train })),
             },
             {
               key: "f-test",
               label: t("degree 9, test"),
-              color: BRAND,
+              color: "var(--color-fg-secondary)",
               points: curveFlexible.map((r) => ({ x: r.n, y: r.test })),
             },
             {
               key: "f-train",
               label: t("degree 9, train"),
-              color: BRAND,
+              color: "var(--color-fg-secondary)",
               dashed: true,
               points: curveFlexible.map((r) => ({ x: r.n, y: r.train })),
             },
@@ -663,6 +694,43 @@ export function BiasAndVarianceLesson({ entry }: { entry: LessonEntry }) {
             "The goal is the top-left panel: the five fits agree with each other and with the truth.",
           )}
         </Takeaway>
+      </section>
+
+      <section aria-label={t("Types of bias")} className="flex flex-col gap-4">
+        <SectionTitle number="9">{t("Types of bias")}</SectionTitle>
+        <p className="text-fg-secondary">
+          {t(
+            "A different sense of the word: not the systematic error above, but how a model inherits unfairness from its data or its builders. ",
+          )}
+          <Link
+            to="/learn/$chapter/$lesson"
+            params={{ chapter: "machine-learning", lesson: "fairness" }}
+            className="text-brand hover:text-brand-soft"
+          >
+            {t("Bias & Fairness →")}
+          </Link>
+          {t(
+            " covers where it enters the ML pipeline and how to measure it; these are the broader human and data habits behind it. ",
+          )}
+        </p>
+        <div className="overflow-x-auto rounded-[3px] border border-divider">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-surface">
+              <tr className="label-ui text-fg-muted">
+                <th className="px-4 py-2 font-normal">{t("Type")}</th>
+                <th className="px-4 py-2 font-normal">{t("What it is")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-divider text-fg-secondary">
+              {BIAS_TYPES.map((row) => (
+                <tr key={row.name}>
+                  <td className="px-4 py-2 text-fg">{t(row.name)}</td>
+                  <td className="px-4 py-2">{t(row.body)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <LessonFooter entry={entry} />

@@ -8,6 +8,12 @@ export const classMeta: Record<MachineClass, { code: "A" | "B"; name: string }> 
   "at-risk": { code: "B", name: "At Risk" },
 }
 
+/** The risk column's value: 1 = at risk, 0 = normal — matches the network's target encoding. */
+export const riskValue = (label: MachineClass) => (label === "at-risk" ? 1 : 0)
+
+/** Chart legend / series label, e.g. "0 — Normal" or "1 — At Risk". */
+export const riskLabel = (label: MachineClass) => `${riskValue(label)} — ${classMeta[label].name}`
+
 /**
  * Illustrative synthetic data for the lesson — not real industrial safety thresholds. The two
  * classes interlock like "two moons", so no straight line or axis-aligned threshold separates

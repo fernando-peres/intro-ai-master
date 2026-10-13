@@ -17,9 +17,34 @@ test("renders one circle per point and a legend entry per series", () => {
     <ScatterChart points={points} series={series} xLabel="Temperature" yLabel="Vibration" />,
   )
 
-  expect(container.querySelectorAll("circle")).toHaveLength(points.length)
+  const plot = container.querySelector("svg[role='img']")
+  expect(plot?.querySelectorAll("circle")).toHaveLength(points.length)
   expect(screen.getByText("A — Normal")).toBeTruthy()
   expect(screen.getByText("B — At Risk")).toBeTruthy()
+})
+
+test("draws a series' own shape for its points and its legend icon", () => {
+  const { container } = render(
+    <ScatterChart
+      points={points}
+      series={[
+        { key: "a", label: "A — Normal", color: "blue", shape: "square" },
+        { key: "b", label: "B — At Risk", color: "orange", shape: "triangle" },
+      ]}
+      xLabel="Temperature"
+      yLabel="Vibration"
+    />,
+  )
+
+  const plot = container.querySelector("svg[role='img']")
+  // Two "a" points are squares (<rect>), the one "b" point is a triangle (<polygon>).
+  expect(plot?.querySelectorAll("rect")).toHaveLength(2)
+  expect(plot?.querySelectorAll("polygon")).toHaveLength(1)
+  expect(plot?.querySelectorAll("circle")).toHaveLength(0)
+
+  // Each legend entry's icon matches its series' shape, not a fixed circle.
+  const legend = screen.getByText("A — Normal").closest("span")
+  expect(legend?.querySelector("rect")).toBeTruthy()
 })
 
 test("renders a labeled × mark for each extra marker", () => {

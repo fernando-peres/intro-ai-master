@@ -67,7 +67,7 @@
   .summary-document *,
   .summary-document *::before,
   .summary-document *::after {
-    animation: none !important;
-    transition: none !important;
+    animation: none;
+    transition: none;
   }
 }

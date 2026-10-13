@@ -3,7 +3,7 @@ import type { ComponentType } from "react"
 import { ScatterChart, type ScatterSeries } from "@/components/charts/scatter-chart"
 import { ArticleFrame, LessonHero, LessonLead } from "@/components/course/lesson-layout"
 import { useTranslation } from "@/i18n/use-translation"
-import { classMeta, machineReadings } from "./dataset"
+import { machineReadings, riskLabel, riskValue } from "./dataset"
 
 const features: { icon: ComponentType<{ className?: string }>; title: string; caption: string }[] =
   [
@@ -12,16 +12,8 @@ const features: { icon: ComponentType<{ className?: string }>; title: string; ca
   ]
 
 const series: ScatterSeries[] = [
-  {
-    key: "normal",
-    label: `${classMeta.normal.code} — ${classMeta.normal.name}`,
-    color: "var(--color-chart-cool)",
-  },
-  {
-    key: "at-risk",
-    label: `${classMeta["at-risk"].code} — ${classMeta["at-risk"].name}`,
-    color: "var(--color-brand)",
-  },
+  { key: "normal", label: riskLabel("normal"), color: "var(--color-class-1)" },
+  { key: "at-risk", label: riskLabel("at-risk"), color: "var(--color-class-2)" },
 ]
 
 export function ProblemLesson() {
@@ -46,11 +38,9 @@ export function ProblemLesson() {
       </section>
 
       <p className="text-sm text-fg-secondary">
-        {t("Each observation contains two input features and a classification:")}{" "}
-        <span className="text-chart-cool">{t("A — Normal")}</span>{" "}
-        {t(" (machine is operating safely) or")}{" "}
-        <span className="text-brand">{t("B — At Risk")}</span>{" "}
-        {t(" (machine may require maintenance). ")}
+        {t("Each observation contains two input features and a risk label:")}{" "}
+        <span className="text-class-1">0</span> {t("— not at risk (operating safely), or")}{" "}
+        <span className="text-class-2">1</span> {t("— at risk (may require maintenance). ")}
       </p>
 
       <section aria-label={t("Example dataset")} className="flex flex-col gap-3">
@@ -64,7 +54,7 @@ export function ProblemLesson() {
               <tr className="sticky top-0 border-b border-divider bg-canvas text-left text-fg-muted">
                 <th className="px-4 py-2 font-normal">{t("Temperature")}</th>
                 <th className="px-4 py-2 font-normal">{t("Vibration")}</th>
-                <th className="px-4 py-2 font-normal">{t("Classification")}</th>
+                <th className="px-4 py-2 font-normal">{t("Risk")}</th>
               </tr>
             </thead>
             <tbody>
@@ -78,11 +68,11 @@ export function ProblemLesson() {
                   <td
                     className={
                       reading.label === "normal"
-                        ? "px-4 py-2 text-chart-cool"
-                        : "px-4 py-2 text-brand"
+                        ? "px-4 py-2 text-class-1"
+                        : "px-4 py-2 text-class-2"
                     }
                   >
-                    {classMeta[reading.label].code} — {t(classMeta[reading.label].name)}
+                    {riskValue(reading.label)}
                   </td>
                 </tr>
               ))}

@@ -220,7 +220,10 @@ export const ptBR: Record<string, string> = {
   "Rules:": "Regras:",
   "Unlike a manually defined if/else program, the network learns the combination of temperature and vibration from the data itself — and the curved line above shows exactly what it decided.":
     "Diferentemente de um programa if/else definido manualmente, a rede aprende a combinação de temperatura e vibração com os próprios dados. A curva acima mostra exatamente o que ela decidiu.",
+  "Fun fact": "Curiosidade",
   "HIDDEN {0} ({1})": "OCULTA {0} ({1})",
+  "This model has **{0}** parameters (weights + biases). GPT-5.6 Sol has roughly **2.2 to 3.2 trillion**":
+    "Este modelo tem **{0}** parâmetros (pesos + vieses). O GPT-5.6 Sol tem aproximadamente **2,2 a 3,2 trilhões**",
   "Live diagram of the {0} network: each node is a small thumbnail of what it computes across the input plane":
     "Diagrama da rede {0}: cada nó mostra uma miniatura do que calcula no plano de entrada",
   "Every neuron computes": "Cada neurônio calcula",
@@ -1231,6 +1234,34 @@ export const ptBR: Record<string, string> = {
   "degree 1, 30 points": "grau 1, 30 pontos",
   "degree 9, 10 points": "grau 9, 10 pontos",
   "degree 1, 3 points": "grau 1, 3 pontos",
+  "Types of bias": "Tipos de viés",
+  "A different sense of the word: not the systematic error above, but how a model inherits unfairness from its data or its builders. ":
+    "Um sentido diferente da palavra: não o erro sistemático acima, mas como um modelo herda injustiça dos seus dados ou de quem o constrói. ",
+  " covers where it enters the ML pipeline and how to measure it; these are the broader human and data habits behind it. ":
+    " mostra onde ele entra no pipeline de ML e como medi-lo; aqui estão os hábitos humanos e de dados, mais amplos, por trás dele. ",
+  Type: "Tipo",
+  "What it is": "O que é",
+  "Reporting bias": "Viés de relato",
+  "What gets recorded doesn't match real-world frequency — unusual cases get noted, ordinary ones don't.":
+    "O que é registrado não corresponde à frequência real — casos incomuns são anotados, os comuns não.",
+  "Automation bias": "Viés de automação",
+  "Favoring an automated system's output over a human's, regardless of which is actually more accurate.":
+    "Favorecer a resposta de um sistema automatizado em vez da de uma pessoa, independentemente de qual é realmente mais precisa.",
+  "Selection bias": "Viés de seleção",
+  "The examples collected don't reflect the real-world distribution (coverage, non-response, and sampling bias are its usual causes).":
+    "Os exemplos coletados não refletem a distribuição real (viés de cobertura, de não resposta e de amostragem são suas causas usuais).",
+  "Group attribution bias": "Viés de atribuição de grupo",
+  "Generalizing from a few individuals to their whole group — favoring one's own group, or flattening every other group into a stereotype.":
+    "Generalizar de alguns indivíduos para todo o seu grupo — favorecer o próprio grupo, ou reduzir todo outro grupo a um estereótipo.",
+  "Implicit bias": "Viés implícito",
+  "Assuming your own experience generalizes, without checking.":
+    "Supor que a própria experiência se generaliza, sem verificar.",
+  "Confirmation bias": "Viés de confirmação",
+  "Unconsciously favoring data or readings that support what you already believed.":
+    "Favorecer inconscientemente dados ou leituras que confirmem o que já se acreditava.",
+  "Experimenter's bias": "Viés do experimentador",
+  "Retraining or re-tuning until the result matches the hypothesis you started with.":
+    "Retreinar ou reajustar até que o resultado corresponda à hipótese inicial.",
   '"Bias" also has an everyday meaning: a model that treats groups of people differently. A model can be accurate overall and still:':
     '"Viés" também tem um sentido cotidiano: um modelo que trata grupos de pessoas de forma diferente. Um modelo pode ser preciso no geral e ainda assim:',
   "approve one group far less often, or": "aprovar um grupo com muito menos frequência, ou",
@@ -1887,8 +1918,6 @@ export const ptBR: Record<string, string> = {
     "A sigmoide transforma z em uma probabilidade p; p = 0,5 exatamente sobre a reta.",
   "η = {0}: how far each update moves the weights.":
     "η = {0}: o quanto cada atualização move os pesos.",
-  "One pass over all {0} points in a shuffled order. This run is at epoch {1}.":
-    "Uma passagem por todos os {0} pontos em ordem embaralhada. Este treino está na época {1}.",
   "Linear separability": "Separabilidade linear",
   "A straight line can put every class-1 point on one side and every class-0 point on the other. This dataset is linearly separable.":
     "Uma reta consegue deixar todos os pontos da classe 1 de um lado e todos os da classe 0 do outro. Este conjunto de dados é linearmente separável.",
@@ -1898,6 +1927,148 @@ export const ptBR: Record<string, string> = {
   "One neuron with these raw inputs can only separate classes with a straight boundary. A network with nonlinear hidden layers can learn more flexible features.":
     "Um neurônio com estas entradas brutas só consegue separar classes com uma fronteira reta. Uma rede com camadas ocultas não lineares pode aprender características mais flexíveis.",
   "Next: hidden layers and back-propagation": "Próximo: camadas ocultas e retropropagação",
+  "(1986)": "(1986)",
+  What: "O quê",
+  Why: "Por quê",
+  "Backpropagation wasn't invented in 1986": "A retropropagação não foi inventada em 1986",
+  "Although earlier research had explored the underlying ideas, **David Rumelhart, Geoffrey Hinton, and Ronald Williams popularized backpropagation in 1986**, demonstrating how it could effectively train multi-layer neural networks.":
+    "Embora pesquisas anteriores já tivessem explorado as ideias centrais, **David Rumelhart, Geoffrey Hinton e Ronald Williams popularizaram a retropropagação em 1986**, mostrando como ela podia treinar redes neurais de várias camadas de forma eficaz.",
+  "Their landmark paper, published in Nature on October 9, 1986, highlighted an important breakthrough: hidden layers could automatically discover meaningful features in data rather than relying on humans to define them.":
+    "O artigo histórico deles, publicado na Nature em 9 de outubro de 1986, destacou um avanço importante: as camadas ocultas podiam descobrir sozinhas características relevantes nos dados, sem depender de humanos para defini-las.",
+  "Original paper:": "Artigo original:",
+  "Learning representations by back-propagating errors — Nature (1986)":
+    "Learning representations by back-propagating errors — Nature (1986)",
+  "Backpropagation is an algorithm that enables neural networks to learn from their mistakes, even across multiple layers.":
+    "A retropropagação é um algoritmo que permite às redes neurais aprenderem com seus erros, mesmo através de várias camadas.",
+  "Early neural networks could learn simple patterns, but struggled with more complex problems.":
+    "As primeiras redes neurais aprendiam padrões simples, mas tinham dificuldade com problemas mais complexos.",
+  "**Limited capabilities:** Simple Perceptrons could only learn linear relationships, making them unable to solve problems such as XOR.":
+    "**Capacidade limitada:** Perceptrons simples só aprendiam relações lineares, o que os impedia de resolver problemas como o XOR.",
+  "**The challenge:** Adding hidden layers made it possible to represent more complex patterns, but efficiently training those layers was difficult.":
+    "**O desafio:** Adicionar camadas ocultas permitiu representar padrões mais complexos, mas treinar essas camadas de forma eficiente era difícil.",
+  "**The breakthrough:** Backpropagation provided an efficient way to determine how each connection contributed to an error, enabling multi-layer networks to learn from examples.":
+    "**O avanço:** A retropropagação ofereceu um modo eficiente de determinar como cada conexão contribuiu para um erro, permitindo que redes de várias camadas aprendessem com exemplos.",
+  "Forward and backward": "Para frente e para trás",
+  "The layers between the inputs and the output. Each hidden neuron draws one straight line and passes its verdict on.":
+    "As camadas entre as entradas e a saída. Cada neurônio oculto traça uma reta e repassa seu veredito.",
+  "With hidden layers we can turn a problem no single line solves into one a line can — the next layer combines the lines into a curve.":
+    "Com camadas ocultas, transformamos um problema que nenhuma reta resolve em um que uma reta resolve — a camada seguinte combina as retas em uma curva.",
+  "This run: {0} hidden layer(s), so the boundary can curve.":
+    "Neste treino: {0} camada(s) oculta(s), então a fronteira pode se curvar.",
+  "This run: no hidden layer, so the boundary is one straight line.":
+    "Neste treino: nenhuma camada oculta, então a fronteira é uma única reta.",
+  "inputs x₁ × x₂": "entradas x₁ × x₂",
+  "hidden lines": "retas ocultas",
+  "hidden space h₁ × h₂": "espaço oculto h₁ × h₂",
+  "A bend applied to each neuron's sum before it passes the result on (here: {0}).":
+    "Uma curvatura aplicada à soma de cada neurônio antes de repassar o resultado (aqui: {0}).",
+  "Without it, stacked layers collapse into one single line — the bend is what lets the network curve.":
+    "Sem ela, camadas empilhadas se reduzem a uma única reta — a curvatura é o que deixa a rede curvar.",
+  "A forward pass computes the prediction ŷ; a backward pass sends the error back through the same layers using the chain rule.":
+    "Uma passada para frente calcula a previsão ŷ; uma passada para trás envia o erro de volta pelas mesmas camadas usando a regra da cadeia.",
+  "It tells every weight how much it contributed to the mistake, so each one knows which way to change.":
+    "Ela diz a cada peso quanto contribuiu para o erro, para que cada um saiba em que direção mudar.",
+  "The step size: how far each backpropagation update moves the weights.":
+    "O tamanho do passo: quanto cada atualização da retropropagação move os pesos.",
+  "Too small is slow; too large overshoots the minimum and bounces.":
+    "Pequeno demais é lento; grande demais passa do mínimo e oscila.",
+  "This run: η = {0}.": "Neste treino: η = {0}.",
+  "One full pass over every training point, in a shuffled order.":
+    "Uma passada completa por todos os pontos de treino, em ordem embaralhada.",
+  "One pass is not enough: the weights improve a little each epoch, so training takes many.":
+    "Uma passada não basta: os pesos melhoram um pouco a cada época, então o treino leva muitas.",
+  "This run: {0} points, at epoch {1}.": "Neste treino: {0} pontos, na época {1}.",
+  "The backward signal shrinks a little at every layer it crosses, so the earliest layers get almost no update.":
+    "O sinal de volta encolhe um pouco a cada camada que atravessa, então as primeiras camadas quase não são atualizadas.",
+  "Those layers stop learning and the loss stalls — deep stacks with sigmoid or tanh are the usual cause.":
+    "Essas camadas param de aprender e a perda estaciona — pilhas profundas com sigmoid ou tanh são a causa habitual.",
+  "training lab": "laboratório de treino",
+  "Build a network, pick a dataset, and press Train: watch backpropagation bend the decision boundary epoch by epoch.":
+    "Monte uma rede, escolha um conjunto de dados e aperte Treinar: veja a retropropagação curvar a fronteira de decisão, época por época.",
+  "Backpropagation in two steps: the prediction flows forward through the hidden layers to ŷ, then the error flows backward to every connection.":
+    "A retropropagação em dois passos: a previsão avança pelas camadas ocultas até ŷ, e depois o erro volta até cada conexão.",
+  "Forward: hidden layers let the network represent more complex patterns.":
+    "Para frente: as camadas ocultas permitem à rede representar padrões mais complexos.",
+  "Backward: the error flows back,": "Para trás: o erro volta,",
+  "measuring how much each connection contributed.": "medindo quanto cada conexão contribuiu.",
+  "Output neuron": "Neurônio de saída",
+  Prediction: "Previsão",
+  "Layer {0}": "Camada {0}",
+  "**The key innovation:** Neural networks could now automatically learn complex patterns and discover useful features from data, without humans having to explicitly define every rule.":
+    "**A inovação central:** As redes neurais passaram a aprender padrões complexos e descobrir características úteis nos dados automaticamente, sem que humanos precisassem definir cada regra.",
+  "0 hidden layers": "0 camadas ocultas",
+  "hidden layers": "camadas ocultas",
+  Architecture: "Arquitetura",
+  Comments: "Comentários",
+  "Press Train. Each small square is what one neuron “sees” across the input plane; the big chart is the final decision.":
+    "Clique em Treinar. Cada quadrado pequeno é o que um neurônio “vê” no plano de entrada; o gráfico maior é a decisão final.",
+  "No hidden layer = a single neuron — the same Perceptron you just saw. Its boundary is still one straight line.":
+    "Nenhuma camada oculta = um único neurônio — o mesmo Perceptron que você acabou de ver. Sua fronteira ainda é uma única reta.",
+  "Training… the hidden layer is learning a curved boundary the single neuron couldn't draw.":
+    "Treinando… a camada oculta está aprendendo uma fronteira curva que o neurônio único não conseguia desenhar.",
+  "✓ Solved — {0} hidden layer(s) and backpropagation found a boundary the Perceptron couldn't.":
+    "✓ Resolvido — {0} camada(s) oculta(s) e a retropropagação encontraram uma fronteira que o Perceptron não conseguiu.",
+  "Loss has stalled near a coin flip — this is a vanishing gradient: with {0}, the error shrinks every layer it passes backward through, so the earliest layers barely update. Try relu, or fewer layers.":
+    "A perda estacionou perto de um palpite de cara ou coroa — isto é um gradiente que desaparece: com {0}, o erro encolhe a cada camada que atravessa para trás, então as primeiras camadas quase não são atualizadas. Tente relu, ou menos camadas.",
+  "Vanishing gradients": "Gradientes que desaparecem",
+  "Nonlinear activation": "Ativação não linear",
+  "Learning rate η = {0}; the arrow length shows the step size.":
+    "Taxa de aprendizado η = {0}; o comprimento da seta mostra o tamanho do passo.",
+  "η = {0}": "η = {0}",
+  "smaller η = smaller, steadier steps": "η menor = passos menores e mais estáveis",
+  "Hidden layers: with none, the boundary is one straight line.":
+    "Camadas ocultas: sem nenhuma, a fronteira é uma única reta.",
+  "Hidden layers: with {0} hidden layer(s), the boundary can curve.":
+    "Camadas ocultas: com {0} camada(s) oculta(s), a fronteira pode se curvar.",
+  "Activation curve for {0}: it {1}.": "Curva de ativação para {0}: ela {1}.",
+  "saturates at both ends": "satura nas duas extremidades",
+  "does not saturate": "não satura",
+  "{0} squashes large |z| toward a flat region, where its slope is near zero. Stack enough of these and the backward gradient shrinks layer by layer.":
+    "{0} comprime valores grandes de |z| para uma região achatada, onde a inclinação é quase zero. Empilhe várias dessas e o gradiente, na volta, encolhe camada por camada.",
+  "{0} stays linear (or flat at zero) without squashing large values, so its gradient doesn't shrink the same way.":
+    "{0} permanece linear (ou achatada em zero) sem comprimir valores grandes, então seu gradiente não encolhe da mesma forma.",
+  "Backpropagation: the forward pass computes the prediction; the backward pass sends the error back through the same layers using the chain rule.":
+    "Retropropagação: o passo para frente calcula a previsão; o passo para trás envia o erro de volta pelas mesmas camadas usando a regra da cadeia.",
+  "forward → ŷ": "para frente → ŷ",
+  "backward → ∂L/∂w": "para trás → ∂L/∂w",
+  "Vanishing gradients: the recent loss history is flat — training has stalled.":
+    "Gradientes que desaparecem: o histórico recente da perda está estável — o treino estacionou.",
+  "Vanishing gradients: the recent loss history is still moving.":
+    "Gradientes que desaparecem: o histórico recente da perda ainda está em movimento.",
+  "This architecture's loss has barely moved for the last {0} checkpoints — a sign that the gradient reaching the earliest layers is too small to keep learning.":
+    "A perda desta arquitetura quase não se moveu nos últimos {0} registros — um sinal de que o gradiente que chega às primeiras camadas é pequeno demais para continuar aprendendo.",
+  "Each bar is a recent loss checkpoint. A flat row of bars near the top (no progress) is what a vanishing gradient looks like at depth.":
+    "Cada barra é um registro recente da perda. Uma fileira plana de barras perto do topo (sem progresso) é como um gradiente que desaparece se parece em profundidade.",
+  "x₁": "x₁",
+  "x₂": "x₂",
+  "Weights & math": "Pesos e matemática",
+  "% → predicted": "% → previsto",
+  "% → predicted class": "% → classe prevista",
+  "How backpropagation changes the weights": "Como a retropropagação muda os pesos",
+  "in hidden layers, σ = sigmoid at the output, so ŷ is a 0–1 probability of class 1). This network has":
+    "nas camadas ocultas, σ = sigmoide na saída, então ŷ é uma probabilidade entre 0 e 1 da classe 1). Esta rede tem",
+  "The loss L is small when ŷ is confidently right (y is the true label, 0 or 1). Backpropagation applies the chain rule from the output back to every weight to get ∂L/∂w — how much the loss would change if that weight moved — and each step nudges every weight a little in the direction that lowers the loss. The further back a weight sits, the more terms that chain multiplies through — which is why a long chain of saturating activations can shrink the gradient to almost nothing by the time it reaches the first layer.":
+    "A perda L é pequena quando ŷ acerta com confiança (y é o rótulo real, 0 ou 1). A retropropagação aplica a regra da cadeia da saída até cada peso para obter ∂L/∂w — o quanto a perda mudaria se aquele peso variasse — e cada passo ajusta cada peso um pouco na direção que reduz a perda. Quanto mais atrás um peso está, mais termos essa cadeia multiplica — por isso uma longa sequência de ativações saturantes pode encolher o gradiente a quase nada até ele chegar à primeira camada.",
+  "Backpropagation can learn any boundary a hidden layer is wide enough to represent — but push the network deep with a saturating activation and the gradient reaching the earliest layers shrinks to almost nothing. Training stalls, not because the boundary is too simple, but because the signal that would fix it barely arrives.":
+    "A retropropagação consegue aprender qualquer fronteira que uma camada oculta seja larga o bastante para representar — mas torne a rede profunda com uma ativação saturante e o gradiente que chega às primeiras camadas encolhe a quase nada. O treino estaciona, não porque a fronteira seja simples demais, mas porque o sinal que a corrigiria mal chega.",
+  "Next: step by step": "Próximo: passo a passo",
+  "Add a hidden layer": "Adicionar uma camada oculta",
+  "Remove a hidden layer": "Remover uma camada oculta",
+  "Hide configuration": "Ocultar configuração",
+  "Show configuration": "Mostrar configuração",
+  Display: "Exibição",
+  Tip: "Dica",
+  "Run metrics": "Métricas do treino",
+  "Decision boundary": "Fronteira de decisão",
+  "Network vs rules": "Rede vs regras",
+  "Hand-written rules": "Regras manuais",
+  "Each node shows what it has learned to see": "Cada nó mostra o que aprendeu a enxergar",
+  "Each small square is what one neuron “sees” across temperature × vibration.":
+    "Cada quadrado pequeno é o que um neurônio “vê” no plano temperatura × vibração.",
+  "Each small square is what one neuron “sees” across the input plane x₁ × x₂.":
+    "Cada quadrado pequeno é o que um neurônio “vê” no plano de entrada x₁ × x₂.",
+  'x = ({0}, {1}) (from "Classify a new example")':
+    'x = ({0}, {1}) (de "Classificar um novo exemplo")',
   "the line {0}": "a reta {0}",
   "none — every point gets the same prediction":
     "nenhuma — todos os pontos recebem a mesma previsão",
@@ -1932,6 +2103,246 @@ export const ptBR: Record<string, string> = {
   "No training update yet.": "Nenhuma atualização de treino ainda.",
   "2 clusters": "2 grupos",
   Moons: "Luas",
+  Machines: "Máquinas",
+  "Seven short ideas sit behind the training loop. Each one is brief, with the formula and a graphic you can move.":
+    "Sete ideias curtas sustentam o ciclo de treino. Cada uma é breve, com a fórmula e um gráfico que você pode mexer.",
+  "Forward pass,": "Passada para frente,",
+  "backward pass": "passada para trás",
+  Key: "Conceitos",
+  concepts: "-chave",
+  "Training a network is one loop: guess, measure the mistake, trace the blame backwards, adjust.":
+    "Treinar uma rede é um único ciclo: palpitar, medir o erro, rastrear a culpa para trás e ajustar.",
+  "Backpropagation computes ∂L/∂w — how much the loss changes if one weight moves a little — for every weight at once. It works in four beats:":
+    "A retropropagação calcula ∂L/∂w — quanto a perda muda se um peso se mover um pouco — para todos os pesos de uma vez. Ela funciona em quatro tempos:",
+  "Forward Pass (The Attempt): You feed raw ingredients into the machine and press “Start.” The gears turn based on how the dials are currently set, and out pops a baked cake. That is the machine's first guess.":
+    "Passada para Frente (A Tentativa): Você coloca ingredientes brutos na máquina e pressiona “Iniciar”. As engrenagens giram de acordo com como os dials estão atualmente configurados, e sai um bolo assado. Esse é o primeiro palpite da máquina.",
+  "Loss Calculation (The Reality Check): A master chef tastes the cake, compares it to the perfect recipe, and issues a strict penalty score. “Too salty, not sweet enough. Error score: 85.”":
+    "Cálculo da Perda (A Verificação da Realidade): Um chef mestre prova o bolo, o compara com a receita perfeita e emite uma pontuação de penalidade severa. “Muito salgado, não está doce o suficiente. Pontuação de erro: 85.”",
+  "Backward Pass (Assigning Blame): The chef's error score is sent backward down the assembly line. The system figures out exactly which dials caused the saltiness and which caused the lack of sweetness. It then mathematically nudges each dial slightly in the correct direction.":
+    "Passada para Trás (Atribuindo Culpa): A pontuação de erro do chef é enviada para trás pela linha de montagem. O sistema descobre exatamente quais dials causaram a salinidade e quais causaram a falta de doçura. Depois, ele ajusta ligeiramente cada dial na direção correta matematicamente.",
+  "Update (Adjusting): Turning the salt dial down 2% and the sugar dial up 5% so the next guess is closer to perfect.":
+    "Atualização (Ajustando): Virar o dial de sal para baixo 2% e o dial de açúcar para cima 5% para que o próximo palpite fique mais perto do perfeito.",
+  "Measuring each weight's effect separately would cost one forward pass per weight. Backpropagation shares the work, so all gradients cost about one extra pass. It only computes gradients — the optimizer (on the Key concepts page) decides what to do with them.":
+    "Medir o efeito de cada peso separadamente custaria uma passada para frente por peso. A retropropagação divide o trabalho, então todos os gradientes custam cerca de uma passada extra. Ela só calcula gradientes — o otimizador (na página Por dentro da rede) decide o que fazer com eles.",
+  "A tiny network: x → hidden → ŷ (biases left out)":
+    "Uma rede minúscula: x → oculta → ŷ (sem os vieses)",
+  "Chain rule, from the loss backwards": "Regra da cadeia, da perda para trás",
+  forward: "para frente",
+  backward: "para trás",
+  update: "atualização",
+  "new loss": "nova perda",
+  was: "era",
+  "Backpropagation is the chain rule run from the loss back to the first layer, reusing every result once.":
+    "A retropropagação é a regra da cadeia aplicada da perda até a primeira camada, reaproveitando cada resultado uma única vez.",
+  "Loss function": "Função de perda",
+  "The loss measures how wrong one prediction is. The cost J is the average loss over the training set. The two words are often swapped; the “Loss” in this page's toolbar is the average over every point.":
+    "A perda mede o quanto uma previsão está errada. O custo J é a perda média sobre o conjunto de treino. As duas palavras costumam ser trocadas; a “Perda” na barra desta página é a média sobre todos os pontos.",
+  "It is the network's only feedback, and its gradient tells every weight which way to move. A good loss is differentiable and punishes confident mistakes harder than unsure ones. Training stops when J stops falling — cross-entropy only approaches 0, it does not have to reach it.":
+    "É o único retorno que a rede recebe, e o seu gradiente diz a cada peso para onde se mover. Uma boa perda é diferenciável e pune erros confiantes mais do que erros incertos. O treino para quando J deixa de cair — a entropia cruzada só se aproxima de 0, não precisa chegar a ele.",
+  "Common losses": "Perdas comuns",
+  "categorical cross-entropy": "entropia cruzada categórica",
+  "mean squared error": "erro quadrático médio",
+  "Binary cross-entropy — two classes, sigmoid output. This lesson.":
+    "Entropia cruzada binária — duas classes, saída sigmoide. Esta lição.",
+  "Categorical cross-entropy — many classes, softmax output.":
+    "Entropia cruzada categórica — muitas classes, saída softmax.",
+  "Mean squared error — predicting a number (regression), linear output.":
+    "Erro quadrático médio — prever um número (regressão), saída linear.",
+  "true label y = 1": "rótulo verdadeiro y = 1",
+  "true label y = 0": "rótulo verdadeiro y = 0",
+  "Predicted probability ŷ": "Probabilidade prevista ŷ",
+  "Loss L": "Perda L",
+  "Cross-entropy is gentle when ŷ is nearly right and steep when it is confidently wrong — that steepness is the gradient that drives learning.":
+    "A entropia cruzada é suave quando ŷ está quase certo e íngreme quando erra com confiança — essa inclinação é o gradiente que move o aprendizado.",
+  "Gradient descent": "Descida do gradiente",
+  "An optimization algorithm that finds the parameter values that minimize a differentiable cost function. The gradient ∇J points toward the steepest increase of J, so each step goes the opposite way. Stepping along +∇J instead climbs to a maximum — that is gradient ascent.":
+    "Um algoritmo de otimização que encontra os valores dos parâmetros que minimizam uma função de custo diferenciável. O gradiente ∇J aponta para o maior aumento de J, então cada passo vai no sentido oposto. Andar ao longo de +∇J sobe até um máximo — isso é a subida do gradiente.",
+  "A network has thousands of weights and no closed-form answer, but the gradient is cheap to get from backpropagation. Descent follows the local slope, so it finds a local minimum — not guaranteed to be the global one, which is usually good enough.":
+    "Uma rede tem milhares de pesos e nenhuma resposta em forma fechada, mas o gradiente sai barato da retropropagação. A descida segue a inclinação local, então encontra um mínimo local — sem garantia de ser o global, o que costuma bastar.",
+  "This page uses mini-batch gradient descent: each step averages the gradient of up to 10 points, and one epoch visits every point once.":
+    "Esta página usa descida do gradiente em mini-lotes: cada passo faz a média do gradiente de até 10 pontos, e uma época visita cada ponto uma vez.",
+  "Each step multiplies w by (1 − 2η) = 0.8, so it slides into the minimum at 0.":
+    "Cada passo multiplica w por (1 − 2η) = 0,8, então ele desliza até o mínimo em 0.",
+  "Starting point w₀": "Ponto inicial w₀",
+  "Learning rate η": "Taxa de aprendizado η",
+  "Starting point": "Ponto inicial",
+  "w after 12 steps": "w após 12 passos",
+  "The network's goal is to minimize the cost: repeat “step downhill” until the slope is flat.":
+    "O objetivo da rede é minimizar o custo: repita “um passo ladeira abaixo” até a inclinação ficar plana.",
+  "The learning rate η (also called the step size, or alpha) is how far each update moves the weights along the negative gradient. You choose it; the network does not learn it.":
+    "A taxa de aprendizado η (também chamada de tamanho do passo, ou alfa) é o quanto cada atualização move os pesos ao longo do gradiente negativo. Você a escolhe; a rede não a aprende.",
+  "Too small: precise but slow — many epochs for the same progress.":
+    "Pequena demais: precisa, porém lenta — muitas épocas para o mesmo progresso.",
+  "About right: the loss falls steadily and settles.":
+    "Na medida: a perda cai de forma constante e se estabiliza.",
+  "Too large: steps overshoot the minimum, the loss bounces or grows, and the weights can end up NaN.":
+    "Grande demais: os passos ultrapassam o mínimo, a perda oscila ou cresce, e os pesos podem virar NaN.",
+  "It is usually the most important setting to tune. A large η is not the same thing as an exploding gradient (section 4), but it makes one much more likely.":
+    "Costuma ser o ajuste mais importante. Um η grande não é o mesmo que um gradiente explosivo (seção 4), mas torna um muito mais provável.",
+  "On the bowl J = w²": "Na tigela J = w²",
+  converges: "converge",
+  "bounces between ±w forever": "oscila entre ±w para sempre",
+  diverges: "diverge",
+  "For other costs the limit is 2 ÷ the steepest curvature. Try the extremes in the rail.":
+    "Para outros custos o limite é 2 ÷ a maior curvatura. Teste os extremos no painel lateral.",
+  "Too small": "Pequena demais",
+  "About right": "Na medida",
+  "Too large": "Grande demais",
+  "Too small is slow; too large overshoots and diverges.":
+    "Pequena demais é lento; grande demais ultrapassa o mínimo e diverge.",
+  "Vanishing and exploding gradients": "Gradientes que desaparecem e que explodem",
+  "Going backwards, the gradient is multiplied by one factor per layer. In a network with n layers that is n factors in a row:":
+    "Indo para trás, o gradiente é multiplicado por um fator por camada. Numa rede com n camadas são n fatores em sequência:",
+  "Vanishing: the factors are below 1, so the gradient shrinks exponentially. The earliest layers barely update and stop learning while the last layers carry on.":
+    "Desaparecendo: os fatores são menores que 1, então o gradiente encolhe exponencialmente. As primeiras camadas quase não se atualizam e param de aprender, enquanto as últimas seguem.",
+  "Exploding: the factors are above 1, so the gradient grows exponentially. Weights jump, the loss blows up, and the numbers end as NaN.":
+    "Explodindo: os fatores são maiores que 1, então o gradiente cresce exponencialmente. Os pesos saltam, a perda dispara e os números terminam em NaN.",
+  "Both make deep networks unstable or unable to learn. A sigmoid's slope never exceeds 0.25, so ten sigmoid layers can scale the gradient by 0.25¹⁰ ≈ 10⁻⁶.":
+    "Ambos deixam redes profundas instáveis ou incapazes de aprender. A inclinação da sigmoide nunca passa de 0,25, então dez camadas sigmoides podem multiplicar o gradiente por 0,25¹⁰ ≈ 10⁻⁶.",
+  vanishes: "desaparece",
+  explodes: "explode",
+  "Common fixes": "Correções comuns",
+  "vanishing: ReLU-family activations, Xavier/He initialization, skip connections, normalization":
+    "desaparecendo: ativações da família ReLU, inicialização Xavier/He, conexões residuais, normalização",
+  "exploding: gradient clipping, a smaller η, careful initialization, weight decay":
+    "explodindo: corte do gradiente, um η menor, inicialização cuidadosa, decaimento de pesos",
+  Layers: "Camadas",
+  Momentum: "Momentum",
+  "Reading ŷ": "Lendo o ŷ",
+  "y — the true label, the answer in the data: 0 or 1.":
+    "y — o rótulo verdadeiro, a resposta nos dados: 0 ou 1.",
+  "ŷ (“y-hat”) — the network's prediction: a probability between 0 and 1 that the class is 1. The hat means “estimated”.":
+    "ŷ (“y chapéu”) — a previsão da rede: uma probabilidade entre 0 e 1 de que a classe seja 1. O chapéu significa “estimado”.",
+  "ŷ − y — the error. It is 0 when the prediction matches the label.":
+    "ŷ − y — o erro. É 0 quando a previsão coincide com o rótulo.",
+  "Expand chart": "Expandir gráfico",
+  "Back to original size": "Voltar ao tamanho original",
+  "Original size": "Tamanho original",
+  Rings: "Anéis",
+  "A core of 12 points inside a ring of 12, with only a thin gap between. Needs a tight circle, and it is touchy: a big learning rate bounces instead of settling.":
+    "Um núcleo de 12 pontos dentro de um anel de 12, com apenas um vão fino entre eles. Exige um círculo justo e é delicado: uma taxa de aprendizado alta oscila em vez de se acomodar.",
+  "Loss as a function of one weight: the weight is {0} now (loss {1}) and one step of size η = {2} sends it to {3}.":
+    "Perda em função de um peso: o peso vale {0} agora (perda {1}) e um passo de tamanho η = {2} o leva a {3}.",
+  "weight w (the output neuron's first weight)": "peso w (o primeiro peso do neurônio de saída)",
+  "● now": "● agora",
+  "○ after one step (η = {0})": "○ após um passo (η = {0})",
+  "Overshoot: the step jumps over the bottom of the U and the loss goes up. Lower η.":
+    "Ultrapassou: o passo pula o fundo do U e a perda sobe. Diminua o η.",
+  "The weight is at the bottom of the U: converged along this weight.":
+    "O peso está no fundo do U: convergiu ao longo deste peso.",
+  "Tiny steps toward the bottom: safe, but it needs many epochs.":
+    "Passos minúsculos em direção ao fundo: seguro, mas precisa de muitas épocas.",
+  "The step goes past the bottom: expect zig-zag across the U.":
+    "O passo passa do fundo: espere zigue-zague pelo U.",
+  "The step lands near the bottom of the U: an efficient η.":
+    "O passo cai perto do fundo do U: um η eficiente.",
+  "The loss as a U in a single weight, with all the others held fixed. The ball is the weight now, the tangent is the slope, and the hollow dot is where one step of size η sends it. Fading dots are earlier epochs. With a large η the ball leaps across the U instead of settling at the bottom.":
+    "A perda como um U em um único peso, com todos os outros fixos. A bola é o peso agora, a tangente é a inclinação e o ponto vazado é para onde um passo de tamanho η o leva. Os pontos esmaecidos são épocas anteriores. Com um η grande a bola salta pelo U em vez de se acomodar no fundo.",
+  "Loss at every recorded epoch, from {0} to {1}.": "Perda em cada época registrada, de {0} a {1}.",
+  "Gradient descent history": "Histórico da descida do gradiente",
+  "{0} epochs recorded": "{0} épocas registradas",
+  "One dot per epoch: the path the loss has taken so far. Red dots are steps where the loss went up — overshoots. A small η gives a slow, smooth slide; a large η zig-zags.":
+    "Um ponto por época: o caminho que a perda percorreu até agora. Pontos vermelhos são passos em que a perda subiu — ultrapassagens. Um η pequeno dá uma descida lenta e suave; um η grande faz zigue-zague.",
+  "{0} overshoot(s)": "{0} ultrapassagem(ns)",
+  lowest: "mais baixo",
+  "Epoch {0}": "Época {0}",
+  "Vanishing: ×0.25 per layer": "Desaparecendo: ×0,25 por camada",
+  "Exploding: ×2 per layer": "Explodindo: ×2 por camada",
+  "The bars share one log scale: the line is the output layer's gradient. Set the playground to sigmoid with 6+ hidden layers to see the vanishing case in a real loss curve.":
+    "As barras compartilham uma escala logarítmica: a linha é o gradiente da camada de saída. Coloque o laboratório em sigmoid com 6+ camadas ocultas para ver o caso de desaparecimento numa curva de perda real.",
+  "Depth multiplies derivatives: below 1 per layer they vanish, above 1 they explode — either way deep networks stop learning.":
+    "A profundidade multiplica derivadas: abaixo de 1 por camada elas desaparecem, acima de 1 explodem — de qualquer forma redes profundas deixam de aprender.",
+  Optimizers: "Otimizadores",
+  "An optimizer is the rule that turns gradients into weight updates. Backpropagation supplies g = ∂L/∂w; the optimizer decides the step.":
+    "Um otimizador é a regra que transforma gradientes em atualizações de pesos. A retropropagação fornece g = ∂L/∂w; o otimizador decide o passo.",
+  "Plain gradient descent zig-zags in narrow valleys and treats every weight the same. Better update rules reach a good solution in fewer steps and with less tuning. This playground uses plain mini-batch gradient descent.":
+    "A descida do gradiente simples faz zigue-zague em vales estreitos e trata todos os pesos igual. Regras de atualização melhores chegam a uma boa solução em menos passos e com menos ajuste. Este laboratório usa a descida do gradiente em mini-lotes simples.",
+  "momentum + RMSProp scaling, with bias correction":
+    "momentum + escala do RMSProp, com correção de viés",
+  "Adam defaults: η = 0.001, β₁ = 0.9, β₂ = 0.999, ε = 10⁻⁸":
+    "Padrões do Adam: η = 0,001, β₁ = 0,9, β₂ = 0,999, ε = 10⁻⁸",
+  "SGD — simple and predictable; needs a well-tuned η.":
+    "SGD — simples e previsível; exige um η bem ajustado.",
+  "Momentum — keeps a running velocity, so steady directions speed up and zig-zags cancel.":
+    "Momentum — mantém uma velocidade acumulada, então direções constantes aceleram e os zigue-zagues se cancelam.",
+  "RMSProp / AdaGrad — scale each weight's step by its recent gradient size.":
+    "RMSProp / AdaGrad — escalam o passo de cada peso pelo tamanho recente do seu gradiente.",
+  "Adam — momentum plus per-weight scaling; the usual first choice.":
+    "Adam — momentum mais escala por peso; a primeira escolha habitual.",
+  "Same valley, same start, 30 steps; each optimizer uses a rate that suits it. SGD zig-zags across the narrow direction, momentum overshoots and then settles, Adam heads almost straight down.":
+    "Mesmo vale, mesmo início, 30 passos; cada otimizador usa uma taxa que lhe convém. O SGD faz zigue-zague na direção estreita, o momentum ultrapassa e depois se acomoda, o Adam desce quase em linha reta.",
+  "Hidden-layer activation": "Ativação da camada oculta",
+  "Each hidden neuron bends its weighted sum z with a nonlinear function f. The curve of the boundary comes from that bending, and from combining many bent neurons.":
+    "Cada neurônio oculto curva a sua soma ponderada z com uma função não linear f. A curva da fronteira vem dessa curvatura e da combinação de muitos neurônios curvados.",
+  "Sigmoid — squashes to 0–1; slope at most 0.25, saturates at both ends.":
+    "Sigmoide — comprime para 0–1; inclinação de no máximo 0,25, satura nas duas pontas.",
+  "tanh — squashes to −1…1, zero-centered; slope at most 1, saturates at both ends.":
+    "tanh — comprime para −1…1, centrada em zero; inclinação de no máximo 1, satura nas duas pontas.",
+  "ReLU — max(0, z); slope 1 for z > 0, so it does not saturate there. A neuron stuck at z < 0 outputs 0 forever (“dying ReLU”).":
+    "ReLU — max(0, z); inclinação 1 para z > 0, então não satura ali. Um neurônio preso em z < 0 devolve 0 para sempre (“ReLU morta”).",
+  "Linear — no bending, only useful to see why bending matters.":
+    "Linear — sem curvatura, útil só para ver por que a curvatura importa.",
+  "Without a nonlinear activation, stacked layers collapse into one single line. Pick the activation by its slope too: where the slope is near 0, no gradient gets through.":
+    "Sem uma ativação não linear, camadas empilhadas colapsam numa única reta. Escolha a ativação também pela inclinação: onde ela é quase 0, nenhum gradiente passa.",
+  "Why linear layers collapse": "Por que camadas lineares colapsam",
+  "Choose “linear” in the Activation selector above: even with many layers the boundary stays one straight line.":
+    "Escolha “linear” no seletor de Ativação acima: mesmo com muitas camadas a fronteira continua sendo uma única reta.",
+  "slope f′(z)": "inclinação f′(z)",
+  "The curve is the activation; the slope is how much learning signal passes through it.":
+    "A curva é a ativação; a inclinação é quanto sinal de aprendizado passa por ela.",
+  "Output activation": "Ativação de saída",
+  "The last layer's activation shapes the final z into the form the answer needs, and it is paired with a matching loss:":
+    "A ativação da última camada molda o z final na forma que a resposta exige, e vem emparelhada com uma perda correspondente:",
+  "Sigmoid → one probability, for two classes (this lesson). Loss: binary cross-entropy.":
+    "Sigmoide → uma probabilidade, para duas classes (esta lição). Perda: entropia cruzada binária.",
+  "Softmax → one probability per class, summing to 1. Loss: categorical cross-entropy.":
+    "Softmax → uma probabilidade por classe, somando 1. Perda: entropia cruzada categórica.",
+  "Linear → any real number, for regression. Loss: mean squared error.":
+    "Linear → qualquer número real, para regressão. Perda: erro quadrático médio.",
+  "With the matching loss the output gradient simplifies to prediction minus target (ŷ − y) — the first backward step on the Step by Step page. Mismatched pairs, such as sigmoid with squared error, give gradients that fade exactly when the output is confidently wrong.":
+    "Com a perda correspondente, o gradiente da saída se simplifica para previsão menos alvo (ŷ − y) — o primeiro passo para trás da página Passo a passo. Pares trocados, como sigmoide com erro quadrático, dão gradientes que somem justamente quando a saída erra com confiança.",
+  "Logit z (class A)": "Logit z (classe A)",
+  "Logit z (class B)": "Logit z (classe B)",
+  "Logit z (class C)": "Logit z (classe C)",
+  "Choose the output activation from the answer's shape, then pair it with its matching loss.":
+    "Escolha a ativação de saída pela forma da resposta e emparelhe-a com a perda correspondente.",
+  "input x": "entrada x",
+  "hidden a₁": "oculta a₁",
+  "output ŷ": "saída ŷ",
+  "loss L": "perda L",
+  "Computation chain for one example: the forward pass computes z₁, a₁, z₂, ŷ and L; the backward pass sends δ₂ and δ₁ back to get the gradients of w₂ and w₁.":
+    "Cadeia de cálculo para um exemplo: a passada para frente calcula z₁, a₁, z₂, ŷ e L; a passada para trás envia δ₂ e δ₁ de volta para obter os gradientes de w₂ e w₁.",
+  "forward →": "para frente →",
+  "← backward": "← para trás",
+  "(no weight before x)": "(nenhum peso antes de x)",
+  "Each gradient reuses the values the forward pass already computed.":
+    "Cada gradiente reaproveita os valores que a passada para frente já calculou.",
+  "Gradient descent on J(w) = w² from w = {0} with learning rate {1}: after {2} steps w = {3}.":
+    "Descida do gradiente em J(w) = w² a partir de w = {0} com taxa de aprendizado {1}: após {2} passos w = {3}.",
+  "off the chart": "fora do gráfico",
+  minimum: "mínimo",
+  "Gradient size at each of {0} layers going backward when every layer multiplies it by {1}: it ends at {2} times the output gradient.":
+    "Tamanho do gradiente em cada uma das {0} camadas indo para trás, quando cada camada o multiplica por {1}: ele termina em {2} vezes o gradiente da saída.",
+  "per layer": "por camada",
+  "first layer": "primeira camada",
+  "Three optimizers descending the same narrow valley from the same start: SGD zig-zags across the valley, momentum overshoots then settles, Adam heads almost straight to the minimum.":
+    "Três otimizadores descendo o mesmo vale estreito a partir do mesmo início: o SGD faz zigue-zague pelo vale, o momentum ultrapassa e depois se acomoda, o Adam vai quase direto ao mínimo.",
+  "class A": "classe A",
+  "class B": "classe B",
+  "class C": "classe C",
+  "Softmax of the logits.": "Softmax dos logits.",
+  "Four points: class 1 when either input is 1. One straight line separates them.":
+    "Quatro pontos: classe 1 quando qualquer entrada é 1. Uma única reta os separa.",
+  "Four points: class 1 only when both inputs are 1. One straight line separates them.":
+    "Quatro pontos: classe 1 só quando as duas entradas são 1. Uma única reta os separa.",
+  "40 points in two well-separated groups. Any reasonable line works.":
+    "40 pontos em dois grupos bem separados. Qualquer reta razoável funciona.",
+  "Four points: class 1 when exactly one input is 1. No straight line separates them.":
+    "Quatro pontos: classe 1 quando exatamente uma entrada é 1. Nenhuma reta os separa.",
+  "Two interlocking half-circles of 30 points each. Separating them needs a curve.":
+    "Dois semicírculos entrelaçados de 30 pontos cada. Separá-los exige uma curva.",
+  "The 30 machine readings from Programming vs ML: temperature and vibration, normal or at risk. Separating them needs a curve.":
+    "As 30 leituras de máquinas de Programação vs ML: temperatura e vibração, normal ou em risco. Separá-las exige uma curva.",
   "Step — perceptron": "Degrau — perceptron",
   "Sigmoid — logistic regression": "Sigmoide — regressão logística",
   "Inputs: the selected point has x₁ = {0} and x₂ = {1}; the bias input is always 1.":
@@ -1958,4 +2369,580 @@ export const ptBR: Record<string, string> = {
     "Separabilidade linear: este conjunto de dados não é linearmente separável.",
   "one line works": "uma reta resolve",
   "no line works": "nenhuma reta resolve",
+
+  // Classification: tabs (Data & Learning / Evaluation), basis NN at epoch 10.
+  "Data & Learning": "Dados e aprendizado",
+  Sections: "Seções",
+  "See the full dataset →": "Ver o conjunto de dados completo →",
+  "The same machine-health problem from Programming vs ML: predict whether a machine is Normal or At Risk from its temperature and vibration.":
+    "O mesmo problema de saúde de máquinas de Programação vs ML: prever se uma máquina está Normal ou Em risco a partir da temperatura e da vibração.",
+  "Train to epoch {0}": "Treinar até a época {0}",
+  "Reset to epoch {0}": "Reiniciar para a época {0}",
+  "missing an at-risk machine (a false negative) is one mistake;":
+    "deixar passar uma máquina em risco (falso negativo) é um erro;",
+  "flagging a healthy machine as at-risk (a false positive) is another.":
+    "sinalizar uma máquina saudável como em risco (falso positivo) é outro.",
+  "Every number below comes from the same network shown in Data & Learning, trained for {0} epochs on the {1} machine readings.":
+    "Todos os números abaixo vêm da mesma rede mostrada em Dados e aprendizado, treinada por {0} épocas sobre as {1} leituras de máquinas.",
+  "Every prediction lands in one of four boxes: a true positive (TP, an at-risk machine flagged at-risk), a false negative (FN, an at-risk machine missed), a false positive (FP, a normal machine flagged at-risk) or a true negative (TN, a normal machine correctly left alone). ":
+    "Toda previsão cai em uma de quatro categorias: verdadeiro positivo (TP, máquina em risco sinalizada corretamente), falso negativo (FN, máquina em risco não detectada), falso positivo (FP, máquina normal sinalizada como em risco) ou verdadeiro negativo (TN, máquina normal corretamente deixada de lado).",
+  "Easy to read, and fine here because the two classes are close to balanced. With rare classes it can be misleading — see ":
+    "Fácil de interpretar, e adequada aqui porque as duas classes estão próximas do equilíbrio. Com classes raras, pode enganar — veja ",
+  "Classification (Fairness) →": "Classificação (Equidade) →",
+  " for the accuracy trap. ": " para a armadilha da acurácia.",
+  ": of everything predicted at-risk, how much really is. ":
+    ": entre as previsões de risco, quantas realmente são.",
+  " (sensitivity, true-positive rate): of everything really at-risk, how much was caught. ":
+    "(taxa de verdadeiros positivos): entre os casos realmente em risco, quantos foram detectados.",
+  "They pull against each other. Raise the cutoff and the model only flags at-risk when sure: precision rises, recall falls. Favour precision when false alarms are costly (unnecessary maintenance), recall when misses are (an at-risk machine running undetected). ":
+    "Elas competem. Aumente o corte e o modelo só sinaliza risco com confiança: precisão sobe, sensibilidade cai. Priorize precisão quando alarmes falsos custam caro (manutenção desnecessária) e sensibilidade quando omissões custam caro (máquina em risco rodando sem detecção).",
+  "0.5 cutoff": "corte de 0,5",
+  "One number to compare models or pick a cutoff when you care about both kinds of mistake. Here F1 peaks at a threshold of ":
+    "Um número para comparar modelos ou escolher um corte quando os dois tipos de erro importam. Aqui F1 atinge o máximo no limiar",
+  " (true-negative rate): of everything really normal, how much was correctly left alone. ":
+    "(taxa de verdadeiros negativos): entre as máquinas realmente normais, quantas foram corretamente deixadas de lado.",
+  "Plain accuracy is dominated by whichever class is bigger. Balanced accuracy gives each class an equal vote, so a model that ignores one class scores 0.5 — chance — however lopsided the data.":
+    "A acurácia simples é dominada pela classe maior. A acurácia balanceada dá peso igual a cada classe, de modo que um modelo que ignora uma classe obtém 0,5 — o acaso — por mais desequilibrados que estejam os dados.",
+  "F1 ignores true negatives and accuracy can be swamped by the majority class; MCC is high only when the model does well on both classes. That makes it one of the most reliable single numbers when classes are imbalanced or the two kinds of mistake cost differently.":
+    "F1 ignora os verdadeiros negativos e a acurácia pode ser dominada pela classe majoritária; MCC só é alto quando o modelo acerta bem as duas classes. Isso o torna um dos números únicos mais confiáveis quando as classes são desbalanceadas ou os dois tipos de erro custam de forma diferente.",
+  " threshold at once. AUC is the area under it: the chance that a random at-risk machine scores higher than a random normal one. ":
+    "os limiares de uma vez. AUC é a área sob a curva: a chance de uma máquina em risco, escolhida ao acaso, receber uma pontuação maior que uma normal, também ao acaso.",
+  ". At the standard 0.5 cutoff, FPR is": ". No corte padrão de 0,5, FPR é",
+  "winning pairs": "pares vencedores",
+  "{0}°C / {1} mm/s, normal: ": "{0}°C / {1} mm/s, normal: ",
+  "{0}°C / {1} mm/s, at-risk: ": "{0}°C / {1} mm/s, em risco: ",
+  "Ranking well and being calibrated are different skills — see ":
+    "Ordenar bem e estar calibrado são habilidades diferentes — veja ",
+  " for a model that ranks almost perfectly yet isn't calibrated at all. Calibrate before you treat a score as a probability — and check calibration per group when fairness matters.":
+    " para um modelo que ordena quase perfeitamente mas não está calibrado. Calibre antes de tratar uma pontuação como probabilidade — e verifique a calibração por grupo quando a equidade importa.",
+  "were at-risk": "estavam em risco",
+  "Observed at-risk rate": "Taxa observada de risco",
+  " machine readings (temperature, vibration) from Programming vs ML, classified by a small neural network trained for {0} epochs. ":
+    "leituras de máquinas (temperatura, vibração) de Programação vs ML, classificadas por uma pequena rede neural treinada por {0} épocas.",
+
+  // Classification (Fairness): payments problem, imbalance metrics, fairness callout.
+  "A dataset is imbalanced when one class is rare. In these illustrative card payments, only a tiny share are fraud — and that changes which metrics are safe to trust.":
+    "Um conjunto de dados é desbalanceado quando uma classe é rara. Nestes pagamentos ilustrativos, só uma fração mínima é fraude — e isso muda quais métricas são seguras.",
+  Legitimate: "Legítimo",
+  Fraud: "Fraude",
+  Payments: "Pagamentos",
+  Count: "Contagem",
+  "Metrics for imbalanced data": "Métricas para dados desbalanceados",
+  "Accuracy barely separates the two models, and ROC AUC flatters the real one. Balanced accuracy, MCC, F1 and PR AUC tell the honest story: the lazy model is useless, and the real one still misses or mis-flags a lot of the rare class.":
+    "A acurácia quase não separa os dois modelos, e a AUC ROC favorece o real. Acurácia balanceada, MCC, F1 e AUC PR contam a história honesta: o modelo preguiçoso é inútil, e o real ainda erra muito na classe rara.",
+  "On imbalanced data, reach for metrics that focus on the rare class or weigh both classes equally, not plain accuracy or ROC AUC alone.":
+    "Em dados desbalanceados, use métricas que focam na classe rara ou dão peso igual às duas classes, não apenas acurácia simples ou AUC ROC.",
+  "Ranking well is not the same as being calibrated":
+    "Ordenar bem não é o mesmo que estar calibrado",
+  "The fraud model above ranks payments almost perfectly (ROC AUC ":
+    "O modelo de fraude acima ordena os pagamentos quase perfeitamente (AUC ROC ",
+  "Data: the fraud examples are synthetic, constructed to show the imbalance traps. See Classification for the metrics computed on a real trained model. ":
+    "Dados: os exemplos de fraude são sintéticos, construídos para mostrar as armadilhas do desbalanceamento. Veja Classificação para as métricas calculadas em um modelo real treinado.",
+
+  // "Good score" ranges (Classification part 1 & Classification (Fairness)) and the lazy-model breakdown.
+  "Good score": "Pontuação boa",
+  "There's no single good number here — the goal is high TP and TN, low FP and FN.":
+    "Não há um único número bom aqui — o objetivo é TP e TN altos, FP e FN baixos.",
+  "0 to 1. Closer to 1 is better; 0 means every prediction is wrong.":
+    "0 a 1. Mais próximo de 1 é melhor; 0 significa que toda previsão está errada.",
+  "Both run 0 to 1. Closer to 1 is better for each; 0 means none of what was flagged (precision) or none of what was really at-risk (recall) was right.":
+    "Ambas vão de 0 a 1. Mais próximo de 1 é melhor em cada uma; 0 significa que nada do sinalizado (precisão) ou nada do realmente em risco (sensibilidade) estava certo.",
+  "0 to 1. Closer to 1 is better; it's 0 whenever precision or recall is 0.":
+    "0 a 1. Mais próximo de 1 é melhor; é 0 sempre que a precisão ou a sensibilidade é 0.",
+  "Both run 0 to 1, but balanced accuracy's chance line is 0.5, not 0 — a model that ignores one class entirely still lands there.":
+    "Ambas vão de 0 a 1, mas a linha do acaso da acurácia balanceada é 0,5, não 0 — um modelo que ignora totalmente uma classe ainda cai nesse ponto.",
+  "−1 to 1. 1 is perfect, 0 is no better than chance, −1 is always wrong — so near 0 is bad, not just near −1.":
+    "−1 a 1. 1 é perfeito, 0 não é melhor que o acaso, −1 é sempre errado — então próximo de 0 já é ruim, não só próximo de −1.",
+  "0 to 1. 1 is a perfect ranking, 0.5 is chance (the dashed diagonal); below 0.5 is worse than guessing.":
+    "0 a 1. 1 é uma ordenação perfeita, 0,5 é o acaso (a diagonal tracejada); abaixo de 0,5 é piores que o acaso.",
+  "0 to 1. Closer to 1 is better; the random baseline sits at the positive rate ({0}), not 0.":
+    "0 a 1. Mais próximo de 1 é melhor; a referência aleatória fica na taxa de positivos ({0}), não em 0.",
+  "0 upward, no fixed ceiling. Lower is better; 0 is a perfect, fully confident correct call. Guessing 50% always scores ln 2 ≈ 0.69.":
+    "A partir de 0, sem teto fixo. Menor é melhor; 0 é um acerto perfeito e totalmente confiante. Prever sempre 50% resulta em ln 2 ≈ 0,69.",
+  "Both run 0 upward with no fixed ceiling, and lower is better. Brier: 0 is a perfect prediction, 1 is the worst (fully confident and wrong). ECE: 0 is perfectly calibrated.":
+    "Ambas partem de 0 sem teto fixo, e menor é melhor. Brier: 0 é uma previsão perfeita, 1 é a pior (totalmente confiante e errada). ECE: 0 é perfeitamente calibrado.",
+  "Both run 0 upward with no fixed ceiling, and lower is better. Brier: 0 is a perfect prediction, 1 is the worst. ECE: 0 is perfectly calibrated.":
+    "Ambas partem de 0 sem teto fixo, e menor é melhor. Brier: 0 é uma previsão perfeita, 1 é a pior. ECE: 0 é perfeitamente calibrado.",
+  "See the Good score column below — most of these run 0 to 1 with 1 best, but MCC and the chance lines differ.":
+    "Veja a coluna Pontuação boa abaixo — a maioria vai de 0 a 1 com 1 sendo o melhor, mas MCC e as linhas de acaso diferem.",
+  "near 1": "próximo de 1",
+  "near 1 (baseline = positive rate)": "próximo de 1 (referência = taxa de positivos)",
+  "near 1 (0.5 = chance)": "próximo de 1 (0,5 = acaso)",
+  "near 1 (0 = chance, −1 = always wrong)": "próximo de 1 (0 = acaso, −1 = sempre errado)",
+  "near 0 (lower is better)": "próximo de 0 (menor é melhor)",
+  'Take the lazy model seriously for a moment: if it simply labels every payment "legitimate", it scores ':
+    'Leve o modelo preguiçoso a sério por um instante: se ele simplesmente rotular todo pagamento como "legítimo", obtém ',
+  " accuracy. That sounds like a success, but finding fraud is the entire reason to build the model — and this one finds none of it:":
+    " de acurácia. Parece um sucesso, mas encontrar fraude é o único motivo de criar o modelo — e este não encontra nenhuma:",
+  "Legitimate classified correctly": "Legítimos classificados corretamente",
+  "Fraud detected": "Fraudes detectadas",
+  "Overall accuracy": "Acurácia geral",
+  "Classified correctly": "Classificados corretamente",
+  "An effective fraud model has to do the opposite: find the frauds, without sacrificing one class's performance to inflate the other's. Accuracy alone can't show you that — it hides exactly the failure that matters here.":
+    "Um modelo de fraude eficaz precisa fazer o contrário: encontrar as fraudes, sem sacrificar o desempenho de uma classe para inflar o da outra. A acurácia sozinha não mostra isso — ela esconde exatamente a falha que importa aqui.",
+  "A good model must find the rare class and stay fair across both classes — plain accuracy cannot tell you either.":
+    "Um bom modelo precisa encontrar a classe rara e manter o desempenho equitativo entre as duas classes — a acurácia simples não revela nenhuma das duas coisas.",
+  "Loss / accuracy": "Perda / acurácia",
+  "Recall / sensitivity (TPR)": "Revocação / sensibilidade (TPR)",
+  "Of all actual frauds, how many did we detect?": "De todas as fraudes reais, quantas detectamos?",
+  "Makes missed fraud visible even when fraud is rare.":
+    "Torna visíveis as fraudes não detectadas, mesmo quando são raras.",
+  "0–1; higher is better. Read alongside false alarms.":
+    "0–1; maior é melhor. Examine também os falsos alarmes.",
+  "70% of fraud found; six cases still missed.":
+    "70% das fraudes detectadas; seis casos ainda não encontrados.",
+  "Useful with task context": "Útil com contexto da tarefa",
+  "Useful for rare-class detection": "Útil para detectar a classe rara",
+  "Compare TPR across groups: equal opportunity":
+    "Compare TPR entre grupos: igualdade de oportunidade",
+  "Of all legitimate payments, how many were correctly cleared?":
+    "De todos os pagamentos legítimos, quantos foram liberados corretamente?",
+  "Shows how well the detector protects legitimate payments from false alarms.":
+    "Mostra como o detector protege pagamentos legítimos de falsos alarmes.",
+  "0–1; higher is better, but 1 can coexist with zero fraud detection.":
+    "0–1; maior é melhor, mas 1 pode coexistir com nenhuma fraude detectada.",
+  "The lazy model clears everyone, including every fraud.":
+    "O modelo ingênuo libera todos, incluindo todas as fraudes.",
+  "Pair with recall; the majority class can dominate":
+    "Combine com revocação; a classe majoritária pode dominar",
+  "Compare groups; not a fairness verdict": "Compare grupos; não é um veredito de equidade",
+  "False-positive rate (FPR)": "Taxa de falsos positivos (FPR)",
+  "The fraction of legitimate payments incorrectly flagged as fraud.":
+    "Fração de pagamentos legítimos sinalizados incorretamente como fraude.",
+  "Even a small false-positive rate creates many alerts when legitimate payments dominate.":
+    "Mesmo uma taxa pequena gera muitos alertas quando pagamentos legítimos predominam.",
+  "0–1; lower is better. Zero alone does not imply a useful detector.":
+    "0–1; menor é melhor. Zero, sozinho, não indica um detector útil.",
+  "4.08% means 40 false alerts here.": "4,08% representam 40 alertas falsos aqui.",
+  "Essential when false alarms are costly": "Essencial quando falsos alarmes têm custo alto",
+  "Compare FPR and TPR: equalized odds": "Compare FPR e TPR: chances igualadas",
+  "Of the payments flagged as fraud, how many really were fraud?":
+    "Dos pagamentos sinalizados como fraude, quantos eram realmente fraudulentos?",
+  "Measures investigation yield: the candidate produces 54 alerts, but only 14 are real fraud.":
+    "Mede o rendimento da investigação: o candidato gera 54 alertas, mas apenas 14 são fraudes reais.",
+  "0–1; higher is better. Undefined when there are no positive predictions.":
+    "0–1; maior é melhor. Indefinida quando não há previsões positivas.",
+  "Lazy: undefined, not zero. Candidate: about one true fraud per four alerts.":
+    "Ingênuo: indefinida, não zero. Candidato: cerca de uma fraude real a cada quatro alertas.",
+  "Useful; depends strongly on prevalence": "Útil; depende bastante da prevalência",
+  "Compare precision: predictive parity": "Compare precisão: paridade preditiva",
+  "The fraction of all payments classified correctly.":
+    "Fração de todos os pagamentos classificados corretamente.",
+  "Describes overall correctness, but its class weights follow the evaluation distribution.":
+    "Descreve o acerto geral, mas o peso de cada classe acompanha a distribuição de avaliação.",
+  "0–1; higher means more correct labels, not necessarily better fraud detection.":
+    "0–1; maior significa mais rótulos corretos, não necessariamente melhor detecção de fraude.",
+  "98% hides zero fraud detection; 95.4% catches 14 frauds.":
+    "98% escondem nenhuma fraude detectada; 95,4% detectam 14 fraudes.",
+  "Useful when error costs are comparable": "Útil quando os custos dos erros são comparáveis",
+  "Insufficient alone; inspect each class": "Insuficiente sozinha; examine cada classe",
+  "The mean of fraud recall and legitimate recall; each class gets equal weight.":
+    "Média da revocação de fraude e da revocação de legítimos; cada classe recebe o mesmo peso.",
+  "Prevents the 980 legitimate cases from overwhelming the contribution of 20 frauds.":
+    "Impede que os 980 casos legítimos dominem a contribuição das 20 fraudes.",
+  "0–1; 1 is best. A constant binary classifier scores 0.5.":
+    "0–1; 1 é o melhor. Um classificador binário constante obtém 0,5.",
+  "Equal class weighting is not demographic fairness.":
+    "Pesos iguais para classes não significam equidade demográfica.",
+  "Useful summary of both class recalls": "Resumo útil da revocação das duas classes",
+  "The harmonic mean of positive-class precision and recall.":
+    "Média harmônica da precisão e da revocação da classe positiva.",
+  "Requires both useful alerts and fraud coverage; it does not include true negatives.":
+    "Exige alertas úteis e cobertura das fraudes; não inclui verdadeiros negativos.",
+  "0–1; higher is better. Read alongside specificity and error costs.":
+    "0–1; maior é melhor. Examine também a especificidade e os custos dos erros.",
+  "0.3784 exposes the candidate’s low alert precision.":
+    "0,3784 evidencia a baixa precisão dos alertas do candidato.",
+  "Useful for the rare positive class; ignores TN": "Útil para a classe positiva rara; ignora TN",
+  "Fβ score: worked F2": "Escore Fβ: exemplo com F2",
+  "A precision–recall summary whose β parameter controls the relative weight of recall.":
+    "Resumo de precisão e revocação cujo parâmetro β controla o peso relativo da revocação.",
+  "β = 2 weights recall more heavily. Choose β from the task, not to make a score look better.":
+    "β = 2 dá mais peso à revocação. Escolha β pela tarefa, não para melhorar a aparência do resultado.",
+  "0–1; higher is better for the chosen β. It is not a monetary cost model.":
+    "0–1; maior é melhor para o β escolhido. Não é um modelo de custo monetário.",
+  "F2 = 0.5224 emphasizes finding fraud more than F1 does.":
+    "F2 = 0,5224 enfatiza encontrar fraudes mais do que F1.",
+  "Useful when recall deserves extra weight": "Útil quando a revocação merece peso maior",
+  "Correlation between actual and predicted binary labels, using all four confusion counts.":
+    "Correlação entre rótulos binários reais e previstos, usando as quatro contagens da matriz.",
+  "Provides a broader summary than accuracy or a metric focused on one class.":
+    "Oferece um resumo mais amplo que a acurácia ou uma métrica focada em uma classe.",
+  "−1 to 1; 1 is perfect agreement, −1 complete disagreement, 0 no correlation.":
+    "−1 a 1; 1 é concordância perfeita, −1 discordância completa, 0 ausência de correlação.",
+  "Lazy MCC uses the library’s 0 convention for a zero denominator; the raw formula is undefined.":
+    "O MCC ingênuo usa a convenção 0 da biblioteca para denominador zero; a fórmula bruta é indefinida.",
+  "Useful; still inspect the individual error rates":
+    "Útil; examine também as taxas de erro individuais",
+  "The ROC curve plots TPR against FPR across thresholds. AUC measures positive–negative ranking quality.":
+    "A curva ROC mostra TPR em função de FPR para vários limiares. AUC mede a qualidade da ordenação de positivos e negativos.",
+  "A high AUC can coexist with many false alerts at the operating threshold.":
+    "Uma AUC alta pode coexistir com muitos alertas falsos no limiar utilizado.",
+  "0–1; 1 is perfect ranking, 0.5 is chance-level ranking.":
+    "0–1; 1 é ordenação perfeita, 0,5 é ordenação ao nível do acaso.",
+  "AUC 0.9878 does not mean 98.78% accuracy or high alert precision.":
+    "AUC 0,9878 não significa acurácia de 98,78% nem alta precisão dos alertas.",
+  "Useful for ranking": "Útil para ordenação",
+  "Useful, but inspect PR and operating-point errors":
+    "Útil, mas examine PR e os erros no limiar escolhido",
+  "The PR curve shows precision versus recall. AP sums precision weighted by increases in recall.":
+    "A curva PR mostra precisão em função da revocação. AP soma a precisão ponderada pelos aumentos da revocação.",
+  "Shows the trade-off between finding rare fraud and the reliability of alerts.":
+    "Mostra o compromisso entre encontrar fraudes raras e a confiabilidade dos alertas.",
+  "0–1; higher is better. Here the constant-score baseline is 0.02, the fraud rate.":
+    "0–1; maior é melhor. Aqui a referência de escore constante é 0,02, a taxa de fraude.",
+  "AP is 0.8; it is not trapezoidal PR AUC or precision at threshold 0.5.":
+    "AP é 0,8; não é AUC PR trapezoidal nem a precisão no limiar 0,5.",
+  "Useful; prevalence affects interpretation": "Útil; a prevalência afeta a interpretação",
+  "Especially useful for rare positives": "Especialmente útil para positivos raros",
+  "The average negative log probability assigned to the observed outcome.":
+    "Média do logaritmo negativo da probabilidade atribuída ao resultado observado.",
+  "Penalizes confident mistakes and assesses probability estimates rather than just labels.":
+    "Penaliza erros confiantes e avalia probabilidades estimadas, não apenas rótulos.",
+  "0 to infinity; lower is better. Zero is ideal.": "0 a infinito; menor é melhor. Zero é o ideal.",
+  "The base-rate predictor has lower loss here despite detecting no fraud at 0.5.":
+    "O preditor da taxa-base tem perda menor aqui, apesar de não detectar fraudes no limiar 0,5.",
+  "Useful, but the aggregate follows class prevalence":
+    "Útil, mas o agregado acompanha a prevalência das classes",
+  "Compare losses by group and outcome": "Compare perdas por grupo e resultado",
+  "The mean squared difference between fraud probability estimates and outcomes 0 or 1.":
+    "Média das diferenças quadráticas entre probabilidades estimadas de fraude e resultados 0 ou 1.",
+  "Combines probability calibration and discrimination; it is not a pure calibration metric.":
+    "Combina calibração e discriminação das probabilidades; não é uma métrica pura de calibração.",
+  "Binary Brier: 0–1; lower is better, 0 perfect, 1 worst.":
+    "Brier binário: 0–1; menor é melhor, 0 perfeito, 1 pior.",
+  "Lazy: 0.0196; candidate: 0.0282. Low aggregate error can hide rare-class failures.":
+    "Ingênuo: 0,0196; candidato: 0,0282. Erro agregado baixo pode esconder falhas na classe rara.",
+  "Compare against the base-rate predictor and per-class errors":
+    "Compare com o preditor da taxa-base e os erros por classe",
+  "Compare probability errors across groups": "Compare erros de probabilidade entre grupos",
+  "Expected calibration error (ECE)": "Erro esperado de calibração (ECE)",
+  "A size-weighted average gap between predicted probability and observed fraud frequency in bins.":
+    "Média ponderada pelo tamanho das diferenças entre probabilidade prevista e frequência observada de fraude em faixas.",
+  "Summarizes the reliability diagram, but depends on bin choices and sample size.":
+    "Resume o diagrama de confiabilidade, mas depende das faixas escolhidas e do tamanho da amostra.",
+  "0–1 for this definition; lower is better. Zero does not prove useful discrimination.":
+    "0–1 nesta definição; menor é melhor. Zero não comprova discriminação útil.",
+  "Ten equal-width bins. The constant 2% estimate has ECE 0 on this dataset.":
+    "Dez faixas de mesma largura. A estimativa constante de 2% tem ECE 0 neste conjunto.",
+  "Useful with bin counts and uncertainty": "Útil com contagens por faixa e incerteza",
+  "Can conceal rare-class problems; inspect bins":
+    "Pode ocultar problemas da classe rara; examine as faixas",
+  "Check calibration separately by group": "Verifique a calibração separadamente por grupo",
+  "Candidate model": "Modelo candidato",
+  "Lazy model": "Modelo ingênuo",
+  "Perfect calibration": "Calibração perfeita",
+  "Estimated fraud probability": "Probabilidade estimada de fraude",
+  "Candidate: non-empty probability bins": "Candidato: faixas de probabilidade não vazias",
+  "Mean estimate": "Estimativa média",
+  "Observed rate": "Taxa observada",
+  "Lazy / chance ranking": "Ingênuo / ordenação ao acaso",
+  "Lazy / prevalence baseline": "Ingênuo / referência de prevalência",
+  "Lazy precision is undefined: it never raises a fraud alert. It is omitted from the chart, not plotted as zero.":
+    "A precisão do modelo ingênuo é indefinida: ele nunca gera um alerta de fraude. Ela é omitida do gráfico, não representada como zero.",
+  "A good classifier must find the rare class without ignoring errors in the majority class.":
+    "Um bom classificador precisa encontrar a classe rara sem ignorar os erros na classe majoritária.",
+  "Class imbalance: one label is rare — for example, 98% legitimate payments and 2% fraud.":
+    "Desbalanceamento de classes: um rótulo é raro — por exemplo, 98% de pagamentos legítimos e 2% de fraudes.",
+  "Demographic fairness: assess how the model’s benefits, errors, and harms are distributed across groups of people.":
+    "Equidade demográfica: avalie como os benefícios, erros e danos do modelo se distribuem entre grupos de pessoas.",
+  "The problem: what does an overall score hide?":
+    "O problema: o que um resultado agregado esconde?",
+  "A majority class can dominate the overall score. Representation imbalance may also contribute to unfairness, but class imbalance and demographic unfairness are distinct: neither establishes the other.":
+    "Uma classe majoritária pode dominar o resultado agregado. O desbalanceamento de representação também pode contribuir para a injustiça, mas desbalanceamento de classes e injustiça demográfica são distintos: um não comprova o outro.",
+  "Balanced classes can coexist with unfair outcomes.":
+    "Classes balanceadas podem coexistir com resultados injustos.",
+  "Imbalanced classes can coexist with reasonably fair outcomes.":
+    "Classes desbalanceadas podem coexistir com resultados razoavelmente equitativos.",
+  "Class imbalance can exist without demographic imbalance.":
+    "Pode haver desbalanceamento de classes sem desbalanceamento demográfico.",
+  "Demographic imbalance can exist without class imbalance.":
+    "Pode haver desbalanceamento demográfico sem desbalanceamento de classes.",
+  "Evaluate each class, inspect the relevant errors, and compare demographic groups when assessing fairness.":
+    "Avalie cada classe, examine os erros relevantes e compare grupos demográficos ao avaliar a equidade.",
+  "Before choosing a metric": "Antes de escolher uma métrica",
+  "Does evaluation represent the population and fraud prevalence expected in use?":
+    "A avaliação representa a população e a prevalência de fraude esperadas no uso real?",
+  "Are evaluation examples separate from training and tuning, including customers and time periods?":
+    "Os exemplos de avaliação estão separados do treino e da seleção de configurações, incluindo clientes e períodos?",
+  "Are there enough fraud examples? Here, one of only 20 frauds changes recall by five percentage points.":
+    "Há exemplos de fraude suficientes? Aqui, uma das apenas 20 fraudes muda a revocação em cinco pontos percentuais.",
+  "Which costs matter: missed fraud, false alarms, or investigation workload?":
+    "Quais custos importam: fraudes não detectadas, falsos alarmes ou trabalho de investigação?",
+  "Which groups need separate assessment, and how many examples belong to each?":
+    "Quais grupos precisam de avaliação separada e quantos exemplos pertencem a cada um?",
+  "Fraud example": "Exemplo de fraude",
+  "The example: 1,000 payments, only 20 frauds": "O exemplo: 1.000 pagamentos, apenas 20 fraudes",
+  "Fraud is rare and can resemble a legitimate payment. This synthetic evaluation set contains 980 legitimate payments and 20 frauds. Finding the rare cases without overwhelming investigators with false alarms requires more than an overall accuracy score.":
+    "Fraudes são raras e podem parecer pagamentos legítimos. Este conjunto sintético de avaliação contém 980 pagamentos legítimos e 20 fraudes. Encontrar os casos raros sem sobrecarregar investigadores com falsos alarmes exige mais que uma acurácia geral.",
+  "The lazy model: 98% accuracy, no fraud detected":
+    "O modelo ingênuo: 98% de acurácia, nenhuma fraude detectada",
+  "Take the lazy model seriously for a moment: it labels every payment legitimate. It is right on 980 payments, but finding fraud is the reason to build this detector — and it finds none.":
+    "Leve o modelo ingênuo a sério por um momento: ele classifica todos os pagamentos como legítimos. Acerta 980 pagamentos, mas encontrar fraudes é a razão para construir este detector — e ele não encontra nenhuma.",
+  "Class recall": "Revocação por classe",
+  "Fraction correctly classified": "Fração classificada corretamente",
+  "Accuracy alone is insufficient: it conceals complete failure on fraud.":
+    "A acurácia sozinha é insuficiente: esconde a falha completa na detecção de fraude.",
+  "The classifier fails its fraud-detection purpose.":
+    "O classificador falha em seu propósito de detectar fraudes.",
+  "We need to evaluate both missed fraud and false alarms.":
+    "Precisamos avaliar tanto as fraudes não detectadas quanto os falsos alarmes.",
+  "A detector that finds fraud — with a cost": "Um detector que encontra fraudes — com um custo",
+  "On the same 1,000 payments, the candidate catches 14 of 20 frauds and correctly clears 940 of 980 legitimate payments. Fraud is the positive class. These are illustrative predictions, not the results of training a model on this page.":
+    "Nos mesmos 1.000 pagamentos, o candidato detecta 14 das 20 fraudes e libera corretamente 940 dos 980 pagamentos legítimos. Fraude é a classe positiva. São previsões ilustrativas, não resultados de treinar um modelo nesta página.",
+  "Precision of fraud alerts": "Precisão dos alertas de fraude",
+  "The candidate catches fraud, yet accuracy drops from 98% to 95.4%. Only 14 of its 54 alerts are real fraud. Whether that trade-off is acceptable depends on the task.":
+    "O candidato detecta fraudes, mas a acurácia cai de 98% para 95,4%. Apenas 14 de seus 54 alertas são fraudes reais. A aceitabilidade desse compromisso depende da tarefa.",
+  "Metrics that expose the trade-offs": "Métricas que revelam os compromissos",
+  "Scores behind the predictions": "Escores por trás das previsões",
+  "Beyond labels: ranking and probabilities": "Além dos rótulos: ordenação e probabilidades",
+  "A confusion matrix cannot determine AUC or probability losses. We now reveal four illustrative probability bands for the same candidate. A threshold of 0.5 produces exactly the matrix above; sweeping thresholds produces the curves below.":
+    "Uma matriz de confusão não determina AUC nem perdas de probabilidade. Agora revelamos quatro faixas ilustrativas de probabilidade para o mesmo candidato. O limiar 0,5 produz exatamente a matriz acima; variar os limiares produz as curvas abaixo.",
+  "Illustrative candidate scores": "Escores ilustrativos do candidato",
+  "Actual class": "Classe real",
+  "Fraud probability estimate": "Estimativa de probabilidade de fraude",
+  "At threshold 0.5": "No limiar 0,5",
+  "For probability evaluation, the lazy model assigns 0.02 to every payment: the 2% base rate. At threshold 0.5, it still predicts legitimate every time. This assumption makes its probabilities explicit rather than inventing losses from hard labels.":
+    "Para avaliar probabilidades, o modelo ingênuo atribui 0,02 a cada pagamento: a taxa-base de 2%. No limiar 0,5, ele continua prevendo legítimo sempre. Essa hipótese explicita suas probabilidades, em vez de inventar perdas a partir de rótulos.",
+  "Calibration curve": "Curva de calibração",
+  "Group probability estimates into ten equal-width bins. Plot mean predicted probability against the observed fraud fraction in each non-empty bin.":
+    "Agrupe as estimativas de probabilidade em dez faixas de mesma largura. Mostre a probabilidade média prevista e a fração de fraude observada em cada faixa não vazia.",
+  "If a model says 80%, does fraud occur about 80% of the time for those predictions? Here all 14 payments scored 0.8 are fraud. A high ranking score does not ensure reliable probabilities.":
+    "Se um modelo diz 80%, a fraude ocorre em cerca de 80% dessas previsões? Aqui todos os 14 pagamentos com escore 0,8 são fraudes. Uma ordenação boa não garante probabilidades confiáveis.",
+  "Closer to the diagonal y = x is better; there is no single curve score. Read bin counts and sampling uncertainty. The constant 2% baseline is calibrated here but cannot rank payments.":
+    "Quanto mais perto da diagonal y = x, melhor; a curva não tem um único escore. Examine contagens e incerteza amostral. A referência constante de 2% está calibrada aqui, mas não consegue ordenar pagamentos.",
+  "Assessing demographic fairness": "Avaliando a equidade demográfica",
+  "What would we need to assess fairness?": "O que precisamos para avaliar a equidade?",
+  "The class metrics above do not tell us whether groups of people experience different errors or harms. With relevant group labels and enough examples, repeat the evaluation for each group and compare:":
+    "As métricas por classe acima não mostram se grupos de pessoas sofrem erros ou danos diferentes. Com rótulos de grupo relevantes e exemplos suficientes, repita a avaliação para cada grupo e compare:",
+  "TPR: equal opportunity.": "TPR: igualdade de oportunidade.",
+  "TPR and FPR: equalized odds.": "TPR e FPR: chances igualadas.",
+  "Precision: predictive parity.": "Precisão: paridade preditiva.",
+  "Calibration and probability errors separately by group.":
+    "Calibração e erros de probabilidade separadamente por grupo.",
+  "Criteria can conflict, and no single score certifies fairness. Definitions and trade-offs: ":
+    "Os critérios podem entrar em conflito, e nenhum escore isolado certifica a equidade. Definições e compromissos: ",
+  "Comparison of Lazy Model and Candidate Model":
+    "Comparação entre modelo ingênuo e modelo candidato",
+  "Same 1,000 payments. Label metrics use threshold 0.5; ranking metrics sweep thresholds; probability metrics use the estimates above. A higher or lower score is a direction, not a universal deployment threshold.":
+    "Os mesmos 1.000 pagamentos. Métricas de rótulos usam limiar 0,5; métricas de ordenação percorrem limiares; métricas de probabilidade usam as estimativas acima. Um escore maior ou menor é uma direção, não um limite universal para implantação.",
+  "Model comparison": "Comparação dos modelos",
+  "Interpretation and good score": "Interpretação e bom resultado",
+  "One point on the diagonal": "Um ponto na diagonal",
+  "Four bins off the diagonal": "Quatro faixas fora da diagonal",
+  "Closer to y = x is better. Inspect the diagram and bin counts; a curve is not a scalar score.":
+    "Mais perto de y = x é melhor. Examine o diagrama e as contagens; uma curva não é um escore escalar.",
+  "Inspect the evaluation distribution before interpreting a score.":
+    "Examine a distribuição de avaliação antes de interpretar um escore.",
+  "Accuracy alone can hide total failure on a rare class. Read the confusion matrix and both class recalls.":
+    "A acurácia sozinha pode esconder a falha total na classe rara. Leia a matriz de confusão e a revocação das duas classes.",
+  "Recall, precision, and false-positive rate describe different costs. No single metric selects the right trade-off for every task.":
+    "Revocação, precisão e taxa de falsos positivos descrevem custos diferentes. Nenhuma métrica escolhe o compromisso correto para todas as tarefas.",
+  "Good ranking, good probability estimates, and useful decisions are different properties.":
+    "Boa ordenação, boas estimativas de probabilidade e decisões úteis são propriedades diferentes.",
+  "Balanced performance across classes does not establish fairness across demographic groups.":
+    "Desempenho balanceado entre classes não comprova equidade entre grupos demográficos.",
+  "Choosing classification metrics": "Escolhendo métricas de classificação",
+  "Balanced data": "Dados balanceados",
+  "Fairness assessment": "Avaliação de equidade",
+  "Useful for probability reliability": "Útil para a confiabilidade das probabilidades",
+  "Inspect bin counts and rare outcomes": "Examine contagens por faixa e resultados raros",
+  "Compare calibration by group": "Compare a calibração por grupo",
+  "Synthetic evaluation data; no model is trained here. Metric references: ":
+    "Dados sintéticos de avaliação; nenhum modelo é treinado aqui. Referências das métricas: ",
+  "Classification Fairness": "Classificação e equidade",
+  "Activation functions": "Funções de ativação",
+  "What an activation function is, and why we need it":
+    "O que é uma função de ativação e por que precisamos dela",
+  "Why we need it": "Por que precisamos dela",
+  "The function f applied to each neuron's z = w·x + b. It is the only non-linear step in a neuron: it takes a number and returns the signal the neuron passes on.":
+    "A função f aplicada ao z = w·x + b de cada neurônio. É o único passo não linear do neurônio: recebe um número e devolve o sinal que o neurônio transmite.",
+  "Weighted sums are linear, and so is a stack of them. Without f, two layers collapse into one line (formula below), however deep the network. With f between the layers, each hidden neuron bends the signal, and the network can fit curves.":
+    "Somas ponderadas são lineares, e uma pilha delas também é. Sem f, duas camadas colapsam em uma única reta (fórmula abaixo), não importa quão profunda seja a rede. Com f entre as camadas, cada neurônio oculto curva o sinal, e a rede consegue ajustar curvas.",
+  "With W₁ = 2, b₁ = 1, W₂ = −0.5, b₂ = 0.5: y = −x, a straight line.":
+    "Com W₁ = 2, b₁ = 1, W₂ = −0.5, b₂ = 0.5: y = −x, uma reta.",
+  "The straight line can never make a bump. Three ReLU neurons, one at each kink (x = −1, 0, 1), can: a single hidden layer is enough to bend the answer.":
+    "A reta nunca forma uma corcova. Três neurônios ReLU, um em cada quina (x = −1, 0, 1), conseguem: uma única camada oculta basta para curvar a resposta.",
+  "Without an activation function, depth adds nothing. Each one is what lets depth bend the answer.":
+    "Sem função de ativação, a profundidade não acrescenta nada. Cada uma delas é o que permite à profundidade curvar a resposta.",
+  "Every neuron works in two steps. It adds up its weighted inputs plus a bias, z = w₁x₁ + w₂x₂ + b, then passes z through an activation function f, which decides how strongly the neuron fires.":
+    "Todo neurônio trabalha em dois passos. Ele soma suas entradas ponderadas mais um viés, z = w₁x₁ + w₂x₂ + b, e depois passa z por uma função de ativação f, que decide com que intensidade o neurônio dispara.",
+  "Activation functions bring non-linearity: without them, any stack of layers is still one straight line. They play two roles:":
+    "Funções de ativação trazem não linearidade: sem elas, qualquer pilha de camadas continua sendo uma única reta. Elas têm dois papéis:",
+  "Hidden layers bend z, so the network can learn curves: tanh, ReLU, Leaky ReLU, GELU.":
+    "As camadas ocultas curvam z, para que a rede aprenda curvas: tanh, ReLU, Leaky ReLU, GELU.",
+  "The output layer shapes z into the form the answer needs: linear for a number, sigmoid for yes/no, softmax for one class among many.":
+    "A camada de saída molda z no formato que a resposta precisa: linear para um número, sigmoide para sim/não, softmax para uma classe entre várias.",
+  "Hidden activations make the network expressive; the output activation makes the answer readable.":
+    "As ativações ocultas tornam a rede expressiva; a ativação de saída torna a resposta legível.",
+  "Every section below uses the same neuron: x = (2, 1), w = (0.5, −1.5), so z = {0} + b. Move the bias to change z and watch the output.":
+    "Todas as seções abaixo usam o mesmo neurônio: x = (2, 1), w = (0,5, −1,5), então z = {0} + b. Mova o viés para mudar z e observe a saída.",
+  "Output layer": "Camada de saída",
+  "Why use it": "Por que usar",
+  "When to use": "Quando usar",
+  "When not to use": "Quando não usar",
+  "Bias b": "Viés b",
+  "{0}: z = {1} becomes output {2}.": "{0}: z = {1} vira a saída {2}.",
+  "Linear (no activation)": "Linear (sem ativação)",
+  "Passes z through unchanged. The output can be any real number.":
+    "Passa z sem alteração. A saída pode ser qualquer número real.",
+  "A regression answer — a price, a temperature — can be any number, so the last neuron must not squash it.":
+    "Uma resposta de regressão — um preço, uma temperatura — pode ser qualquer número, então o último neurônio não deve comprimi-la.",
+  "Output layer of regression, paired with mean squared error.":
+    "Camada de saída de regressão, junto com o erro quadrático médio.",
+  "Hidden layers: stacked linear layers collapse into one single linear layer.":
+    "Camadas ocultas: camadas lineares empilhadas se reduzem a uma única camada linear.",
+  "Linear means “no activation”: right for a number output, useless inside the network.":
+    "Linear significa “sem ativação”: certa para uma saída numérica, inútil dentro da rede.",
+  Sigmoid: "Sigmoide",
+  "Squashes z into 0…1: very negative z → near 0, very positive z → near 1, z = 0 → 0.5.":
+    "Comprime z em 0…1: z muito negativo → perto de 0, z muito positivo → perto de 1, z = 0 → 0,5.",
+  "The output reads as a probability for a yes/no question: spam or not, at risk or not.":
+    "A saída se lê como uma probabilidade para uma pergunta de sim/não: spam ou não, em risco ou não.",
+  "Output of binary classification, paired with binary cross-entropy.":
+    "Saída de classificação binária, junto com a entropia cruzada binária.",
+  "Multi-label outputs: one independent yes/no per label.":
+    "Saídas multirrótulo: um sim/não independente por rótulo.",
+  "Deep hidden layers: its slope is at most 0.25 and near 0 at both ends, so gradients vanish.":
+    "Camadas ocultas profundas: sua inclinação é no máximo 0,25 e quase 0 nas duas pontas, então os gradientes desaparecem.",
+  "Several classes with one right answer: use softmax.":
+    "Várias classes com uma única resposta certa: use softmax.",
+  "Sigmoid turns a score into a probability — keep it at the output.":
+    "A sigmoide transforma uma pontuação em probabilidade — mantenha-a na saída.",
+  "Turns a list of scores (logits), one per class, into probabilities that are all positive and sum to 1.":
+    "Transforma uma lista de pontuações (logits), uma por classe, em probabilidades todas positivas que somam 1.",
+  "A multiclass problem needs one answer among many: cat, dog or bird. Raising one logit raises its class and lowers all the others. It is sigmoid generalized to many classes.":
+    "Um problema multiclasse precisa de uma resposta entre várias: gato, cachorro ou pássaro. Aumentar um logit aumenta sua classe e reduz todas as outras. É a sigmoide generalizada para muitas classes.",
+  "Sum of probabilities": "Soma das probabilidades",
+  "Output of multiclass classification with exactly one right class, paired with categorical cross-entropy.":
+    "Saída de classificação multiclasse com exatamente uma classe certa, junto com a entropia cruzada categórica.",
+  "Attention weights inside transformers.": "Pesos de atenção dentro de transformers.",
+  "Hidden layers.": "Camadas ocultas.",
+  "Multi-label problems, where several classes can be true at once: use one sigmoid per class.":
+    "Problemas multirrótulo, em que várias classes podem ser verdadeiras ao mesmo tempo: use uma sigmoide por classe.",
+  "Softmax picks one class out of many; sigmoid answers one yes/no.":
+    "A softmax escolhe uma classe entre várias; a sigmoide responde um sim/não.",
+  "Hyperbolic tangent (tanh)": "Tangente hiperbólica (tanh)",
+  "Squashes z into −1…1, centered on 0.": "Comprime z em −1…1, centrada em 0.",
+  "Zero-centered outputs keep the next layer's inputs balanced around 0, so training usually converges faster than with sigmoid. Its slope peaks at 1, four times sigmoid's.":
+    "Saídas centradas em zero mantêm as entradas da próxima camada equilibradas em torno de 0, então o treino costuma convergir mais rápido do que com a sigmoide. Sua inclinação chega a 1, quatro vezes a da sigmoide.",
+  "Hidden layers of small networks.": "Camadas ocultas de redes pequenas.",
+  "Recurrent networks (LSTM, GRU).": "Redes recorrentes (LSTM, GRU).",
+  "Very deep networks: it still saturates at both ends, so gradients can vanish.":
+    "Redes muito profundas: ela ainda satura nas duas pontas, então os gradientes podem desaparecer.",
+  "tanh is a zero-centered sigmoid: better inside the network, but it still saturates.":
+    "A tanh é uma sigmoide centrada em zero: melhor dentro da rede, mas ainda satura.",
+  "Rectified Linear Unit (ReLU)": "Unidade linear retificada (ReLU)",
+  "Keeps positive z and turns negative z into 0.":
+    "Mantém z positivo e transforma z negativo em 0.",
+  "Its slope is exactly 1 for z > 0, so gradients do not vanish there. It is a single comparison, so it is cheap, and deep networks train much faster with it.":
+    "Sua inclinação é exatamente 1 para z > 0, então os gradientes não desaparecem ali. É uma única comparação, então é barata, e redes profundas treinam muito mais rápido com ela.",
+  "The default for hidden layers of most networks (MLPs, CNNs).":
+    "O padrão para camadas ocultas da maioria das redes (MLPs, CNNs).",
+  "Output layers whose answer can be negative.":
+    "Camadas de saída cuja resposta pode ser negativa.",
+  "When many neurons “die”: if z stays below 0, the slope is 0 and the weights never update again.":
+    "Quando muitos neurônios “morrem”: se z fica abaixo de 0, a inclinação é 0 e os pesos nunca mais são atualizados.",
+  "ReLU is the default hidden activation: simple, fast, and no saturation for z > 0.":
+    "A ReLU é a ativação oculta padrão: simples, rápida e sem saturação para z > 0.",
+  "Like ReLU, but negative z keeps a small slope α. Libraries use α = 0.01; here α = 0.1 so the leak is visible.":
+    "Como a ReLU, mas z negativo mantém uma pequena inclinação α. As bibliotecas usam α = 0,01; aqui α = 0,1 para o vazamento ficar visível.",
+  "It fixes dying ReLU: a neuron with negative z still passes a small gradient, so it can recover.":
+    "Ela corrige a ReLU que morre: um neurônio com z negativo ainda passa um pequeno gradiente, então pode se recuperar.",
+  "Hidden layers where many ReLU neurons are stuck at 0.":
+    "Camadas ocultas em que muitos neurônios ReLU ficam presos em 0.",
+  "GAN discriminators, where it is the usual choice.":
+    "Discriminadores de GANs, onde é a escolha usual.",
+  "When plain ReLU already trains well: the gain is often small, and α is one more knob.":
+    "Quando a ReLU simples já treina bem: o ganho costuma ser pequeno, e α é mais um ajuste.",
+  "Leaky ReLU is a ReLU that never fully switches off.":
+    "A Leaky ReLU é uma ReLU que nunca desliga totalmente.",
+  "GELU and SiLU": "GELU e SiLU",
+  "Smooth versions of ReLU: near 0 for very negative z, near z for large z, with a soft bend and a small dip below 0 in between.":
+    "Versões suaves da ReLU: perto de 0 para z muito negativo, perto de z para z grande, com uma curva suave e uma pequena descida abaixo de 0 no meio.",
+  "The smooth curve passes some gradient almost everywhere, which helps very deep models train. GELU is the activation inside BERT and GPT; SiLU (also called Swish) is used in many vision models and LLMs such as Llama.":
+    "A curva suave passa algum gradiente em quase todo lugar, o que ajuda modelos muito profundos a treinar. A GELU é a ativação dentro do BERT e do GPT; a SiLU (também chamada Swish) é usada em muitos modelos de visão e LLMs como o Llama.",
+  "Hidden layers of transformers and other large, deep networks.":
+    "Camadas ocultas de transformers e de outras redes grandes e profundas.",
+  "Small or speed-critical models: they cost more than ReLU for little gain.":
+    "Modelos pequenos ou em que a velocidade é crítica: custam mais que a ReLU para pouco ganho.",
+  "GELU and SiLU are the smooth ReLUs of modern deep learning.":
+    "GELU e SiLU são as ReLUs suaves do deep learning moderno.",
+  "Side by side": "Lado a lado",
+  "The curves": "As curvas",
+  "The slopes": "As inclinações",
+  "Sigmoid and tanh flatten at both ends. The ReLU family keeps rising for positive z.":
+    "A sigmoide e a tanh achatam nas duas pontas. A família ReLU continua subindo para z positivo.",
+  "Training sends its learning signal back through each slope f′(z). Where the slope is near 0, the signal fades, and every extra layer multiplies those small slopes together.":
+    "O treino envia seu sinal de aprendizado de volta por cada inclinação f′(z). Onde a inclinação é quase 0, o sinal some, e cada camada a mais multiplica essas pequenas inclinações entre si.",
+  "Activation curves": "Curvas de ativação",
+  "Activation slopes": "Inclinações das ativações",
+  "A flat slope means no learning signal: that is why ReLU-style functions won.":
+    "Inclinação plana significa nenhum sinal de aprendizado: é por isso que as funções do tipo ReLU venceram.",
+  Function: "Função",
+  "Output range": "Faixa de saída",
+  "Use it for": "Use para",
+  "any number": "qualquer número",
+  "Regression output": "Saída de regressão",
+  "0 to 1": "0 a 1",
+  "Binary or multi-label output": "Saída binária ou multirrótulo",
+  "0 to 1, sums to 1": "0 a 1, soma 1",
+  "Multiclass output": "Saída multiclasse",
+  "−1 to 1": "−1 a 1",
+  "Hidden layers of small or recurrent networks":
+    "Camadas ocultas de redes pequenas ou recorrentes",
+  "0 to ∞": "0 a ∞",
+  "Default hidden layer": "Camada oculta padrão",
+  "−∞ to ∞": "−∞ a ∞",
+  "Hidden layers when ReLU neurons die": "Camadas ocultas quando neurônios ReLU morrem",
+  "≈ −0.3 to ∞": "≈ −0,3 a ∞",
+  "Hidden layers of transformers": "Camadas ocultas de transformers",
+  "In a nutshell": "Em resumo",
+  "Inputs pass through hidden neurons and their activation, then an output neuron and the output activation.":
+    "As entradas passam pelos neurônios ocultos e sua ativação, depois por um neurônio de saída e a ativação de saída.",
+  "the default": "o padrão",
+  "when ReLU neurons die": "quando neurônios ReLU morrem",
+  "transformers, deep nets": "transformers, redes profundas",
+  "small or recurrent nets": "redes pequenas ou recorrentes",
+  "output neuron": "neurônio de saída",
+  "a number (regression)": "um número (regressão)",
+  "yes / no (binary)": "sim / não (binária)",
+  "one class of many": "uma classe entre várias",
+  "Pick one hidden activation and one output activation. The hidden results always go through an output neuron (its own weights and bias) before the output activation. With no hidden layer, the inputs go straight to that output neuron — that is linear or logistic regression, which can only draw straight lines.":
+    "Escolha uma ativação oculta e uma ativação de saída. Os resultados ocultos sempre passam por um neurônio de saída (com seus próprios pesos e viés) antes da ativação de saída. Sem camada oculta, as entradas vão direto para esse neurônio de saída — isso é regressão linear ou logística, que só consegue traçar retas.",
+  "Choose hidden activations for learning; choose the output activation for the answer.":
+    "Escolha as ativações ocultas para aprender; escolha a ativação de saída para a resposta.",
+  Risk: "Risco",
+  "Each observation contains two input features and a risk label:":
+    "Cada observação contém duas características de entrada e um rótulo de risco:",
+  "— not at risk (operating safely), or": "— sem risco (operando com segurança), ou",
+  "— at risk (may require maintenance). ": "— em risco (pode precisar de manutenção). ",
+  "Actual risk": "Risco real",
+  "Predicted risk": "Risco previsto",
+  "Risk: 1 = at risk, 0 = normal.": "Risco: 1 = em risco, 0 = normal.",
+  "Every machine, scored": "Cada máquina, avaliada",
+  "Predicted risk is this network's current guess — it updates as you train. ":
+    "O risco previsto é o palpite atual desta rede — ele muda à medida que você treina. ",
+  "Hide {0} machines": "Ocultar {0} máquinas",
+  "Show {0} machines": "Mostrar {0} máquinas",
+  "Risk:": "Risco:",
+  "= at risk,": "= em risco,",
+  "= normal.": "= normal.",
+  "Class colors": "Cores das classes",
+  "Color for 0 — normal": "Cor para 0 — normal",
+  "0 — Normal": "0 — Normal",
+  "Color for 1 — at risk": "Cor para 1 — em risco",
+  "1 — At risk": "1 — Em risco",
+  "1 — At Risk": "1 — Em risco",
+  "Model configuration": "Configuração do modelo",
+  "Performance report": "Relatório de desempenho",
+  "A dashboard of every number; each is explained, with its formula, below.":
+    "Um painel com todos os números; cada um é explicado, com sua fórmula, abaixo.",
+  ROC: "ROC",
+  Calibration: "Calibração",
+  "Precision–recall": "Precisão–revocação",
+  "Every number below comes from the same network shown in Data & Learning, currently trained for {0} epochs on the {1} machine readings.":
+    "Todos os números abaixo vêm da mesma rede mostrada em Dados e Aprendizado, atualmente treinada por {0} épocas sobre as {1} leituras de máquinas.",
+  " machine readings (temperature, vibration) from Programming vs ML, classified by a small neural network currently trained for {0} epochs. ":
+    " leituras de máquinas (temperatura, vibração) de Programação vs ML, classificadas por uma pequena rede neural atualmente treinada por {0} épocas. ",
 }

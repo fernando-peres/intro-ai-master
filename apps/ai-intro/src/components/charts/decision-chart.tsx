@@ -1,6 +1,6 @@
-import { useId } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import { useTranslation } from "@/i18n/use-translation"
-import { createScale } from "./scales"
+import { CHART_HEIGHT, CHART_WIDTH, createScale } from "./scales"
 import type { ScatterPoint, ScatterSeries } from "./scatter-chart"
 import { pointKey } from "./scatter-chart"
 
@@ -65,11 +65,13 @@ export function DecisionChart({
   xLabel,
   yLabel,
   valueAt,
-  positiveColor = "var(--color-brand)",
-  negativeColor = "var(--color-chart-cool)",
+  positiveColor = "var(--color-class-2)",
+  negativeColor = "var(--color-class-1)",
   showBoundaryLine = false,
   flaggedKeys,
   boundaries,
+  showLegend = true,
+  fill = false,
 }: {
   points: ScatterPoint[]
   series: ScatterSeries[]
@@ -90,11 +92,33 @@ export function DecisionChart({
     color: string
     dashed?: boolean
   }[]
+  /** Hide the series legend when the surrounding panel already shows one. */
+  showLegend?: boolean
+  /** Grow taller to fill the parent's height (never shorter than the default aspect ratio). */
+  fill?: boolean
 }) {
   const { t } = useTranslation()
   const clipId = useId()
+  const frameRef = useRef<HTMLDivElement>(null)
+  const [fillHeight, setFillHeight] = useState(CHART_HEIGHT)
+
+  useEffect(() => {
+    const frame = frameRef.current
+    if (!fill || !frame || typeof ResizeObserver === "undefined") return
+    const observer = new ResizeObserver(([entry]) => {
+      const { width: w, height: h } = entry.contentRect
+      if (w > 0) setFillHeight(Math.max(CHART_HEIGHT, Math.round((CHART_WIDTH * h) / w)))
+    })
+    observer.observe(frame)
+    return () => observer.disconnect()
+  }, [fill])
+
   const { width, height, margin, plotWidth, plotHeight, xTicks, yTicks, xDomain, yDomain, px, py } =
-    createScale({ xValues: points.map((p) => p.x), yValues: points.map((p) => p.y) })
+    createScale({
+      xValues: points.map((p) => p.x),
+      yValues: points.map((p) => p.y),
+      height: fill ? fillHeight : CHART_HEIGHT,
+    })
 
   const colorOf = (key: string) => series.find((s) => s.key === key)?.color ?? "currentColor"
   const cellWidth = plotWidth / GRID_COLS
@@ -121,157 +145,170 @@ export function DecisionChart({
       .join("")
   const boundaryPath = showBoundaryLine ? contourPath(valueAt) : ""
 
-  return (
-    <figure className="flex flex-col gap-3">
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        className="h-auto w-full"
-        role="img"
-        aria-label={t(
-          "{0} against {1}, with the model's predicted decision boundary shaded behind the data.",
-          [t(xLabel), t(yLabel)],
-        )}
-      >
-        <clipPath id={clipId}>
-          <rect x={margin.left} y={margin.top} width={plotWidth} height={plotHeight} />
-        </clipPath>
-        <g clipPath={`url(#${clipId})`}>
-          {cells.map((cell) => (
-            <rect
-              key={cell.key}
-              x={cell.x}
-              y={cell.y}
-              width={cellWidth + 0.5}
-              height={cellHeight + 0.5}
-              fill={cell.color}
-              fillOpacity={cell.opacity}
-            />
-          ))}
-          {boundaryPath && (
-            <path
-              d={boundaryPath}
-              fill="none"
-              className="stroke-fg"
-              strokeWidth={2.5}
-              strokeLinecap="round"
-            />
-          )}
-          {boundaries?.map((b) => (
-            <path
-              key={b.key}
-              d={contourPath(b.valueAt)}
-              fill="none"
-              stroke={b.color}
-              strokeWidth={b.dashed ? 2 : 2.5}
-              strokeDasharray={b.dashed ? "6 5" : undefined}
-              strokeLinecap="round"
-            />
-          ))}
-        </g>
-
-        {yTicks.map((t) => (
-          <g key={`y-${t}`}>
-            <line
-              x1={margin.left}
-              x2={width - margin.right}
-              y1={py(t)}
-              y2={py(t)}
-              className="stroke-divider"
-              strokeDasharray="4 4"
-            />
-            <text
-              x={margin.left - 12}
-              y={py(t)}
-              textAnchor="end"
-              dominantBaseline="middle"
-              className="fill-fg-muted font-ui text-[13px]"
-            >
-              {t}
-            </text>
-          </g>
+  const svg = (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className={fill ? "absolute inset-0 size-full" : "h-auto w-full"}
+      role="img"
+      aria-label={t(
+        "{0} against {1}, with the model's predicted decision boundary shaded behind the data.",
+        [t(xLabel), t(yLabel)],
+      )}
+    >
+      <clipPath id={clipId}>
+        <rect x={margin.left} y={margin.top} width={plotWidth} height={plotHeight} />
+      </clipPath>
+      <g clipPath={`url(#${clipId})`}>
+        {cells.map((cell) => (
+          <rect
+            key={cell.key}
+            x={cell.x}
+            y={cell.y}
+            width={cellWidth + 0.5}
+            height={cellHeight + 0.5}
+            fill={cell.color}
+            fillOpacity={cell.opacity}
+          />
         ))}
+        {boundaryPath && (
+          <path
+            d={boundaryPath}
+            fill="none"
+            className="stroke-fg"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+          />
+        )}
+        {boundaries?.map((b) => (
+          <path
+            key={b.key}
+            d={contourPath(b.valueAt)}
+            fill="none"
+            stroke={b.color}
+            strokeWidth={b.dashed ? 2 : 2.5}
+            strokeDasharray={b.dashed ? "6 5" : undefined}
+            strokeLinecap="round"
+          />
+        ))}
+      </g>
 
-        <line
-          x1={margin.left}
-          x2={margin.left}
-          y1={margin.top}
-          y2={margin.top + plotHeight}
-          className="stroke-fg-muted"
-        />
-        <line
-          x1={margin.left}
-          x2={width - margin.right}
-          y1={margin.top + plotHeight}
-          y2={margin.top + plotHeight}
-          className="stroke-fg-muted"
-        />
-
-        {xTicks.map((t) => (
+      {yTicks.map((t) => (
+        <g key={`y-${t}`}>
+          <line
+            x1={margin.left}
+            x2={width - margin.right}
+            y1={py(t)}
+            y2={py(t)}
+            className="stroke-divider"
+            strokeDasharray="4 4"
+          />
           <text
-            key={`x-${t}`}
-            x={px(t)}
-            y={margin.top + plotHeight + 28}
-            textAnchor="middle"
+            x={margin.left - 12}
+            y={py(t)}
+            textAnchor="end"
+            dominantBaseline="middle"
             className="fill-fg-muted font-ui text-[13px]"
           >
             {t}
           </text>
-        ))}
+        </g>
+      ))}
 
-        <text
-          x={margin.left + plotWidth / 2}
-          y={height - 6}
-          textAnchor="middle"
-          className="fill-fg-secondary font-ui text-[14px]"
-        >
-          {t(xLabel)}
-        </text>
-        <text
-          x={-(margin.top + plotHeight / 2)}
-          y={16}
-          textAnchor="middle"
-          transform="rotate(-90)"
-          className="fill-fg-secondary font-ui text-[14px]"
-        >
-          {t(yLabel)}
-        </text>
+      <line
+        x1={margin.left}
+        x2={margin.left}
+        y1={margin.top}
+        y2={margin.top + plotHeight}
+        className="stroke-fg-muted"
+      />
+      <line
+        x1={margin.left}
+        x2={width - margin.right}
+        y1={margin.top + plotHeight}
+        y2={margin.top + plotHeight}
+        className="stroke-fg-muted"
+      />
 
-        {points.map((p) => (
-          <g key={pointKey(p)}>
-            {flaggedKeys?.has(pointKey(p)) && (
-              <circle
-                cx={px(p.x)}
-                cy={py(p.y)}
-                r={15}
-                fill="none"
-                className="stroke-fg"
-                strokeWidth={1.5}
-                strokeDasharray="3 3"
-              />
-            )}
+      {xTicks.map((t) => (
+        <text
+          key={`x-${t}`}
+          x={px(t)}
+          y={margin.top + plotHeight + 28}
+          textAnchor="middle"
+          className="fill-fg-muted font-ui text-[13px]"
+        >
+          {t}
+        </text>
+      ))}
+
+      <text
+        x={margin.left + plotWidth / 2}
+        y={height - 6}
+        textAnchor="middle"
+        className="fill-fg-secondary font-ui text-[14px]"
+      >
+        {t(xLabel)}
+      </text>
+      <text
+        x={-(margin.top + plotHeight / 2)}
+        y={16}
+        textAnchor="middle"
+        transform="rotate(-90)"
+        className="fill-fg-secondary font-ui text-[14px]"
+      >
+        {t(yLabel)}
+      </text>
+
+      {points.map((p) => (
+        <g key={pointKey(p)}>
+          {flaggedKeys?.has(pointKey(p)) && (
             <circle
               cx={px(p.x)}
               cy={py(p.y)}
-              r={9}
-              fill={colorOf(p.series)}
-              stroke="var(--color-canvas)"
-              strokeWidth={2.5}
+              r={15}
+              fill="none"
+              className="stroke-fg"
+              strokeWidth={1.5}
+              strokeDasharray="3 3"
             />
-          </g>
-        ))}
-      </svg>
-      <figcaption className="flex items-center justify-center gap-6">
-        {series.map((s) => (
-          <span key={s.key} className="flex items-center gap-2 font-ui text-sm text-fg-secondary">
-            <span
-              aria-hidden
-              className="size-3 rounded-full"
-              style={{ backgroundColor: s.color }}
-            />
-            {t(s.label)}
-          </span>
-        ))}
-      </figcaption>
+          )}
+          <circle
+            cx={px(p.x)}
+            cy={py(p.y)}
+            r={9}
+            fill={colorOf(p.series)}
+            stroke="var(--color-canvas)"
+            strokeWidth={2.5}
+          />
+        </g>
+      ))}
+    </svg>
+  )
+
+  return (
+    <figure className={fill ? "flex flex-1 flex-col gap-3" : "flex flex-col gap-3"}>
+      {fill ? (
+        <div ref={frameRef} className="relative flex-1">
+          <div aria-hidden className="aspect-[760/420] w-full" />
+          {svg}
+        </div>
+      ) : (
+        svg
+      )}
+      {showLegend && (
+        <figcaption className="flex items-center justify-center gap-6">
+          {series.map((s) => (
+            <span key={s.key} className="flex items-center gap-2 font-ui text-sm text-fg-secondary">
+              <span
+                aria-hidden
+                className="size-3 rounded-full"
+                style={{ backgroundColor: s.color }}
+              />
+              {t(s.label)}
+            </span>
+          ))}
+        </figcaption>
+      )}
     </figure>
   )
 }

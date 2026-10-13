@@ -102,7 +102,7 @@ export function runReducer(state: RunState, action: RunAction): RunState {
     case "selectActivation":
       return freshRun(state.runId + 1, state.dataset, action.activation, toggles)
     case "reset":
-      return initialRunState(state.runId + 1)
+      return freshRun(state.runId + 1, state.dataset, state.activation, toggles)
     case "play":
       return state.status === "paused" ? { ...state, status: "playing" } : state
     case "pause":

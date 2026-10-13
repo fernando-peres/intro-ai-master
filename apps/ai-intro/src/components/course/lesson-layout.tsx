@@ -124,8 +124,13 @@ export function LessonArticle({ children }: { entry: LessonEntry; children: Reac
 export function LessonHero({ line1, line2 }: { line1: string; line2?: string }) {
   return (
     <h1 className="break-words font-display text-6xl font-bold leading-[0.98] tracking-[-1.6px] text-fg md:text-[78px] md:tracking-[-2.4px]">
-      <span className="block">{line1}</span>
-      {line2 && <span className="block text-brand italic">{line2}</span>}
+      {line1}
+      {line2 && (
+        <>
+          {" "}
+          <span className="text-brand italic">{line2}</span>
+        </>
+      )}
     </h1>
   )
 }

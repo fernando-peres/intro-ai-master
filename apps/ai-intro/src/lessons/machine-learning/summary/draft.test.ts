@@ -3,8 +3,14 @@ import { SummaryDraft, storageKey } from "./draft"
 
 const seed = [{ type: "paragraph" as const, content: "Original" }]
 const edited = [{ type: "paragraph" as const, content: "My explanation" }]
-beforeEach(() => { localStorage.clear(); vi.useFakeTimers() })
-afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks() })
+beforeEach(() => {
+  localStorage.clear()
+  vi.useFakeTimers()
+})
+afterEach(() => {
+  vi.useRealTimers()
+  vi.restoreAllMocks()
+})
 
 test("seeds a missing document, debounces edits, and reloads the saved copy", () => {
   const draft = new SummaryDraft("en-US", seed)
@@ -25,10 +31,17 @@ test("flush preserves the latest edit before navigation and keeps languages sepa
   const pt = new SummaryDraft("pt-BR", [{ type: "paragraph", content: "Original em português" }])
   pt.flush()
   expect(new SummaryDraft("en-US", seed).getSnapshot().blocks).toEqual(edited)
-  expect(new SummaryDraft("pt-BR", seed).getSnapshot().blocks[0].content).toBe("Original em português")
+  expect(new SummaryDraft("pt-BR", seed).getSnapshot().blocks[0].content).toBe(
+    "Original em português",
+  )
 })
 
-test.each(["{broken", JSON.stringify({ version: 2, blocks: seed }), JSON.stringify({ version: 1, blocks: [{ type: "video" }] }), JSON.stringify({ version: 1, blocks: [{ type: "table", content: "bad" }] })])("preserves unreadable saved content until explicit restore: %s", (raw) => {
+test.each([
+  "{broken",
+  JSON.stringify({ version: 2, blocks: seed }),
+  JSON.stringify({ version: 1, blocks: [{ type: "video" }] }),
+  JSON.stringify({ version: 1, blocks: [{ type: "table", content: "bad" }] }),
+])("preserves unreadable saved content until explicit restore: %s", (raw) => {
   localStorage.setItem(storageKey("en-US"), raw)
   const draft = new SummaryDraft("en-US", seed)
   expect(draft.getSnapshot().status).toBe("blocked")
@@ -42,7 +55,9 @@ test.each(["{broken", JSON.stringify({ version: 2, blocks: seed }), JSON.stringi
 
 test("failed writes keep the newest document in memory without reporting saved", () => {
   const draft = new SummaryDraft("en-US", seed)
-  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("Quota") })
+  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    throw new Error("Quota")
+  })
   draft.change(edited)
   draft.flush()
   expect(draft.getSnapshot()).toMatchObject({ status: "error", blocks: edited })
@@ -52,8 +67,12 @@ test("failed writes keep the newest document in memory without reporting saved",
 })
 
 test("unavailable storage still allows in-memory editing", () => {
-  vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("Blocked") })
-  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("Blocked") })
+  vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    throw new Error("Blocked")
+  })
+  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    throw new Error("Blocked")
+  })
   const draft = new SummaryDraft("en-US", seed)
   draft.change(edited)
   draft.flush()
@@ -63,8 +82,10 @@ test("unavailable storage still allows in-memory editing", () => {
 test("restoring cancels pending saves and affects only the active language", () => {
   const en = new SummaryDraft("en-US", seed)
   const pt = new SummaryDraft("pt-BR", seed)
-  pt.change(edited); pt.flush()
-  en.change(edited); en.restore()
+  pt.change(edited)
+  pt.flush()
+  en.change(edited)
+  en.restore()
   vi.runAllTimers()
   expect(new SummaryDraft("en-US", seed).getSnapshot().blocks).toEqual(seed)
   expect(new SummaryDraft("pt-BR", seed).getSnapshot().blocks).toEqual(edited)

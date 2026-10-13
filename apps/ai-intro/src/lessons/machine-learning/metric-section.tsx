@@ -10,6 +10,7 @@ export function MetricSection({
   what,
   why,
   formulas,
+  range,
   worked,
   children,
   whatLabel = "What it measures",
@@ -20,6 +21,8 @@ export function MetricSection({
   what: ReactNode
   why: ReactNode
   formulas?: ReactNode
+  /** What a good score looks like: the range, which end is better, and where chance/baseline sits. */
+  range?: ReactNode
   /** The formulas again, with this lesson's actual numbers substituted in (see `Worked`). */
   worked?: ReactNode
   children: ReactNode
@@ -42,6 +45,12 @@ export function MetricSection({
             <div className="text-fg-secondary">{why}</div>
           </div>
           {formulas && <Formula>{formulas}</Formula>}
+          {range && (
+            <div className="flex flex-col gap-1">
+              <p className="label-ui text-brand">{t("Good score")}</p>
+              <div className="text-sm text-fg-secondary">{range}</div>
+            </div>
+          )}
           {worked && <Worked>{worked}</Worked>}
         </div>
         <div className="flex flex-col gap-3">{children}</div>
@@ -54,9 +63,11 @@ export function MetricSection({
 export function CheatSheet({
   number,
   rows,
+  columns = ["Metric", "Answers", "Reach for it when"],
 }: {
   number: string
   rows: { metric: string; question: string; use: string }[]
+  columns?: [string, string, string]
 }) {
   const { t } = useTranslation()
   return (
@@ -66,9 +77,11 @@ export function CheatSheet({
         <table className="w-full text-left text-sm">
           <thead className="bg-surface">
             <tr className="label-ui text-fg-muted">
-              <th className="px-4 py-2 font-normal">{t("Metric")}</th>
-              <th className="px-4 py-2 font-normal">{t("Answers")}</th>
-              <th className="px-4 py-2 font-normal">{t("Reach for it when")}</th>
+              {columns.map((c) => (
+                <th key={c} className="px-4 py-2 font-normal">
+                  {t(c)}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-divider">
@@ -186,14 +199,14 @@ export function FoldDiagram({ folds }: { folds: number }) {
             <span
               // biome-ignore lint/suspicious/noArrayIndexKey: folds are a fixed, ordered sequence
               key={fold}
-              className={`h-5 flex-1 rounded-[2px] ${fold === round ? "bg-brand" : "bg-chart-cool/60"}`}
+              className={`h-5 flex-1 rounded-[2px] ${fold === round ? "bg-fg-secondary" : "bg-chart-warm/60"}`}
             />
           ))}
         </div>
       ))}
       <p className="font-ui text-[11px] text-fg-muted">
-        <span className="text-chart-cool">■</span> {t(" train ")}
-        <span className="text-brand">■</span> {t("validate ")}
+        <span className="text-chart-warm">■</span> {t(" train ")}
+        <span className="text-fg-secondary">■</span> {t("validate ")}
       </p>
     </div>
   )

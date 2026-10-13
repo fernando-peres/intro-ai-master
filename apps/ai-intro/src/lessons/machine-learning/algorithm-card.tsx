@@ -131,15 +131,21 @@ export function ConfusionMatrix({
   metrics: m,
   positive,
   negative,
+  positiveColor = "var(--color-class-1)",
+  negativeColor = "var(--color-class-2)",
 }: {
   metrics: ClassificationMetrics
   positive: string
   negative: string
+  /** Match whatever color this page already uses for the positive/negative class elsewhere. */
+  positiveColor?: string
+  negativeColor?: string
 }) {
   const { t } = useTranslation()
-  const cell = (value: number, label: string, correct: boolean) => (
+  const cell = (value: number, label: string, actualClassColor: string) => (
     <div
-      className={`flex flex-col items-center rounded-[2px] border px-2 py-1 ${correct ? "border-chart-cool" : "border-brand"}`}
+      className="flex flex-col items-center rounded-[2px] border px-2 py-1"
+      style={{ borderColor: actualClassColor }}
     >
       <span className="font-display text-lg text-fg">{value}</span>
       <span className="font-ui text-[10px] text-fg-muted">{t(label)}</span>
@@ -167,14 +173,14 @@ export function ConfusionMatrix({
         {t("actual ")}
         {t(positive)}
       </span>
-      {cell(m.tp, "TP", true)}
-      {cell(m.fn, "FN", false)}
+      {cell(m.tp, "TP", positiveColor)}
+      {cell(m.fn, "FN", positiveColor)}
       <span>
         {t("actual ")}
         {t(negative)}
       </span>
-      {cell(m.fp, "FP", false)}
-      {cell(m.tn, "TN", true)}
+      {cell(m.fp, "FP", negativeColor)}
+      {cell(m.tn, "TN", negativeColor)}
     </div>
   )
 }
@@ -186,18 +192,29 @@ export function ClassificationEvaluation({
   metrics,
   positive,
   negative,
+  positiveColor,
+  negativeColor,
   children,
 }: {
   metrics: ClassificationMetrics
   positive: string
   negative: string
+  /** Match whatever color this page already uses for the positive/negative class elsewhere. */
+  positiveColor?: string
+  negativeColor?: string
   children: ReactNode
 }) {
   const { t } = useTranslation()
   const lesson = { slug: "classification-metrics", title: "Classification Metrics" }
   return (
     <>
-      <ConfusionMatrix metrics={metrics} positive={t(positive)} negative={t(negative)} />
+      <ConfusionMatrix
+        metrics={metrics}
+        positive={t(positive)}
+        negative={t(negative)}
+        positiveColor={positiveColor}
+        negativeColor={negativeColor}
+      />
       <MetricList
         rows={[
           { name: "Accuracy", value: fixed2(metrics.accuracy) },

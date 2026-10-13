@@ -48,6 +48,12 @@ export const chapters: Chapter[] = [
         kind: "content",
         group: "Metrics",
       },
+      {
+        slug: "classification-fairness",
+        title: "Classification (Fairness)",
+        kind: "content",
+        group: "Metrics",
+      },
       { slug: "clustering-metrics", title: "Clustering", kind: "content", group: "Metrics" },
       { slug: "regression-metrics", title: "Regression", kind: "content", group: "Metrics" },
       {
@@ -70,8 +76,26 @@ export const chapters: Chapter[] = [
     title: "Neural Networks",
     lessons: [
       { slug: "perceptron", title: "Perceptron" },
-      { slug: "back-propagation", title: "Back-propagation" },
-      { slug: "activation-functions", title: "Activation Functions" },
+      {
+        slug: "back-propagation",
+        title: "Overview",
+        kind: "content",
+        group: "Back-propagation",
+      },
+      { slug: "training-lab", title: "Training Lab", group: "Back-propagation" },
+      {
+        slug: "forward-and-backward",
+        title: "Step by Step",
+        kind: "content",
+        group: "Back-propagation",
+      },
+      {
+        slug: "under-the-hood",
+        title: "Key Concepts",
+        kind: "content",
+        group: "Back-propagation",
+      },
+      { slug: "activation-functions", title: "Activation Functions", kind: "content" },
       { slug: "loss-and-optimization", title: "Loss & Optimization" },
     ],
   },

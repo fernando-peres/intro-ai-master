@@ -63,7 +63,7 @@ Each chapter follows the same arc:
 
 ## Curriculum and candidate simulations
 
-The current curriculum has 5 chapters and 26 lessons. The simulation ideas below are proposals to discuss.
+The current curriculum has 5 chapters; `apps/ai-intro/src/curriculum.ts` defines the lesson order. The simulation ideas below are proposals to discuss.
 
 | Chapter | Lesson | Candidate simulation | Limitation it exposes |
 |---|---|---|---|
@@ -75,10 +75,11 @@ The current curriculum has 5 chapters and 26 lessons. The simulation ideas below
 | | Bias & Variance *(content)* | **Built.** Polynomial degree slider; training vs. test error, bias²–variance decomposition, cross-validation, learning curves | Overfitting and underfitting |
 | | Bias & Fairness *(content)* | **Built.** Approval-threshold slider over two groups; parity, disparate impact, equal opportunity, equalized odds, predictive parity | Fairness criteria conflict |
 | | Data Splits *(content)* | **Built.** Holdout, k-fold, stratified and group-aware folds on imbalanced payments, time and grouped splits | Splits make fairness measurable, not fair |
-| | Generalization *(content, closes the group)* | **Built.** Synthesis of bias, variance, imbalance and fairness; scenario tabs (underfit, good fit, overfit, imbalanced) each train a neural network on 5 splits | Low training error proves nothing; averages hide groups |
+| | Generalization *(content)* | **Built.** Synthesis of bias, variance, imbalance and fairness; scenario tabs (underfit, good fit, overfit, imbalanced) each train a neural network on 5 splits | Low training error proves nothing; averages hide groups |
+| | Summary *(content, closes Generalization)* | **Built.** Editable concept reference with separate English and Portuguese copies saved in the browser | Summaries and overall scores must be interpreted in context |
 | | Metrics: Classification / Clustering / Regression / Reinforcement Learning / Ranking *(content)* | **Built.** One lesson per family: what each metric measures, why, its formula and a computed chart | Each metric hides some failure |
 | 03 Neural Networks | Perceptron | Train a perceptron on 2D points | Cannot learn XOR, which motivates hidden layers |
-| | Back-propagation | Step through gradients flowing backwards through a tiny network | Vanishing gradients in deep stacks |
+| | Back-propagation | Deepen the Machine Learning playground — more hidden layers, pick the activation — and train it on XOR/moons | Vanishing gradients in deep stacks |
 | | Activation Functions | Compare step, sigmoid, tanh and ReLU on the same task | Saturation and dead neurons |
 | | Loss & Optimization | Ball rolling on a loss landscape, with a learning-rate slider | Local minima, divergence when the rate is too high |
 | 04 LLM | Tokens & Embeddings | Tokenizer playground and an embedding-neighbour map | Odd tokenisation, biased associations |

@@ -1,18 +1,33 @@
 import {
+  ChevronRightIcon,
   MinusIcon,
   PauseIcon,
   PlayIcon,
   PlusIcon,
   RotateCcwIcon,
-  SigmaIcon,
-  StepForwardIcon,
 } from "lucide-react"
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { DecisionChart } from "@/components/charts/decision-chart"
 import { LineChart } from "@/components/charts/line-chart"
 import { ArticleFrame, LessonHero, LessonLead } from "@/components/course/lesson-layout"
+import { FloatingPanel } from "@/components/floating-panel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  CompareBars,
+  ConfigRail,
+  LegendDot,
+  OptionGrid,
+  Panel,
+  PanelNote,
+  RailSection,
+  RunToolbar,
+  railButtonClass,
+  Stepper,
+  Switch,
+  toolbarButtonClass,
+  Workbench,
+} from "@/components/workbench"
 import type { Translate } from "@/i18n/translate"
 import { useTranslation } from "@/i18n/use-translation"
 import {
@@ -25,8 +40,7 @@ import {
   predict,
   trainEpoch,
 } from "@/lib/neural-net"
-import { cn } from "@/lib/utils"
-import { classMeta, type MachineClass, machineReadings } from "./dataset"
+import { classMeta, type MachineClass, machineReadings, riskLabel } from "./dataset"
 import {
   DEFAULT_ACTIVATION,
   DEFAULT_HIDDEN_LAYERS,
@@ -47,6 +61,8 @@ import {
 } from "./ml-training"
 import { NetworkDiagram } from "./network-diagram"
 import { NetworkMath } from "./network-math"
+import { RiskColorPicker, RiskColorsProvider } from "./risk-colors"
+import { RiskTable } from "./risk-table"
 import { classifyByRules } from "./rules"
 
 const ACTIVATIONS: ActivationName[] = ["tanh", "relu", "sigmoid", "linear"]
@@ -56,16 +72,8 @@ const rulesCorrect = machineReadings.filter((r) => classifyByRules(r) === r.labe
 const rulesAccuracy = Math.round((rulesCorrect / TOTAL) * 100)
 
 const series = [
-  {
-    key: "normal",
-    label: `${classMeta.normal.code} — ${classMeta.normal.name}`,
-    color: "var(--color-chart-cool)",
-  },
-  {
-    key: "at-risk",
-    label: `${classMeta["at-risk"].code} — ${classMeta["at-risk"].name}`,
-    color: "var(--color-brand)",
-  },
+  { key: "normal", label: riskLabel("normal"), color: "var(--color-risk-0)" },
+  { key: "at-risk", label: riskLabel("at-risk"), color: "var(--color-risk-1)" },
 ]
 const points = machineReadings.map((r) => ({ x: r.temperature, y: r.vibration, series: r.label }))
 const toInputXY = (x: number, y: number) => toInput({ temperature: x, vibration: y })
@@ -82,17 +90,6 @@ function snapshot(net: Network, epoch: number): HistoryEntry {
     loss: crossEntropy(net, examples),
     accuracy: Math.round((correctCount(net) / TOTAL) * 100),
   }
-}
-
-function ChartNote({ children }: { children: ReactNode }) {
-  return <p className="text-sm text-fg-secondary">{children}</p>
-}
-
-function toggleButtonClass(active: boolean) {
-  return cn(
-    "label-ui rounded-[2px] border px-2.5 py-1.5 transition-colors",
-    active ? "border-brand text-brand" : "border-line text-fg-muted hover:text-fg",
-  )
 }
 
 function statusMessage(
@@ -150,6 +147,7 @@ export function MachineLearningLesson() {
   )
   const [history, setHistory] = useState<HistoryEntry[]>(() => [snapshot(net, 0)])
   const [playing, setPlaying] = useState(false)
+  const [showWeights, setShowWeights] = useState(false)
   const [showMath, setShowMath] = useState(false)
   const shuffleRand = useRef(mulberry32(SEED + 100))
 
@@ -216,222 +214,207 @@ export function MachineLearningLesson() {
 
   const architecture = [2, ...hiddenLayers, 1].join(" → ")
 
-  return (
-    <ArticleFrame>
-      <LessonHero line1={t("Learn the rules")} line2={t("from data")} />
-      <LessonLead>
-        {t(
-          "Instead of writing the classification logic ourselves, we give a neural network the same",
-        )}{" "}
-        {TOTAL}{" "}
-        {t(
-          " machines the rules were tested on, with their known outcomes. Backpropagation (1986) pushes the error backwards through the hidden layers and nudges every weight — and the hidden neurons learn to bend the boundary where a fixed threshold can't. ",
-        )}
-      </LessonLead>
+  const riskRows = machineReadings.map((r) => ({
+    key: `${r.temperature}-${r.vibration}-${r.label}`,
+    temperature: r.temperature,
+    vibration: r.vibration,
+    actual: r.label,
+    predicted: (predict(net, toInputXY(r.temperature, r.vibration))[0] >= 0.5
+      ? "at-risk"
+      : "normal") as MachineClass,
+  }))
 
-      <section
-        aria-label={t("Network configuration")}
-        className="flex flex-col gap-3 rounded-[3px] border border-divider bg-surface p-[18px]"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="label-ui text-fg-muted">{t("Hidden layers")}</span>
+  const rail = (
+    <ConfigRail
+      title={t("Network configuration")}
+      tip={t("Each small square is what one neuron “sees” across temperature × vibration.")}
+    >
+      <RailSection label={t("Hidden layers")}>
+        <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => setLayers([...hiddenLayers, 3])}
-            className={cn(toggleButtonClass(false), "disabled:opacity-50")}
             disabled={hiddenLayers.length >= MAX_LAYERS}
+            aria-label={t("Add a hidden layer")}
+            className={railButtonClass()}
           >
-            <PlusIcon className="size-3.5" aria-hidden /> {t(" layer ")}
+            <PlusIcon className="size-3" aria-hidden /> {t("layer")}
           </button>
           <button
             type="button"
             onClick={() => setLayers(hiddenLayers.slice(0, -1))}
-            className={cn(toggleButtonClass(false), "disabled:opacity-50")}
             disabled={hiddenLayers.length <= MIN_LAYERS}
+            aria-label={t("Remove a hidden layer")}
+            className={railButtonClass()}
           >
-            <MinusIcon className="size-3.5" aria-hidden /> {t(" layer ")}
-          </button>
-          {hiddenLayers.map((count, i) => (
-            <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: layers are positional, not identified by value.
-              key={i}
-              className="flex items-center gap-1 rounded-[2px] border border-line px-2 py-1"
-            >
-              <span className="label-ui text-fg-muted">L{i + 1}</span>
-              <button
-                type="button"
-                onClick={() => resizeLayer(i, -1)}
-                aria-label={t("Fewer neurons in layer {0}", [i + 1])}
-              >
-                <MinusIcon className="size-3 text-fg-muted hover:text-brand" aria-hidden />
-              </button>
-              <span className="w-4 text-center font-ui text-xs text-fg">{count}</span>
-              <button
-                type="button"
-                onClick={() => resizeLayer(i, 1)}
-                aria-label={t("More neurons in layer {0}", [i + 1])}
-              >
-                <PlusIcon className="size-3 text-fg-muted hover:text-brand" aria-hidden />
-              </button>
-            </div>
-          ))}
-          <span className="label-ui ml-auto text-fg-muted">{architecture}</span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <div className="flex items-center gap-2">
-            <span className="label-ui text-fg-muted">{t("Activation")}</span>
-            {ACTIVATIONS.map((name) => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => chooseActivation(name)}
-                className={toggleButtonClass(activation === name)}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
-
-          <label className="flex items-center gap-2">
-            <span className="label-ui text-fg-muted">{t("Learning rate")}</span>
-            <select
-              value={learningRate}
-              onChange={(e) => setLearningRate(Number(e.target.value))}
-              className="label-ui rounded-[2px] border border-line bg-canvas px-2 py-1.5 text-fg-secondary"
-            >
-              {LEARNING_RATE_PRESETS.map((rate) => (
-                <option key={rate} value={rate}>
-                  {rate}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </section>
-
-      <section aria-label={t("The network")} className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="label-ui text-fg-muted">
-            {t("Input → hidden → output: each node shows what it has learned to see ")}
-          </h2>
-          <button
-            type="button"
-            onClick={() => setShowMath((v) => !v)}
-            aria-pressed={showMath}
-            className={cn(toggleButtonClass(showMath), "flex items-center gap-1.5")}
-          >
-            <SigmaIcon className="size-3.5" aria-hidden />
-            {showMath ? t("Hide weights & math") : t("Show weights & math")}
+            <MinusIcon className="size-3" aria-hidden /> {t("layer")}
           </button>
         </div>
-        <NetworkDiagram
-          network={net}
-          toInput={toInputXY}
-          domain={{
-            xMin: TEMP_DOMAIN[0],
-            xMax: TEMP_DOMAIN[1],
-            yMin: VIB_DOMAIN[0],
-            yMax: VIB_DOMAIN[1],
-          }}
-          inputLabels={[t("Temp"), t("Vib")]}
-          outputLabel={t("At Risk?")}
-          showWeights={showMath}
-        />
-        {showMath && (
-          <NetworkMath
-            network={net}
-            input={toInputXY(testTemp, testVib)}
-            exampleLabel={t('a machine at {0} °C, {1} mm/s (from "Classify a new example")', [
-              testTemp,
-              testVib,
-            ])}
-            learningRate={learningRate}
+        {hiddenLayers.map((count, i) => (
+          <Stepper
+            // biome-ignore lint/suspicious/noArrayIndexKey: layers are positional, not identified by value.
+            key={i}
+            label={`L${i + 1}`}
+            value={count}
+            onDecrement={() => resizeLayer(i, -1)}
+            onIncrement={() => resizeLayer(i, 1)}
+            decrementLabel={t("Fewer neurons in layer {0}", [i + 1])}
+            incrementLabel={t("More neurons in layer {0}", [i + 1])}
           />
-        )}
-      </section>
+        ))}
+      </RailSection>
 
-      <section aria-label={t("Train the network")} className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-3">
+      <RailSection label={t("Activation")}>
+        <OptionGrid
+          options={ACTIVATIONS.map((name) => ({ value: name, label: name }))}
+          value={activation}
+          onChange={chooseActivation}
+        />
+      </RailSection>
+
+      <label className="flex flex-col gap-2">
+        <span className="label-ui text-fg-muted">{t("Learning rate")}</span>
+        <select
+          value={learningRate}
+          onChange={(e) => setLearningRate(Number(e.target.value))}
+          className="rounded-[2px] border border-line bg-surface px-2.5 py-1.5 font-display text-[17px] text-fg"
+        >
+          {LEARNING_RATE_PRESETS.map((rate) => (
+            <option key={rate} value={rate}>
+              {rate}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <RailSection label={t("Display")}>
+        <Switch label={t("Show weights")} checked={showWeights} onChange={setShowWeights} />
+        <Switch label={t("Show math")} checked={showMath} onChange={setShowMath} />
+      </RailSection>
+    </ConfigRail>
+  )
+
+  const toolbar = (
+    <RunToolbar
+      controls={
+        <>
           <button
             type="button"
             onClick={() => step(1)}
             disabled={done}
-            className={cn(
-              toggleButtonClass(false),
-              "flex items-center gap-1.5 disabled:pointer-events-none disabled:opacity-50",
-            )}
+            className={toolbarButtonClass()}
           >
-            <StepForwardIcon className="size-3.5" aria-hidden /> {t(" Step ")}
+            <ChevronRightIcon className="size-3" aria-hidden /> {t("Step")}
           </button>
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
             disabled={done}
-            className={cn(
-              toggleButtonClass(playing),
-              "flex items-center gap-1.5 disabled:pointer-events-none disabled:opacity-50",
-            )}
+            className={toolbarButtonClass(true)}
           >
             {playing ? (
-              <PauseIcon className="size-3.5" aria-hidden />
+              <PauseIcon className="size-3" aria-hidden />
             ) : (
-              <PlayIcon className="size-3.5" aria-hidden />
+              <PlayIcon className="size-3" aria-hidden />
             )}
             {playing ? t("Pause") : t("Train")}
           </button>
           <button
             type="button"
             onClick={() => restart(hiddenLayers, activation)}
-            className={cn(toggleButtonClass(false), "flex items-center gap-1.5")}
+            className={toolbarButtonClass()}
           >
-            <RotateCcwIcon className="size-3.5" aria-hidden /> {t(" Reset ")}
+            <RotateCcwIcon className="size-3" aria-hidden /> {t("Reset")}
           </button>
-        </div>
+        </>
+      }
+      architecture={architecture}
+      metricsLabel={t("Run metrics")}
+      metrics={[
+        { label: t("Epoch"), value: String(epoch) },
+        { label: t("Loss"), value: current.loss.toFixed(3) },
+      ]}
+    />
+  )
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {[
-            { label: t("Epoch"), value: String(epoch), highlight: false },
-            { label: t("Loss"), value: current.loss.toFixed(3), highlight: false },
-            {
-              label: t("Network accuracy"),
-              value: `${current.accuracy}% (${correct}/${TOTAL})`,
-              highlight: correct > rulesCorrect,
-            },
-            {
-              label: t("Rules accuracy"),
-              value: `${rulesAccuracy}% (${rulesCorrect}/${TOTAL})`,
-              highlight: false,
-            },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-[2px] border border-divider bg-surface px-3 py-2"
+  return (
+    <ArticleFrame>
+      <RiskColorsProvider>
+        <LessonHero line1={t("Learn the rules")} line2={t("from data")} />
+        <LessonLead>
+          {t(
+            "Instead of writing the classification logic ourselves, we give a neural network the same",
+          )}{" "}
+          {TOTAL}{" "}
+          {t(
+            " machines the rules were tested on, with their known outcomes. Backpropagation (1986) pushes the error backwards through the hidden layers and nudges every weight — and the hidden neurons learn to bend the boundary where a fixed threshold can't. ",
+          )}
+        </LessonLead>
+
+        <RiskColorPicker />
+
+        <Workbench rail={rail}>
+          <Panel
+            title={t("Network")}
+            aside={t("Each node shows what it has learned to see")}
+            footer={toolbar}
+          >
+            <NetworkDiagram
+              network={net}
+              toInput={toInputXY}
+              domain={{
+                xMin: TEMP_DOMAIN[0],
+                xMax: TEMP_DOMAIN[1],
+                yMin: VIB_DOMAIN[0],
+                yMax: VIB_DOMAIN[1],
+              }}
+              inputLabels={[t("Temp"), t("Vib")]}
+              outputLabel={t("At Risk?")}
+              showWeights={showWeights}
+            />
+          </Panel>
+
+          <div className="grid items-stretch gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)]">
+            <Panel
+              title={t("Decision boundary")}
+              aside={
+                <span className="flex items-center gap-3">
+                  <LegendDot color="var(--color-risk-0)" label={t(riskLabel("normal"))} />
+                  <LegendDot color="var(--color-risk-1)" label={t(riskLabel("at-risk"))} />
+                </span>
+              }
             >
-              <p className="label-ui text-fg-muted">{t(stat.label)}</p>
-              <p className={cn("font-display text-lg", stat.highlight ? "text-brand" : "text-fg")}>
-                {stat.value}
-              </p>
-            </div>
-          ))}
-        </div>
+              <DecisionChart
+                points={points}
+                series={series}
+                xLabel={t("Temperature (°C)")}
+                yLabel={t("Vibration (mm/s)")}
+                valueAt={(x, y) => predict(net, toInputXY(x, y))[0]}
+                showBoundaryLine
+                showLegend={false}
+                fill
+                positiveColor="var(--color-risk-1)"
+                negativeColor="var(--color-risk-0)"
+              />
+            </Panel>
 
-        <p aria-live="polite" className="text-sm text-fg-secondary">
-          {statusMessage({ epoch, correct, hiddenLayers, activation }, t)}
-        </p>
-
-        <DecisionChart
-          points={points}
-          series={series}
-          xLabel={t("Temperature (°C)")}
-          yLabel={t("Vibration (mm/s)")}
-          valueAt={(x, y) => predict(net, toInputXY(x, y))[0]}
-          showBoundaryLine
-        />
-
-        {history.length > 1 && (
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="flex flex-col gap-2">
+            <Panel title={t("Network vs rules")}>
+              <CompareBars
+                rows={[
+                  {
+                    label: t("Neural network"),
+                    count: `${correct} / ${TOTAL}`,
+                    percent: current.accuracy,
+                    tone: "brand",
+                  },
+                  {
+                    label: t("Hand-written rules"),
+                    count: `${rulesCorrect} / ${TOTAL}`,
+                    percent: rulesAccuracy,
+                    tone: "muted",
+                  },
+                ]}
+              />
               <LineChart
                 series={[
                   {
@@ -453,131 +436,117 @@ export function MachineLearningLesson() {
                 ]}
                 xLabel={t("Epoch")}
                 yLabel={t("Accuracy (%)")}
+                xExtent={[0, 10]}
               />
-              <ChartNote>
-                <span className="text-fg">{t("Accuracy")}</span> {t(" — the share of the ")}
-                {TOTAL}{" "}
-                {t(
-                  " machines whose predicted class (probability above or below 50%) matches the real label.",
-                )}{" "}
-                {!playing &&
-                  t(
-                    "After {0} epochs the network is at {1}% ({2}/{3}); the dashed line is the rules' fixed {4}%. {5}",
-                    [
-                      epoch,
-                      current.accuracy,
-                      correct,
-                      TOTAL,
-                      rulesAccuracy,
-                      correct > rulesCorrect
-                        ? t(
-                            "The network beats them because it learned the curved boundary from the data.",
-                          )
-                        : t("Keep training — or change the architecture — to beat them."),
-                    ],
-                  )}
-              </ChartNote>
-            </div>
-            <div className="flex flex-col gap-2">
-              <LineChart
-                series={[
-                  {
-                    key: "loss",
-                    label: t("loss (cross-entropy)"),
-                    color: "var(--color-fg)",
-                    points: history.map((h) => ({ x: h.epoch, y: h.loss })),
-                  },
-                ]}
-                xLabel={t("Epoch")}
-                yLabel={t("Loss")}
+              <PanelNote>
+                <p>{statusMessage({ epoch, correct, hiddenLayers, activation }, t)}</p>
+              </PanelNote>
+            </Panel>
+          </div>
+        </Workbench>
+
+        <section aria-label={t("Every machine, scored")} className="flex flex-col gap-3">
+          <h2 className="label-ui text-fg-muted">{t("Every machine, scored")}</h2>
+          <RiskTable rows={riskRows} />
+          <p className="text-xs text-fg-muted">
+            {t("Predicted risk is this network's current guess — it updates as you train. ")}
+          </p>
+        </section>
+
+        <section
+          aria-label={t("Classify a new example")}
+          className="flex flex-col gap-3 rounded-[3px] border border-divider bg-surface p-[26px]"
+        >
+          <h2 className="label-ui text-fg-muted">{t("Classify a new example")}</h2>
+          <div className="flex flex-wrap items-end gap-4">
+            <label htmlFor="classify-temperature" className="flex flex-col gap-1.5">
+              <span className="label-ui text-fg-muted">{t("Temperature (°C)")}</span>
+              <Input
+                id="classify-temperature"
+                type="number"
+                value={testTemp}
+                onChange={(e) => setTestTemp(Number(e.target.value))}
+                className="w-28"
               />
-              <ChartNote>
-                <span className="text-fg">{t("Loss")}</span>{" "}
-                {t(
-                  " — cross-entropy: how far the predicted probabilities are from the true labels. 0 is confidently right; about 0.69 is a coin-flip guess. It's what backpropagation minimizes.",
-                )}{" "}
-                {!playing &&
-                  t("It fell from {0} to {1}: {2}", [
-                    history[0].loss.toFixed(2),
-                    current.loss.toFixed(2),
-                    current.loss < 0.1
-                      ? t("the network is not just right but confident on almost every machine.")
-                      : t("it's still unsure about some machines near the boundary."),
-                  ])}
-              </ChartNote>
+            </label>
+            <label htmlFor="classify-vibration" className="flex flex-col gap-1.5">
+              <span className="label-ui text-fg-muted">{t("Vibration (mm/s)")}</span>
+              <Input
+                id="classify-vibration"
+                type="number"
+                step="0.1"
+                value={testVib}
+                onChange={(e) => setTestVib(Number(e.target.value))}
+                className="w-28"
+              />
+            </label>
+            <Button
+              type="button"
+              onClick={() =>
+                setClassified({
+                  probability: predict(net, toInputXY(testTemp, testVib))[0],
+                  rules: classifyByRules({
+                    temperature: testTemp,
+                    vibration: testVib,
+                    label: "normal",
+                  }),
+                })
+              }
+            >
+              {t("Classify ")}
+            </Button>
+          </div>
+          {classified !== null && (
+            <div className="flex flex-col gap-1 font-display text-lg">
+              <span>
+                {t("Network: ")}
+                {Math.round(classified.probability * 100)}
+                {t("% at risk —")}{" "}
+                <span
+                  className={
+                    classified.probability >= 0.5
+                      ? "text-[var(--color-risk-1)]"
+                      : "text-[var(--color-risk-0)]"
+                  }
+                >
+                  {classified.probability >= 0.5 ? t("B — At Risk") : t("A — Normal")}
+                </span>
+              </span>
+              <span className="text-fg-secondary">
+                {t("Rules:")}{" "}
+                <span
+                  className={
+                    classified.rules === "at-risk"
+                      ? "text-[var(--color-risk-1)]"
+                      : "text-[var(--color-risk-0)]"
+                  }
+                >
+                  {classMeta[classified.rules].code} — {t(classMeta[classified.rules].name)}
+                </span>
+              </span>
             </div>
-          </div>
-        )}
-      </section>
+          )}
+        </section>
 
-      <section
-        aria-label={t("Classify a new example")}
-        className="flex flex-col gap-3 rounded-[3px] border border-divider bg-surface p-[26px]"
-      >
-        <h2 className="label-ui text-fg-muted">{t("Classify a new example")}</h2>
-        <div className="flex flex-wrap items-end gap-4">
-          <label htmlFor="classify-temperature" className="flex flex-col gap-1.5">
-            <span className="label-ui text-fg-muted">{t("Temperature (°C)")}</span>
-            <Input
-              id="classify-temperature"
-              type="number"
-              value={testTemp}
-              onChange={(e) => setTestTemp(Number(e.target.value))}
-              className="w-28"
+        <p className="text-sm text-fg-secondary">
+          {t(
+            "Unlike a manually defined if/else program, the network learns the combination of temperature and vibration from the data itself — and the curved line above shows exactly what it decided. ",
+          )}
+        </p>
+        {showMath && (
+          <FloatingPanel title={t("Weights & math")} onClose={() => setShowMath(false)}>
+            <NetworkMath
+              network={net}
+              input={toInputXY(testTemp, testVib)}
+              exampleLabel={t('a machine at {0} °C, {1} mm/s (from "Classify a new example")', [
+                testTemp,
+                testVib,
+              ])}
+              learningRate={learningRate}
             />
-          </label>
-          <label htmlFor="classify-vibration" className="flex flex-col gap-1.5">
-            <span className="label-ui text-fg-muted">{t("Vibration (mm/s)")}</span>
-            <Input
-              id="classify-vibration"
-              type="number"
-              step="0.1"
-              value={testVib}
-              onChange={(e) => setTestVib(Number(e.target.value))}
-              className="w-28"
-            />
-          </label>
-          <Button
-            type="button"
-            onClick={() =>
-              setClassified({
-                probability: predict(net, toInputXY(testTemp, testVib))[0],
-                rules: classifyByRules({
-                  temperature: testTemp,
-                  vibration: testVib,
-                  label: "normal",
-                }),
-              })
-            }
-          >
-            {t("Classify ")}
-          </Button>
-        </div>
-        {classified !== null && (
-          <div className="flex flex-col gap-1 font-display text-lg">
-            <span>
-              {t("Network: ")}
-              {Math.round(classified.probability * 100)}
-              {t("% at risk —")}{" "}
-              <span className={classified.probability >= 0.5 ? "text-brand" : "text-chart-cool"}>
-                {classified.probability >= 0.5 ? t("B — At Risk") : t("A — Normal")}
-              </span>
-            </span>
-            <span className="text-fg-secondary">
-              {t("Rules:")}{" "}
-              <span className={classified.rules === "at-risk" ? "text-brand" : "text-chart-cool"}>
-                {classMeta[classified.rules].code} — {t(classMeta[classified.rules].name)}
-              </span>
-            </span>
-          </div>
+          </FloatingPanel>
         )}
-      </section>
-
-      <p className="text-sm text-fg-secondary">
-        {t(
-          "Unlike a manually defined if/else program, the network learns the combination of temperature and vibration from the data itself — and the curved line above shows exactly what it decided. ",
-        )}
-      </p>
+      </RiskColorsProvider>
     </ArticleFrame>
   )
 }

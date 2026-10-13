@@ -28,10 +28,13 @@ async function renderLesson() {
 }
 
 const stat = (label: string) =>
-  within(screen.getByLabelText("Performance"))
+  within(screen.getByLabelText("Run metrics"))
     .queryByText(label, { selector: "dt" })
     ?.parentElement?.querySelector("dd")?.textContent
 const button = (name: string | RegExp) => screen.getByRole("button", { name })
+const datasetSelect = () => screen.getByRole("combobox", { name: "Dataset" }) as HTMLSelectElement
+const chooseDataset = (value: string) => fireEvent.change(datasetSelect(), { target: { value } })
+const toggle = (name: string) => screen.getByRole("switch", { name })
 /** One act per tick: React schedules the next tick only after committing the previous one. */
 const playTicks = (count: number) => {
   for (let i = 0; i < count; i++) act(() => vi.advanceTimersByTime(140))
@@ -45,7 +48,7 @@ afterEach(() => {
 
 test("opens on OR with the step perceptron and an evaluated epoch-0 baseline", async () => {
   await renderLesson()
-  expect(button("OR").getAttribute("aria-pressed")).toBe("true")
+  expect(datasetSelect().value).toBe("or")
   expect(button("Step — perceptron").getAttribute("aria-pressed")).toBe("true")
   expect(stat("Epoch")).toBe("0")
   expect(stat("Misclassified")).toBe("2 / 4")
@@ -54,24 +57,25 @@ test("opens on OR with the step perceptron and an evaluated epoch-0 baseline", a
   expect(screen.getByText("Press Play or Step 1 epoch to watch the line move.")).toBeTruthy()
 })
 
-test("playback controls live in the configuration box with the selectors", async () => {
+test("selectors live in the configuration rail and playback in the network toolbar", async () => {
   await renderLesson()
   const config = screen.getByRole("region", { name: "Configuration" })
-  for (const name of ["Play", "Step 1 epoch", "Reset", "OR", "Step — perceptron"]) {
-    expect(within(config).getByRole("button", { name })).toBeTruthy()
+  expect(within(config).getByRole("combobox", { name: "Dataset" })).toBeTruthy()
+  expect(within(config).getByRole("button", { name: "Step — perceptron" })).toBeTruthy()
+  const network = screen.getByRole("region", { name: "Network" })
+  for (const name of ["Play", "Step 1 epoch", "Reset"]) {
+    expect(within(network).getByRole("button", { name })).toBeTruthy()
   }
 })
 
-test("the visuals read Network, Decision plot, Performance with tiles above the chart", async () => {
+test("the workbench shows Network, Decision plot and Performance panels with run metrics in the toolbar", async () => {
   await renderLesson()
-  const row = screen.getByRole("region", { name: "The model" })
-  const headings = within(row)
-    .getAllByRole("heading", { level: 2 })
-    .map((h) => h.textContent)
-  expect(headings).toEqual(["Network", "Decision plot", "Performance"])
-  const tiles = screen.getByLabelText("Performance")
-  const chart = screen.getByRole("img", { name: /Misclassified over Epoch/ })
-  expect(tiles.compareDocumentPosition(chart) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  for (const name of ["Network", "Decision plot", "Performance"]) {
+    expect(screen.getByRole("region", { name })).toBeTruthy()
+  }
+  const network = screen.getByRole("region", { name: "Network" })
+  expect(within(network).getByLabelText("Run metrics")).toBeTruthy()
+  expect(screen.getByRole("img", { name: /Misclassified over Epoch/ })).toBeTruthy()
 })
 
 test("Step 1 epoch advances exactly one epoch", async () => {
@@ -107,7 +111,7 @@ test("toggling Play/Pause quickly keeps a single training loop", async () => {
 
 test("XOR explains its structural limitation before any training", async () => {
   await renderLesson()
-  fireEvent.click(button(/^XOR/))
+  chooseDataset("xor")
   expect(screen.getAllByText("Not linearly separable").length).toBeGreaterThan(0)
   expect(
     screen.getByText(
@@ -130,21 +134,20 @@ test("sigmoid shows cross-entropy and keeps training after 100% accuracy", async
   ).toBeTruthy()
 })
 
-test("reset restores the defaults", async () => {
+test("reset restarts training and keeps the configuration", async () => {
   await renderLesson()
-  fireEvent.click(button(/^Moons/))
-  fireEvent.click(button("Show weights"))
+  chooseDataset("xor")
+  fireEvent.click(toggle("Show weights"))
   fireEvent.click(button("Step 1 epoch"))
   fireEvent.click(button("Reset"))
-  expect(button("OR").getAttribute("aria-pressed")).toBe("true")
-  expect(button("Show weights").getAttribute("aria-pressed")).toBe("false")
+  expect(datasetSelect().value).toBe("xor")
+  expect(toggle("Show weights").getAttribute("aria-checked")).toBe("true")
   expect(stat("Epoch")).toBe("0")
-  expect(stat("Misclassified")).toBe("2 / 4")
 })
 
 test("the math panel shows the last real update separately from the selected point", async () => {
   await renderLesson()
-  fireEvent.click(button("Show math"))
+  fireEvent.click(toggle("Show math"))
   expect(screen.getByText("No training update yet.")).toBeTruthy()
   fireEvent.click(button("Step 1 epoch"))
   expect(screen.getByText("Last training update")).toBeTruthy()

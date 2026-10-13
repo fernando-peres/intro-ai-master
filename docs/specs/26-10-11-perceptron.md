@@ -44,26 +44,24 @@ Use the existing simulation shell: no lesson counter or previous/next footer. Ke
 ```text
 Problem + short “what to notice” hint
 
-┌ Configuration ───────────────────────────────────────────┐
-│ Dataset:    OR | AND | 2 clusters | XOR | Moons          │
-│ Activation: Step | Sigmoid                               │
-│ Training:   [Play / Pause] [Step 1 epoch] [Reset]        │
-│ “Changing dataset or activation restarts training.”      │
-└──────────────────────────────────────────────────────────┘
-
-[Network]              | [Decision plot]        | [Performance]
-[Show weights]         | point inspector        | epoch · misclassified · training accuracy (· BCE)
-diagram + legend       |                        | misclassified history (+ BCE history in sigmoid)
-                       |                        | explanation for the current dataset/run
-
-[Show math]
-  Equations + worked example using a selected point
+┌ rail (collapsible ‹ ›) ──┬ main ───────────────────────────────────┐
+│ Configuration            │ Network diagram          [size slider]  │
+│  Dataset: OR|AND|…       ├─────────────────────────────────────────┤
+│  Activation: Step|Sigmoid│ Epoch │ Misclassified │ Accuracy │ BCE  │  one stat strip
+│  “Changing dataset or    ├────────────────────┬────────────────────┤
+│   activation restarts…”  │ Decision plot      │ Performance chart  │
+│ ──────────────────────── │ + point inspector  │ (misclassified)    │
+│ [Show weights]           ├────────────────────┼────────────────────┤
+│ [Show math] (floating)   │ Loss chart (BCE,   │ Comments           │
+│ ──────────────────────── │ sigmoid only)      │ (explanations)     │
+│ [Play] [Step 1] [Reset]  │                    │                    │
+└──────────────────────────┴────────────────────┴────────────────────┘
 
 Key concepts (one live graphic per concept)
 Limitation + link to Back-propagation
 ```
 
-On wide screens, show Network, Decision plot and Performance side by side in that order. On narrow screens, stack the plot, network, and performance in that order. The plot and network remain visible when math is collapsed.
+The page is one aligned workbench: a left rail (configuration, display toggles, then transport controls pinned at the bottom, separated by hairlines) beside a main column whose rows share the same edges. The rail collapses to a thin strip; on narrow screens it stacks above the main column and each row stacks. In step mode there is no loss chart, so Comments takes the full width of the last row. Visual style: flat, minimalist, hairline borders, no shadows except the floating math panel.
 
 Opening copy:
 
@@ -100,7 +98,7 @@ Initial state: OR, Step, paused, `w₁ = −0.3`, `w₂ = 0.2`, `b = 0.1`, epoch
 | Step 1 epoch | Pause, process every point once, then refresh all views. One click is an epoch, not a single weight update. |
 | Reset | Restore the full initial state, including OR, Step, toggles, model, seed, selection, and epoch-0 metrics. |
 | Show weights | Toggle numerical `w₁`, `w₂`, and `b` labels in the network without changing training. |
-| Show math | Expand the equations and point inspector without changing training. |
+| Show math | Open the equations and worked example in a floating, draggable panel (close with ✕ or Escape) without changing training. |
 
 Dataset/activation changes clear history and the previous update trace, select the first point, and retain disclosure toggles. Show a short note by the selectors: “Changing dataset or activation restarts training.”
 
@@ -184,7 +182,7 @@ Track misclassified points, accuracy, and (sigmoid only) BCE after evaluation. T
 
 ### Performance
 
-Show epoch, **misclassified / total**, and **training accuracy** in both modes, as tiles directly above the history chart. Show **binary cross-entropy** only for sigmoid, as a fourth tile and a separate chart stacked below the misclassification history. Include epoch 0, and extend the epoch axis through the actual run rather than clipping it at 12 as in the reference.
+Show epoch, **misclassified / total**, and **training accuracy** in both modes, as one stat strip directly above the charts. Show **binary cross-entropy** only for sigmoid, as a fourth cell of the strip and a separate loss chart in the row below the misclassification history. Include epoch 0, and extend the epoch axis through the actual run rather than clipping it at 12 as in the reference.
 
 State explicitly: “Evaluated on the same points used for training; this does not measure performance on unseen data.” No train/test split is needed for this small representation lesson.
 

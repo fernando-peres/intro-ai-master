@@ -80,12 +80,12 @@ const series = [
   {
     key: "normal",
     label: `${classMeta.normal.code} — ${classMeta.normal.name}`,
-    color: "var(--color-chart-cool)",
+    color: "var(--color-class-1)",
   },
   {
     key: "at-risk",
     label: `${classMeta["at-risk"].code} — ${classMeta["at-risk"].name}`,
-    color: "var(--color-brand)",
+    color: "var(--color-class-2)",
   },
 ]
 

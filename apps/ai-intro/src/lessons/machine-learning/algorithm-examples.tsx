@@ -72,7 +72,7 @@ function toDiagram(tree: DecisionTree): TreeDiagramNode {
   if (tree.kind === "leaf") {
     return {
       label: tree.label,
-      color: tree.label === "Yes" ? "var(--color-chart-cool)" : "var(--color-brand)",
+      color: tree.label === "Yes" ? "var(--color-class-1)" : "var(--color-class-2)",
     }
   }
   return {
@@ -112,7 +112,7 @@ const irisAgreement = [0, 1, 2].reduce((sum, c) => {
     .map((f) => f.species)
   return sum + Math.max(0, ...species.map((s) => species.filter((t) => t === s).length))
 }, 0)
-const clusterColors = ["var(--color-chart-cool)", "var(--color-brand)", "var(--color-fg-secondary)"]
+const clusterColors = ["var(--color-class-1)", "var(--color-class-2)", "var(--color-fg-secondary)"]
 
 // ---- Neural network: the chapter's own machines ----
 const nnArchitecture = [2, ...DEFAULT_HIDDEN_LAYERS, 1]
@@ -313,8 +313,8 @@ export function AlgorithmExamples() {
               series: r.passed ? "pass" : "fail",
             }))}
             series={[
-              { key: "fail", label: "Failed", color: "var(--color-brand)" },
-              { key: "pass", label: "Passed", color: "var(--color-chart-cool)" },
+              { key: "fail", label: "Failed", color: "var(--color-class-2)" },
+              { key: "pass", label: "Passed", color: "var(--color-class-1)" },
             ]}
             xLabel={t("Hours studied")}
             yLabel="P(pass) %"
@@ -500,7 +500,13 @@ export function AlgorithmExamples() {
           </Formula>
         </AlgorithmColumn>
         <AlgorithmColumn icon={TargetIcon} label={t("Evaluation")}>
-          <ClassificationEvaluation metrics={nnMetrics} positive={t("at risk")} negative="normal">
+          <ClassificationEvaluation
+            metrics={nnMetrics}
+            positive={t("at risk")}
+            negative="normal"
+            positiveColor="var(--color-class-2)"
+            negativeColor="var(--color-class-1)"
+          >
             {t("The same classification metrics, on the ")}
             {machineReadings.length}{" "}
             {t(

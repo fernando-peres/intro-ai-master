@@ -2,7 +2,7 @@
 
 Topic 02-Machine Learning. Follows chapter 01 (Programming vs ML) and precedes Neural Networks.
 
-The chapter opens with the three components of every ML algorithm (Representation, Optimization, Evaluation), then zooms in on Evaluation: two lessons on bias (statistical and social), then one lesson per family of metrics. All eight lessons are content pages (`kind: "content"`), in `apps/ai-intro/src/lessons/machine-learning/`.
+The chapter opens with the three components of every ML algorithm (Representation, Optimization, Evaluation), then zooms in on Evaluation: two lessons on bias (statistical and social), then one lesson per family of metrics. These lessons are content pages (`kind: "content"`), in `apps/ai-intro/src/lessons/machine-learning/`.
 
 | Lesson | Slug | Running example |
 |---|---|---|
@@ -11,13 +11,14 @@ The chapter opens with the three components of every ML algorithm (Representatio
 | Generalization / Bias & Fairness | `fairness` | Synthetic loan applicants, two groups |
 | Generalization / Data Splits | `data-splits` | Synthetic payments: 2% fraud, 10% minority group |
 | Generalization / Generalization | `generalization` | Synthetic two-group data; neural network trained on 5 splits per scenario |
+| Generalization / Summary | `summary` | Editable bilingual concept reference, saved in this browser |
 | Metrics / Classification | `classification-metrics` | Exam pass vs. hours studied; synthetic payments for imbalance |
 | Metrics / Clustering | `clustering-metrics` | k-means on 30 Iris flowers |
 | Metrics / Regression | `regression-metrics` | Illustrative house prices (linear regression) |
 | Metrics / Reinforcement Learning | `reinforcement-learning-metrics` | 5-armed bandit (ε-greedy) and a gridworld (Q-learning) |
 | Metrics / Ranking & Recommendation | `ranking-metrics` | 4 illustrative search queries, two rankers |
 
-**Hierarchy.** Two sidebar groups: "Generalization" (Bias & Variance, Bias & Fairness, Data Splits, then Generalization as the synthesis) and "Metrics" (the five metrics lessons). The metrics lessons share `group: "Metrics"` in `curriculum.ts`: the sidebar shows them indented under a "Metrics" subheading and the breadcrumb reads Machine Learning / Metrics / lesson. URLs, the lesson counter and prev/next are unchanged (the group is display-only).
+**Hierarchy.** Two sidebar groups: "Generalization" (Bias & Variance, Bias & Fairness, Data Splits, Generalization with the interactive synthesis, then Summary as the editable reference) and "Metrics" (the five metrics lessons). The metrics lessons share `group: "Metrics"` in `curriculum.ts`: the sidebar shows them indented under a "Metrics" subheading and the breadcrumb reads Machine Learning / Metrics / lesson. URLs, the lesson counter and prev/next are unchanged (the group is display-only).
 
 **Writing rule.** When prose lists two to five possibilities, render them as a numbered or bulleted list (`OptionList`) and set the one sentence to remember apart as a quote (`Takeaway`), both in `metric-section.tsx`.
 
@@ -109,6 +110,41 @@ Synthetic data (`loan-applicants.ts`): 150 applicants per group, base repayment 
 
 Exam data and the logistic fit shared with the gallery (`classic-models.ts`). A threshold slider drives: 1 Confusion matrix (sigmoid chart with the threshold line); 2 Accuracy, plus the accuracy trap (1,000 payments, 10 frauds, an always-"not fraud" model); 3 Precision and recall vs. threshold; 4 F1 / Fβ vs. threshold, with macro/micro averaging noted; 5 Specificity and balanced accuracy; 6 MCC; 7 ROC curve and AUC; 8 Precision–recall curve and average precision; 9 Log loss; 10 Brier score and calibration (calibration curve and ECE on the synthetic payments: ROC AUC 0.98 yet badly calibrated); 11 Balanced vs. imbalanced data — and fairness: lazy vs. real fraud model across accuracy, balanced accuracy, F1, MCC, ROC AUC and PR AUC; a which-metric-when table; "Class imbalance ≠ fairness" with the four combinations and per-group evaluation (TPR, FPR, precision, calibration, log loss); 12 Cheat sheet.
 
+## Page: Classification (Fairness)
+
+`classification-fairness.tsx` follows the fraud-detection story: distinguish class
+imbalance from demographic fairness; inspect the evaluation distribution; show
+980 legitimate payments and 20 frauds; expose the lazy classifier’s 98% accuracy
+and zero fraud recall; then evaluate a candidate with TP=14, FN=6, TN=940, FP=40.
+The candidate detects more fraud, but its accuracy falls to 95.4% and its alert
+precision is 25.93%. “Better” is conditional on the task and error costs.
+Both model sections pair a confusion matrix with the same four performance
+figures. The lazy matrix has TP=0, FN=20, TN=980, FP=0; its alert precision is
+undefined because it never predicts fraud.
+
+Every metric has an explanation, motivation, formula, substituted calculation,
+range, interpretation, and adjacent chart: recall, specificity, FPR, precision,
+accuracy, balanced accuracy, F1, Fβ (worked F2), MCC, ROC/AUC, PR/average precision,
+log loss, binary Brier, calibration curve, and ECE. Average precision uses the
+step-wise PR integral, not trapezoidal PR AUC. The class colors stay consistent.
+
+A lesson-local fixture in `classification-fairness-data.ts` supplies four score
+bands: 14 frauds at 0.8, six frauds at 0.2, 940 legitimate payments at 0.1, and 40
+legitimate payments at 0.6. Threshold 0.5 reproduces the same confusion matrix.
+The lazy probability baseline assigns 0.02 to everyone, so it has no fraud
+predictions at 0.5 but perfect aggregate calibration on this illustrative sample.
+The probabilities are constructed examples, not a trained model or calibrated
+estimates. The shared `payments.ts` fixture is unchanged.
+
+A short demographic-fairness bridge links to Bias & Fairness; these class totals
+cannot establish group fairness. Immediately before Main Takeaways, a comparison
+table gives every metric’s lazy and candidate results under a grouped Performance
+header, plus a short interpretation and desirable score direction. Undefined lazy
+precision is shown as a dash, and the zero-denominator MCC convention is explicit.
+A final metric-selection table qualifies usefulness for balanced data, imbalanced
+data, group assessment, and good-score interpretation. Both languages share all
+calculations; score ranges are never presented as universal acceptance thresholds.
+
 ## Page: Data Splits
 
 `data-splits.tsx`, `payments.ts`, `src/lib/splits.ts`. Lead: train / validation / test as a numbered list. 1 Train/validation/test holdout (proportion bar, common leaks); 2 k-fold cross-validation (shared `FoldDiagram`); 3 Stratified splits for imbalanced data (frauds per fold, random vs. stratified — one random fold has none); 4 Group-aware splits for fairness (group-B payments per fold, random vs. stratified by class × group; only 3 minority-group frauds exist, so no split covers every fold — splits make fairness measurable, they don't guarantee it); 5 Time-based and grouped splits (diagrams); 6 Cheat sheet.
@@ -144,3 +180,28 @@ All hand-rolled, each with tests in `src/lib/`: `metrics.ts` (confusion-matrix m
 - **Pass 7 (done):** each scenario now shows one row per run (its own data, boundary and train/test accuracy curve, with a comment) plus an "All 5 runs" row with mean curves and bias / variance / fairness diagnosis lines; a short note explains the 5 splits; tabs mount lazily.
 - **Pass 8 (done):** each scenario splits into two sub-tabs. **Dataset**: the data sliders (training size, % random labels, minority share), how the data was split into 5, split 1's training points with the group A | B divide, a class-by-group distribution chart (training splits vs test set), a per-split table (points, group A/B, class-1 share, wrong labels) and a "What to notice" note on the data's part. **Algorithm / Performance**: the hidden-neurons slider and training controls, the five run rows, the "All 5 runs" row and a "What to notice" note explaining the outcome (underfitting, good fit, overfitting, unfairness). The variance diagnosis now says when a big gap comes from group B rather than memorization.
 - **Pass 9 (done):** per-group performance and fairness in every scenario. Each run's learning curve now plots training, test (all), and test accuracy for group A and group B. A new "Per group and fairness" block (mean of the 5 runs, test set) shows a grouped bar chart of accuracy, TPR, FPR, precision and selection rate per group, the Bias & Fairness criteria as gaps with ✓/✗ (demographic parity, disparate impact ≥ 0.8, equal opportunity, equalized odds, predictive parity; gap ≤ 0.15 passes), worked equal-opportunity / equalized-odds / disparate-impact lines, a fairness verdict by equalized odds, and a per-scenario fairness note. Measured: Good fit accurate and fair; Overfit fair but inaccurate; Imbalanced accurate for A, unfair to B; Underfit also unfair (group B's FPR about three times A's). Helpers: `groupReport`, `meanGroupReport`, `fairnessGaps` in `generalization-data.ts`.
+
+
+---
+
+
+
+
+## Page: Generalization Summary
+
+`/learn/machine-learning/summary` closes the Generalization group with an editable
+reference for Bias & Variance, Bias & Fairness, Data Splits, and Generalization.
+Each concept includes a definition, practical interpretation, and source-lesson
+link. A diagnosis table and personal-notes section close the document.
+
+The lazy-loaded BlockNote editor supports text, headings, lists, checklists,
+quotes, tables, links, formatting, undo/redo, and block reordering. Explicit
+move-up/down buttons provide a keyboard alternative to dragging. The page uses
+the course shell and themes, with an approximately 800px document column.
+
+Each language has its own version-1 JSON document under
+`ai-intro-generalization-summary:en-US` or `ai-intro-generalization-summary:pt-BR`.
+Edits autosave after 500ms and flush on navigation, language changes, and page
+exit. Failed writes remain in memory for the tab lifetime. Unreadable saved
+content is preserved until an explicit, confirmed restore; restore affects only
+the current language. There is no account, backend, upload, or collaboration.

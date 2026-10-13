@@ -24,7 +24,7 @@ import { irisPoints } from "./classic-models"
 import { CheatSheet, MetricSection, OptionList, StatRow, Takeaway } from "./metric-section"
 
 const K = 3
-const COLORS = ["var(--color-chart-cool)", "var(--color-brand)", "var(--color-fg-secondary)"]
+const COLORS = ["var(--color-class-1)", "var(--color-class-2)", "var(--color-fg-secondary)"]
 const species = irisSample.map((f) => f.species)
 const speciesNames = [...new Set(species)]
 

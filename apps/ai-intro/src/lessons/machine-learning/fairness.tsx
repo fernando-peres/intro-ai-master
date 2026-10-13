@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { BarChart } from "@/components/charts/bar-chart"
 import { LineChart } from "@/components/charts/line-chart"
-import { ScatterChart } from "@/components/charts/scatter-chart"
+import { ScatterChart, type ScatterShape } from "@/components/charts/scatter-chart"
 import {
   LessonArticle,
   LessonFooter,
@@ -22,11 +22,17 @@ import {
 } from "./loan-applicants"
 import { CheatSheet, MetricSection, OptionList, Slider, StatRow, Takeaway } from "./metric-section"
 
-const A = "var(--color-chart-cool)"
-const B = "var(--color-brand)"
+const A = "var(--color-class-1)"
+const B = "var(--color-class-2)"
 const FG = "var(--color-fg)"
 const MUTED = "var(--color-fg-muted)"
-const VARIANT_COLORS = [A, B, "var(--color-fg-secondary)", "var(--color-fg)"]
+/** Color follows fairness (fair → A, unfair → B); shape gives each of the four its own mark. */
+const VARIANT_STYLE: Record<string, { color: string; shape: ScatterShape }> = {
+  "fair-accurate": { color: A, shape: "circle" },
+  "unfair-accurate": { color: B, shape: "triangle" },
+  "fair-inaccurate": { color: A, shape: "diamond" },
+  "unfair-inaccurate": { color: B, shape: "square" },
+}
 
 const thresholds = Array.from({ length: 13 }, (_, i) => Number((0.2 + i * 0.05).toFixed(2)))
 const gaps = thresholds.map((t) => {
@@ -105,13 +111,13 @@ export function FairnessLesson({ entry }: { entry: LessonEntry }) {
         </p>
         <FairnessSummary />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <blockquote className="border-l-2 border-brand pl-4 text-fg-secondary">
+          <blockquote className="border-l-2 border-chart-warm pl-4 text-fg-secondary">
             <span className="font-display text-xl text-fg">{t("Bias")}</span>{" "}
             {t(
               "— a systematic error that makes a model's decisions depend on who you are, not only on the evidence about you.",
             )}
           </blockquote>
-          <blockquote className="border-l-2 border-chart-cool pl-4 text-fg-secondary">
+          <blockquote className="border-l-2 border-fg-secondary pl-4 text-fg-secondary">
             <span className="font-display text-xl text-fg">{t("Fairness")}</span>{" "}
             {t(
               "— comparable decisions and error rates across groups. Which comparison counts (approval rates, TPR, FPR, precision) is a choice this lesson makes explicit.",
@@ -482,13 +488,13 @@ export function FairnessLesson({ entry }: { entry: LessonEntry }) {
             {
               key: "opportunity",
               label: t("TPR gap"),
-              color: A,
+              color: "var(--color-chart-warm)",
               points: gaps.map((g) => ({ x: g.t, y: g.opportunity })),
             },
             {
               key: "predictive",
               label: t("precision gap"),
-              color: B,
+              color: "var(--color-chart-amber)",
               points: gaps.map((g) => ({ x: g.t, y: g.predictive })),
             },
           ]}
@@ -547,10 +553,10 @@ export function FairnessLesson({ entry }: { entry: LessonEntry }) {
           points={modelVariants.flatMap((v) =>
             splitScores(v).map((score) => ({ x: score.accuracy, y: score.tprGap, series: v.key })),
           )}
-          series={modelVariants.map((v, i) => ({
+          series={modelVariants.map((v) => ({
             key: v.key,
             label: t(v.label),
-            color: VARIANT_COLORS[i],
+            ...VARIANT_STYLE[v.key],
           }))}
           xLabel={t("Accuracy")}
           yLabel={t("TPR gap |A − B|")}

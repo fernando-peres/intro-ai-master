@@ -31,6 +31,6 @@ export const queries = [
 
 export const RANKERS = [
   { key: "keyword" as const, label: "Keyword ranker", color: "var(--color-fg-muted)" },
-  { key: "learned" as const, label: "Learned ranker", color: "var(--color-brand)" },
+  { key: "learned" as const, label: "Learned ranker", color: "var(--color-chart-warm)" },
 ]
 export const KS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]

@@ -55,3 +55,27 @@ test("a dashed series renders with a dash pattern", () => {
   expect(dashed.getAttribute("stroke-dasharray")).toBe("6 5")
   expect(solid.getAttribute("stroke-dasharray")).toBeNull()
 })
+
+test("point markers make a single-point calibration series visible", () => {
+  render(
+    <LineChart
+      showPoints
+      series={[
+        {
+          key: "constant",
+          label: "Constant probability",
+          color: "red",
+          points: [{ x: 0.02, y: 0.02 }],
+        },
+      ]}
+      xLabel="Estimate"
+      yLabel="Observed"
+    />,
+  )
+  const plot = screen.getByRole("img")
+  const marker = plot.querySelector("circle")
+  expect(marker).not.toBeNull()
+  expect(marker?.getAttribute("fill")).toBe("red")
+  expect(Number(marker?.getAttribute("cx"))).toBeGreaterThan(0)
+  expect(Number(marker?.getAttribute("cy"))).toBeGreaterThan(0)
+})

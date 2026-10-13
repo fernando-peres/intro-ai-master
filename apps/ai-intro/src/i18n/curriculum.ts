@@ -28,6 +28,7 @@ const titles: Record<
       generalization: "Generalização",
       summary: "Resumo",
       "classification-metrics": "Classificação",
+      "classification-fairness": "Classificação (Equidade)",
       "clustering-metrics": "Agrupamento",
       "regression-metrics": "Regressão",
       "reinforcement-learning-metrics": "Aprendizado por reforço",
@@ -37,7 +38,14 @@ const titles: Record<
   },
   "neural-networks": {
     title: "Redes neurais",
-    lessons: { perceptron: "Perceptron" },
+    lessons: {
+      perceptron: "Perceptron",
+      "back-propagation": "Visão geral",
+      "training-lab": "Laboratório de treino",
+      "forward-and-backward": "Passo a passo",
+      "under-the-hood": "Conceitos-chave",
+    },
+    groups: { "Back-propagation": "Retropropagação" },
   },
 }
 

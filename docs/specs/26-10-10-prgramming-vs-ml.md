@@ -133,19 +133,22 @@ The problem is no longer writing code. It is discovering the right rules.
 
 UI
 ```
----------------------------
-| Intro (why ML)          |
----------------------------
-| Show NN (play button)   |
-| Simulate the training   | 
-| show/hide nn config     |
----------------------------
-| Show performance        |
-| Show charts             |
----------------------------
-| Show new example comming and press classify    |
----------------------------
+Intro (why ML)
+
+┌ rail (collapsible ‹ ›) ──┬ main ───────────────────────────────────┐
+│ Network configuration    │ Network diagram          [size slider]  │
+│  hidden layers, activation,├───────────────────────────────────────┤
+│  learning rate           │ Epoch │ Loss │ Network acc │ Rules acc  │
+│ ──────────────────────── ├────────────────────┬────────────────────┤
+│ [Show weights]           │ Decision plot      │ Accuracy chart     │
+│ [Show math] (floating)   ├────────────────────┼────────────────────┤
+│ ──────────────────────── │ Loss chart         │ Comments           │
+│ [Step] [Train] [Reset]   │                    │ (status + notes)   │
+└──────────────────────────┴────────────────────┴────────────────────┘
+
+Classify a new example (below the workbench)
 ```
+Flat, minimalist, hairline-bordered workbench; rows share the same edges. The rail collapses; on narrow screens it stacks above and rows stack. Show weights and Show math are independent: weights print on the diagram, math opens a draggable floating panel. Before the first epoch the decision plot is shown alone (resizable) and Comments takes the full last row.
 
 3. Machine Learning — Learn the Rules from Data
 

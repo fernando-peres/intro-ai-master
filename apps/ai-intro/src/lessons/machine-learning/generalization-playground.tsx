@@ -136,8 +136,8 @@ type HistoryPoint = { x: number; train: number; test: number; groupA: number; gr
 const emptyHistory = (): HistoryPoint[][] => Array.from({ length: SPLITS }, () => [])
 const points = (pts: { x: number; y: number }[]) => pts.map((p) => ({ x: p.x, y: p.y }))
 const CLASS_SERIES = [
-  { key: "negative", label: "class 0", color: "var(--color-chart-cool)" },
-  { key: "positive", label: "class 1", color: "var(--color-brand)" },
+  { key: "negative", label: "class 0", color: "var(--color-class-1)" },
+  { key: "positive", label: "class 1", color: "var(--color-class-2)" },
 ]
 const asSeries = (pts: GroupPoint[]) =>
   pts.map((p) => ({ x: p.x, y: p.y, series: p.label === 1 ? "positive" : "negative" }))
@@ -169,13 +169,13 @@ function AccuracyCurves({ history }: { history: HistoryPoint[] }) {
         {
           key: "a",
           label: t("test, group A"),
-          color: "var(--color-chart-cool)",
+          color: "var(--color-class-1)",
           points: line((h) => h.groupA),
         },
         {
           key: "b",
           label: t("test, group B"),
-          color: "var(--color-brand)",
+          color: "var(--color-class-2)",
           points: line((h) => h.groupB),
         },
       ]}
@@ -318,13 +318,13 @@ function TrainingData({ trainSets }: { trainSets: GroupPoint[][] }) {
               {
                 key: "train",
                 label: t("training (mean of 5 splits)"),
-                color: "var(--color-chart-cool)",
+                color: "var(--color-chart-warm)",
                 values: meanTrainShares,
               },
               {
                 key: "test",
                 label: t("test set"),
-                color: "var(--color-brand)",
+                color: "var(--color-fg-secondary)",
                 values: cellShares(testSet),
               },
             ]}
@@ -449,13 +449,13 @@ function GroupFairness({
             {
               key: "A",
               label: t("Group A"),
-              color: "var(--color-chart-cool)",
+              color: "var(--color-class-1)",
               values: values(groups.A),
             },
             {
               key: "B",
               label: t("Group B"),
-              color: "var(--color-brand)",
+              color: "var(--color-class-2)",
               values: values(groups.B),
             },
           ]}
@@ -479,9 +479,7 @@ function GroupFairness({
                   <td className="px-1 py-1 text-fg">{t(r.name)}</td>
                   <td className="px-1 py-1">{t(r.compares)}</td>
                   <td className="px-1 py-1 text-right">{r.value}</td>
-                  <td
-                    className={cn("px-1 py-1 text-right", r.ok ? "text-chart-cool" : "text-brand")}
-                  >
+                  <td className={cn("px-1 py-1 text-right", r.ok ? "text-success" : "text-error")}>
                     {r.ok ? "✓" : "✗"}
                   </td>
                 </tr>
@@ -507,7 +505,7 @@ function GroupFairness({
           <p
             className={cn(
               "rounded-[3px] border px-3 py-2 text-sm text-fg",
-              fair ? "border-chart-cool" : "border-brand",
+              fair ? "border-success" : "border-error",
             )}
           >
             {!done
@@ -761,8 +759,8 @@ function ScenarioPanel({ scenario, active }: { scenario: Scenario; active: boole
               <DecisionChart
                 points={shownPoints}
                 series={[
-                  { key: "negative", label: "class 0", color: "var(--color-chart-cool)" },
-                  { key: "positive", label: "class 1", color: "var(--color-brand)" },
+                  { key: "negative", label: "class 0", color: "var(--color-class-1)" },
+                  { key: "positive", label: "class 1", color: "var(--color-class-2)" },
                 ]}
                 xLabel="x₁"
                 yLabel="x₂"
@@ -875,7 +873,7 @@ function ScenarioPanel({ scenario, active }: { scenario: Scenario; active: boole
                 <p
                   className={cn(
                     "rounded-[3px] border px-3 py-2 text-sm text-fg",
-                    verdict === "good" ? "border-chart-cool" : "border-brand",
+                    verdict === "good" ? "border-success" : "border-error",
                   )}
                 >
                   {done

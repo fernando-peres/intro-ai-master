@@ -207,11 +207,16 @@ export function RegressionMetricsLesson({ entry }: { entry: LessonEntry }) {
         <BarChart
           categories={["MAE", "RMSE"]}
           series={[
-            { key: "clean", label: t("14 sales"), color: COOL, values: [clean.mae, clean.rmse] },
+            {
+              key: "clean",
+              label: t("14 sales"),
+              color: "var(--color-chart-warm)",
+              values: [clean.mae, clean.rmse],
+            },
             {
               key: "outlier",
               label: t("+ one outlier"),
-              color: BRAND,
+              color: "var(--color-fg-secondary)",
               values: [withOutlier.mae, withOutlier.rmse],
             },
           ]}

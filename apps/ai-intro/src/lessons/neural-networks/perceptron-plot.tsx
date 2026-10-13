@@ -15,7 +15,7 @@ const WIDTH = 520
 const HEIGHT = 480
 const GRID = 40
 
-export const CLASS_COLOR = ["var(--color-chart-warm)", "var(--color-chart-cool)"] as const
+export const CLASS_COLOR = ["var(--color-class-1)", "var(--color-class-2)"] as const
 
 /** Class 0 is a square, class 1 a circle, so class never depends on color alone. */
 export function ClassMarker({ cls, cx, cy, r }: { cls: 0 | 1; cx: number; cy: number; r: number }) {

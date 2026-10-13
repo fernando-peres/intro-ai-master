@@ -26,8 +26,8 @@ import { classifyByRules, rulesPythonSource, rulesScore } from "./rules"
 
 const points = machineReadings.map((r) => ({ x: r.temperature, y: r.vibration, series: r.label }))
 const series = [
-  { key: "normal", label: "A — Normal", color: "var(--color-chart-cool)" },
-  { key: "at-risk", label: "B — At Risk", color: "var(--color-brand)" },
+  { key: "normal", label: "A — Normal", color: "var(--color-class-1)" },
+  { key: "at-risk", label: "B — At Risk", color: "var(--color-class-2)" },
 ]
 const ruleMisses = new Set(
   points

@@ -41,14 +41,14 @@ const fraudCount = payments.filter((p) => p.fraud).length
 const pct = (v: number) => `${Math.round(v * 100)}%`
 
 const HOLDOUT = [
-  { name: "Train", share: 0.6, color: "bg-chart-cool", body: "Fits the model's parameters." },
+  { name: "Train", share: 0.6, color: "bg-chart-warm", body: "Fits the model's parameters." },
   {
     name: "Validation",
     share: 0.2,
     color: "bg-fg-secondary",
     body: "Chooses between models and settings.",
   },
-  { name: "Test", share: 0.2, color: "bg-brand", body: "Reports the final score, once." },
+  { name: "Test", share: 0.2, color: "bg-chart-amber", body: "Reports the final score, once." },
 ]
 
 /** Rolling-origin evaluation: each round trains on the past and tests on the next period. */
@@ -75,9 +75,9 @@ function TimeSplitDiagram() {
               key={period}
               className={`h-5 flex-1 rounded-[2px] ${
                 period < trainUpTo
-                  ? "bg-chart-cool/60"
+                  ? "bg-chart-warm/60"
                   : period === trainUpTo
-                    ? "bg-brand"
+                    ? "bg-fg-secondary"
                     : "bg-divider"
               }`}
             />
@@ -85,8 +85,8 @@ function TimeSplitDiagram() {
         </div>
       ))}
       <p className="font-ui text-[11px] text-fg-muted">
-        {t("time →")} <span className="text-chart-cool">■</span> {t(" train ")}
-        <span className="text-brand">■</span> {t("test ")}
+        {t("time →")} <span className="text-chart-warm">■</span> {t(" train ")}
+        <span className="text-fg-secondary">■</span> {t("test ")}
         <span className="text-fg-muted">■</span> {t("future, unused")}
       </p>
     </div>
@@ -116,14 +116,14 @@ function GroupSplitDiagram() {
             <span
               // biome-ignore lint/suspicious/noArrayIndexKey: a customer's rows are interchangeable
               key={i}
-              className={`h-5 w-8 rounded-[2px] ${c.test ? "bg-brand" : "bg-chart-cool/60"}`}
+              className={`h-5 w-8 rounded-[2px] ${c.test ? "bg-fg-secondary" : "bg-chart-warm/60"}`}
             />
           ))}
         </div>
       ))}
       <p className="font-ui text-[11px] text-fg-muted">
-        <span className="text-chart-cool">■</span> {t(" train ")}
-        <span className="text-brand">■</span> {t("test ")}
+        <span className="text-chart-warm">■</span> {t(" train ")}
+        <span className="text-fg-secondary">■</span> {t("test ")}
       </p>
     </div>
   )
@@ -295,7 +295,7 @@ export function DataSplitsLesson({ entry }: { entry: LessonEntry }) {
             {
               key: "stratified",
               label: t("Stratified folds"),
-              color: "var(--color-brand)",
+              color: "var(--color-fg-secondary)",
               values: byClass.map((f) => count(f, (p) => p.fraud)),
             },
           ]}
@@ -354,7 +354,7 @@ export function DataSplitsLesson({ entry }: { entry: LessonEntry }) {
             {
               key: "stratified",
               label: t("Stratified by class × group"),
-              color: "var(--color-chart-cool)",
+              color: "var(--color-chart-warm)",
               values: byClassAndGroup.map((f) => count(f, (p) => p.group === "B")),
             },
           ]}

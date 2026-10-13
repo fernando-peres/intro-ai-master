@@ -2,10 +2,53 @@ import { useTranslation } from "@/i18n/use-translation"
 import { createScale } from "./scales"
 
 export type ScatterPoint = { x: number; y: number; series: string }
-export type ScatterSeries = { key: string; label: string; color: string }
+export type ScatterShape = "circle" | "square" | "triangle" | "diamond"
+export type ScatterSeries = { key: string; label: string; color: string; shape?: ScatterShape }
 
 /** A point key, as used in `flaggedKeys` — matches a point's `${x}-${y}-${series}`. */
 export const pointKey = (p: ScatterPoint) => `${p.x}-${p.y}-${p.series}`
+
+/** One mark, centered at `(cx, cy)` — so a series can be told apart by shape, not color alone. */
+function ShapeMark({
+  shape,
+  cx,
+  cy,
+  r,
+  ...fillProps
+}: {
+  shape: ScatterShape
+  cx: number
+  cy: number
+  r: number
+  fill?: string
+  stroke?: string
+  strokeWidth?: number
+  strokeDasharray?: string
+  className?: string
+}) {
+  switch (shape) {
+    case "square":
+      return (
+        <rect x={cx - r * 0.9} y={cy - r * 0.9} width={r * 1.8} height={r * 1.8} {...fillProps} />
+      )
+    case "triangle":
+      return (
+        <polygon
+          points={`${cx},${cy - r * 1.15} ${cx - r * 1.05},${cy + r * 0.75} ${cx + r * 1.05},${cy + r * 0.75}`}
+          {...fillProps}
+        />
+      )
+    case "diamond":
+      return (
+        <polygon
+          points={`${cx},${cy - r * 1.15} ${cx + r * 1.15},${cy} ${cx},${cy + r * 1.15} ${cx - r * 1.15},${cy}`}
+          {...fillProps}
+        />
+      )
+    default:
+      return <circle cx={cx} cy={cy} r={r} {...fillProps} />
+  }
+}
 
 /**
  * Minimal SVG scatter plot: axis ticks are derived from the data, so it fits any two numeric
@@ -48,6 +91,8 @@ export function ScatterChart({
   const { width, height, margin, plotWidth, plotHeight, xTicks, yTicks, px, py } = scale
 
   const colorOf = (key: string) => series.find((s) => s.key === key)?.color ?? "currentColor"
+  const shapeOf = (key: string): ScatterShape =>
+    series.find((s) => s.key === key)?.shape ?? "circle"
   const counts = series.map(
     (s) => `${points.filter((p) => p.series === s.key).length} ${t(s.label)}`,
   )
@@ -172,7 +217,8 @@ export function ScatterChart({
                   strokeDasharray="3 3"
                 />
               )}
-              <circle
+              <ShapeMark
+                shape={shapeOf(p.series)}
                 cx={px(p.x)}
                 cy={py(p.y)}
                 r={9}
@@ -216,11 +262,9 @@ export function ScatterChart({
       <figcaption className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
         {series.map((s) => (
           <span key={s.key} className="flex items-center gap-2 font-ui text-sm text-fg-secondary">
-            <span
-              aria-hidden
-              className="size-3 rounded-full"
-              style={{ backgroundColor: s.color }}
-            />
+            <svg aria-hidden width={14} height={14} viewBox="0 0 14 14" className="shrink-0">
+              <ShapeMark shape={s.shape ?? "circle"} cx={7} cy={7} r={6} fill={s.color} />
+            </svg>
             {t(s.label)}
           </span>
         ))}

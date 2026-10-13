@@ -1,10 +1,11 @@
 @import "tailwindcss";
-@source "../node_modules/@blocknote/shadcn";
 @import "tw-animate-css";
 @import "@xyflow/react/dist/style.css";
 @import "@fontsource/cormorant-garamond/400.css";
 @import "@fontsource/cormorant-garamond/400-italic.css";
 @import "@fontsource/ibm-plex-mono/400.css";
+
+@source "../node_modules/@blocknote/shadcn";
 
 /* violet, mint and cobalt are dark themes too. */
 @custom-variant dark (&:is(.dark *, .violet *, .mint *, .cobalt *));
@@ -26,6 +27,11 @@
   --color-divider: var(--ae-divider);
   --color-chart-cool: var(--ae-chart-cool);
   --color-chart-warm: var(--ae-chart-warm);
+  --color-class-1: var(--ae-class-1);
+  --color-class-2: var(--ae-class-2);
+  --color-chart-amber: var(--ae-chart-amber);
+  --color-success: var(--ae-chart-cool);
+  --color-error: var(--ae-error);
 
   /* shadcn tokens */
   --color-background: var(--background);
@@ -56,6 +62,12 @@
 :root {
   --ae-chart-cool: #5b8def;
   --ae-chart-warm: #d9742e;
+  /* The two-class pair shared by every chart with a binary split. */
+  --ae-class-1: #c084fc;
+  --ae-class-2: #34d399;
+  /* Misc yellow (metrics/variants) and the error semantic. */
+  --ae-chart-amber: #fbbf24;
+  --ae-error: #f87171;
 }
 
 :root,
@@ -84,6 +96,11 @@
   --ae-accent-soft: #e98a5d;
   --ae-border: #d9cac1;
   --ae-divider: #e8ddd5;
+  /* Darker than the dark-theme pair above, for contrast on this pale background. */
+  --ae-class-1: #7e22ce;
+  --ae-class-2: #047857;
+  --ae-chart-amber: #b45309;
+  --ae-error: #b91c1c;
   color-scheme: light;
 }
 

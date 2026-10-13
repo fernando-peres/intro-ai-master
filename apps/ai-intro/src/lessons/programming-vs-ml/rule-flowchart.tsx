@@ -63,8 +63,8 @@ export function RuleFlowchart() {
   const normal = classMeta.normal
   const riskLabel = `${risk.code} — ${t(risk.name)}`
   const normalLabel = `${normal.code} — ${t(normal.name)}`
-  const riskColor = "var(--color-brand)"
-  const normalColor = "var(--color-chart-cool)"
+  const riskColor = "var(--color-class-2)"
+  const normalColor = "var(--color-class-1)"
 
   return (
     <div className="rounded-[3px] border border-divider p-4">

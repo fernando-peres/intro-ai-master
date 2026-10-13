@@ -29,15 +29,15 @@ async function openLesson(path: string) {
 test("switches the trained network's copy without resetting its epoch or inputs", async () => {
   await openLesson("/learn/programming-vs-ml/machine-learning")
   fireEvent.click(screen.getByRole("button", { name: "Step" }))
-  expect(screen.getByText("Epoch", { selector: "p" }).parentElement?.textContent).toBe("Epoch1")
+  expect(screen.getByText("Epoch", { selector: "dt" }).parentElement?.textContent).toBe("Epoch1")
   fireEvent.change(screen.getByLabelText("Temperature (°C)"), { target: { value: "90" } })
   fireEvent.click(screen.getByRole("button", { name: "PT-BR" }))
-  expect(screen.getByText("Época", { selector: "p" }).parentElement?.textContent).toBe("Época1")
+  expect(screen.getByText("Época", { selector: "dt" }).parentElement?.textContent).toBe("Época1")
   expect((screen.getByLabelText("Temperatura (°C)") as HTMLInputElement).value).toBe("90")
   fireEvent.click(screen.getByRole("button", { name: "Classificar" }))
   expect(screen.getByText(/Rede:/).textContent).toContain("de risco")
   fireEvent.click(screen.getByRole("button", { name: "EN-US" }))
-  expect(screen.getByText("Epoch", { selector: "p" }).parentElement?.textContent).toBe("Epoch1")
+  expect(screen.getByText("Epoch", { selector: "dt" }).parentElement?.textContent).toBe("Epoch1")
 }, 15_000)
 
 test("switches the perceptron's copy without resetting its run", async () => {
@@ -45,12 +45,13 @@ test("switches the perceptron's copy without resetting its run", async () => {
   const epoch = (label: string) =>
     screen.getAllByText(label, { selector: "dt" })[0].parentElement?.querySelector("dd")
       ?.textContent
-  fireEvent.click(screen.getByRole("button", { name: /^XOR/ }))
+  fireEvent.change(screen.getByRole("combobox", { name: "Dataset" }), { target: { value: "xor" } })
   fireEvent.click(screen.getByRole("button", { name: "Step 1 epoch" }))
-  fireEvent.click(screen.getByRole("button", { name: "Show math" }))
+  fireEvent.click(screen.getByRole("switch", { name: "Show math" }))
   fireEvent.click(screen.getByRole("button", { name: "PT-BR" }))
   expect(epoch("Época")).toBe("1")
-  expect(screen.getByRole("button", { name: /^XOR/ }).getAttribute("aria-pressed")).toBe("true")
+  const dataset = screen.getByRole("combobox", { name: "Conjunto de dados" }) as HTMLSelectElement
+  expect(dataset.value).toBe("xor")
   expect(screen.getByText("Última atualização do treino")).toBeTruthy()
   fireEvent.click(screen.getByRole("button", { name: "EN-US" }))
   expect(epoch("Epoch")).toBe("1")
@@ -65,12 +66,12 @@ test("content lessons show no chapter eyebrow in either language", async () => {
 
 test("keeps classification points visible when translated", async () => {
   await openLesson("/learn/machine-learning/classification-metrics")
-  const plot = screen.getByRole("img", { name: /Scatter plot/ })
+  const plot = screen.getByRole("img", { name: /decision boundary/ })
   const points = plot.querySelectorAll("circle").length
   const colors = [...plot.querySelectorAll("circle")].map((point) => point.getAttribute("fill"))
   expect(points).toBeGreaterThan(0)
   fireEvent.click(screen.getByRole("button", { name: "PT-BR" }))
-  const translated = screen.getByRole("img", { name: /Gráfico de dispersão/ })
+  const translated = screen.getByRole("img", { name: /fronteira de decisão/ })
   expect(translated.querySelectorAll("circle")).toHaveLength(points)
   expect(
     [...translated.querySelectorAll("circle")].map((point) => point.getAttribute("fill")),
@@ -87,8 +88,8 @@ test("keeps Portuguese across footer navigation and English for an untranslated 
     expect(screen.getByRole("heading", { level: 1 }).textContent).toContain("ML é formado"),
   )
   expect(localStorage.getItem("ai-intro-language")).toBe("pt-BR")
-  fireEvent.click(screen.getByRole("link", { name: "Back-propagation" }))
-  await screen.findByRole("heading", { level: 1, name: "Back-propagation" })
+  fireEvent.click(screen.getByRole("link", { name: "Loss & Optimization" }))
+  await screen.findByRole("heading", { level: 1, name: "Loss & Optimization" })
   expect(
     screen
       .getByText("This simulation is being built. Check back soon.")
@@ -116,6 +117,7 @@ test("translates compound ranking summary labels", async () => {
 
 test("preserves comparison symbols in the English F-beta explanation", async () => {
   await openLesson("/learn/machine-learning/classification-metrics")
+  fireEvent.click(screen.getByRole("tab", { name: "Evaluation" }))
   expect(screen.getByText(/Fβ generalizes it:/).textContent).toContain("β > 1")
   expect(screen.getByText(/Fβ generalizes it:/).textContent).toContain("β < 1")
 })
@@ -132,11 +134,13 @@ test.each([
   ["machine-learning/fairness", "equidade"],
   ["machine-learning/data-splits", "Divisão"],
   ["machine-learning/classification-metrics", "Classificação"],
+  ["machine-learning/classification-fairness", "Classificação"],
   ["machine-learning/clustering-metrics", "Agrupamento"],
   ["machine-learning/regression-metrics", "Regressão"],
   ["machine-learning/reinforcement-learning-metrics", "Reforço"],
   ["machine-learning/ranking-metrics", "Ordenação"],
   ["neural-networks/perceptron", "um neurônio"],
+  ["neural-networks/activation-functions", "ativação"],
 ])(
   "restores saved Portuguese for %s",
   async (lesson, title) => {

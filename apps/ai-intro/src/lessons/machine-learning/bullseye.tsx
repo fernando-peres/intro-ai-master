@@ -46,7 +46,7 @@ function Target({ bias, variance, seed }: { bias: boolean; variance: boolean; se
           cx={C}
           cy={C}
           r={r}
-          fill={i === RINGS.length - 1 ? "var(--color-brand)" : "var(--color-surface)"}
+          fill={i === RINGS.length - 1 ? "var(--color-chart-warm)" : "var(--color-surface)"}
           fillOpacity={i === RINGS.length - 1 ? 0.35 : 1}
           className="stroke-fg-muted"
           strokeWidth={1.2}
@@ -58,7 +58,7 @@ function Target({ bias, variance, seed }: { bias: boolean; variance: boolean; se
           cx={s.x}
           cy={s.y}
           r={5}
-          fill="var(--color-chart-cool)"
+          fill="var(--color-fg-secondary)"
           stroke="var(--color-canvas)"
           strokeWidth={1.5}
         />

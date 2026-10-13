@@ -18,6 +18,7 @@ export function LineChart({
   yLabel,
   vLines,
   xExtent = [],
+  showPoints = false,
 }: {
   series: LineSeries[]
   xLabel: string
@@ -26,6 +27,7 @@ export function LineChart({
   vLines?: { x: number; label: string }[]
   /** x values the axis must span even without data there, e.g. the first epochs of a run. */
   xExtent?: number[]
+  showPoints?: boolean
 }) {
   const { t } = useTranslation()
   const allPoints = series.flatMap((s) => s.points)
@@ -130,6 +132,18 @@ export function LineChart({
             strokeDasharray={s.dashed ? "6 5" : undefined}
           />
         ))}
+        {showPoints &&
+          series.flatMap((s) =>
+            s.points.map((p) => (
+              <circle
+                key={`${s.key}-${p.x}-${p.y}`}
+                cx={px(p.x)}
+                cy={py(p.y)}
+                r={4}
+                fill={s.color}
+              />
+            )),
+          )}
         {vLines?.map((v) => (
           <g key={v.label}>
             <line

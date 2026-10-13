@@ -22,7 +22,7 @@ import {
   OPTIMAL_STEPS,
 } from "./rl-environments"
 
-const COLORS = ["var(--color-fg-muted)", "var(--color-chart-cool)", "var(--color-brand)"]
+const COLORS = ["var(--color-fg-muted)", "var(--color-chart-warm)", "var(--color-chart-amber)"]
 const SMOOTH = 10
 const series = (pick: (b: (typeof bandits)[number]) => number[], smooth = 1) =>
   bandits.map((b, i) => ({
@@ -71,9 +71,9 @@ function GridPolicy() {
         row.map((cell, c) => {
           const tone =
             cell === "G"
-              ? "border-chart-cool text-chart-cool"
+              ? "border-success text-success"
               : cell === "X"
-                ? "border-brand text-brand"
+                ? "border-error text-error"
                 : "border-divider text-fg"
           const label = cell === "." || cell === "S" ? ACTIONS[gridRun.policy[r][c]].arrow : cell
           return (

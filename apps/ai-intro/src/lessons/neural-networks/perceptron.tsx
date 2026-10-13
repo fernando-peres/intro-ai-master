@@ -1,8 +1,21 @@
 import { Link } from "@tanstack/react-router"
-import { PauseIcon, PlayIcon, RotateCcwIcon, SigmaIcon, StepForwardIcon } from "lucide-react"
+import { ChevronRightIcon, PauseIcon, PlayIcon, RotateCcwIcon } from "lucide-react"
 import { useEffect, useMemo, useReducer } from "react"
 import { LineChart } from "@/components/charts/line-chart"
 import { ArticleFrame, LessonHero, LessonLead } from "@/components/course/lesson-layout"
+import { FloatingPanel } from "@/components/floating-panel"
+import {
+  ConfigRail,
+  OptionGrid,
+  Panel,
+  PanelNote,
+  RailSection,
+  RunToolbar,
+  SelectField,
+  Switch,
+  toolbarButtonClass,
+  Workbench,
+} from "@/components/workbench"
 import type { Translate } from "@/i18n/translate"
 import { useTranslation } from "@/i18n/use-translation"
 import {
@@ -13,9 +26,8 @@ import {
   score,
   sigmoid,
 } from "@/lib/perceptron"
-import { cn } from "@/lib/utils"
 import { PerceptronConcepts } from "./perceptron-concepts"
-import { DATASET_IDS, DATASETS, type DatasetId } from "./perceptron-data"
+import { DATASET_IDS, DATASET_TEXT, DATASETS } from "./perceptron-data"
 import { PerceptronDiagram } from "./perceptron-diagram"
 import { signed } from "./perceptron-format"
 import { PerceptronMath } from "./perceptron-math"
@@ -24,23 +36,9 @@ import { initialRunState, isTerminal, type RunState, runReducer } from "./percep
 
 const TICK_MS = 140
 
-const DATASET_LABEL: Record<DatasetId, string> = {
-  or: "OR",
-  and: "AND",
-  clusters: "2 clusters",
-  xor: "XOR",
-  moons: "Moons",
-}
 const ACTIVATION_LABEL: Record<PerceptronActivation, string> = {
   step: "Step — perceptron",
   sigmoid: "Sigmoid — logistic regression",
-}
-
-function toggleButtonClass(active: boolean) {
-  return cn(
-    "label-ui flex items-center gap-1.5 rounded-[2px] border px-2.5 py-1.5 transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:pointer-events-none disabled:opacity-50",
-    active ? "border-brand text-brand" : "border-line text-fg-muted hover:text-fg",
-  )
 }
 
 function NotSeparableBadge() {
@@ -84,7 +82,7 @@ function explanations(state: RunState, t: Translate): string[] {
 
 /** Changes only on pause, completion and configuration changes — never once per epoch. */
 function announcement(state: RunState, t: Translate) {
-  const config = `${t(DATASET_LABEL[state.dataset])}, ${t(ACTIVATION_LABEL[state.activation])}`
+  const config = `${t(DATASET_TEXT[state.dataset].label)}, ${t(ACTIVATION_LABEL[state.activation])}`
   if (state.status === "playing") return t("Training: {0}.", [config])
   if (state.status === "solved")
     return t("Finished: all points classified correctly. {0}.", [config])
@@ -111,7 +109,7 @@ export function PerceptronLesson() {
     return () => clearTimeout(timer)
   }, [state.status, state.runId, state.epoch])
 
-  const stats = [
+  const metrics = [
     { label: t("Epoch"), value: String(state.epoch) },
     { label: t("Misclassified"), value: `${current.errors} / ${points.length}` },
     { label: t("Training accuracy"), value: `${Math.round(current.accuracy * 100)}%` },
@@ -119,6 +117,107 @@ export function PerceptronLesson() {
       ? [{ label: t("Binary cross-entropy"), value: current.bce.toFixed(3) }]
       : []),
   ]
+
+  const rail = (
+    <ConfigRail
+      title={t("Configuration")}
+      tip={t("Start with OR. Then try XOR: can one straight line separate all four points?")}
+    >
+      <RailSection label={t("Dataset")}>
+        <SelectField
+          label={t("Dataset")}
+          options={DATASET_IDS.map((id) => ({
+            value: id,
+            label: t(DATASET_TEXT[id].label),
+            description: t(DATASET_TEXT[id].description),
+            badge: DATASETS[id].separable ? undefined : <NotSeparableBadge />,
+          }))}
+          value={state.dataset}
+          onChange={(dataset) => dispatch({ type: "selectDataset", dataset })}
+        />
+      </RailSection>
+
+      <RailSection label={t("Activation")}>
+        <OptionGrid
+          columns={1}
+          options={(["step", "sigmoid"] as const).map((activation) => ({
+            value: activation,
+            label: t(ACTIVATION_LABEL[activation]),
+          }))}
+          value={state.activation}
+          onChange={(activation) => dispatch({ type: "selectActivation", activation })}
+        />
+        <p className="text-xs text-fg-muted">
+          {t("Changing dataset or activation restarts training.")}{" "}
+          {t("The activation also selects its learning rule (η = {0}).", [
+            LEARNING_RATE[state.activation],
+          ])}
+        </p>
+      </RailSection>
+      <p aria-live="polite" className="sr-only">
+        {announcement(state, t)}
+      </p>
+
+      <RailSection label={t("Display")}>
+        <Switch
+          label={t("Show weights")}
+          checked={state.showWeights}
+          onChange={() => dispatch({ type: "toggleWeights" })}
+        />
+        <Switch
+          label={t("Show math")}
+          checked={state.showMath}
+          onChange={() => dispatch({ type: "toggleMath" })}
+        />
+      </RailSection>
+    </ConfigRail>
+  )
+
+  const toolbar = (
+    <RunToolbar
+      controls={
+        <>
+          <button
+            type="button"
+            disabled={terminal}
+            onClick={() => dispatch({ type: "step" })}
+            className={toolbarButtonClass()}
+          >
+            <ChevronRightIcon className="size-3" aria-hidden />
+            {t("Step 1 epoch")}
+          </button>
+          <button
+            type="button"
+            disabled={terminal}
+            onClick={() => dispatch({ type: state.status === "playing" ? "pause" : "play" })}
+            className={toolbarButtonClass(true)}
+          >
+            {state.status === "playing" ? (
+              <PauseIcon className="size-3" aria-hidden />
+            ) : (
+              <PlayIcon className="size-3" aria-hidden />
+            )}
+            {state.status === "playing" ? t("Pause") : t("Play")}
+          </button>
+          <button
+            type="button"
+            onClick={() => dispatch({ type: "reset" })}
+            className={toolbarButtonClass()}
+          >
+            <RotateCcwIcon className="size-3" aria-hidden />
+            {t("Reset")}
+          </button>
+        </>
+      }
+      architecture={
+        <>
+          2 → 1 <span className="text-fg-muted">· {t("Limit: {0} epochs", [MAX_EPOCHS])}</span>
+        </>
+      }
+      metricsLabel={t("Run metrics")}
+      metrics={metrics}
+    />
+  )
 
   return (
     <ArticleFrame>
@@ -131,159 +230,49 @@ export function PerceptronLesson() {
           "One neuron combines two inputs and a bias, then makes a prediction. Train it and watch its decision boundary move.",
         )}
       </LessonLead>
-      <p className="text-sm text-fg-secondary">
-        {t("Start with OR. Then try XOR: can one straight line separate all four points?")}
-      </p>
 
-      <section
-        aria-label={t("Configuration")}
-        className="flex flex-col gap-3 rounded-[3px] border border-divider bg-surface p-[18px]"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="label-ui text-fg-muted">{t("Dataset")}</span>
-          {DATASET_IDS.map((id) => (
-            <button
-              key={id}
-              type="button"
-              aria-pressed={state.dataset === id}
-              onClick={() => dispatch({ type: "selectDataset", dataset: id })}
-              className={toggleButtonClass(state.dataset === id)}
-            >
-              {t(DATASET_LABEL[id])}
-              {!DATASETS[id].separable && <NotSeparableBadge />}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="label-ui text-fg-muted">{t("Activation")}</span>
-          {(["step", "sigmoid"] as const).map((activation) => (
-            <button
-              key={activation}
-              type="button"
-              aria-pressed={state.activation === activation}
-              onClick={() => dispatch({ type: "selectActivation", activation })}
-              className={toggleButtonClass(state.activation === activation)}
-            >
-              {t(ACTIVATION_LABEL[activation])}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="label-ui text-fg-muted">{t("Training")}</span>
-          <button
-            type="button"
-            disabled={terminal}
-            onClick={() => dispatch({ type: state.status === "playing" ? "pause" : "play" })}
-            className={toggleButtonClass(state.status === "playing")}
-          >
-            {state.status === "playing" ? (
-              <PauseIcon className="size-3.5" aria-hidden />
-            ) : (
-              <PlayIcon className="size-3.5" aria-hidden />
-            )}
-            {state.status === "playing" ? t("Pause") : t("Play")}
-          </button>
-          <button
-            type="button"
-            disabled={terminal}
-            onClick={() => dispatch({ type: "step" })}
-            className={toggleButtonClass(false)}
-          >
-            <StepForwardIcon className="size-3.5" aria-hidden />
-            {t("Step 1 epoch")}
-          </button>
-          <button
-            type="button"
-            onClick={() => dispatch({ type: "reset" })}
-            className={toggleButtonClass(false)}
-          >
-            <RotateCcwIcon className="size-3.5" aria-hidden />
-            {t("Reset")}
-          </button>
-          <span className="label-ui text-fg-muted">{t("Limit: {0} epochs", [MAX_EPOCHS])}</span>
-        </div>
-        <p aria-live="polite" className="sr-only">
-          {announcement(state, t)}
-        </p>
-
-        <p className="text-xs text-fg-muted">
-          {t("Changing dataset or activation restarts training.")}{" "}
-          {t("The activation also selects its learning rule (η = {0}).", [
-            LEARNING_RATE[state.activation],
-          ])}
-        </p>
-      </section>
-
-      <section aria-label={t("The model")} className="grid items-start gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="label-ui text-fg-muted">{t("Network")}</h2>
-            <button
-              type="button"
-              aria-pressed={state.showWeights}
-              onClick={() => dispatch({ type: "toggleWeights" })}
-              className={toggleButtonClass(state.showWeights)}
-            >
-              {t("Show weights")}
-            </button>
-          </div>
+      <Workbench rail={rail}>
+        <Panel title={t("Network")} footer={toolbar}>
           <PerceptronDiagram
             params={state.params}
             activation={state.activation}
             showWeights={state.showWeights}
           />
-        </div>
-        <div className="order-first flex flex-col gap-3 lg:order-none">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="label-ui text-fg-muted">{t("Decision plot")}</h2>
-            {!separable && <NotSeparableBadge />}
-          </div>
-          <PerceptronPlot
-            points={points}
-            domain={domain}
-            params={state.params}
-            activation={state.activation}
-            misclassifiedIds={misclassified}
-            selectedId={selected.id}
-            onSelect={(id) => dispatch({ type: "selectPoint", id })}
-          />
-          <label className="flex flex-wrap items-center gap-2">
-            <span className="label-ui text-fg-muted">{t("Inspect point")}</span>
-            <select
-              value={selected.id}
-              onChange={(e) => dispatch({ type: "selectPoint", id: e.target.value })}
-              className="label-ui rounded-[2px] border border-line bg-canvas px-2 py-1.5 text-fg-secondary focus-visible:outline-2 focus-visible:outline-brand"
-            >
-              {points.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.id} ({signed(p.x1)}, {signed(p.x2)}) — {t("class {0}", [p.y])}
-                </option>
-              ))}
-            </select>
-          </label>
-          <p className="font-ui text-xs text-fg-secondary">
-            x = ({signed(selected.x1)}, {signed(selected.x2)}) · {t("target")} {selected.y} · z ={" "}
-            {signed(selectedZ, 3)} · {t("prediction")} {classOf(selectedZ)}
-            {state.activation === "sigmoid" && ` · p = ${sigmoid(selectedZ).toFixed(3)}`}
-          </p>
-        </div>
-        <div className="flex flex-col gap-3">
-          <h2 className="label-ui text-fg-muted">{t("Performance")}</h2>
-          <dl
-            aria-label={t("Performance")}
-            className={cn("grid gap-2", stats.length === 4 ? "grid-cols-2" : "grid-cols-3")}
-          >
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-[2px] border border-divider bg-surface px-3 py-2"
+        </Panel>
+
+        <div className="grid items-stretch gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <Panel title={t("Decision plot")} aside={!separable ? <NotSeparableBadge /> : undefined}>
+            <PerceptronPlot
+              points={points}
+              domain={domain}
+              params={state.params}
+              activation={state.activation}
+              misclassifiedIds={misclassified}
+              selectedId={selected.id}
+              onSelect={(id) => dispatch({ type: "selectPoint", id })}
+            />
+            <label className="flex flex-wrap items-center gap-2">
+              <span className="label-ui text-fg-muted">{t("Inspect point")}</span>
+              <select
+                value={selected.id}
+                onChange={(e) => dispatch({ type: "selectPoint", id: e.target.value })}
+                className="label-ui rounded-[2px] border border-line bg-canvas px-2 py-1.5 text-fg-secondary focus-visible:outline-2 focus-visible:outline-brand"
               >
-                <dt className="label-ui text-fg-muted">{stat.label}</dt>
-                <dd className="font-display text-lg text-fg">{stat.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="flex flex-col gap-4">
+                {points.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.id} ({signed(p.x1)}, {signed(p.x2)}) — {t("class {0}", [p.y])}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="font-ui text-xs text-fg-secondary">
+              x = ({signed(selected.x1)}, {signed(selected.x2)}) · {t("target")} {selected.y} · z ={" "}
+              {signed(selectedZ, 3)} · {t("prediction")} {classOf(selectedZ)}
+              {state.activation === "sigmoid" && ` · p = ${sigmoid(selectedZ).toFixed(3)}`}
+            </p>
+          </Panel>
+
+          <Panel title={t("Performance")}>
             <LineChart
               series={[
                 {
@@ -312,42 +301,19 @@ export function PerceptronLesson() {
                 xExtent={[0, 5]}
               />
             )}
-          </div>
-          <p className="text-xs text-fg-muted">
-            {t(
-              "Evaluated on the same points used for training; this does not measure performance on unseen data.",
-            )}
-          </p>
-
-          <div className="flex flex-col gap-1 text-sm text-fg-secondary">
-            {explanations(state, t).map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
+            <PanelNote>
+              {explanations(state, t).map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+              <p className="font-ui text-xs">
+                {t(
+                  "Evaluated on the same points used for training; this does not measure performance on unseen data.",
+                )}
+              </p>
+            </PanelNote>
+          </Panel>
         </div>
-      </section>
-
-      <section aria-label={t("The math")} className="flex flex-col gap-3">
-        <button
-          type="button"
-          aria-pressed={state.showMath}
-          aria-expanded={state.showMath}
-          onClick={() => dispatch({ type: "toggleMath" })}
-          className={cn(toggleButtonClass(state.showMath), "self-start")}
-        >
-          <SigmaIcon className="size-3.5" aria-hidden />
-          {t("Show math")}
-        </button>
-        {state.showMath && (
-          <PerceptronMath
-            activation={state.activation}
-            params={state.params}
-            selected={selected}
-            lastTrace={state.lastTrace}
-            points={points}
-          />
-        )}
-      </section>
+      </Workbench>
 
       <section aria-label={t("Key concepts")} className="flex flex-col gap-3">
         <h2 className="font-display text-3xl font-bold text-fg">{t("Key concepts")}</h2>
@@ -379,6 +345,17 @@ export function PerceptronLesson() {
           {t("Next: hidden layers and back-propagation")} →
         </Link>
       </section>
+      {state.showMath && (
+        <FloatingPanel title={t("The math")} onClose={() => dispatch({ type: "toggleMath" })}>
+          <PerceptronMath
+            activation={state.activation}
+            params={state.params}
+            selected={selected}
+            lastTrace={state.lastTrace}
+            points={points}
+          />
+        </FloatingPanel>
+      )}
     </ArticleFrame>
   )
 }

@@ -54,9 +54,9 @@ const scenarios: {
 ]
 
 const TONE = {
-  good: "border-chart-cool text-chart-cool",
+  good: "border-success text-success",
   warn: "border-fg-secondary text-fg-secondary",
-  bad: "border-brand text-brand",
+  bad: "border-error text-error",
 }
 
 function DotRow({ approved, qualified }: { approved: number; qualified: boolean }) {
@@ -73,7 +73,7 @@ function DotRow({ approved, qualified }: { approved: number; qualified: boolean 
             <span
               className="size-3.5 rounded-full"
               style={{
-                backgroundColor: qualified ? "var(--color-chart-cool)" : "var(--color-brand)",
+                backgroundColor: qualified ? "var(--color-class-1)" : "var(--color-class-2)",
               }}
             />
           </span>
@@ -117,11 +117,11 @@ export function FairnessSummary() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-ui text-xs text-fg-secondary">
         <span className="flex items-center gap-2">
-          <span className="size-3 rounded-full bg-chart-cool" />
+          <span className="size-3 rounded-full bg-class-1" />
           {t("Qualified / should be approved (positive)")}
         </span>
         <span className="flex items-center gap-2">
-          <span className="size-3 rounded-full bg-brand" />
+          <span className="size-3 rounded-full bg-class-2" />
           {t("Not qualified (negative)")}
         </span>
         <span className="flex items-center gap-2">

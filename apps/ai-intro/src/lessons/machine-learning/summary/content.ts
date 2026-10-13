@@ -5,54 +5,514 @@ type Concept = { en: [string, string, string]; pt: [string, string, string] }
 type Section = { slug: string; en: string; pt: string; concepts: Concept[] }
 
 export const sections: Section[] = [
-  { slug: "bias-and-variance", en: "Bias & Variance", pt: "Viés e variância", concepts: [
-    { en: ["Statistical bias", "Systematic difference between a model's average prediction across training samples and the true target function.", "Check whether the model repeatedly misses the same pattern."], pt: ["Viés estatístico", "Diferença sistemática entre a previsão média do modelo em várias amostras de treino e a função verdadeira.", "Observe se o modelo erra repetidamente o mesmo padrão."] },
-    { en: ["Variance", "Sensitivity of predictions to the particular training sample.", "Refit on different samples and compare predictions; unstable results suggest high variance."], pt: ["Variância", "Sensibilidade das previsões à amostra específica de treino.", "Treine com amostras diferentes e compare as previsões; resultados instáveis sugerem alta variância."] },
-    { en: ["Underfitting", "The model fails to capture useful structure, often giving poor training and validation scores.", "Check features, capacity, regularization, and whether optimization has finished."], pt: ["Subajuste", "O modelo não captura estruturas úteis e costuma apresentar resultados ruins no treino e na validação.", "Verifique as variáveis, a capacidade, a regularização e se a otimização terminou."] },
-    { en: ["Overfitting", "The fitted model captures sample-specific details that do not transfer well to new data.", "Compare held-out performance with training performance, rather than trusting training accuracy alone."], pt: ["Sobreajuste", "O modelo aprende detalhes específicos da amostra que não se transferem bem para novos dados.", "Compare o desempenho em dados separados com o desempenho no treino, em vez de confiar apenas na acurácia de treino."] },
-    { en: ["Model capacity", "The range and complexity of patterns a model can represent.", "Select capacity using validation: more capacity does not universally worsen generalization."], pt: ["Capacidade do modelo", "Variedade e complexidade dos padrões que o modelo consegue representar.", "Escolha a capacidade usando validação: aumentá-la não piora necessariamente a generalização."] },
-    { en: ["Regularization", "Constraints or penalties that discourage fitting unnecessary complexity.", "Tune regularization on validation data; too much can cause underfitting. Early stopping is another way to constrain fitting."], pt: ["Regularização", "Restrições ou penalidades que desestimulam o ajuste de complexidade desnecessária.", "Ajuste a regularização com dados de validação; em excesso, ela pode causar subajuste. A parada antecipada também limita o ajuste."] },
-    { en: ["Irreducible noise", "Variation in the target that cannot be predicted from the available inputs.", "Some residual error remains even with a well-specified model; do not chase every noisy observation."], pt: ["Ruído irredutível", "Variação no alvo que não pode ser prevista a partir das entradas disponíveis.", "Algum erro permanece mesmo com um modelo bem especificado; não tente reproduzir toda observação ruidosa."] },
-    { en: ["Squared-error decomposition", "Under the usual regression assumptions, expected squared prediction error = bias² + variance + noise variance.", "This explains sources of error under squared loss; it is not a universal decomposition of classification accuracy."], pt: ["Decomposição do erro quadrático", "Sob as hipóteses usuais de regressão, erro quadrático esperado = viés² + variância + variância do ruído.", "A decomposição explica o erro sob perda quadrática; não é uma decomposição universal da acurácia de classificação."] },
-    { en: ["Validation", "Evaluation on data withheld from fitting, used to choose model settings.", "Use it for tuning, then reserve a separate test set for the final evaluation."], pt: ["Validação", "Avaliação com dados não usados no ajuste, utilizada para escolher as configurações do modelo.", "Use-a para selecionar configurações e reserve um conjunto de teste separado para a avaliação final."] },
-    { en: ["Cross-validation", "Repeated fitting and validation on different folds of the available data.", "Compare average validation performance and its spread; fit preprocessing within each training fold."], pt: ["Validação cruzada", "Ajustes e validações repetidos em diferentes partições dos dados disponíveis.", "Compare a média e a dispersão do desempenho; ajuste o pré-processamento dentro de cada partição de treino."] },
-    { en: ["Learning curves", "Training and validation performance plotted against training-set size.", "A persistent gap may suggest more data would help; two poor, similar scores can indicate underfitting."], pt: ["Curvas de aprendizado", "Desempenho no treino e na validação em função do tamanho do conjunto de treino.", "Uma diferença persistente pode sugerir que mais dados ajudariam; resultados parecidos e ruins podem indicar subajuste."] },
-  ] },
-  { slug: "fairness", en: "Bias & Fairness", pt: "Viés e equidade", concepts: [
-    { en: ["Statistical versus social bias", "Statistical bias describes prediction error; social bias concerns harmful or unjust patterns in data, systems, and decisions.", "A model with low statistical bias can still produce unfair outcomes."], pt: ["Viés estatístico e viés social", "O viés estatístico descreve erros de previsão; o viés social envolve padrões prejudiciais ou injustos em dados, sistemas e decisões.", "Um modelo com baixo viés estatístico ainda pode produzir resultados injustos."] },
-    { en: ["Historical bias", "Data can faithfully reflect existing inequalities.", "Ask whether reproducing past outcomes is an appropriate objective."], pt: ["Viés histórico", "Os dados podem refletir fielmente desigualdades existentes.", "Questione se reproduzir os resultados do passado é um objetivo adequado."] },
-    { en: ["Representation bias", "The sample represents some populations poorly or differently from the intended population.", "Compare coverage and sample sizes for the groups the system will serve."], pt: ["Viés de representação", "A amostra representa mal algumas populações ou difere da população de interesse.", "Compare a cobertura e o tamanho das amostras dos grupos que o sistema atenderá."] },
-    { en: ["Measurement bias", "Features or labels are imperfect proxies and may be measured differently across groups.", "Audit how labels were obtained; a recorded decision is not necessarily the true outcome of interest."], pt: ["Viés de medição", "Variáveis ou rótulos são aproximações imperfeitas e podem ser medidos de maneiras diferentes entre grupos.", "Investigue como os rótulos foram obtidos; uma decisão registrada não é necessariamente o resultado real de interesse."] },
-    { en: ["Aggregation bias", "One shared model can miss relevant differences between populations or contexts.", "Check subgroup relationships before assuming one pattern fits everyone."], pt: ["Viés de agregação", "Um único modelo pode ignorar diferenças relevantes entre populações ou contextos.", "Examine as relações em cada subgrupo antes de supor que um padrão atende a todos."] },
-    { en: ["Evaluation bias", "A benchmark or metric fails to represent the intended deployment setting.", "Evaluate relevant groups and conditions, not just a convenient overall benchmark."], pt: ["Viés de avaliação", "Um conjunto de avaliação ou uma métrica não representa o contexto de uso pretendido.", "Avalie grupos e condições relevantes, e não apenas um resultado agregado conveniente."] },
-    { en: ["Deployment bias", "A system is used in a context or workflow that differs from its intended use.", "Check how people act on predictions and monitor consequences after deployment."], pt: ["Viés de implantação", "O sistema é usado em um contexto ou fluxo diferente do uso previsto.", "Verifique como as pessoas agem a partir das previsões e acompanhe as consequências após a implantação."] },
-    { en: ["Class and group imbalance", "Some target classes or population groups have fewer examples than others.", "Report class and group counts separately. Imbalance can contribute to unfairness but is not synonymous with it."], pt: ["Desbalanceamento de classes e grupos", "Algumas classes do alvo ou grupos da população têm menos exemplos que outros.", "Informe as contagens por classe e por grupo separadamente. O desbalanceamento pode contribuir para a injustiça, mas não é sinônimo dela."] },
-    { en: ["Demographic parity", "Equal positive-decision rates across groups: P(ŷ = 1 | A = a).", "Compare selection rates; equal rates alone do not establish equal error rates."], pt: ["Paridade demográfica", "Taxas iguais de decisões positivas entre grupos: P(ŷ = 1 | A = a).", "Compare as taxas de seleção; taxas iguais não garantem taxas de erro iguais."] },
-    { en: ["Disparate impact ratio", "The positive-decision rate of one group divided by that of a reference group.", "Interpret the ratio alongside counts and context; it is undefined when the reference rate is zero and is not a fairness certificate."], pt: ["Razão de impacto adverso", "Taxa de decisões positivas de um grupo dividida pela taxa de um grupo de referência.", "Interprete a razão junto às contagens e ao contexto; ela é indefinida quando a taxa de referência é zero e não certifica equidade."] },
-    { en: ["Equal opportunity", "Equal true-positive rates across groups: TPR = TP / (TP + FN).", "Among people with positive outcomes, compare who receives a positive prediction."], pt: ["Igualdade de oportunidade", "Taxas de verdadeiros positivos iguais entre grupos: TPR = TP / (TP + FN).", "Entre as pessoas com resultado positivo, compare quem recebe uma previsão positiva."] },
-    { en: ["Equalized odds", "Equal true-positive and false-positive rates across groups; FPR = FP / (FP + TN).", "Compare both missed positives and false alarms, using groups with enough examples of each outcome."], pt: ["Chances igualadas", "Taxas de verdadeiros positivos e falsos positivos iguais entre grupos; FPR = FP / (FP + TN).", "Compare os positivos não detectados e os falsos alarmes em grupos com exemplos suficientes de cada resultado."] },
-    { en: ["Predictive parity", "Equal precision across groups: precision = TP / (TP + FP).", "Among positive predictions, compare how often they are correct; precision depends on prevalence."], pt: ["Paridade preditiva", "Precisão igual entre grupos: precisão = TP / (TP + FP).", "Entre as previsões positivas, compare quantas estão corretas; a precisão depende da prevalência."] },
-    { en: ["Fairness trade-offs", "With different base rates and imperfect predictions, common fairness criteria can conflict.", "Choose criteria based on harms and context, disclose trade-offs, and avoid calling one metric a complete fairness verdict."], pt: ["Compromissos entre critérios de equidade", "Com taxas-base diferentes e previsões imperfeitas, critérios comuns de equidade podem entrar em conflito.", "Escolha critérios considerando danos e contexto, explicite os compromissos e evite tratar uma métrica como veredito completo."] },
-  ] },
-  { slug: "data-splits", en: "Data Splits", pt: "Divisão dos dados", concepts: [
-    { en: ["Training, validation, and test", "Training fits parameters; validation chooses settings; test estimates final performance on untouched examples.", "Do not repeatedly tune against the test score: that turns the test set into validation data."], pt: ["Treino, validação e teste", "O treino ajusta parâmetros; a validação escolhe configurações; o teste estima o desempenho final em exemplos ainda não utilizados.", "Não ajuste repetidamente o modelo pelo resultado de teste: isso transforma o teste em validação."] },
-    { en: ["Holdout", "A single division into separate training, validation, and test subsets.", "Use when sufficient data is available; remember that the score depends on which examples land in each subset."], pt: ["Holdout", "Uma única divisão em subconjuntos separados de treino, validação e teste.", "Use quando há dados suficientes; lembre que o resultado depende dos exemplos presentes em cada subconjunto."] },
-    { en: ["k-fold cross-validation", "Partition development data into k folds, train on k−1, validate on the remaining fold, and rotate.", "Use the mean and spread to compare settings; keep the final test set separate."], pt: ["Validação cruzada k-fold", "Divida os dados de desenvolvimento em k partições, treine em k−1, valide na restante e alterne.", "Use a média e a dispersão para comparar configurações; mantenha o teste final separado."] },
-    { en: ["Class stratification", "Preserve approximately the class proportions in each split.", "Helps represent rare labels but does not remove leakage or guarantee reliable estimates from tiny classes."], pt: ["Estratificação por classe", "Preserva aproximadamente as proporções das classes em cada divisão.", "Ajuda a representar rótulos raros, mas não elimina vazamento nem garante estimativas confiáveis para classes muito pequenas."] },
-    { en: ["Class-by-group stratification", "Balance the distribution of label × demographic-group combinations across splits.", "Supports per-group evaluation when counts permit; it differs from keeping entities disjoint."], pt: ["Estratificação por classe e grupo", "Equilibra a distribuição das combinações rótulo × grupo demográfico entre as divisões.", "Ajuda na avaliação por grupo quando há exemplos suficientes; é diferente de manter entidades separadas."] },
-    { en: ["Entity-grouped splits", "Keep all records from the same customer, patient, or device on one side of a split.", "Use when evaluation should measure performance on new entities, not recognition of known ones."], pt: ["Divisões agrupadas por entidade", "Mantêm todos os registros do mesmo cliente, paciente ou dispositivo em um único lado da divisão.", "Use quando a avaliação deve medir o desempenho em novas entidades, e não o reconhecimento de entidades conhecidas."] },
-    { en: ["Temporal splits", "Train on earlier observations and evaluate on later ones; rolling windows repeat this over time.", "Respect information availability at prediction time and look for performance changes as conditions shift."], pt: ["Divisões temporais", "Treinam com observações anteriores e avaliam nas posteriores; janelas móveis repetem isso ao longo do tempo.", "Respeite as informações disponíveis no momento da previsão e observe mudanças no desempenho conforme o contexto muda."] },
-    { en: ["Data leakage", "Information unavailable at real prediction time enters training or model selection.", "Split before fitting preprocessing, feature selection, or resampling; check duplicates, entities, and future-derived features."], pt: ["Vazamento de dados", "Informações indisponíveis no momento real da previsão entram no treino ou na seleção do modelo.", "Separe os dados antes de ajustar pré-processamento, seleção de variáveis ou reamostragem; verifique duplicatas, entidades e variáveis derivadas do futuro."] },
-  ] },
-  { slug: "generalization", en: "Generalization", pt: "Generalização", concepts: [
-    { en: ["Unseen-data performance", "Generalization is performance on examples not used to fit or select the model.", "Evaluate on data that reflects the intended use, rather than relying on memorized training examples."], pt: ["Desempenho em dados novos", "Generalização é o desempenho em exemplos não usados para ajustar ou selecionar o modelo.", "Avalie com dados que reflitam o uso pretendido, em vez de confiar em exemplos memorizados do treino."] },
-    { en: ["Generalization gap", "Accuracy gap = training accuracy − test accuracy; error gap = test error − training error.", "A small gap can coexist with underfitting. Inspect absolute scores too; finite-sample gaps can even be negative."], pt: ["Diferença de generalização", "Diferença de acurácia = acurácia de treino − acurácia de teste; diferença de erro = erro de teste − erro de treino.", "Uma diferença pequena pode coexistir com subajuste. Examine também os valores absolutos; diferenças em amostras finitas podem até ser negativas."] },
-    { en: ["Representative evaluation", "The evaluation population, time period, and conditions should match the intended use.", "State what the test set represents. A balanced illustrative test set may not match deployment prevalence."], pt: ["Avaliação representativa", "A população, o período e as condições de avaliação devem corresponder ao uso pretendido.", "Declare o que o teste representa. Um teste ilustrativo balanceado pode não refletir a prevalência no uso real."] },
-    { en: ["Variation across runs", "Scores and decision boundaries can change with training samples and random initialization.", "Compare repeated runs and report their spread; a single favorable run is weak evidence."], pt: ["Variação entre execuções", "Resultados e fronteiras de decisão podem mudar conforme as amostras de treino e a inicialização aleatória.", "Compare execuções repetidas e informe a dispersão; uma única execução favorável é uma evidência fraca."] },
-    { en: ["Per-group performance", "Overall metrics aggregate outcomes that may differ substantially between groups.", "Report relevant group metrics and sample sizes; small groups produce uncertain estimates."], pt: ["Desempenho por grupo", "Métricas agregadas combinam resultados que podem diferir bastante entre grupos.", "Informe métricas e tamanhos das amostras por grupo; grupos pequenos geram estimativas incertas."] },
-    { en: ["Worst-group performance", "The lowest performance among the groups being evaluated, for a higher-is-better metric.", "Use it alongside overall scores and uncertainty; it depends on how groups are defined and is not a complete fairness measure."], pt: ["Desempenho do pior grupo", "Menor desempenho entre os grupos avaliados, para uma métrica em que valores maiores são melhores.", "Use junto ao resultado geral e à incerteza; depende da definição dos grupos e não mede toda a equidade."] },
-    { en: ["Diagnosis before intervention", "Poor results can arise from representation, optimization, data quality, sampling, or distribution shift.", "Treat score patterns as clues, not proof of a single cause. Test one explanation at a time."], pt: ["Diagnóstico antes da intervenção", "Resultados ruins podem vir da representação, otimização, qualidade dos dados, amostragem ou mudança de distribuição.", "Trate os padrões como pistas, não como prova de uma única causa. Teste uma explicação de cada vez."] },
-  ] },
+  {
+    slug: "bias-and-variance",
+    en: "Bias & Variance",
+    pt: "Viés e variância",
+    concepts: [
+      {
+        en: [
+          "Statistical bias",
+          "Systematic difference between a model's average prediction across training samples and the true target function.",
+          "Check whether the model repeatedly misses the same pattern.",
+        ],
+        pt: [
+          "Viés estatístico",
+          "Diferença sistemática entre a previsão média do modelo em várias amostras de treino e a função verdadeira.",
+          "Observe se o modelo erra repetidamente o mesmo padrão.",
+        ],
+      },
+      {
+        en: [
+          "Variance",
+          "Sensitivity of predictions to the particular training sample.",
+          "Refit on different samples and compare predictions; unstable results suggest high variance.",
+        ],
+        pt: [
+          "Variância",
+          "Sensibilidade das previsões à amostra específica de treino.",
+          "Treine com amostras diferentes e compare as previsões; resultados instáveis sugerem alta variância.",
+        ],
+      },
+      {
+        en: [
+          "Underfitting",
+          "The model fails to capture useful structure, often giving poor training and validation scores.",
+          "Check features, capacity, regularization, and whether optimization has finished.",
+        ],
+        pt: [
+          "Subajuste",
+          "O modelo não captura estruturas úteis e costuma apresentar resultados ruins no treino e na validação.",
+          "Verifique as variáveis, a capacidade, a regularização e se a otimização terminou.",
+        ],
+      },
+      {
+        en: [
+          "Overfitting",
+          "The fitted model captures sample-specific details that do not transfer well to new data.",
+          "Compare held-out performance with training performance, rather than trusting training accuracy alone.",
+        ],
+        pt: [
+          "Sobreajuste",
+          "O modelo aprende detalhes específicos da amostra que não se transferem bem para novos dados.",
+          "Compare o desempenho em dados separados com o desempenho no treino, em vez de confiar apenas na acurácia de treino.",
+        ],
+      },
+      {
+        en: [
+          "Model capacity",
+          "The range and complexity of patterns a model can represent.",
+          "Select capacity using validation: more capacity does not universally worsen generalization.",
+        ],
+        pt: [
+          "Capacidade do modelo",
+          "Variedade e complexidade dos padrões que o modelo consegue representar.",
+          "Escolha a capacidade usando validação: aumentá-la não piora necessariamente a generalização.",
+        ],
+      },
+      {
+        en: [
+          "Regularization",
+          "Constraints or penalties that discourage fitting unnecessary complexity.",
+          "Tune regularization on validation data; too much can cause underfitting. Early stopping is another way to constrain fitting.",
+        ],
+        pt: [
+          "Regularização",
+          "Restrições ou penalidades que desestimulam o ajuste de complexidade desnecessária.",
+          "Ajuste a regularização com dados de validação; em excesso, ela pode causar subajuste. A parada antecipada também limita o ajuste.",
+        ],
+      },
+      {
+        en: [
+          "Irreducible noise",
+          "Variation in the target that cannot be predicted from the available inputs.",
+          "Some residual error remains even with a well-specified model; do not chase every noisy observation.",
+        ],
+        pt: [
+          "Ruído irredutível",
+          "Variação no alvo que não pode ser prevista a partir das entradas disponíveis.",
+          "Algum erro permanece mesmo com um modelo bem especificado; não tente reproduzir toda observação ruidosa.",
+        ],
+      },
+      {
+        en: [
+          "Squared-error decomposition",
+          "Under the usual regression assumptions, expected squared prediction error = bias² + variance + noise variance.",
+          "This explains sources of error under squared loss; it is not a universal decomposition of classification accuracy.",
+        ],
+        pt: [
+          "Decomposição do erro quadrático",
+          "Sob as hipóteses usuais de regressão, erro quadrático esperado = viés² + variância + variância do ruído.",
+          "A decomposição explica o erro sob perda quadrática; não é uma decomposição universal da acurácia de classificação.",
+        ],
+      },
+      {
+        en: [
+          "Validation",
+          "Evaluation on data withheld from fitting, used to choose model settings.",
+          "Use it for tuning, then reserve a separate test set for the final evaluation.",
+        ],
+        pt: [
+          "Validação",
+          "Avaliação com dados não usados no ajuste, utilizada para escolher as configurações do modelo.",
+          "Use-a para selecionar configurações e reserve um conjunto de teste separado para a avaliação final.",
+        ],
+      },
+      {
+        en: [
+          "Cross-validation",
+          "Repeated fitting and validation on different folds of the available data.",
+          "Compare average validation performance and its spread; fit preprocessing within each training fold.",
+        ],
+        pt: [
+          "Validação cruzada",
+          "Ajustes e validações repetidos em diferentes partições dos dados disponíveis.",
+          "Compare a média e a dispersão do desempenho; ajuste o pré-processamento dentro de cada partição de treino.",
+        ],
+      },
+      {
+        en: [
+          "Learning curves",
+          "Training and validation performance plotted against training-set size.",
+          "A persistent gap may suggest more data would help; two poor, similar scores can indicate underfitting.",
+        ],
+        pt: [
+          "Curvas de aprendizado",
+          "Desempenho no treino e na validação em função do tamanho do conjunto de treino.",
+          "Uma diferença persistente pode sugerir que mais dados ajudariam; resultados parecidos e ruins podem indicar subajuste.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "fairness",
+    en: "Bias & Fairness",
+    pt: "Viés e equidade",
+    concepts: [
+      {
+        en: [
+          "Statistical versus social bias",
+          "Statistical bias describes prediction error; social bias concerns harmful or unjust patterns in data, systems, and decisions.",
+          "A model with low statistical bias can still produce unfair outcomes.",
+        ],
+        pt: [
+          "Viés estatístico e viés social",
+          "O viés estatístico descreve erros de previsão; o viés social envolve padrões prejudiciais ou injustos em dados, sistemas e decisões.",
+          "Um modelo com baixo viés estatístico ainda pode produzir resultados injustos.",
+        ],
+      },
+      {
+        en: [
+          "Historical bias",
+          "Data can faithfully reflect existing inequalities.",
+          "Ask whether reproducing past outcomes is an appropriate objective.",
+        ],
+        pt: [
+          "Viés histórico",
+          "Os dados podem refletir fielmente desigualdades existentes.",
+          "Questione se reproduzir os resultados do passado é um objetivo adequado.",
+        ],
+      },
+      {
+        en: [
+          "Representation bias",
+          "The sample represents some populations poorly or differently from the intended population.",
+          "Compare coverage and sample sizes for the groups the system will serve.",
+        ],
+        pt: [
+          "Viés de representação",
+          "A amostra representa mal algumas populações ou difere da população de interesse.",
+          "Compare a cobertura e o tamanho das amostras dos grupos que o sistema atenderá.",
+        ],
+      },
+      {
+        en: [
+          "Measurement bias",
+          "Features or labels are imperfect proxies and may be measured differently across groups.",
+          "Audit how labels were obtained; a recorded decision is not necessarily the true outcome of interest.",
+        ],
+        pt: [
+          "Viés de medição",
+          "Variáveis ou rótulos são aproximações imperfeitas e podem ser medidos de maneiras diferentes entre grupos.",
+          "Investigue como os rótulos foram obtidos; uma decisão registrada não é necessariamente o resultado real de interesse.",
+        ],
+      },
+      {
+        en: [
+          "Aggregation bias",
+          "One shared model can miss relevant differences between populations or contexts.",
+          "Check subgroup relationships before assuming one pattern fits everyone.",
+        ],
+        pt: [
+          "Viés de agregação",
+          "Um único modelo pode ignorar diferenças relevantes entre populações ou contextos.",
+          "Examine as relações em cada subgrupo antes de supor que um padrão atende a todos.",
+        ],
+      },
+      {
+        en: [
+          "Evaluation bias",
+          "A benchmark or metric fails to represent the intended deployment setting.",
+          "Evaluate relevant groups and conditions, not just a convenient overall benchmark.",
+        ],
+        pt: [
+          "Viés de avaliação",
+          "Um conjunto de avaliação ou uma métrica não representa o contexto de uso pretendido.",
+          "Avalie grupos e condições relevantes, e não apenas um resultado agregado conveniente.",
+        ],
+      },
+      {
+        en: [
+          "Deployment bias",
+          "A system is used in a context or workflow that differs from its intended use.",
+          "Check how people act on predictions and monitor consequences after deployment.",
+        ],
+        pt: [
+          "Viés de implantação",
+          "O sistema é usado em um contexto ou fluxo diferente do uso previsto.",
+          "Verifique como as pessoas agem a partir das previsões e acompanhe as consequências após a implantação.",
+        ],
+      },
+      {
+        en: [
+          "Class and group imbalance",
+          "Some target classes or population groups have fewer examples than others.",
+          "Report class and group counts separately. Imbalance can contribute to unfairness but is not synonymous with it.",
+        ],
+        pt: [
+          "Desbalanceamento de classes e grupos",
+          "Algumas classes do alvo ou grupos da população têm menos exemplos que outros.",
+          "Informe as contagens por classe e por grupo separadamente. O desbalanceamento pode contribuir para a injustiça, mas não é sinônimo dela.",
+        ],
+      },
+      {
+        en: [
+          "Demographic parity",
+          "Equal positive-decision rates across groups: P(ŷ = 1 | A = a).",
+          "Compare selection rates; equal rates alone do not establish equal error rates.",
+        ],
+        pt: [
+          "Paridade demográfica",
+          "Taxas iguais de decisões positivas entre grupos: P(ŷ = 1 | A = a).",
+          "Compare as taxas de seleção; taxas iguais não garantem taxas de erro iguais.",
+        ],
+      },
+      {
+        en: [
+          "Disparate impact ratio",
+          "The positive-decision rate of one group divided by that of a reference group.",
+          "Interpret the ratio alongside counts and context; it is undefined when the reference rate is zero and is not a fairness certificate.",
+        ],
+        pt: [
+          "Razão de impacto adverso",
+          "Taxa de decisões positivas de um grupo dividida pela taxa de um grupo de referência.",
+          "Interprete a razão junto às contagens e ao contexto; ela é indefinida quando a taxa de referência é zero e não certifica equidade.",
+        ],
+      },
+      {
+        en: [
+          "Equal opportunity",
+          "Equal true-positive rates across groups: TPR = TP / (TP + FN).",
+          "Among people with positive outcomes, compare who receives a positive prediction.",
+        ],
+        pt: [
+          "Igualdade de oportunidade",
+          "Taxas de verdadeiros positivos iguais entre grupos: TPR = TP / (TP + FN).",
+          "Entre as pessoas com resultado positivo, compare quem recebe uma previsão positiva.",
+        ],
+      },
+      {
+        en: [
+          "Equalized odds",
+          "Equal true-positive and false-positive rates across groups; FPR = FP / (FP + TN).",
+          "Compare both missed positives and false alarms, using groups with enough examples of each outcome.",
+        ],
+        pt: [
+          "Chances igualadas",
+          "Taxas de verdadeiros positivos e falsos positivos iguais entre grupos; FPR = FP / (FP + TN).",
+          "Compare os positivos não detectados e os falsos alarmes em grupos com exemplos suficientes de cada resultado.",
+        ],
+      },
+      {
+        en: [
+          "Predictive parity",
+          "Equal precision across groups: precision = TP / (TP + FP).",
+          "Among positive predictions, compare how often they are correct; precision depends on prevalence.",
+        ],
+        pt: [
+          "Paridade preditiva",
+          "Precisão igual entre grupos: precisão = TP / (TP + FP).",
+          "Entre as previsões positivas, compare quantas estão corretas; a precisão depende da prevalência.",
+        ],
+      },
+      {
+        en: [
+          "Fairness trade-offs",
+          "With different base rates and imperfect predictions, common fairness criteria can conflict.",
+          "Choose criteria based on harms and context, disclose trade-offs, and avoid calling one metric a complete fairness verdict.",
+        ],
+        pt: [
+          "Compromissos entre critérios de equidade",
+          "Com taxas-base diferentes e previsões imperfeitas, critérios comuns de equidade podem entrar em conflito.",
+          "Escolha critérios considerando danos e contexto, explicite os compromissos e evite tratar uma métrica como veredito completo.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "data-splits",
+    en: "Data Splits",
+    pt: "Divisão dos dados",
+    concepts: [
+      {
+        en: [
+          "Training, validation, and test",
+          "Training fits parameters; validation chooses settings; test estimates final performance on untouched examples.",
+          "Do not repeatedly tune against the test score: that turns the test set into validation data.",
+        ],
+        pt: [
+          "Treino, validação e teste",
+          "O treino ajusta parâmetros; a validação escolhe configurações; o teste estima o desempenho final em exemplos ainda não utilizados.",
+          "Não ajuste repetidamente o modelo pelo resultado de teste: isso transforma o teste em validação.",
+        ],
+      },
+      {
+        en: [
+          "Holdout",
+          "A single division into separate training, validation, and test subsets.",
+          "Use when sufficient data is available; remember that the score depends on which examples land in each subset.",
+        ],
+        pt: [
+          "Holdout",
+          "Uma única divisão em subconjuntos separados de treino, validação e teste.",
+          "Use quando há dados suficientes; lembre que o resultado depende dos exemplos presentes em cada subconjunto.",
+        ],
+      },
+      {
+        en: [
+          "k-fold cross-validation",
+          "Partition development data into k folds, train on k−1, validate on the remaining fold, and rotate.",
+          "Use the mean and spread to compare settings; keep the final test set separate.",
+        ],
+        pt: [
+          "Validação cruzada k-fold",
+          "Divida os dados de desenvolvimento em k partições, treine em k−1, valide na restante e alterne.",
+          "Use a média e a dispersão para comparar configurações; mantenha o teste final separado.",
+        ],
+      },
+      {
+        en: [
+          "Class stratification",
+          "Preserve approximately the class proportions in each split.",
+          "Helps represent rare labels but does not remove leakage or guarantee reliable estimates from tiny classes.",
+        ],
+        pt: [
+          "Estratificação por classe",
+          "Preserva aproximadamente as proporções das classes em cada divisão.",
+          "Ajuda a representar rótulos raros, mas não elimina vazamento nem garante estimativas confiáveis para classes muito pequenas.",
+        ],
+      },
+      {
+        en: [
+          "Class-by-group stratification",
+          "Balance the distribution of label × demographic-group combinations across splits.",
+          "Supports per-group evaluation when counts permit; it differs from keeping entities disjoint.",
+        ],
+        pt: [
+          "Estratificação por classe e grupo",
+          "Equilibra a distribuição das combinações rótulo × grupo demográfico entre as divisões.",
+          "Ajuda na avaliação por grupo quando há exemplos suficientes; é diferente de manter entidades separadas.",
+        ],
+      },
+      {
+        en: [
+          "Entity-grouped splits",
+          "Keep all records from the same customer, patient, or device on one side of a split.",
+          "Use when evaluation should measure performance on new entities, not recognition of known ones.",
+        ],
+        pt: [
+          "Divisões agrupadas por entidade",
+          "Mantêm todos os registros do mesmo cliente, paciente ou dispositivo em um único lado da divisão.",
+          "Use quando a avaliação deve medir o desempenho em novas entidades, e não o reconhecimento de entidades conhecidas.",
+        ],
+      },
+      {
+        en: [
+          "Temporal splits",
+          "Train on earlier observations and evaluate on later ones; rolling windows repeat this over time.",
+          "Respect information availability at prediction time and look for performance changes as conditions shift.",
+        ],
+        pt: [
+          "Divisões temporais",
+          "Treinam com observações anteriores e avaliam nas posteriores; janelas móveis repetem isso ao longo do tempo.",
+          "Respeite as informações disponíveis no momento da previsão e observe mudanças no desempenho conforme o contexto muda.",
+        ],
+      },
+      {
+        en: [
+          "Data leakage",
+          "Information unavailable at real prediction time enters training or model selection.",
+          "Split before fitting preprocessing, feature selection, or resampling; check duplicates, entities, and future-derived features.",
+        ],
+        pt: [
+          "Vazamento de dados",
+          "Informações indisponíveis no momento real da previsão entram no treino ou na seleção do modelo.",
+          "Separe os dados antes de ajustar pré-processamento, seleção de variáveis ou reamostragem; verifique duplicatas, entidades e variáveis derivadas do futuro.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "generalization",
+    en: "Generalization",
+    pt: "Generalização",
+    concepts: [
+      {
+        en: [
+          "Unseen-data performance",
+          "Generalization is performance on examples not used to fit or select the model.",
+          "Evaluate on data that reflects the intended use, rather than relying on memorized training examples.",
+        ],
+        pt: [
+          "Desempenho em dados novos",
+          "Generalização é o desempenho em exemplos não usados para ajustar ou selecionar o modelo.",
+          "Avalie com dados que reflitam o uso pretendido, em vez de confiar em exemplos memorizados do treino.",
+        ],
+      },
+      {
+        en: [
+          "Generalization gap",
+          "Accuracy gap = training accuracy − test accuracy; error gap = test error − training error.",
+          "A small gap can coexist with underfitting. Inspect absolute scores too; finite-sample gaps can even be negative.",
+        ],
+        pt: [
+          "Diferença de generalização",
+          "Diferença de acurácia = acurácia de treino − acurácia de teste; diferença de erro = erro de teste − erro de treino.",
+          "Uma diferença pequena pode coexistir com subajuste. Examine também os valores absolutos; diferenças em amostras finitas podem até ser negativas.",
+        ],
+      },
+      {
+        en: [
+          "Representative evaluation",
+          "The evaluation population, time period, and conditions should match the intended use.",
+          "State what the test set represents. A balanced illustrative test set may not match deployment prevalence.",
+        ],
+        pt: [
+          "Avaliação representativa",
+          "A população, o período e as condições de avaliação devem corresponder ao uso pretendido.",
+          "Declare o que o teste representa. Um teste ilustrativo balanceado pode não refletir a prevalência no uso real.",
+        ],
+      },
+      {
+        en: [
+          "Variation across runs",
+          "Scores and decision boundaries can change with training samples and random initialization.",
+          "Compare repeated runs and report their spread; a single favorable run is weak evidence.",
+        ],
+        pt: [
+          "Variação entre execuções",
+          "Resultados e fronteiras de decisão podem mudar conforme as amostras de treino e a inicialização aleatória.",
+          "Compare execuções repetidas e informe a dispersão; uma única execução favorável é uma evidência fraca.",
+        ],
+      },
+      {
+        en: [
+          "Per-group performance",
+          "Overall metrics aggregate outcomes that may differ substantially between groups.",
+          "Report relevant group metrics and sample sizes; small groups produce uncertain estimates.",
+        ],
+        pt: [
+          "Desempenho por grupo",
+          "Métricas agregadas combinam resultados que podem diferir bastante entre grupos.",
+          "Informe métricas e tamanhos das amostras por grupo; grupos pequenos geram estimativas incertas.",
+        ],
+      },
+      {
+        en: [
+          "Worst-group performance",
+          "The lowest performance among the groups being evaluated, for a higher-is-better metric.",
+          "Use it alongside overall scores and uncertainty; it depends on how groups are defined and is not a complete fairness measure.",
+        ],
+        pt: [
+          "Desempenho do pior grupo",
+          "Menor desempenho entre os grupos avaliados, para uma métrica em que valores maiores são melhores.",
+          "Use junto ao resultado geral e à incerteza; depende da definição dos grupos e não mede toda a equidade.",
+        ],
+      },
+      {
+        en: [
+          "Diagnosis before intervention",
+          "Poor results can arise from representation, optimization, data quality, sampling, or distribution shift.",
+          "Treat score patterns as clues, not proof of a single cause. Test one explanation at a time.",
+        ],
+        pt: [
+          "Diagnóstico antes da intervenção",
+          "Resultados ruins podem vir da representação, otimização, qualidade dos dados, amostragem ou mudança de distribuição.",
+          "Trate os padrões como pistas, não como prova de uma única causa. Teste uma explicação de cada vez.",
+        ],
+      },
+    ],
+  },
 ]
 
 export function summaryContent(language: Language): SummaryBlock[] {
@@ -65,30 +525,78 @@ export function summaryContent(language: Language): SummaryBlock[] {
       blocks.push(
         { type: "heading", props: { level: 3 }, content: name },
         { type: "paragraph", content: definition },
-        { type: "paragraph", content: [
-          { type: "text", text: pt ? "Na prática: " : "In practice: ", styles: { bold: true } },
-          { type: "text", text: `${meaning} `, styles: {} },
-          { type: "link", href: `/learn/machine-learning/${section.slug}`, content: pt ? "Rever a aula →" : "Revisit lesson →" },
-        ] },
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: pt ? "Na prática: " : "In practice: ", styles: { bold: true } },
+            { type: "text", text: `${meaning} `, styles: {} },
+            {
+              type: "link",
+              href: `/learn/machine-learning/${section.slug}`,
+              content: pt ? "Rever a aula →" : "Revisit lesson →",
+            },
+          ],
+        },
       )
     }
   }
-  const rows = pt ? [
-    ["Sintoma", "O que verificar", "Possível resposta"],
-    ["Treino e validação ruins", "Variáveis, capacidade e otimização", "Melhorar variáveis; ajustar capacidade ou regularização"],
-    ["Treino bom, validação ruim", "Vazamento, variância e mudança de distribuição", "Corrigir a avaliação; testar regularização e dados representativos"],
-    ["Um grupo fica para trás", "Cobertura, rótulos e tipos de erro", "Investigar os dados e avaliar intervenções por grupo"],
-    ["Resultados variam muito", "Tamanho da amostra e desenho das divisões", "Repetir a avaliação e informar a incerteza"],
-  ] : [
-    ["Symptom", "What to check", "Possible response"],
-    ["Training and validation both poor", "Features, capacity, and optimization", "Improve features; tune capacity or regularization"],
-    ["Good training, poor validation", "Leakage, variance, and distribution shift", "Fix evaluation; try regularization and representative data"],
-    ["One group falls behind", "Coverage, labels, and error types", "Investigate data and evaluate interventions by group"],
-    ["Results vary widely", "Sample size and split design", "Repeat evaluation and report uncertainty"],
-  ]
+  const rows = pt
+    ? [
+        ["Sintoma", "O que verificar", "Possível resposta"],
+        [
+          "Treino e validação ruins",
+          "Variáveis, capacidade e otimização",
+          "Melhorar variáveis; ajustar capacidade ou regularização",
+        ],
+        [
+          "Treino bom, validação ruim",
+          "Vazamento, variância e mudança de distribuição",
+          "Corrigir a avaliação; testar regularização e dados representativos",
+        ],
+        [
+          "Um grupo fica para trás",
+          "Cobertura, rótulos e tipos de erro",
+          "Investigar os dados e avaliar intervenções por grupo",
+        ],
+        [
+          "Resultados variam muito",
+          "Tamanho da amostra e desenho das divisões",
+          "Repetir a avaliação e informar a incerteza",
+        ],
+      ]
+    : [
+        ["Symptom", "What to check", "Possible response"],
+        [
+          "Training and validation both poor",
+          "Features, capacity, and optimization",
+          "Improve features; tune capacity or regularization",
+        ],
+        [
+          "Good training, poor validation",
+          "Leakage, variance, and distribution shift",
+          "Fix evaluation; try regularization and representative data",
+        ],
+        [
+          "One group falls behind",
+          "Coverage, labels, and error types",
+          "Investigate data and evaluate interventions by group",
+        ],
+        [
+          "Results vary widely",
+          "Sample size and split design",
+          "Repeat evaluation and report uncertainty",
+        ],
+      ]
   blocks.push(
-    { type: "heading", props: { level: 2 }, content: pt ? "Do sintoma à próxima ação" : "From symptom to next step" },
-    { type: "table", content: { type: "tableContent", headerRows: 1, rows: rows.map((cells) => ({ cells })) } },
+    {
+      type: "heading",
+      props: { level: 2 },
+      content: pt ? "Do sintoma à próxima ação" : "From symptom to next step",
+    },
+    {
+      type: "table",
+      content: { type: "tableContent", headerRows: 1, rows: rows.map((cells) => ({ cells })) },
+    },
     { type: "heading", props: { level: 2 }, content: pt ? "Minhas anotações" : "My notes" },
     { type: "paragraph", content: "" },
   )

@@ -48,6 +48,32 @@ function moons(): PerceptronPoint[] {
   ]
 }
 
+/** Untranslated English keys; callers pass them through `t`. */
+export const DATASET_TEXT: Record<DatasetId, { label: string; description: string }> = {
+  or: {
+    label: "OR",
+    description: "Four points: class 1 when either input is 1. One straight line separates them.",
+  },
+  and: {
+    label: "AND",
+    description:
+      "Four points: class 1 only when both inputs are 1. One straight line separates them.",
+  },
+  clusters: {
+    label: "2 clusters",
+    description: "40 points in two well-separated groups. Any reasonable line works.",
+  },
+  xor: {
+    label: "XOR",
+    description:
+      "Four points: class 1 when exactly one input is 1. No straight line separates them.",
+  },
+  moons: {
+    label: "Moons",
+    description: "Two interlocking half-circles of 30 points each. Separating them needs a curve.",
+  },
+}
+
 export const DATASETS: Record<DatasetId, Dataset> = {
   or: { points: truthTable("or", [0, 1, 1, 1]), separable: true, domain: UNIT_DOMAIN },
   and: { points: truthTable("and", [0, 0, 0, 1]), separable: true, domain: UNIT_DOMAIN },

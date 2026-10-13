@@ -58,7 +58,7 @@ const gainTerm = (grade: number, rank: number) => `(2^${grade} − 1)/log₂(${r
 const idealTopK = [...q1.allGrades].sort((a, b) => b - a).slice(0, K)
 
 const GRADE_LABEL = ["not relevant", "somewhat", "relevant", "perfect"]
-const GRADE_TONE = ["text-fg-muted", "text-fg-secondary", "text-chart-cool", "text-brand"]
+const GRADE_TONE = ["text-fg-muted", "text-fg-secondary", "text-chart-amber", "text-chart-warm"]
 
 function RankedList({ grades, title }: { grades: number[]; title: string }) {
   const { t } = useTranslation()

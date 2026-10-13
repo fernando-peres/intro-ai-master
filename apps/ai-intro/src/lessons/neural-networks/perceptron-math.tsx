@@ -47,7 +47,7 @@ export function PerceptronMath({
   const traced = lastTrace && points.find((p) => p.id === lastTrace.pointId)
 
   return (
-    <div className="flex flex-col gap-4 rounded-[3px] border border-divider bg-surface p-[18px] font-ui text-xs text-fg-secondary">
+    <div className="flex flex-col gap-4 font-ui text-xs text-fg-secondary">
       <Block title={t("Forward pass")}>
         <p className="text-sm text-fg">z = w₁x₁ + w₂x₂ + b</p>
         {isStep ? (

@@ -41,7 +41,7 @@ export function NetworkMath({
   )
 
   return (
-    <div className="flex flex-col gap-4 rounded-[3px] border border-divider bg-surface p-[18px] font-ui text-xs text-fg-secondary">
+    <div className="flex flex-col gap-4 font-ui text-xs text-fg-secondary">
       <div className="flex flex-col gap-1.5">
         <p className="label-ui text-fg-muted">{t("Every neuron computes")}</p>
         <p className="text-sm text-fg">z = w₁·a₁ + w₂·a₂ + … + b, then a = f(z)</p>
