@@ -1,17 +1,6 @@
 import { useTranslation } from "@/i18n/use-translation"
 import { forward, type Network } from "@/lib/neural-net"
-
-const fmt = (v: number) => (v < 0 ? `−${Math.abs(v).toFixed(2)}` : v.toFixed(2))
-const term = (w: number, a: number) => `(${fmt(w)})(${fmt(a)})`
-const plus = (v: number) => (v < 0 ? ` − ${Math.abs(v).toFixed(2)}` : ` + ${v.toFixed(2)}`)
-const SUPERSCRIPT = "¹²³⁴⁵⁶⁷⁸⁹"
-
-/** Layer names in the equations: x for the input, h¹, h², … for hidden layers, ŷ for the output. */
-function symbol(layer: number, lastLayer: number) {
-  if (layer === 0) return "x"
-  if (layer === lastLayer) return "ŷ"
-  return `h${SUPERSCRIPT[layer - 1]}`
-}
+import { fmt, plus, SUPERSCRIPT, symbol, term } from "./math-format"
 
 /**
  * The network's math, live: one equation per layer, a worked forward pass for one machine

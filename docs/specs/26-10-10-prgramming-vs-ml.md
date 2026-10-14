@@ -148,7 +148,7 @@ Intro (why ML)
 
 Classify a new example (below the workbench)
 ```
-Flat, minimalist, hairline-bordered workbench; rows share the same edges. The rail collapses; on narrow screens it stacks above and rows stack. Show weights and Show math are independent: weights print on the diagram, math opens a draggable floating panel. Before the first epoch the decision plot is shown alone (resizable) and Comments takes the full last row.
+Flat, minimalist, hairline-bordered workbench; rows share the same edges. The rail collapses; on narrow screens it stacks above and rows stack. Show weights and Show math are independent: weights print on the diagram, math opens a draggable floating panel. The Network panel header has a top-right **ƒ Function** button that opens a modal with the whole forward pass written as one function of Temp and Vib, using the current learned weights and biases (live while training). Before the first epoch the decision plot is shown alone (resizable) and Comments takes the full last row.
 
 3. Machine Learning — Learn the Rules from Data
 

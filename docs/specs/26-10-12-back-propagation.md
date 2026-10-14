@@ -48,7 +48,7 @@ The lesson is a group of four pages under Neural Networks → Back-propagation:
 |---|---|---|---|
 | Overview | `back-propagation` | content | Title "Backpropagation (1986)", 1986 fun fact with the Nature paper link, What / Why (numbered list), forward/backward diagram, key-innovation takeaway, then six Key-concept cards (each with What / Why; Hidden layers shows XOR in input space → hidden lines → hidden space) |
 | Training Lab | `training-lab` | simulation | The workbench below (with class-color pickers in the rail), Classify a new example, limitation + link to Step by Step |
-| Step by Step | `forward-and-backward` | content | The four beats on a worked example |
+| Step by Step | `forward-and-backward` | content | A five-step stepper over one forward/backward/update pass on a 2 → 2 → 1 network (see [its spec](26-10-13-bp-step-by-step.md)) |
 | Key Concepts | `under-the-hood` | content | The seven numbered theory explainers, from "1. Loss function" |
 
 The workbench on the Training Lab uses the same rail + main shell as `programming-vs-ml/machine-learning.tsx`, with a Key-concepts section (richer treatment, matching the Perceptron lesson) and a closing limitation + forward link:

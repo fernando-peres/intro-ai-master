@@ -1,23 +1,105 @@
-import { useMemo } from "react"
-import { Expandable } from "@/components/charts/expandable"
+import { Maximize2Icon, PauseIcon, PlayIcon, RotateCcwIcon, SkipForwardIcon } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
 import {
   LessonArticle,
   LessonFooter,
   LessonHero,
   LessonLead,
 } from "@/components/course/lesson-layout"
+import { Stepper } from "@/components/course/stepper"
+import { ZoomDialog } from "@/components/course/zoom-dialog"
+import { Button } from "@/components/ui/button"
 import type { LessonEntry } from "@/curriculum"
 import { useTranslation } from "@/i18n/use-translation"
-import { MetricSection, OptionList, Takeaway } from "@/lessons/machine-learning/metric-section"
-import { BackpropGraph } from "./back-propagation-theory-charts"
-import { backpropExample } from "./back-propagation-theory-math"
+import { Takeaway } from "@/lessons/machine-learning/metric-section"
+import { DATASETS, type DatasetId, trainRounds } from "./back-propagation-step-by-step-math"
+import { StepCharts, StepData } from "./back-propagation-step-data"
+import { buildSteps, MathStack } from "./back-propagation-step-math"
+import { StepNetwork, stepNetwork } from "./back-propagation-step-network"
 
-const fmt = (v: number, digits = 3) => (v < 0 ? "−" : "") + Math.abs(v).toFixed(digits)
+const STEP_TITLES = [
+  "Forward weights",
+  "Activation function",
+  "Loss",
+  "Backward",
+  "Update",
+] as const
 
-/** Back-propagation, page 2: the forward and backward passes on a worked two-weight example. */
+const TRAIN_TICK_MS = 150
+
+/** Back-propagation, page 2: online training on four rows, one row and one step at a time. */
 export function BackPropagationForwardBackwardLesson({ entry }: { entry: LessonEntry }) {
   const { t } = useTranslation()
-  const e = useMemo(() => backpropExample(), [])
+  const [round, setRound] = useState(0)
+  const [step, setStep] = useState(0)
+  const [dataset, setDataset] = useState<DatasetId>("and")
+  const rows = DATASETS[dataset]
+  const { rounds, initial } = useMemo(() => trainRounds(undefined, rows), [rows])
+  const current = rounds[round]
+  const p = current.pass
+  const lastRound = rounds.length - 1
+  const lastStep = STEP_TITLES.length - 1
+  const atStart = round === 0 && step === 0
+  const atEnd = round === lastRound && step === lastStep
+
+  // Index 0 is the untrained network; index e is the network after epoch e.
+  const epochNets = useMemo(
+    () => [
+      stepNetwork(rounds[0].pass, 0),
+      ...rounds.filter((_, i) => (i + 1) % rows.length === 0).map((r) => stepNetwork(r.pass, 4)),
+    ],
+    [rounds, rows],
+  )
+
+  const steps = useMemo(() => buildSteps(p, t), [p, t])
+  const panel = steps[step]
+  const completed = step === lastStep ? round + 1 : round
+
+  const [training, setTraining] = useState(false)
+  const [zoom, setZoom] = useState(false)
+  const stepTitles = STEP_TITLES.map((title) => t(title))
+  // Train completes one row per tick, landing on its Update step so the charts and network follow.
+  useEffect(() => {
+    if (!training) return
+    if (atEnd) {
+      setTraining(false)
+      return
+    }
+    const id = setTimeout(() => {
+      if (step === lastStep) setRound(round + 1)
+      else setStep(lastStep)
+    }, TRAIN_TICK_MS)
+    return () => clearTimeout(id)
+  }, [training, atEnd, round, step, lastStep])
+  const lastEpoch = rounds[lastRound].epoch
+  // The first row of the next epoch: every remaining row of this one has been trained on.
+  const nextEpoch = () => {
+    setTraining(false)
+    setRound(current.epoch * rows.length)
+    setStep(0)
+  }
+  const reset = () => {
+    setTraining(false)
+    setRound(0)
+    setStep(0)
+  }
+
+  const next = () => {
+    setTraining(false)
+    if (step < lastStep) setStep(step + 1)
+    else {
+      setRound(round + 1)
+      setStep(0)
+    }
+  }
+  const previous = () => {
+    setTraining(false)
+    if (step > 0) setStep(step - 1)
+    else {
+      setRound(round - 1)
+      setStep(lastStep)
+    }
+  }
 
   return (
     <LessonArticle entry={entry}>
@@ -27,102 +109,118 @@ export function BackPropagationForwardBackwardLesson({ entry }: { entry: LessonE
           "Training a network is one loop: guess, measure the mistake, trace the blame backwards, adjust.",
         )}
       </LessonLead>
-      <MetricSection
-        number="1"
-        title="Backpropagation"
-        whatLabel="What it is"
-        what={
-          <div className="flex flex-col gap-2">
-            <p>
-              {t(
-                "Backpropagation computes ∂L/∂w — how much the loss changes if one weight moves a little — for every weight at once. It works in four beats:",
-              )}
-            </p>
-            <OptionList
-              items={[
-                t(
-                  "Forward Pass (The Attempt): You feed raw ingredients into the machine and press “Start.” The gears turn based on how the dials are currently set, and out pops a baked cake. That is the machine's first guess.",
-                ),
-                t(
-                  "Loss Calculation (The Reality Check): A master chef tastes the cake, compares it to the perfect recipe, and issues a strict penalty score. “Too salty, not sweet enough. Error score: 85.”",
-                ),
-                t(
-                  "Backward Pass (Assigning Blame): The chef's error score is sent backward down the assembly line. The system figures out exactly which dials caused the saltiness and which caused the lack of sweetness. It then mathematically nudges each dial slightly in the correct direction.",
-                ),
-                t(
-                  "Update (Adjusting): Turning the salt dial down 2% and the sugar dial up 5% so the next guess is closer to perfect.",
-                ),
-              ]}
-            />
-            <p className="label-ui text-brand">{t("Reading ŷ")}</p>
-            <OptionList
-              ordered={false}
-              items={[
-                t("y — the true label, the answer in the data: 0 or 1."),
-                t(
-                  "ŷ (“y-hat”) — the network's prediction: a probability between 0 and 1 that the class is 1. The hat means “estimated”.",
-                ),
-                t("ŷ − y — the error. It is 0 when the prediction matches the label."),
-              ]}
-            />
-          </div>
-        }
-        why={
-          <p>
-            {t(
-              "Measuring each weight's effect separately would cost one forward pass per weight. Backpropagation shares the work, so all gradients cost about one extra pass. It only computes gradients — the optimizer (on the Key concepts page) decides what to do with them.",
-            )}
-          </p>
-        }
-        formulas={
-          <>
-            <p className="text-fg-muted">{t("A tiny network: x → hidden → ŷ (biases left out)")}</p>
-            <p>z₁ = w₁·x, a₁ = σ(z₁)</p>
-            <p>z₂ = w₂·a₁, ŷ = σ(z₂)</p>
-            <p>L = −[y·ln ŷ + (1 − y)·ln(1 − ŷ)]</p>
-            <p className="mt-1 text-fg-muted">{t("Chain rule, from the loss backwards")}</p>
-            <p>δ₂ = ∂L/∂z₂ = ŷ − y</p>
-            <p>∂L/∂w₂ = δ₂·a₁</p>
-            <p>δ₁ = ∂L/∂z₁ = δ₂·w₂·σ′(z₁), σ′ = a₁(1 − a₁)</p>
-            <p>∂L/∂w₁ = δ₁·x</p>
-            <p className="mt-1">w ← w − η·∂L/∂w</p>
-          </>
-        }
-        worked={
-          <>
-            <p>
-              x = {e.x}, y = {e.y}, w₁ = {e.w1}, w₂ = {e.w2}, η = {e.learningRate}
-            </p>
-            <p>
-              {t("forward")}: z₁ = {fmt(e.z1)}, a₁ = {fmt(e.a1)}, z₂ = {fmt(e.z2)}, ŷ ={" "}
-              {fmt(e.yHat)}, L = {fmt(e.loss)}
-            </p>
-            <p>
-              {t("backward")}: δ₂ = {fmt(e.yHat)} − {e.y} = {fmt(e.delta2)}, ∂L/∂w₂ ={" "}
-              {fmt(e.gradW2)}
-            </p>
-            <p>
-              δ₁ = {fmt(e.delta2)}·{e.w2}·{fmt(e.a1 * (1 - e.a1))} = {fmt(e.delta1)}, ∂L/∂w₁ ={" "}
-              {fmt(e.gradW1)}
-            </p>
-            <p>
-              {t("update")}: w₁ = {fmt(e.newW1)}, w₂ = {fmt(e.newW2)}
-            </p>
-            <p>
-              {t("new loss")}: {fmt(e.newLoss)} ({t("was")} {fmt(e.loss)})
-            </p>
-          </>
-        }
+
+      <StepData
+        dataset={dataset}
+        onDataset={(id) => {
+          setDataset(id)
+          reset()
+        }}
+        rows={rows}
+        active={current.row}
+        pass={p}
+        step={step}
+        epochNets={epochNets}
+        epochsDone={Math.floor(completed / rows.length)}
+      />
+
+      <section
+        aria-label={t("Step by step")}
+        className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-[1.4fr_1fr]"
       >
-        <Expandable title={t("Backpropagation")}>
-          <BackpropGraph example={e} />
-        </Expandable>
-        <Takeaway>
-          {t(
-            "Backpropagation is the chain rule run from the loss back to the first layer, reusing every result once.",
-          )}
-        </Takeaway>
-      </MetricSection>
+        <div className="flex flex-col gap-4 rounded border border-line p-4">
+          <Stepper
+            label={t("Steps")}
+            steps={STEP_TITLES.map((title) => t(title))}
+            current={step}
+            onSelect={(i) => {
+              setTraining(false)
+              setStep(i)
+            }}
+          />
+          <StepNetwork pass={p} step={step} />
+          <div className="flex flex-col gap-2">
+            <h2 className="font-display text-2xl font-bold uppercase text-fg">
+              {t(STEP_TITLES[step])}
+            </h2>
+            {step === 0 && round > 0 && (
+              <p className="label-ui text-brand">
+                {t("Network updated by row {0}", [String(rounds[round - 1].row + 1)])}
+              </p>
+            )}
+            <p className="text-fg-secondary">{panel.analogy}</p>
+          </div>
+          <div className="mt-auto flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-2">
+              <Button variant="outline" disabled={atStart} onClick={previous}>
+                ‹ {t("Previous")}
+              </Button>
+              <span className="label-ui text-center text-fg-muted">
+                {t("Row {0}", [String(current.row + 1)])} ·{" "}
+                {t("Epoch {0}", [String(current.epoch)])} · {step + 1} / {STEP_TITLES.length}
+              </span>
+              <Button variant="outline" disabled={atEnd} onClick={next}>
+                {step === lastStep && !atEnd ? t("Next row") : t("Next")} ›
+              </Button>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Button variant="outline" disabled={current.epoch === lastEpoch} onClick={nextEpoch}>
+                <SkipForwardIcon aria-hidden /> {t("Next epoch")}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={atEnd}
+                aria-pressed={training}
+                onClick={() => setTraining(!training)}
+              >
+                {training ? <PauseIcon aria-hidden /> : <PlayIcon aria-hidden />}
+                {training ? t("Pause") : t("Train")}
+              </Button>
+              <Button variant="outline" disabled={atStart && !training} onClick={reset}>
+                <RotateCcwIcon aria-hidden /> {t("Reset")}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <section
+          aria-label={t("Math")}
+          className="relative max-h-96 overflow-y-auto rounded border border-line md:max-h-none md:overflow-visible"
+        >
+          <div className="flex flex-col items-stretch p-4 md:absolute md:inset-0 md:overflow-y-auto">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="label-ui text-brand">{t("Math")}</p>
+              <button
+                type="button"
+                onClick={() => setZoom(true)}
+                aria-label={t("Zoom math")}
+                title={t("Zoom math")}
+                className="rounded-[2px] border border-line p-1 text-fg-muted hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
+              >
+                <Maximize2Icon className="size-3.5" aria-hidden />
+              </button>
+            </div>
+            <MathStack steps={steps} titles={stepTitles} step={step} />
+          </div>
+        </section>
+        {zoom && (
+          <ZoomDialog title={t("Math")} onClose={() => setZoom(false)}>
+            <MathStack steps={steps} titles={stepTitles} step={step} large />
+          </ZoomDialog>
+        )}
+      </section>
+
+      <StepCharts
+        points={[initial, ...rounds.slice(0, completed).map((r) => r.after)]}
+        pass={p}
+        step={step}
+      />
+
+      <Takeaway>
+        {t(
+          "Backpropagation is the chain rule run from the loss back to the first layer, reusing every result once.",
+        )}
+      </Takeaway>
 
       <LessonFooter entry={entry} />
     </LessonArticle>

@@ -27,12 +27,17 @@ export const MAX_NEURONS_PER_LAYER = 8
 export const TEMP_DOMAIN: [number, number] = [40, 105]
 export const VIB_DOMAIN: [number, number] = [0, 9]
 
+export const TEMP_CENTER = 72.5
+export const TEMP_SCALE = 22.5
+export const VIB_CENTER = 4.5
+export const VIB_SCALE = 3
+
 /** Centers and scales the raw readings to roughly −1..1 — the network trains on this. */
 export function toInput({
   temperature,
   vibration,
 }: Pick<MachineReading, "temperature" | "vibration">) {
-  return [(temperature - 72.5) / 22.5, (vibration - 4.5) / 3]
+  return [(temperature - TEMP_CENTER) / TEMP_SCALE, (vibration - VIB_CENTER) / VIB_SCALE]
 }
 
 /** The shared dataset as (input, target) pairs, ready for `trainEpoch`/`predict`. */

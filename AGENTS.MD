@@ -50,6 +50,23 @@ Introduction to AI: a polyglot monorepo. Apps live in `apps/`, reusable packages
 
 8. **Each app and package is self-contained**: its own `pyproject.toml` or `package.json`, `README.md` and tests. Shared tooling lives at the root: the uv workspace (`pyproject.toml`, `uv.lock`) and the pnpm workspace (`package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`). Apps may add integration tests against the packages they use.
 
+## Translation (pt-BR)
+
+1. **Do not translate to Portuguese unless the request says so.** Write new docs, code, comments and UI copy in English. Translate only when the request explicitly asks (e.g. "translate to pt-br", "update the pt-br translation").
+
+2. **Track translation state in frontmatter**: a source document that has a pt-BR copy declares `update` under `metadata`:
+
+   ```yaml
+   ---
+   metadata:
+     update: true   # or false
+   ---
+   ```
+
+   - Set `update: true` when you change the English source of a document that has a pt-BR copy.
+   - Set `update: false` once its pt-BR copy is brought up to date.
+   - A translation/update request translates only files marked `update: true`, unless the user names specific files. Files without `metadata.update` are not translated.
+
 ## Skills
 
 Reusable task-specific instructions are available under `.agents/skills/`

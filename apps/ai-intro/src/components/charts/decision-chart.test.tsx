@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 
 import { DecisionChart } from "./decision-chart"
 
@@ -87,4 +87,27 @@ test("draws one extra contour per entry in boundaries, in its own color", () => 
   const paths = [...container.querySelectorAll("g[clip-path] > path")]
   expect(paths.map((p) => p.getAttribute("stroke"))).toEqual(["red", "gray"])
   expect(paths[1].getAttribute("stroke-dasharray")).toBe("6 5")
+})
+
+test("reports the data-space position of clicks inside the plot only", () => {
+  const onPlotClick = vi.fn()
+  const { container } = render(
+    <DecisionChart
+      points={points}
+      series={series}
+      xLabel="Temperature"
+      yLabel="Vibration"
+      valueAt={() => 0.5}
+      onPlotClick={onPlotClick}
+    />,
+  )
+  const svg = container.querySelector("svg") as SVGSVGElement
+  // Unscaled viewBox: svg units equal CSS pixels.
+  svg.getBoundingClientRect = () => ({ left: 0, top: 0, width: 760, height: 420 }) as DOMRect
+
+  fireEvent.click(svg, { clientX: 5, clientY: 5 })
+  expect(onPlotClick).not.toHaveBeenCalled()
+
+  fireEvent.click(svg, { clientX: 48, clientY: 20 })
+  expect(onPlotClick).toHaveBeenLastCalledWith({ x: 45, y: 8 })
 })

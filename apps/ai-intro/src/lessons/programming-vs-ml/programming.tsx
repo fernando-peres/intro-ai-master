@@ -8,11 +8,20 @@ import { CodeBlock } from "@/components/code-block"
 import { ArticleFrame, LessonHero, LessonLead } from "@/components/course/lesson-layout"
 import { useTranslation } from "@/i18n/use-translation"
 import { cn } from "@/lib/utils"
-import { machineReadings, riskLabel } from "./dataset"
+import { type MachineClass, machineReadings, riskLabel, riskValue } from "./dataset"
 import { RiskColorPicker, RiskColorsProvider } from "./risk-colors"
 import { RiskTable } from "./risk-table"
 import { RuleFlowchart } from "./rule-flowchart"
 import { classifyByRules, rulesPythonSource, rulesScore } from "./rules"
+import {
+  type Coord,
+  emptySketch,
+  placeLineEnd,
+  placePoint,
+  type SketchMode,
+  type SketchState,
+} from "./sketch"
+import { SketchControls } from "./sketch-controls"
 
 const series: ScatterSeries[] = [
   { key: "normal", label: riskLabel("normal"), color: "var(--color-risk-0)" },
@@ -44,6 +53,9 @@ export function ProgrammingLesson() {
   const [view, setView] = useState<"code" | "flowchart">("code")
   const [revealed, setRevealed] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const [sketch, setSketch] = useState<SketchState>(emptySketch)
+  const [sketchMode, setSketchMode] = useState<SketchMode>("point")
+  const [sketchLabel, setSketchLabel] = useState<MachineClass>("at-risk")
 
   useEffect(() => {
     if (!playing) return
@@ -66,6 +78,19 @@ export function ProgrammingLesson() {
   const reset = () => {
     setPlaying(false)
     setRevealed(0)
+  }
+
+  const onPlotClick = (at: Coord) =>
+    setSketch((s) =>
+      sketchMode === "point" ? placePoint(s, at, sketchLabel) : placeLineEnd(s, at),
+    )
+  const changeSketchMode = (mode: SketchMode) => {
+    setSketchMode(mode)
+    setSketch((s) => ({ ...s, pending: null }))
+  }
+  const addPointOf = (label: MachineClass) => {
+    setSketchLabel(label)
+    changeSketchMode("point")
   }
 
   const flaggedKeys = useMemo(() => {
@@ -178,6 +203,24 @@ export function ProgrammingLesson() {
                   flaggedKeys={flaggedKeys}
                   positiveColor="var(--color-risk-1)"
                   negativeColor="var(--color-risk-0)"
+                  onPlotClick={onPlotClick}
+                  sketch={{
+                    points: sketch.points.map((p) => ({
+                      id: p.id,
+                      x: p.x,
+                      y: p.y,
+                      color: `var(--color-risk-${riskValue(p.label)})`,
+                    })),
+                    segments: sketch.segments,
+                    pending: sketch.pending,
+                  }}
+                />
+                <SketchControls
+                  mode={sketchMode}
+                  label={sketchLabel}
+                  onAddLine={() => changeSketchMode("line")}
+                  onAddPoint={addPointOf}
+                  onClear={() => setSketch(emptySketch)}
                 />
                 <p className="text-sm text-fg-secondary">
                   {revealed > 0 ? (

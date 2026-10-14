@@ -2132,6 +2132,70 @@ export const ptBR: Record<string, string> = {
   update: "atualização",
   "new loss": "nova perda",
   was: "era",
+  "Forward weights": "Pesos para frente",
+  "Activation function": "Função de ativação",
+  Backward: "Para trás",
+  "Step by step": "Passo a passo",
+  Previous: "Anterior",
+  Next: "Próximo",
+  "input (x₁, x₂) → Input Layer → Hidden Layer → Output":
+    "entrada (x₁, x₂) → Camada de entrada → Camada oculta → Saída",
+  "You feed raw ingredients into the machine and press “Start.” The gears turn based on how the dials are currently set. Each hidden neuron mixes the inputs with its own weights.":
+    "Você coloca os ingredientes crus na máquina e aperta “Iniciar”. As engrenagens giram conforme a posição atual dos botões. Cada neurônio oculto mistura as entradas com os próprios pesos.",
+  "Each gear squashes its raw signal into a smooth 0-to-1 range, so no single dial can shout. The output neuron does the same, and out pops the machine's first guess.":
+    "Cada engrenagem comprime seu sinal bruto para uma faixa suave de 0 a 1, para que nenhum botão grite sozinho. O neurônio de saída faz o mesmo, e sai o primeiro palpite da máquina.",
+  "A master chef tastes the cake, compares it to the perfect recipe, and issues a strict penalty score. The further the guess is from the label, the bigger the penalty.":
+    "Um mestre-cuca prova o bolo, compara com a receita perfeita e dá uma nota de penalidade rigorosa. Quanto mais longe o palpite do rótulo, maior a penalidade.",
+  "The chef's score travels backward down the assembly line. Each dial learns how much it contributed to the mistake: that is its gradient, the blame it carries.":
+    "A nota do chef viaja de volta pela linha de montagem. Cada botão descobre o quanto contribuiu para o erro: esse é o seu gradiente, a culpa que ele carrega.",
+  "Turn each dial a small step against its blame, scaled by the learning rate η. The next guess should land closer to the perfect recipe.":
+    "Gire cada botão um pouco contra a sua culpa, na escala da taxa de aprendizado η. O próximo palpite deve ficar mais perto da receita perfeita.",
+  Math: "Matemática",
+  "Network updated by row {0}": "Rede atualizada pela linha {0}",
+  "Row {0}": "Linha {0}",
+  "Next row": "Próxima linha",
+  "Loss and accuracy": "Perda e acurácia",
+  Updates: "Atualizações",
+  "Color for {0}": "Cor para {0}",
+  "Reset colors": "Redefinir cores",
+  Current: "Atual",
+  Weight: "Peso",
+  "Loss of this row as {0} moves, from {1} to {2}.":
+    "Perda desta linha conforme {0} se move, de {1} para {2}.",
+  "Next epoch": "Próxima época",
+  "What the variables mean": "O que as variáveis significam",
+  "where:": "onde:",
+  "The weighted sum feeding hidden neuron j, before the activation":
+    "A soma ponderada que alimenta o neurônio oculto j, antes da ativação",
+  "The weight from input k to hidden neuron j": "O peso da entrada k para o neurônio oculto j",
+  "Input k of the current row": "A entrada k da linha atual",
+  "The bias of hidden neuron j: a constant added to its sum":
+    "O viés do neurônio oculto j: uma constante somada à sua soma",
+  "The sigmoid activation: squashes any z into a value between 0 and 1":
+    "A ativação sigmoide: comprime qualquer z em um valor entre 0 e 1",
+  "The number entering the activation": "O número que entra na ativação",
+  "The activation (output) of hidden neuron j": "A ativação (saída) do neurônio oculto j",
+  "The weight from hidden neuron j to the output neuron":
+    "O peso do neurônio oculto j para o neurônio de saída",
+  "The bias of the output neuron": "O viés do neurônio de saída",
+  "The prediction: the probability that the class is 1":
+    "A previsão: a probabilidade de a classe ser 1",
+  "The loss: the penalty for this row, 0 when the prediction is perfect":
+    "A perda: a penalidade desta linha, 0 quando a previsão é perfeita",
+  "The true label of the row: 0 or 1": "O rótulo verdadeiro da linha: 0 ou 1",
+  "The natural logarithm": "O logaritmo natural",
+  "The error signal at the output: ŷ − y": "O sinal de erro na saída: ŷ − y",
+  "The error signal of hidden neuron j: the blame passed back to it":
+    "O sinal de erro do neurônio oculto j: a culpa que lhe foi repassada",
+  "How much the loss changes if vⱼ moves a little": "Quanto a perda muda se vⱼ se mover um pouco",
+  "How much the loss changes if wⱼₖ moves a little": "Quanto a perda muda se wⱼₖ se mover um pouco",
+  "How much the loss changes if bⱼ moves a little": "Quanto a perda muda se bⱼ se mover um pouco",
+  "The slope of the sigmoid at neuron j": "A inclinação da sigmoide no neurônio j",
+  "The weights and biases being adjusted": "Os pesos e vieses sendo ajustados",
+  "Their gradients from the Backward step": "Seus gradientes do passo Para trás",
+  "The learning rate: the size of each step": "A taxa de aprendizado: o tamanho de cada passo",
+  "Replace the old value with the new one": "Substitui o valor antigo pelo novo",
+  "Zoom math": "Ampliar a matemática",
   "Backpropagation is the chain rule run from the loss back to the first layer, reusing every result once.":
     "A retropropagação é a regra da cadeia aplicada da perda até a primeira camada, reaproveitando cada resultado uma única vez.",
   "Loss function": "Função de perda",
@@ -2216,6 +2280,18 @@ export const ptBR: Record<string, string> = {
   "ŷ − y — the error. It is 0 when the prediction matches the label.":
     "ŷ − y — o erro. É 0 quando a previsão coincide com o rótulo.",
   "Expand chart": "Expandir gráfico",
+  "Show the learned function": "Mostrar a função aprendida",
+  "The learned function": "A função aprendida",
+  Close: "Fechar",
+  "This is everything the network learned: a chain of weighted sums and squashing functions. Training only changed the numbers.":
+    "Isto é tudo o que a rede aprendeu: uma cadeia de somas ponderadas e funções de achatamento. O treino só mudou os números.",
+  Calculations: "Cálculos",
+  "Entire function": "Função completa",
+  "Scale the readings": "Escale as leituras",
+  Output: "Saída",
+  "Hidden layer {0}": "Camada oculta {0}",
+  Decide: "Decida",
+  otherwise: "senão",
   "Back to original size": "Voltar ao tamanho original",
   "Original size": "Tamanho original",
   Rings: "Anéis",
@@ -2945,4 +3021,6 @@ export const ptBR: Record<string, string> = {
     "Todos os números abaixo vêm da mesma rede mostrada em Dados e Aprendizado, atualmente treinada por {0} épocas sobre as {1} leituras de máquinas.",
   " machine readings (temperature, vibration) from Programming vs ML, classified by a small neural network currently trained for {0} epochs. ":
     " leituras de máquinas (temperatura, vibração) de Programação vs ML, classificadas por uma pequena rede neural atualmente treinada por {0} épocas. ",
+  "Clear drawing": "Limpar desenho",
+  "Add a line": "Adicionar uma linha",
 }

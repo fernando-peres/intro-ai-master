@@ -1,5 +1,6 @@
-import { useEffect, useId, useRef, useState } from "react"
+import { type MouseEvent, useEffect, useId, useRef, useState } from "react"
 import { useTranslation } from "@/i18n/use-translation"
+import { cn } from "@/lib/utils"
 import { CHART_HEIGHT, CHART_WIDTH, createScale } from "./scales"
 import type { ScatterPoint, ScatterSeries } from "./scatter-chart"
 import { pointKey } from "./scatter-chart"
@@ -72,6 +73,8 @@ export function DecisionChart({
   boundaries,
   showLegend = true,
   fill = false,
+  onPlotClick,
+  sketch,
 }: {
   points: ScatterPoint[]
   series: ScatterSeries[]
@@ -96,6 +99,14 @@ export function DecisionChart({
   showLegend?: boolean
   /** Grow taller to fill the parent's height (never shorter than the default aspect ratio). */
   fill?: boolean
+  /** Called with the data-space position of a click inside the plot area, rounded to 0.1. */
+  onPlotClick?: (at: Point) => void
+  /** Hand-drawn marks in data space, drawn above the data points and not part of the scale. */
+  sketch?: {
+    points: (Point & { id: number; color: string })[]
+    segments: { from: Point; to: Point }[]
+    pending?: Point | null
+  }
 }) {
   const { t } = useTranslation()
   const clipId = useId()
@@ -145,10 +156,36 @@ export function DecisionChart({
       .join("")
   const boundaryPath = showBoundaryLine ? contourPath(valueAt) : ""
 
+  const handlePlotClick = (e: MouseEvent<SVGSVGElement>) => {
+    if (!onPlotClick) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const sx = ((e.clientX - rect.left) / rect.width) * width
+    const sy = ((e.clientY - rect.top) / rect.height) * height
+    const inside =
+      sx >= margin.left &&
+      sx <= width - margin.right &&
+      sy >= margin.top &&
+      sy <= margin.top + plotHeight
+    if (!inside) return
+    const [xLo, xHi] = xDomain
+    const [yLo, yHi] = yDomain
+    const round = (v: number) => Math.round(v * 10) / 10
+    onPlotClick({
+      x: round(xLo + ((sx - margin.left) / plotWidth) * (xHi - xLo)),
+      y: round(yLo + ((margin.top + plotHeight - sy) / plotHeight) * (yHi - yLo)),
+    })
+  }
+
   const svg = (
+    // Pointer-only: keyboard users cannot place marks here; the toolbar controls are keyboard-accessible.
+    // biome-ignore lint/a11y/useKeyWithClickEvents: sketching is a mouse/touch interaction
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className={fill ? "absolute inset-0 size-full" : "h-auto w-full"}
+      className={cn(
+        fill ? "absolute inset-0 size-full" : "h-auto w-full",
+        onPlotClick && "cursor-crosshair",
+      )}
+      onClick={onPlotClick ? handlePlotClick : undefined}
       role="img"
       aria-label={t(
         "{0} against {1}, with the model's predicted decision boundary shaded behind the data.",
@@ -282,6 +319,54 @@ export function DecisionChart({
           />
         </g>
       ))}
+
+      {sketch?.segments.map((seg) => (
+        <g key={`${seg.from.x},${seg.from.y}-${seg.to.x},${seg.to.y}`}>
+          {/* Dark halo keeps the white line visible on light backgrounds. */}
+          <line
+            x1={px(seg.from.x)}
+            y1={py(seg.from.y)}
+            x2={px(seg.to.x)}
+            y2={py(seg.to.y)}
+            stroke="#000"
+            strokeOpacity={0.35}
+            strokeWidth={5}
+            strokeLinecap="round"
+          />
+          <line
+            x1={px(seg.from.x)}
+            y1={py(seg.from.y)}
+            x2={px(seg.to.x)}
+            y2={py(seg.to.y)}
+            stroke="#fff"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+          />
+        </g>
+      ))}
+      {sketch?.points.map((p) => (
+        <rect
+          key={`sketch-${p.id}`}
+          x={px(p.x) - 7}
+          y={py(p.y) - 7}
+          width={14}
+          height={14}
+          fill={p.color}
+          stroke="var(--color-fg)"
+          strokeWidth={1.5}
+        />
+      ))}
+      {sketch?.pending && (
+        <circle
+          cx={px(sketch.pending.x)}
+          cy={py(sketch.pending.y)}
+          r={5}
+          fill="#fff"
+          stroke="#000"
+          strokeOpacity={0.35}
+          strokeWidth={1}
+        />
+      )}
     </svg>
   )
 

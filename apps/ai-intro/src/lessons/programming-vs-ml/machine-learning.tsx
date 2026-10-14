@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { DecisionChart } from "@/components/charts/decision-chart"
 import { LineChart } from "@/components/charts/line-chart"
 import { ArticleFrame, LessonHero, LessonLead } from "@/components/course/lesson-layout"
+import { ZoomDialog } from "@/components/course/zoom-dialog"
 import { FloatingPanel } from "@/components/floating-panel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -60,6 +61,7 @@ import {
   VIB_DOMAIN,
 } from "./ml-training"
 import { NetworkDiagram } from "./network-diagram"
+import { NetworkFunction } from "./network-function"
 import { NetworkMath } from "./network-math"
 import { RiskColorPicker, RiskColorsProvider } from "./risk-colors"
 import { RiskTable } from "./risk-table"
@@ -149,6 +151,7 @@ export function MachineLearningLesson() {
   const [playing, setPlaying] = useState(false)
   const [showWeights, setShowWeights] = useState(false)
   const [showMath, setShowMath] = useState(false)
+  const [showFunction, setShowFunction] = useState(false)
   const shuffleRand = useRef(mulberry32(SEED + 100))
 
   const [testTemp, setTestTemp] = useState(85)
@@ -356,7 +359,22 @@ export function MachineLearningLesson() {
         <Workbench rail={rail}>
           <Panel
             title={t("Network")}
-            aside={t("Each node shows what it has learned to see")}
+            aside={
+              <span className="flex items-center gap-3">
+                {t("Each node shows what it has learned to see")}
+                <button
+                  type="button"
+                  onClick={() => setShowFunction(true)}
+                  aria-label={t("Show the learned function")}
+                  className="label-ui flex items-center gap-1.5 rounded-[2px] border border-line px-2 py-1 text-fg-secondary hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
+                >
+                  <span aria-hidden className="font-serif italic">
+                    ƒ
+                  </span>
+                  {t("Function")}
+                </button>
+              </span>
+            }
             footer={toolbar}
           >
             <NetworkDiagram
@@ -533,6 +551,23 @@ export function MachineLearningLesson() {
             "Unlike a manually defined if/else program, the network learns the combination of temperature and vibration from the data itself — and the curved line above shows exactly what it decided. ",
           )}
         </p>
+        {showFunction && (
+          <ZoomDialog
+            title={t("The learned function")}
+            closeLabel={t("Close")}
+            onClose={() => setShowFunction(false)}
+          >
+            <NetworkFunction
+              network={net}
+              inputLabels={[t("Temp"), t("Vib")]}
+              input={toInputXY(testTemp, testVib)}
+              exampleLabel={t('a machine at {0} °C, {1} mm/s (from "Classify a new example")', [
+                testTemp,
+                testVib,
+              ])}
+            />
+          </ZoomDialog>
+        )}
         {showMath && (
           <FloatingPanel title={t("Weights & math")} onClose={() => setShowMath(false)}>
             <NetworkMath
