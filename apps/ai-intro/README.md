@@ -36,6 +36,8 @@ Focus mode: the maximize icon at the right of the lesson header (after `EN-US` /
 
 Languages: the Programming vs ML and Machine Learning chapters, and the Perceptron lesson, include English and Brazilian Portuguese. Use `EN-US` / `PT-BR` in the lesson header; the selection persists across visits. Copy maintenance is documented in `../../docs/localization.md`.
 
+Generative AI: chapter 04 has a content lesson (Foundation Models) and four labs: Next Token, Adaptation (Theory and Lab tabs), Assistant Lab and GPT → ChatGPT. The labs call `algo-server` for real model output, and Vite proxies `/api` to `http://localhost:8000`. Start the server as its README describes; until it is up, each lab shows the start command. Spec: `../../docs/specs/26-10-16-foundational model.md`.
+
 ## Scripts
 
 | Command          | What it does                                    |

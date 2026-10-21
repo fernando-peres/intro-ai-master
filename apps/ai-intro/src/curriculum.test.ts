@@ -1,7 +1,7 @@
 import { findLesson, lessonEntries, lessonKind, neighbours } from "./curriculum"
 
-test("course has 31 lessons, Content closing chapter 01", () => {
-  expect(lessonEntries).toHaveLength(31)
+test("course has 36 lessons, Content closing chapter 01", () => {
+  expect(lessonEntries).toHaveLength(36)
   expect(findLesson("programming-vs-ml", "content")?.index).toBe(3)
 })
 
@@ -34,6 +34,7 @@ test("Content, the Machine Learning chapter and Activation Functions are content
     "neural-networks/forward-and-backward",
     "neural-networks/under-the-hood",
     "neural-networks/activation-functions",
+    "generative-ai/foundation-models",
   ])
 })
 
@@ -59,4 +60,18 @@ test("Summary closes Generalization after the four source lessons", () => {
     "generalization",
     "summary",
   ])
+})
+
+test("Generative AI is chapter 04: one content lesson, then four labs", () => {
+  const genai = lessonEntries.filter((entry) => entry.chapter.slug === "generative-ai")
+  expect(genai[0].chapter.number).toBe("04")
+  expect(genai.map((entry) => `${entry.lesson.slug}:${lessonKind(entry)}`)).toEqual([
+    "foundation-models:content",
+    "next-token-lab:simulation",
+    "adaptation-lab:simulation",
+    "assistant-lab:simulation",
+    "gpt-to-chatgpt:simulation",
+  ])
+  expect(findLesson("llm", "prompting")?.chapter.number).toBe("05")
+  expect(findLesson("agents", "memory")?.chapter.number).toBe("06")
 })

@@ -1,6 +1,11 @@
 import type { ComponentType } from "react"
 
 import type { LessonEntry } from "@/curriculum"
+import { AdaptationLabLesson } from "./generative-ai/adaptation-lab"
+import { AssistantLabLesson } from "./generative-ai/assistant-lab"
+import { FoundationModelsLesson } from "./generative-ai/foundation-models"
+import { GptToChatGptLesson } from "./generative-ai/gpt-to-chatgpt"
+import { NextTokenLabLesson } from "./generative-ai/next-token-lab"
 import { BiasAndVarianceLesson } from "./machine-learning/bias-and-variance"
 import { ClassificationFairnessLesson } from "./machine-learning/classification-fairness"
 import { ClassificationMetricsLesson } from "./machine-learning/classification-metrics"
@@ -48,4 +53,9 @@ export const lessonPages: Record<string, ComponentType<{ entry: LessonEntry }>> 
   "neural-networks/under-the-hood": BackPropagationUnderTheHoodLesson,
   "neural-networks/perceptron": PerceptronLesson,
   "neural-networks/activation-functions": ActivationFunctionsLesson,
+  "generative-ai/foundation-models": FoundationModelsLesson,
+  "generative-ai/next-token-lab": NextTokenLabLesson,
+  "generative-ai/adaptation-lab": AdaptationLabLesson,
+  "generative-ai/assistant-lab": AssistantLabLesson,
+  "generative-ai/gpt-to-chatgpt": GptToChatGptLesson,
 }

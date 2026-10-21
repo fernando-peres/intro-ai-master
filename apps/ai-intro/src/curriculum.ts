@@ -100,8 +100,20 @@ export const chapters: Chapter[] = [
     ],
   },
   {
-    slug: "llm",
+    slug: "generative-ai",
     number: "04",
+    title: "Generative AI",
+    lessons: [
+      { slug: "foundation-models", title: "Foundation Models", kind: "content" },
+      { slug: "next-token-lab", title: "Next Token" },
+      { slug: "adaptation-lab", title: "Adaptation" },
+      { slug: "assistant-lab", title: "Assistant Lab" },
+      { slug: "gpt-to-chatgpt", title: "GPT → ChatGPT" },
+    ],
+  },
+  {
+    slug: "llm",
+    number: "05",
     title: "LLM",
     lessons: [
       { slug: "tokens-and-embeddings", title: "Tokens & Embeddings" },
@@ -112,7 +124,7 @@ export const chapters: Chapter[] = [
   },
   {
     slug: "agents",
-    number: "05",
+    number: "06",
     title: "Agents",
     lessons: [
       { slug: "tools-and-function-calling", title: "Tools & Function Calling" },

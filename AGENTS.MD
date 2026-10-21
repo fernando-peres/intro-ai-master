@@ -80,7 +80,7 @@ Use skills for specialized workflows or conventions rather than duplicating thos
 ```
 docs/           — design docs (architecture, system design, ADRs)
 apps/           — algo-server (FastAPI, Python 3.14), ai-intro (React, Vite, pnpm)
-packages/       — algo (Python 3.14)
+packages/       — algo, genai (Python 3.14)
 .agents/skills/ — reusable task-specific agent instructions
 .scratchpad/    — personal notes; never read, modify or delete
 ```

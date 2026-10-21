@@ -12,27 +12,28 @@ dev = ["pytest>=8", "ruff>=0.6", "import-linter>=2.1"]
 package = false
 
 [tool.uv.workspace]
-members = ["apps/algo-server", "packages/algo"]
+members = ["apps/algo-server", "packages/algo", "packages/genai"]
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
-testpaths = ["apps/algo-server/tests", "packages/algo/tests"]
+testpaths = ["apps/algo-server/tests", "packages/algo/tests", "packages/genai/tests"]
+markers = ["slow: downloads and runs the real GPT-2 model"]
 
 [tool.ruff]
 target-version = "py314"
 line-length = 100
 
 [tool.importlinter]
-root_packages = ["algo", "algo_server"]
+root_packages = ["algo", "algo_server", "genai"]
 
 [[tool.importlinter.contracts]]
 name = "packages/* never import apps/*"
 type = "forbidden"
-source_modules = ["algo"]
+source_modules = ["algo", "genai"]
 forbidden_modules = ["algo_server"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["algo", "algo_server"]
+known-first-party = ["algo", "algo_server", "genai"]

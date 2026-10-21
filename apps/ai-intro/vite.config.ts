@@ -9,6 +9,8 @@ export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
+  // The Generative AI labs call algo-server (GPT-2 and the OpenAI assistant).
+  server: { proxy: { "/api": "http://localhost:8000" } },
   test: {
     environment: "jsdom",
     globals: true,

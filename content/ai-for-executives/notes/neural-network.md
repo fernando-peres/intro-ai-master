@@ -1,0 +1,2 @@
+One important nuance: backpropagation made training multi-layer neural networks more practical, but did not by itself solve every difficulty in training deep networks. Those advances came through additional developments in architectures, optimization, data, and computing power.
+For this introductory section, I would retain the current level of detail and leave those later developments for subsequent topics.
