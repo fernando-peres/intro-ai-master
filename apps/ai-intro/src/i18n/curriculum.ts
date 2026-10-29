@@ -47,6 +47,23 @@ const titles: Record<
     },
     groups: { "Back-propagation": "Retropropagação" },
   },
+  "generative-ai": {
+    title: "IA generativa",
+    lessons: {
+      "foundation-models": "Modelos de fundação",
+      "next-token-lab": "Próximo token",
+      "adaptation-lab": "Adaptação",
+      "assistant-lab": "Laboratório do assistente",
+      "gpt-to-chatgpt": "GPT → ChatGPT",
+      "intuition-pretraining": "Pré-treino",
+      "intuition-rlhf": "RLHF",
+      "intuition-dpo": "DPO",
+      "transformer-architecture": "Arquitetura",
+      pretraining: "Pré-treino",
+      "post-training": "Pós-treino",
+    },
+    groups: { "Training Intuition": "Intuição de treino", Transformers: "Transformers" },
+  },
 }
 
 export function localizedChapter(chapter: Chapter, language: Language): Chapter {

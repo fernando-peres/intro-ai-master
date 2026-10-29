@@ -6,6 +6,13 @@ import { AssistantLabLesson } from "./generative-ai/assistant-lab"
 import { FoundationModelsLesson } from "./generative-ai/foundation-models"
 import { GptToChatGptLesson } from "./generative-ai/gpt-to-chatgpt"
 import { NextTokenLabLesson } from "./generative-ai/next-token-lab"
+import { PostTrainingLesson } from "./generative-ai/post-training"
+import { PretrainingLesson } from "./generative-ai/pretraining"
+import { TrainingIntuitionDpoLesson } from "./generative-ai/training-intuition-dpo"
+import { TrainingIntuitionPretrainingLesson } from "./generative-ai/training-intuition-pretraining"
+import { TrainingIntuitionRlhfLesson } from "./generative-ai/training-intuition-rlhf"
+import { TransformerArchitectureLesson } from "./generative-ai/transformer-architecture"
+import { EmbeddingsLesson } from "./llm/embeddings"
 import { BiasAndVarianceLesson } from "./machine-learning/bias-and-variance"
 import { ClassificationFairnessLesson } from "./machine-learning/classification-fairness"
 import { ClassificationMetricsLesson } from "./machine-learning/classification-metrics"
@@ -58,4 +65,11 @@ export const lessonPages: Record<string, ComponentType<{ entry: LessonEntry }>> 
   "generative-ai/adaptation-lab": AdaptationLabLesson,
   "generative-ai/assistant-lab": AssistantLabLesson,
   "generative-ai/gpt-to-chatgpt": GptToChatGptLesson,
+  "generative-ai/intuition-pretraining": TrainingIntuitionPretrainingLesson,
+  "generative-ai/intuition-rlhf": TrainingIntuitionRlhfLesson,
+  "generative-ai/intuition-dpo": TrainingIntuitionDpoLesson,
+  "generative-ai/transformer-architecture": TransformerArchitectureLesson,
+  "generative-ai/pretraining": PretrainingLesson,
+  "generative-ai/post-training": PostTrainingLesson,
+  "llm/embeddings": EmbeddingsLesson,
 }

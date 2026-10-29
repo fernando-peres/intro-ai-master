@@ -15,6 +15,7 @@ import { useTranslation } from "@/i18n/use-translation"
 import { cn } from "@/lib/utils"
 import { chat, complete, type Example, fewShot, fewShotPrompt } from "./api"
 import { RequestError, ServerNotice, type StageId, stage } from "./stages"
+import { ToyLineage } from "./toy-lineage"
 
 type TaskId = "continuation" | "question" | "sentiment"
 
@@ -247,6 +248,7 @@ export function GptToChatGptLesson() {
             )}
           </StagePanel>
         </div>
+        <ToyLineage />
         <Panel title={t("What to notice")}>
           <ul className="flex list-disc flex-col gap-1.5 pl-5 text-fg-secondary marker:text-brand">
             <li>

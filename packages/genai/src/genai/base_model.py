@@ -21,6 +21,18 @@ class Step:
     top_k: list[Candidate]
 
 
+@dataclass(frozen=True)
+class Attention:
+    """One layer's attention over `tokens`: `weights[head][query][key]`; query rows sum to 1."""
+
+    tokens: list[str]
+    layer: int
+    heads: int
+    weights: list[list[list[float]]]
+    #: The most likely continuations after the last token.
+    next_tokens: list[Candidate]
+
+
 class BaseLM(Protocol):
     name: str
 
@@ -44,6 +56,10 @@ class BaseLM(Protocol):
         """Probability of each label as the continuation of `prompt`, normalised over `labels`."""
         ...
 
+    def attention(self, text: str, *, layer: int, top_k: int) -> Attention:
+        """Every head of `layer` over `text`; raises `ValueError` when the layer does not exist."""
+        ...
+
 
 #: Sampling draws only from the most likely tokens; GPT-2's long tail is mostly noise.
 SAMPLING_POOL = 50
@@ -57,9 +73,13 @@ def normalise(log_probs: dict[str, float]) -> dict[str, float]:
 
 
 class GPT2Model:
-    """GPT-2 (124M) from Hugging Face on CPU; weights load on first use (~500 MB download once)."""
+    """GPT-2 (124M) from Hugging Face on CPU; weights load on first use (~500 MB download once).
+
+    Loaded with the eager attention kernel: the default (sdpa) cannot return attention weights.
+    """
 
     name = "gpt2"
+    LAYERS = 12
 
     def __init__(self) -> None:
         self._tokenizer = None
@@ -77,7 +97,9 @@ class GPT2Model:
             from transformers import AutoModelForCausalLM, AutoTokenizer
 
             self._tokenizer = AutoTokenizer.from_pretrained(self.name)
-            self._model = AutoModelForCausalLM.from_pretrained(self.name).eval()
+            self._model = AutoModelForCausalLM.from_pretrained(
+                self.name, attn_implementation="eager"
+            ).eval()
             return self._tokenizer, self._model
 
     def generate_steps(
@@ -140,3 +162,25 @@ class GPT2Model:
                     float(logits[start + i, tok]) for i, tok in enumerate(label_ids)
                 )
         return normalise(log_probs)
+
+    def attention(self, text: str, *, layer: int, top_k: int) -> Attention:
+        import torch
+
+        if not 0 <= layer < self.LAYERS:
+            raise ValueError(f"layer must be in 0..{self.LAYERS - 1}, got {layer}")
+        tokenizer, model = self._load()
+        ids = tokenizer(text, return_tensors="pt").input_ids
+        with torch.no_grad():
+            out = model(ids, use_cache=False, output_attentions=True)
+            weights = out.attentions[layer][0]
+            top_p, top_i = out.logits[0, -1].softmax(-1).topk(top_k)
+        return Attention(
+            tokens=[tokenizer.decode([int(i)]) for i in ids[0]],
+            layer=layer,
+            heads=int(weights.shape[0]),
+            weights=[[[round(float(w), 4) for w in row] for row in head] for head in weights],
+            next_tokens=[
+                Candidate(tokenizer.decode([int(i)]), float(p))
+                for p, i in zip(top_p, top_i, strict=True)
+            ],
+        )

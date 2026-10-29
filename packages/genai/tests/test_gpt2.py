@@ -28,6 +28,24 @@ def test_generation_stops_at_the_stop_text():
     assert len(steps) < 20
 
 
+def test_attention_is_causal_and_each_row_is_a_distribution():
+    attention = model.attention("The cat sat on the", layer=5, top_k=3)
+    n = len(attention.tokens)
+    assert n == 5 and attention.heads == 12 and len(attention.weights) == 12
+    for head in attention.weights:
+        for q, row in enumerate(head):
+            assert len(row) == n
+            assert sum(row) == pytest.approx(1.0, abs=1e-3)
+            assert row[q + 1 :] == [0.0] * (n - q - 1)
+    assert len(attention.next_tokens) == 3
+    assert attention.next_tokens[0].prob >= attention.next_tokens[1].prob
+
+
+def test_attention_rejects_a_missing_layer():
+    with pytest.raises(ValueError):
+        model.attention("Hi", layer=12, top_k=1)
+
+
 def test_label_scores_form_a_distribution():
     scores = model.label_scores("Review: I love it!\nSentiment:", ["Positive", "Negative"])
     assert set(scores) == {"Positive", "Negative"}

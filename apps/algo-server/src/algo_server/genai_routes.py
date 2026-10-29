@@ -10,7 +10,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from genai.assistant import Assistant, Message, OpenAIAssistant, Role, pick_label
-from genai.base_model import BaseLM, GPT2Model, Step
+from genai.base_model import BaseLM, Candidate, GPT2Model, Step
+from genai.encoder_model import AttentionModel, BertSmallModel
 from genai.prompts import Example, few_shot_prompt
 
 #: The repo-root `.env`; variables already set in the environment win.
@@ -27,6 +28,11 @@ def get_base_lm() -> BaseLM:
 
 
 @cache
+def get_encoder() -> AttentionModel:
+    return BertSmallModel()
+
+
+@cache
 def get_assistant() -> Assistant | None:
     key = os.environ.get("OPENAI_API_KEY")
     model = os.environ.get("OPENAI_MODEL", DEFAULT_ASSISTANT_MODEL)
@@ -35,6 +41,7 @@ def get_assistant() -> Assistant | None:
 
 MaybeAssistant = Annotated[Assistant | None, Depends(get_assistant)]
 Base = Annotated[BaseLM, Depends(get_base_lm)]
+Encoder = Annotated[AttentionModel, Depends(get_encoder)]
 
 
 def require_assistant(assistant: MaybeAssistant) -> Assistant:
@@ -87,6 +94,47 @@ def complete(req: CompleteRequest, base: Base) -> CompleteResponse:
         seed=req.seed,
     )
     return CompleteResponse(model=base.name, steps=steps)
+
+
+class AttentionRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=200)
+    layer: int = Field(0, ge=0, le=GPT2Model.LAYERS - 1)
+    top_k: int = Field(5, ge=1, le=10)
+    #: GPT-2 is the causal decoder; BERT small the bidirectional encoder.
+    model: Literal["gpt2", "bert-small"] = "gpt2"
+
+
+class AttentionResponse(BaseModel):
+    model: str
+    #: Causal: future keys are 0. An encoder's rows are free to look both ways.
+    causal: bool
+    layers: int
+    tokens: list[str]
+    layer: int
+    heads: int
+    #: `weights[head][query][key]`; every query row sums to 1.
+    weights: list[list[list[float]]]
+    next_tokens: list[Candidate]
+
+
+@router.post("/genai/attention")
+def attention(req: AttentionRequest, base: Base, encoder: Encoder) -> AttentionResponse:
+    causal = req.model == "gpt2"
+    chosen: BaseLM | AttentionModel = base if causal else encoder
+    layers = GPT2Model.LAYERS if causal else encoder.LAYERS
+    if req.layer >= layers:
+        raise HTTPException(400, f"{chosen.name} has layers 0..{layers - 1}")
+    result = chosen.attention(req.text, layer=req.layer, top_k=req.top_k)
+    return AttentionResponse(
+        model=chosen.name,
+        causal=causal,
+        layers=layers,
+        tokens=result.tokens,
+        layer=result.layer,
+        heads=result.heads,
+        weights=result.weights,
+        next_tokens=result.next_tokens,
+    )
 
 
 class ExampleIn(BaseModel):

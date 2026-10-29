@@ -34,9 +34,11 @@ Chart and diagram colors follow one of four meanings — app brand, data class, 
 
 Focus mode: the maximize icon at the right of the lesson header (after `EN-US` / `PT-BR`) hides the top bar and sidebar; in focus mode the header adds previous/next icons, and the same icon (or Escape) returns to the standard layout. Spec: `../../docs/specs/26-10-11-focus-mode.md`.
 
-Languages: the Programming vs ML and Machine Learning chapters, and the Perceptron lesson, include English and Brazilian Portuguese. Use `EN-US` / `PT-BR` in the lesson header; the selection persists across visits. Copy maintenance is documented in `../../docs/localization.md`.
+Languages: the Programming vs ML and Machine Learning chapters, the Perceptron and Back-propagation lessons, and the Transformers group in Generative AI include English and Brazilian Portuguese. Use `EN-US` / `PT-BR` in the lesson header; the selection persists across visits. Copy maintenance is documented in `../../docs/localization.md`.
 
-Generative AI: chapter 04 has a content lesson (Foundation Models) and four labs: Next Token, Adaptation (Theory and Lab tabs), Assistant Lab and GPT → ChatGPT. The labs call `algo-server` for real model output, and Vite proxies `/api` to `http://localhost:8000`. Start the server as its README describes; until it is up, each lab shows the start command. Spec: `../../docs/specs/26-10-16-foundational model.md`.
+Generative AI: chapter 04 has a content lesson (Foundation Models), four labs (Next Token, Adaptation with Theory and Lab tabs, Assistant Lab, GPT → ChatGPT), the Training Intuition group (three content pages on the data behind pretraining, RLHF and DPO, no server needed) and the Transformers group (Architecture, with GPT-2's real attention; Pretraining, which trains a toy GPT live on the server; Post-training, which takes that toy GPT through SFT, a reward model and PPO). The labs call `algo-server` for real model output, and Vite proxies `/api` to `http://localhost:8000`. Start the server as its README describes; until it is up, each lab shows the start command. Specs: `../../docs/specs/26-10-16-foundational model.md`, `../../docs/specs/26-10-26-training-intuition.md` and `../../docs/specs/26-10-25-transformers.md`.
+
+Embeddings: chapter 05 has the Embeddings lesson with Theory, Intuition (GloVe word vectors), Text (MiniLM sentence vectors) and Applications (semantic against keyword search, and the RAG pipeline) tabs. The labs call `algo-server` (`/embeddings/*`) for real vectors; start the server as its README describes, and until it is up each lab shows the start command. Spec: `../../docs/specs/26-10-25-embeddings.md`.
 
 ## Scripts
 

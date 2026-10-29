@@ -53,4 +53,6 @@ uv run fastapi dev apps/algo-server/src/algo_server/main.py   # :8000 (first run
 pnpm --filter ai-intro dev                                    # :5173, proxies /api to :8000
 ```
 
+The Embeddings lab (chapter 05) runs two more real models: GloVe 6B 300d (~480 MB) and all-MiniLM-L6-v2 (~90 MB), downloaded on first use. With GPT-2 the server holds about 1.1 GB in memory. Set `HF_HOME` to move the Hugging Face cache.
+
 Per-project docs: [algo-server](apps/algo-server/README.md) · [ai-intro](apps/ai-intro/README.md) · [algo](packages/algo/README.md) · [genai](packages/genai/README.md)

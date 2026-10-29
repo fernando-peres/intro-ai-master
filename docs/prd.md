@@ -82,11 +82,21 @@ The current curriculum has 5 chapters; `apps/ai-intro/src/curriculum.ts` defines
 | | Back-propagation | Deepen the Machine Learning playground — more hidden layers, pick the activation — and train it on XOR/moons | Vanishing gradients in deep stacks |
 | | Activation Functions | Compare step, sigmoid, tanh and ReLU on the same task | Saturation and dead neurons |
 | | Loss & Optimization | Ball rolling on a loss landscape, with a learning-rate slider | Local minima, divergence when the rate is too high |
-| 04 LLM | Tokens & Embeddings | Tokenizer playground and an embedding-neighbour map | Odd tokenisation, biased associations |
-| | Transformers | Attention heat-map over a sentence | Context-window length, quadratic cost |
+| 04 Generative AI | Foundation Models *(content)* | **Built.** Pretraining → adaptation → assistant, with GPT-2's real next-token guesses | A foundation model continues text; it does not try to help |
+| | Next Token | **Built.** GPT-2 generates token by token; probabilities, temperature, forcing a token | Sampling trades fluency for surprise; "Paris" is only the fifth guess |
+| | Adaptation | **Built.** Theory of adaptation methods; zero-/few-shot classification on GPT-2 and the assistant; reviews become a post-training dataset | Prompting changes the context, not the weights |
+| | Assistant Lab | **Built.** Chat with a post-trained model, with and without history | Without history, follow-ups lose their referent |
+| | GPT → ChatGPT | **Built.** One input through the foundation model, the few-shot adapted model and the assistant | A base model sometimes answers correctly by chance |
+| | Training Intuition › Pretraining *(content)* | **Built.** Raw web text as it was found, GPT-3's data mix, a sentence sliced into next-token examples, GPT-3 continuing a question instead of answering it | Self-supervision teaches what text looks like, not what you want |
+| | Training Intuition › RLHF *(content)* | **Built.** The InstructGPT recipe as three data sets: written answers, ranked answers, prompts alone; before/after on the same prompt | A reward model learns preferences, not truth; tiny data, large behaviour change |
+| | Training Intuition › DPO *(content)* | **Built.** The same rankings as chosen/rejected pairs, the update intuition, RLHF vs DPO side by side, the lab's toy prompt | No sampling means no exploration beyond the written pairs |
+| | Transformers › Architecture | **Built.** Encoder / decoder / encoder–decoder; GPT-2's real attention per layer and head with the causal mask; a Q·K·V calculator | Attention weights are not an explanation of the model's reasoning |
+| | Transformers › Pretraining | **Built.** Train a tiny GPT live on a small corpus; context → target rows with real probabilities; training vs validation loss; greedy generation | A toy model is not GPT-3 scale; a tiny corpus is memorised fast |
+| | Transformers › Post-training | **Built.** SFT on demonstrations, ranking answers into preference pairs, a real tiny reward model and PPO on the toy GPT, or DPO on the same pairs, then base vs SFT vs RLHF side by side | Few demonstrations overwrite knowledge; a biased annotator trains a biased reward model; reward hacking |
+| 05 LLM | Embeddings | **Built.** Real GloVe word vectors (analogies, neighbours, PCA map) and MiniLM sentence vectors (similarity matrix, pooling inspector), plus semantic vs keyword search over a small corpus | A 2D map distorts 300 dimensions; high similarity is not equivalence |
 | | Prompting | The same task under different prompts | Brittleness, hallucination |
 | | Fine-tuning | Before and after on a narrow task | Catastrophic forgetting, data cost |
-| 05 Agents | Tools & Function Calling | Trace of a model choosing and calling tools | Wrong tool, wrong arguments |
+| 06 Agents | Tools & Function Calling | Trace of a model choosing and calling tools | Wrong tool, wrong arguments |
 | | Memory | Conversation overflowing the context window | Forgetting and retrieval errors |
 | | Planning Loops | Step through a plan → act → observe loop | Loops that never converge, error compounding |
 | | Multi-agent Systems | Agents passing messages to solve a task | Coordination overhead, cascading errors |

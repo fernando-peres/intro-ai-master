@@ -26,6 +26,8 @@ Every output in the labs is live. GPT-2 is a genuine foundation model (it was ne
 | 3 | `adaptation-lab` | theory + simulation | Adaptation | 3 adapt behaviour · review → post-training dataset |
 | 4 | `assistant-lab` | simulation | Assistant | 4 chat, follow up, context |
 | 5 | `gpt-to-chatgpt` | simulation | all | same input, three stages side by side |
+| 6–8 | `intuition-pretraining`, `intuition-rlhf`, `intuition-dpo` | group **Training Intuition** (content) | all | the kind of data each training technique needs, GPT-3 → GPT-3.5; see [the Training Intuition spec](26-10-26-training-intuition.md) |
+| 9–11 | `transformer-architecture`, `pretraining`, `post-training` | group **Transformers** | all | the network inside, how it is pretrained and post-trained; see [the Transformers spec](26-10-25-transformers.md) |
 
 Each lab opens with a status line naming the live models. The sidebar links between the labs. When `algo-server` is unreachable, the status line becomes a notice with the start command, and it recovers by itself (the health check is polled every 5 s).
 
@@ -96,6 +98,7 @@ The examples are Text continuation, Question answering and Sentiment classificat
 | `POST /api/genai/complete` | `prompt`, `max_tokens` ≤ 80, `temperature` 0–2, `top_k` ≤ 10, `seed` | `{model, steps: [{token, prob, top_k}]}` |
 | `POST /api/genai/few-shot` | `instruction`, `examples` ≤ 12, `query`, `input_name`, `output_name`, `model: base\|assistant`, `labels?` | `{model, prompt, output, label, scores \| null}` |
 | `POST /api/genai/chat` | `messages` (system/user/assistant) ≤ 40 | `{model, reply}` |
+| `POST /api/genai/attention` | `text` ≤ 200 chars, `layer`, `top_k` ≤ 10, `model` gpt2 or bert-small | `{model, causal, layers, tokens, layer, heads, weights, next_tokens}` (Transformers spec) |
 
 The server reads `OPENAI_API_KEY` and `OPENAI_MODEL` (default `gpt-5.4-mini`) from the repo-root `.env`. Without the key, assistant calls return 503 with that message; an OpenAI failure returns 502 with its error. GPT-2 loads lazily on its first request and is cached in-process.
 
@@ -104,7 +107,7 @@ The server reads `OPENAI_API_KEY` and `OPENAI_MODEL` (default `gpt-5.4-mini`) fr
 - **GPT-2 without its KV cache.** Reusing `past_key_values` crashes the process (SIGBUS) with torch and transformers on Python 3.14, so every step recomputes the whole sequence. That takes about 65 ms per token on a laptop CPU.
 - **`genai[gpt2]` extra.** torch and transformers are optional for the package, and `algo-server` requires them. The package and route tests use fakes, so they need no model download; `packages/genai/tests/test_gpt2.py` (marked `slow`) runs the real model.
 - **No fine-tuning in v1.** The Adaptation lesson explains it and collects the dataset it would use. A next version could add a model fine-tuned on the sentiment examples as a third Adaptation option.
-- **English only.** Copy goes through `t()`, but there are no pt-BR entries yet.
+- **Mostly English.** Copy goes through `t()`; the Transformers group and the chapter's sidebar titles have pt-BR entries, the five original lessons do not yet.
 
 ## Verification
 

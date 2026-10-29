@@ -109,6 +109,17 @@ export const chapters: Chapter[] = [
       { slug: "adaptation-lab", title: "Adaptation" },
       { slug: "assistant-lab", title: "Assistant Lab" },
       { slug: "gpt-to-chatgpt", title: "GPT → ChatGPT" },
+      {
+        slug: "intuition-pretraining",
+        title: "Pretraining",
+        kind: "content",
+        group: "Training Intuition",
+      },
+      { slug: "intuition-rlhf", title: "RLHF", kind: "content", group: "Training Intuition" },
+      { slug: "intuition-dpo", title: "DPO", kind: "content", group: "Training Intuition" },
+      { slug: "transformer-architecture", title: "Architecture", group: "Transformers" },
+      { slug: "pretraining", title: "Pretraining", group: "Transformers" },
+      { slug: "post-training", title: "Post-training", group: "Transformers" },
     ],
   },
   {
@@ -116,8 +127,7 @@ export const chapters: Chapter[] = [
     number: "05",
     title: "LLM",
     lessons: [
-      { slug: "tokens-and-embeddings", title: "Tokens & Embeddings" },
-      { slug: "transformers", title: "Transformers" },
+      { slug: "embeddings", title: "Embeddings" },
       { slug: "prompting", title: "Prompting" },
       { slug: "fine-tuning", title: "Fine-tuning" },
     ],

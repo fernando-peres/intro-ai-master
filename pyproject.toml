@@ -17,7 +17,7 @@ members = ["apps/algo-server", "packages/algo", "packages/genai"]
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 testpaths = ["apps/algo-server/tests", "packages/algo/tests", "packages/genai/tests"]
-markers = ["slow: downloads and runs the real GPT-2 model"]
+markers = ["slow: downloads and runs real models (GPT-2, GloVe, MiniLM)"]
 
 [tool.ruff]
 target-version = "py314"

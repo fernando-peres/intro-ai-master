@@ -312,6 +312,8 @@ export type CompareRow = {
   label: string
   count: string
   percent: number
+  /** Replaces the `percent%` text when the figure is not a percentage; the bar still uses `percent`. */
+  value?: string
   tone: "brand" | "muted"
 }
 
@@ -340,7 +342,7 @@ export function CompareBars({ rows }: { rows: CompareRow[] }) {
                   row.tone === "brand" ? "text-brand" : "text-fg-secondary",
                 )}
               >
-                {row.percent}%
+                {row.value ?? `${row.percent}%`}
               </span>
             </span>
           </div>

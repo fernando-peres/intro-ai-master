@@ -1,6 +1,7 @@
 import { type ReactNode, useId } from "react"
 import { SectionTitle } from "@/components/course/lesson-layout"
 import { useTranslation } from "@/i18n/use-translation"
+import { cn } from "@/lib/utils"
 import { Formula } from "./algorithm-card"
 
 /** One metric (or concept): what it measures, why it matters, its formula, beside a chart. */
@@ -154,9 +155,14 @@ export function StatRow({ stats }: { stats: { label: string; value: string }[] }
 }
 
 /** The one sentence to remember from a passage, set apart as a quote. */
-export function Takeaway({ children }: { children: ReactNode }) {
+export function Takeaway({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <blockquote className="border-l-2 border-brand pl-4 font-display text-[19px] leading-snug text-fg">
+    <blockquote
+      className={cn(
+        "border-l-2 border-brand pl-4 font-display text-[19px] leading-snug text-fg",
+        className,
+      )}
+    >
       {children}
     </blockquote>
   )

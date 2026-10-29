@@ -1,4 +1,7 @@
+import { ptBRTransformers } from "./pt-br-transformers"
+
 export const ptBR: Record<string, string> = {
+  ...ptBRTransformers,
   "What was learned — the trained network": "O que foi aprendido — a rede treinada",
   "Trained network weights and biases": "Pesos e vieses da rede treinada",
   "After {0} epochs, these are the learned parameters: each connection is labeled with its weight, and b beneath each neuron is its bias. Values are rounded to two decimal places. Together, weights and biases determine how the network combines the scaled sensor readings to make a prediction. This is the same trained model evaluated below.":

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, screen, within } from "@testing-library/react"
+import { cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react"
 import { afterEach, expect, test, vi } from "vitest"
 import { GptToChatGptLesson } from "./gpt-to-chatgpt"
 import { fakeServer, HEALTH, renderLesson } from "./test-utils"
@@ -68,4 +68,70 @@ test("the answers stay with the input that produced them", async () => {
     panel("01 Foundation").getAllByText("What is the capital of France?").length,
   ).toBeGreaterThan(0)
   expect(panel("01 Foundation").queryByText(/Something else/)).toBeNull()
+})
+
+const toyRun = (stage: string) => ({
+  run_id: `r-${stage}`,
+  corpus: "all",
+  step: 800,
+  max_steps: 2000,
+  params: 48000,
+  vocab_size: 560,
+  context_len: 32,
+  random_guess_loss: 6.3,
+  history: [],
+  stage,
+  sft_history: [],
+  rm_history: [],
+  ppo_history: [],
+  student_pairs: 0,
+  has_reward_model: false,
+  execution_mode: "real",
+})
+
+test("the toy lineage row generates one prompt from the three committed checkpoints", async () => {
+  const fake = fakeServer({
+    "/health": () => HEALTH,
+    "/genai/toy/alignment": () => ({
+      demonstrations: [],
+      held_out: [
+        { prompt: "Question: What is the capital of Italy? Answer:", completion: " Rome." },
+      ],
+      prompts: [
+        {
+          id: "france",
+          prompt: "Question: What is the capital of France? Answer:",
+          candidates: [],
+          honest: [],
+        },
+      ],
+    }),
+    "/genai/toy/runs": (body) => toyRun((body as { stage: string }).stage),
+    "/genai/toy/runs/r-pretrained/generate": () => ({
+      model: "toy-gpt",
+      steps: [{ token: " noite", prob: 0.3, top_k: [] }],
+    }),
+    "/genai/toy/runs/r-sft/generate": () => ({
+      model: "toy-gpt",
+      steps: [{ token: " Paris", prob: 0.9, top_k: [] }],
+    }),
+    "/genai/toy/runs/r-rlhf/generate": () => ({
+      model: "toy-gpt",
+      steps: [{ token: " Paris", prob: 0.95, top_k: [] }],
+    }),
+  })
+  await renderLesson(GptToChatGptLesson)
+  fireEvent.click(await screen.findByRole("button", { name: "Run the toy lineage" }))
+  const lineage = panel("Same lineage, toy scale")
+  expect(await lineage.findByText("noite")).toBeTruthy()
+  expect(lineage.getAllByText("Paris")).toHaveLength(2)
+  expect(fake.posts("/genai/toy/runs").map((b) => (b as { stage: string }).stage)).toEqual([
+    "pretrained",
+    "sft",
+    "rlhf",
+  ])
+  // A second click reuses the three runs instead of loading three more checkpoints.
+  fireEvent.click(screen.getByRole("button", { name: "Run the toy lineage" }))
+  await waitFor(() => expect(fake.posts("/genai/toy/runs/r-rlhf/generate")).toHaveLength(2))
+  expect(fake.posts("/genai/toy/runs")).toHaveLength(3)
 })

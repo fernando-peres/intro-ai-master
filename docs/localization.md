@@ -1,8 +1,10 @@
 # Lesson Languages
 
-The Programming vs ML and Machine Learning chapters, and the Neural Networks
-Perceptron and Back-propagation lessons, support English (`en-US`) and Brazilian Portuguese
-(`pt-BR`). The lesson breadcrumb exposes `EN-US` and `PT-BR` buttons.
+The Programming vs ML and Machine Learning chapters, the Neural Networks
+Perceptron and Back-propagation lessons, and the Generative AI Transformers group
+(Architecture, Pretraining, Post-training, plus the lineage row in GPT → ChatGPT) support
+English (`en-US`) and Brazilian Portuguese (`pt-BR`). The Generative AI chapter's sidebar
+titles are translated, the Training Intuition group included; its other lessons keep English bodies. The lesson breadcrumb exposes `EN-US` and `PT-BR` buttons.
 English is the default; the selection is saved in browser
 storage under `ai-intro-language` and survives refreshes and navigation.
 
@@ -13,7 +15,9 @@ translated lessons retain their English content.
 
 ## Maintaining Copy
 
-`apps/ai-intro/src/i18n/pt-br.ts` maps English copy to Brazilian Portuguese.
+`apps/ai-intro/src/i18n/pt-br.ts` maps English copy to Brazilian Portuguese; the Transformers
+group's entries live in `pt-br-transformers.ts` and are spread into that map. A test scans
+those lessons' `t()` literals and fails when one has no entry.
 Lesson components use `useTranslation().t` for visible strings. English strings
 are also the fallback for missing entries. Whitespace is normalized for lookup;
 surrounding whitespace is preserved when rendering. Dynamic strings use

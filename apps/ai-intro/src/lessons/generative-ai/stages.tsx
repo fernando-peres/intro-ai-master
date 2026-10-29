@@ -1,5 +1,6 @@
 import { ServerOffIcon } from "lucide-react"
 import { useTranslation } from "@/i18n/use-translation"
+import { cn } from "@/lib/utils"
 import { OFFLINE, useHealth } from "./api"
 
 export type StageId = "foundation" | "adaptation" | "assistant"
@@ -44,11 +45,17 @@ export const stage = (id: StageId) => STAGES.find((s) => s.id === id) ?? STAGES[
 
 const START_COMMAND = "uv run fastapi dev apps/algo-server/src/algo_server/main.py"
 
-/** Says which models answer, or how to start the server when it is unreachable. */
-export function ServerNotice({ needsAssistant = false }: { needsAssistant?: boolean }) {
+/** Says which models answer, or how to start the server when it is unreachable; `quiet` only warns. */
+export function ServerNotice({
+  needsAssistant = false,
+  quiet = false,
+}: {
+  needsAssistant?: boolean
+  quiet?: boolean
+}) {
   const { t } = useTranslation()
   const health = useHealth()
-  if (health.isPending) return null
+  if (health.isPending || (quiet && !health.isError)) return null
   if (health.isError) {
     return (
       <div
@@ -93,6 +100,24 @@ export function RequestError({ error }: { error: Error | null }) {
         ? t("Could not reach the model server. Is it running?")
         : error.message}
     </p>
+  )
+}
+
+export type ExecutionMode = "real" | "simulation" | "historical" | "conceptual"
+
+/** Says where a panel's numbers come from: a live model, toy numbers, or an authored illustration. */
+export function ModeBadge({ mode, note }: { mode: ExecutionMode; note?: string }) {
+  const { t } = useTranslation()
+  const copy = {
+    real: { label: t("real"), className: "border-chart-warm text-chart-warm" },
+    simulation: { label: t("simulation"), className: "border-chart-amber text-chart-amber" },
+    historical: { label: t("historical illustration"), className: "border-line text-fg-muted" },
+    conceptual: { label: t("conceptual illustration"), className: "border-line text-fg-muted" },
+  }[mode]
+  return (
+    <span className={cn("label-ui rounded-[2px] border px-1.5 py-0.5", copy.className)}>
+      {note ? `${copy.label} · ${note}` : copy.label}
+    </span>
   )
 }
 

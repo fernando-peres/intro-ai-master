@@ -137,7 +137,9 @@ export function FoundationModelsLesson({ entry }: { entry: LessonEntry }) {
           )}
         </Takeaway>
         <p className="text-sm text-fg-muted">
-          {t("Try it in the")} <LabLink lesson="next-token-lab">{t("Next Token")}</LabLink>.
+          {t("Try it in the")} <LabLink lesson="next-token-lab">{t("Next Token")}</LabLink>
+          {t(", and see the network that computes these probabilities in")}{" "}
+          <LabLink lesson="transformer-architecture">{t("Transformers › Architecture")}</LabLink>.
         </p>
       </section>
 
