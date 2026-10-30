@@ -1,4 +1,4 @@
-"""ORM models for locations, artifacts, versions, reviews, users and audit events.
+"""ORM models for locations, artifacts, versions, reviews, assets, users and audit events.
 
 Database constraints back the versioning invariants that services enforce: a draft has no
 version number and a non-draft always has one, numbers are unique per (artifact, locale),
@@ -279,3 +279,25 @@ class FlowStep(Base):
     presenter_note: Mapped[str | None] = mapped_column(Text)
     advance_seconds: Mapped[int | None] = mapped_column(Integer)
     theme_override: Mapped[str | None] = mapped_column(String(32))
+
+
+class Asset(Base):
+    """A file attached to an artifact root (its Resources); the bytes live in `AssetStorage`."""
+
+    __tablename__ = "assets"
+    __table_args__ = (UniqueConstraint("artifact_id", "name", name="uq_assets_artifact_name"),)
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(ForeignKey("artifacts.id"), index=True)
+    name: Mapped[str] = mapped_column(Text)
+    mime_type: Mapped[str] = mapped_column(String(127))
+    size_bytes: Mapped[int] = mapped_column(Integer)
+    #: sha256 hex of the stored bytes.
+    checksum: Mapped[str] = mapped_column(String(64))
+    storage_key: Mapped[str] = mapped_column(Text, unique=True)
+    #: Bumped on every content or name change; the ETag clients send back in If-Match.
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    created_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    updated_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = _created()
+    updated_at: Mapped[datetime] = _updated()

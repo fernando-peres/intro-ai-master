@@ -28,7 +28,7 @@ export const ARTIFACT_TYPES: ArtifactTypeInfo[] = [
     description: "A single deck slide with title, body and diagram blocks.",
     icon: PresentationIcon,
     chip: "bg-gc-nav-bg text-gc-nav-ink",
-    ink: "text-gc-primary",
+    ink: "text-gc-primary-ink",
   },
   {
     type: "doc",

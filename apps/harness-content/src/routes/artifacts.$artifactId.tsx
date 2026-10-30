@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-r
 import { ArrowLeftIcon, ChevronDownIcon } from "lucide-react"
 import { Fragment, Suspense, useCallback, useState } from "react"
 import { toast } from "sonner"
+import { useAssets } from "@/api/assets"
 import type { Schemas } from "@/api/client"
 import {
   saveDraft,
@@ -28,6 +29,7 @@ import {
   Placeholder,
   ScriptPanel,
 } from "@/components/workspace/inspector"
+import { ResourceStage, ResourcesInspector } from "@/components/workspace/resources"
 import {
   DecideReviewDialog,
   PublishDialog,
@@ -89,6 +91,7 @@ type EditorProps = {
 
 type Draft = { content: unknown; script: string }
 type DialogKind = "submit" | "decide" | "publish" | null
+type Area = "content" | "resources"
 
 function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
   const { version, etag } = loaded
@@ -109,6 +112,10 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
   const [tab, setTab] = useState<InspectorTab>("metadata")
   const [collapsed, setCollapsed] = useState(false)
   const [dialog, setDialog] = useState<DialogKind>(null)
+  const [area, setArea] = useState<Area>("content")
+  const assets = useAssets(artifact.id).data ?? []
+  const [resourceId, setResourceId] = useState<string | null>(null)
+  const openResource = assets.find((asset) => asset.id === resourceId) ?? assets[0]
 
   const editable = canEditDraft(version, me) && validation.ok
   const save = useCallback(
@@ -168,9 +175,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
             </Link>
           )}
           <span className="text-xs text-gc-ink3">/</span>
-          <span className="truncate text-[12.5px] font-semibold text-gc-text">
-            {artifact.title}
-          </span>
+          <h1 className="truncate text-[12.5px] font-semibold text-gc-text">{artifact.title}</h1>
           <span className="rounded bg-gc-nav-bg px-[7px] py-[3px] font-mono text-[9px] tracking-[0.8px] text-gc-nav-ink uppercase">
             {info.label}
           </span>
@@ -203,82 +208,105 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
         <div className="flex min-h-0 flex-1">
           <section className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-10 shrink-0 items-center justify-between gap-4 border-b border-gc-border px-4">
-              <div className="flex h-full items-center gap-1">
-                <span className="flex h-full items-center border-b-2 border-gc-primary px-3 text-xs font-semibold text-gc-text">
-                  Content Design
-                </span>
-                <span
-                  title="Notes and files arrive in a later phase"
-                  className="flex h-full items-center px-3 text-xs text-gc-ink3"
-                >
-                  Resources
-                </span>
-              </div>
+              <AreaTabs area={area} onArea={setArea} resourceCount={assets.length} />
               {latestReview?.status === "changes_requested" && latestReview.decisionComment && (
                 <span className="truncate text-[11px] text-gc-risk-ink">
                   Changes requested: {latestReview.decisionComment}
                 </span>
               )}
             </div>
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3.5 bg-gc-sunken p-6">
-              <Suspense fallback={<Caption>Loading editor…</Caption>}>
-                {!validation.ok ? (
-                  <div role="alert" className="max-w-xl text-[11.5px] text-gc-fail-ink">
-                    <p className="font-semibold">
-                      This content does not match the {info.label} schema:
-                    </p>
-                    <ul className="mt-2 list-disc pl-5">
-                      {validation.issues.map((issue) => (
-                        <li key={issue}>{issue}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : preview ? (
-                  <plugin.Renderer content={draft.content} />
-                ) : (
-                  <plugin.Editor {...editorProps} />
-                )}
-              </Suspense>
-              <Caption className="tracking-[0.8px]">
-                Reusable artifact · {plugin.stageLabel ?? info.label} · {version.locale}{" "}
-                {version.versionNumber ? `v${version.versionNumber}` : "draft"}
-              </Caption>
-            </div>
+            {area === "resources" ? (
+              <div
+                id="area-resources"
+                role="tabpanel"
+                aria-labelledby="tab-resources"
+                className="flex min-h-0 flex-1 flex-col"
+              >
+                <ResourceStage
+                  artifactId={artifact.id}
+                  asset={openResource}
+                  readOnly={!me || me.role === "viewer"}
+                  onDeleted={() => setResourceId(null)}
+                />
+              </div>
+            ) : (
+              <div
+                id="area-content"
+                role="tabpanel"
+                aria-labelledby="tab-content"
+                className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3.5 bg-gc-sunken p-6"
+              >
+                <Suspense fallback={<Caption>Loading editor…</Caption>}>
+                  {!validation.ok ? (
+                    <div role="alert" className="max-w-xl text-[11.5px] text-gc-fail-ink">
+                      <p className="font-semibold">
+                        This content does not match the {info.label} schema:
+                      </p>
+                      <ul className="mt-2 list-disc pl-5">
+                        {validation.issues.map((issue) => (
+                          <li key={issue}>{issue}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : preview ? (
+                    <plugin.Renderer content={draft.content} />
+                  ) : (
+                    <plugin.Editor {...editorProps} />
+                  )}
+                </Suspense>
+                <Caption className="tracking-[0.8px]">
+                  Reusable artifact · {plugin.stageLabel ?? info.label} · {version.locale}{" "}
+                  {version.versionNumber ? `v${version.versionNumber}` : "draft"}
+                </Caption>
+              </div>
+            )}
           </section>
 
-          <Inspector
-            tabs={ARTIFACT_TABS}
-            tab={tab}
-            onTab={setTab}
-            collapsed={collapsed}
-            onCollapse={setCollapsed}
-            panels={{
-              metadata: (
-                <MetadataPanel
-                  artifact={artifact}
-                  status={status}
-                  readOnly={!me || me.role === "viewer"}
-                />
-              ),
-              format: plugin.FormatPanel ? (
-                <plugin.FormatPanel {...editorProps} />
-              ) : (
-                <Placeholder>No format options for this artifact type yet.</Placeholder>
-              ),
-              script: (
-                <ScriptPanel
-                  script={draft.script}
-                  readOnly={!editable}
-                  onChange={(script) => setDraft((prev) => ({ ...prev, script }))}
-                />
-              ),
-              insert: plugin.InsertPanel ? (
-                <plugin.InsertPanel {...editorProps} />
-              ) : (
-                <Placeholder>No insertable blocks for this artifact type yet.</Placeholder>
-              ),
-            }}
-          />
+          {area === "resources" ? (
+            <ResourcesInspector
+              artifactId={artifact.id}
+              assets={assets}
+              selectedId={openResource?.id ?? null}
+              onSelect={setResourceId}
+              readOnly={!me || me.role === "viewer"}
+              collapsed={collapsed}
+              onCollapse={setCollapsed}
+            />
+          ) : (
+            <Inspector
+              tabs={ARTIFACT_TABS}
+              tab={tab}
+              onTab={setTab}
+              collapsed={collapsed}
+              onCollapse={setCollapsed}
+              panels={{
+                metadata: (
+                  <MetadataPanel
+                    artifact={artifact}
+                    status={status}
+                    readOnly={!me || me.role === "viewer"}
+                  />
+                ),
+                format: plugin.FormatPanel ? (
+                  <plugin.FormatPanel {...editorProps} />
+                ) : (
+                  <Placeholder>No format options for this artifact type yet.</Placeholder>
+                ),
+                script: (
+                  <ScriptPanel
+                    script={draft.script}
+                    readOnly={!editable}
+                    onChange={(script) => setDraft((prev) => ({ ...prev, script }))}
+                  />
+                ),
+                insert: plugin.InsertPanel ? (
+                  <plugin.InsertPanel {...editorProps} />
+                ) : (
+                  <Placeholder>No insertable blocks for this artifact type yet.</Placeholder>
+                ),
+              }}
+            />
+          )}
         </div>
 
         {dialog === "submit" && (
@@ -471,6 +499,61 @@ function TrailBanner({ flowId, step }: { flowId: string; step?: number }) {
       >
         Done
       </button>
+    </div>
+  )
+}
+
+const AREAS: { id: Area; label: string }[] = [
+  { id: "content", label: "Content Design" },
+  { id: "resources", label: "Resources" },
+]
+
+/** WAI-ARIA tabs: arrow keys move between areas, only the selected tab is in the tab order. */
+function AreaTabs({
+  area,
+  onArea,
+  resourceCount,
+}: {
+  area: Area
+  onArea: (area: Area) => void
+  resourceCount: number
+}) {
+  const move = (event: React.KeyboardEvent, index: number) => {
+    const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0
+    if (!step) return
+    event.preventDefault()
+    const next = AREAS[(index + step + AREAS.length) % AREAS.length]
+    onArea(next.id)
+    document.getElementById(`tab-${next.id}`)?.focus()
+  }
+  return (
+    <div role="tablist" aria-label="Artifact areas" className="flex h-full items-center gap-1">
+      {AREAS.map((entry, index) => (
+        <button
+          key={entry.id}
+          id={`tab-${entry.id}`}
+          type="button"
+          role="tab"
+          aria-selected={area === entry.id}
+          aria-controls={`area-${entry.id}`}
+          tabIndex={area === entry.id ? 0 : -1}
+          onClick={() => onArea(entry.id)}
+          onKeyDown={(event) => move(event, index)}
+          className={cn(
+            "flex h-full items-center gap-1.5 border-b-2 px-3 text-xs",
+            area === entry.id
+              ? "border-gc-primary font-semibold text-gc-text"
+              : "border-transparent text-gc-ink3 hover:text-gc-ink2",
+          )}
+        >
+          {entry.label}
+          {entry.id === "resources" && resourceCount > 0 && (
+            <span className="rounded-[3px] bg-gc-sunken px-[5px] font-mono text-[8.5px] text-gc-ink2">
+              {resourceCount}
+            </span>
+          )}
+        </button>
+      ))}
     </div>
   )
 }

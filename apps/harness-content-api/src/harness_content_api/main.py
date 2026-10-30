@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from harness_content_api.db import get_session
 from harness_content_api.errors import DomainError
-from harness_content_api.routes import artifacts, flows, locations, reviews, users
+from harness_content_api.routes import artifacts, assets, flows, locations, reviews, users
 
 app = FastAPI(title="harness-content-api")
 app.include_router(users.router)
@@ -17,6 +17,7 @@ app.include_router(locations.router)
 app.include_router(artifacts.router)
 app.include_router(reviews.router)
 app.include_router(flows.router)
+app.include_router(assets.router)
 
 
 @app.exception_handler(DomainError)

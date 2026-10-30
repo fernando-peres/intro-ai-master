@@ -35,7 +35,7 @@ function NotFound() {
   return (
     <div className="flex flex-col gap-4 p-14">
       <h1 className="text-2xl font-medium">Page not found</h1>
-      <Link to="/" className="text-sm text-gc-primary underline-offset-4 hover:underline">
+      <Link to="/" className="text-sm text-gc-primary-ink underline-offset-4 hover:underline">
         Back to artifact search
       </Link>
     </div>

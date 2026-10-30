@@ -26,18 +26,26 @@ def test_create_makes_root_and_first_draft(api):
 
 
 def test_published_isolation(api):
-    """DoD 1: editing a successor draft never changes the published snapshot."""
+    """DoD 1: a recoloured successor draft never changes the snapshot a trail pins."""
     created = api.artifact(content=V1)
     artifact_id, draft_id = created["artifact"]["id"], created["draft"]["id"]
     v1 = api.ship(draft_id)
     assert (v1["versionNumber"], v1["state"], v1["isDefault"]) == (1, "published", True)
 
+    flow_id = api.flow()
+    step = {"artifactId": artifact_id, "locale": "en", "artifactVersionId": draft_id}
+    api.set_steps(flow_id, [step])
+    revision_id = api.publish_flow(flow_id).json()["id"]
+
     successor = api.fork(artifact_id, draft_id)
     assert successor["parentVersionId"] == draft_id
-    api.edit(successor["id"], V2)
+    recoloured = _slide("v2")
+    recoloured["elements"][0]["style"] = {"color": "#E5484D"}
+    api.edit(successor["id"], recoloured)
 
     reread = api.get("usr_viewer", f"/api/v1/artifact-versions/{draft_id}").json()
     assert reread["content"] == V1
+    assert api.play(flow_id, revision_id)["steps"][0]["version"]["content"] == V1
     resolved = api.get("usr_viewer", f"/api/v1/artifacts/{artifact_id}/resolve?locale=en")
     assert resolved.json()["id"] == draft_id
 

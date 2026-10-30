@@ -541,6 +541,89 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/assets": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Upload Asset
+     * @description Multipart upload (≤ 20 MB) attached to an artifact; 422 `unsupported_file` otherwise.
+     */
+    post: operations["upload_asset_api_v1_assets_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/artifacts/{artifact_id}/assets": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Assets */
+    get: operations["list_assets_api_v1_artifacts__artifact_id__assets_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/assets/{asset_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Asset */
+    get: operations["get_asset_api_v1_assets__asset_id__get"]
+    put?: never
+    post?: never
+    /**
+     * Delete Asset
+     * @description 409 `asset_in_use` while any version's content references it.
+     */
+    delete: operations["delete_asset_api_v1_assets__asset_id__delete"]
+    options?: never
+    head?: never
+    /** Rename Asset */
+    patch: operations["rename_asset_api_v1_assets__asset_id__patch"]
+    trace?: never
+  }
+  "/api/v1/assets/{asset_id}/content": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Asset Content
+     * @description The stored bytes. Never rendered as a page: sandboxed, no sniffing.
+     */
+    get: operations["asset_content_api_v1_assets__asset_id__content_get"]
+    /**
+     * Write Asset Text
+     * @description Replaces a text resource (markdown note); needs If-Match.
+     */
+    put: operations["write_asset_text_api_v1_assets__asset_id__content_put"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/health": {
     parameters: {
       query?: never
@@ -765,6 +848,41 @@ export interface components {
       /** Resources */
       resources?: unknown[] | null
     }
+    /** AssetOut */
+    AssetOut: {
+      /** Id */
+      id: string
+      /** Artifactid */
+      artifactId: string
+      /** Name */
+      name: string
+      /** Mimetype */
+      mimeType: string
+      /** Sizebytes */
+      sizeBytes: number
+      /** Checksum */
+      checksum: string
+      /** Revision */
+      revision: number
+      /** Createdby */
+      createdBy: string
+      /** Updatedby */
+      updatedBy: string
+      /** Createdat */
+      createdAt: string
+      /** Updatedat */
+      updatedAt: string
+    }
+    /** AssetRename */
+    AssetRename: {
+      /** Name */
+      name: string
+    }
+    /** AssetText */
+    AssetText: {
+      /** Text */
+      text: string
+    }
     /** BehindReport */
     BehindReport: {
       /** Revisionid */
@@ -797,6 +915,13 @@ export interface components {
       defaultNumber: number | null
       /** Behind */
       behind: boolean
+    }
+    /** Body_upload_asset_api_v1_assets_post */
+    Body_upload_asset_api_v1_assets_post: {
+      /** Artifactid */
+      artifactId: string
+      /** File */
+      file: string
     }
     /** DraftCreate */
     DraftCreate: {
@@ -2683,6 +2808,247 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["Playback"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  upload_asset_api_v1_assets_post: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_asset_api_v1_assets_post"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AssetOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_assets_api_v1_artifacts__artifact_id__assets_get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        artifact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AssetOut"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_asset_api_v1_assets__asset_id__get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        asset_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AssetOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_asset_api_v1_assets__asset_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        asset_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  rename_asset_api_v1_assets__asset_id__patch: {
+    parameters: {
+      query?: never
+      header?: {
+        "if-match"?: string | null
+        "x-user-id"?: string | null
+      }
+      path: {
+        asset_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssetRename"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AssetOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  asset_content_api_v1_assets__asset_id__content_get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        asset_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/octet-stream": unknown
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  write_asset_text_api_v1_assets__asset_id__content_put: {
+    parameters: {
+      query?: never
+      header?: {
+        "if-match"?: string | null
+        "x-user-id"?: string | null
+      }
+      path: {
+        asset_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssetText"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["AssetOut"]
         }
       }
       /** @description Validation Error */

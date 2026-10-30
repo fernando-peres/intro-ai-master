@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 const CALLOUT_TONES = {
   note: { icon: InfoIcon, label: "Note", ink: "text-gc-done-base" },
   warning: { icon: OctagonAlertIcon, label: "Warning", ink: "text-gc-risk-base" },
-  rule: { icon: ScaleIcon, label: "Rule", ink: "text-gc-primary" },
+  rule: { icon: ScaleIcon, label: "Rule", ink: "text-gc-primary-ink" },
 } as const satisfies Record<(typeof CALLOUT_TONE_IDS)[number], unknown>
 type CalloutTone = keyof typeof CALLOUT_TONES
 const TONE_ORDER = Object.keys(CALLOUT_TONES) as CalloutTone[]

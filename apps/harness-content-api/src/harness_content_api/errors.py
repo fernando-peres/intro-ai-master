@@ -35,3 +35,7 @@ class PreconditionRequired(DomainError):
 
 class PreconditionFailed(DomainError):
     status_code = 412
+
+
+class TooLarge(DomainError):
+    status_code = 413

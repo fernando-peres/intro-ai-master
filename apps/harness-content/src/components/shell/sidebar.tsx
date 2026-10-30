@@ -248,15 +248,15 @@ function Row({ icon: Icon, label, right, disabled }: RowProps) {
   return (
     <div
       title={disabled ? "Coming later" : undefined}
-      className={cn(
-        "flex h-[23px] items-center justify-between rounded-md px-2",
-        disabled && "opacity-60",
-      )}
+      aria-disabled={disabled || undefined}
+      className="flex h-[23px] items-center justify-between rounded-md px-2"
     >
       <span className="flex min-w-0 items-center gap-1.5">
         <span className="size-2.5 shrink-0" />
-        <Icon className="size-[11px] shrink-0 text-gc-ink3" />
-        <span className="truncate text-[11px] text-gc-ink2">{label}</span>
+        <Icon aria-hidden className="size-[11px] shrink-0 text-gc-ink3" />
+        <span className={cn("truncate text-[11px]", disabled ? "text-gc-ink3" : "text-gc-ink2")}>
+          {label}
+        </span>
       </span>
       {right && <span className="font-mono text-[8.5px] text-gc-ink3">{right}</span>}
     </div>

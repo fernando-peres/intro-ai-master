@@ -271,7 +271,7 @@ function ImportField({ json, detected, issues, onJson, onFile }: ImportFieldProp
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <Caption className="text-[9px]">Structured JSON (content or version envelope)</Caption>
-        <label className="cursor-pointer text-[10.5px] text-gc-primary hover:underline">
+        <label className="cursor-pointer text-[10.5px] text-gc-primary-ink hover:underline">
           Load .json file
           <input
             type="file"

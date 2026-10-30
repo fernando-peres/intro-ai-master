@@ -104,7 +104,7 @@ function StepRow({
         disabled={readOnly}
         className={cn(
           "relative z-10 cursor-grab touch-none disabled:cursor-default disabled:opacity-40",
-          selected ? "text-gc-primary" : "text-gc-ink3",
+          selected ? "text-gc-primary-ink" : "text-gc-ink3",
         )}
         {...sortable.attributes}
         {...sortable.listeners}

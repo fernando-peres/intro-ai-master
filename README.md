@@ -6,7 +6,8 @@ Introduction to AI: a polyglot monorepo (Python, Node, React).
 apps/                    deployable apps; may depend on packages/*
   algo-server/           FastAPI service (Python 3.14)
   ai-intro/              React app (Vite, pnpm)
-  harness-content-api/   FastAPI + PostgreSQL service for the Reusable Artifacts Studio
+  harness-content/       React app: the Reusable Artifacts Studio (Vite, pnpm)
+  harness-content-api/   FastAPI + PostgreSQL service behind harness-content
 packages/                reusable libraries; never depend on apps/*
   algo/                  Python 3.14 package
   genai/                 Python 3.14: GPT-2 base model, prompts, OpenAI assistant
@@ -56,4 +57,15 @@ pnpm --filter ai-intro dev                                    # :5173, proxies /
 
 The Embeddings lab (chapter 05) runs two more real models: GloVe 6B 300d (~480 MB) and all-MiniLM-L6-v2 (~90 MB), downloaded on first use. With GPT-2 the server holds about 1.1 GB in memory. Set `HF_HOME` to move the Hugging Face cache.
 
-Per-project docs: [algo-server](apps/algo-server/README.md) · [ai-intro](apps/ai-intro/README.md) · [harness-content-api](apps/harness-content-api/README.md) · [algo](packages/algo/README.md) · [genai](packages/genai/README.md)
+## Reusable Artifacts Studio
+
+`harness-content` and `harness-content-api` together build versioned, localized docs, slides and animations, and the trails that pin them. The architecture is described in [docs/harness-content.md](docs/harness-content.md). To run them:
+
+```bash
+docker compose -f apps/harness-content-api/docker-compose.yml up -d
+uv run alembic -c apps/harness-content-api/alembic.ini upgrade head && uv run python -m harness_content_api.seed
+uv run fastapi dev apps/harness-content-api/src/harness_content_api/main.py   # :8000
+pnpm --filter harness-content dev                                             # :5173, proxies /api to :8000
+```
+
+Per-project docs: [algo-server](apps/algo-server/README.md) · [ai-intro](apps/ai-intro/README.md) · [harness-content](apps/harness-content/README.md) · [harness-content-api](apps/harness-content-api/README.md) · [algo](packages/algo/README.md) · [genai](packages/genai/README.md)

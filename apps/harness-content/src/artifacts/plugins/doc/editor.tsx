@@ -24,6 +24,7 @@ function useDocBlockNote(content: DocContent) {
   return useCreateBlockNote({
     schema: docEditorSchema,
     initialContent: content.blocks.length ? (content.blocks as DocPartialBlock[]) : undefined,
+    domAttributes: { editor: { "aria-label": "Document content" } },
   })
 }
 

@@ -14,6 +14,8 @@
 /*
  * Generated from harness-sigmma.pen variables: gc-d-* / gc-l-* (studio chrome) and the six
  * content themes (bg, accent, … per mode), which artifact renderers read via data-content-theme.
+ * Deviations from the .pen values, for WCAG AA text contrast (src/lib/contrast.test.ts):
+ * gc-ink3 (both modes), gc-warn-chip-ink (light), and gc-primary-ink, primary as text.
  */
 [data-theme="graphite-dark"] {
   --gc-page: #121214;
@@ -23,11 +25,12 @@
   --gc-divider: #232327;
   --gc-text: #fafafa;
   --gc-ink2: #a1a1aa;
-  --gc-ink3: #71717a;
+  --gc-ink3: #8a8a94;
   --gc-nav-bg: #4a3c7d;
   --gc-nav-ink: #ffffff;
   --gc-row-bg: #241f38;
   --gc-primary: #6d5bd0;
+  --gc-primary-ink: #8b7be0;
   --gc-on-solid: #ffffff;
   --gc-fail-tint: #40201a;
   --gc-fail-base: #d97a66;
@@ -55,11 +58,12 @@
   --gc-divider: #ededef;
   --gc-text: #18181b;
   --gc-ink2: #52525b;
-  --gc-ink3: #a1a1aa;
+  --gc-ink3: #6b6b74;
   --gc-nav-bg: #ede9f8;
   --gc-nav-ink: #3b2e80;
   --gc-row-bg: #f4f1fc;
   --gc-primary: #3a3263;
+  --gc-primary-ink: #3a3263;
   --gc-on-solid: #ffffff;
   --gc-fail-tint: #f7dad4;
   --gc-fail-base: #c2614f;
@@ -76,7 +80,7 @@
   --gc-done-tint: #d8e7f7;
   --gc-done-base: #4c8fd6;
   --gc-done-ink: #1e4c83;
-  --gc-warn-chip-ink: #4a3e0b;
+  --gc-warn-chip-ink: #3d330a;
 }
 
 [data-content-theme="dark"] {
@@ -207,6 +211,7 @@
   --color-gc-nav-ink: var(--gc-nav-ink);
   --color-gc-row-bg: var(--gc-row-bg);
   --color-gc-primary: var(--gc-primary);
+  --color-gc-primary-ink: var(--gc-primary-ink);
   --color-gc-on-solid: var(--gc-on-solid);
   --color-gc-fail-tint: var(--gc-fail-tint);
   --color-gc-fail-base: var(--gc-fail-base);

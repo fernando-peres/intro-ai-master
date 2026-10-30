@@ -73,7 +73,7 @@ export function AnimationInsertPanel({
               >
                 <span className="flex items-center justify-between text-[11.5px] font-semibold text-gc-text">
                   {template.label}
-                  {active && <CheckIcon className="size-3 text-gc-primary" />}
+                  {active && <CheckIcon className="size-3 text-gc-primary-ink" />}
                 </span>
                 <span className="text-[10.5px] text-gc-ink3">{template.description}</span>
                 <span className="font-mono text-[8.5px] tracking-[0.5px] text-gc-ink3">

@@ -61,6 +61,12 @@ Every `/api/v1` request names a user in `X-User-Id`; unknown or missing → `401
 | `GET /flows/{id}/revisions`, `GET /flows/{id}/revisions/{revisionId}` | |
 | `GET /flows/{id}/behind?revisionId=` | pinned version vs current default per step (default: the draft, else the latest published) |
 | `GET /flows/{id}/revisions/{revisionId}/play` | published revisions only; archived pinned versions still play |
+| `POST /assets` | multipart `artifactId` + `file`; at most 20 MB, `413` above; `.md .txt .csv .pdf .png .jpg .gif .webp`. The bytes must match the extension (`422 unsupported_file`); names are unique per artifact (`409 asset_name_taken`) |
+| `GET /artifacts/{id}/assets`, `GET /assets/{id}` | the artifact's resources (shared by all locales and versions); `ETag` is the asset revision |
+| `GET /assets/{id}/content` | the bytes with `nosniff` and a sandbox CSP; images and PDFs are served `inline`, everything else as `attachment` |
+| `PUT /assets/{id}/content` | `{text}` replaces a text resource (a markdown note); `If-Match` required |
+| `PATCH /assets/{id}` | `{name}` renames it (same file type); `If-Match` required |
+| `DELETE /assets/{id}` | `409 asset_in_use` (with `versions`) while any version's content mentions the asset id |
 
 Errors are `{"detail", "code", ...}`; timestamps are UTC `YYYY-MM-DD-HH-mm-ss`.
 
@@ -74,6 +80,9 @@ Content is checked on create, import, draft save and publish against `src/harnes
 |---|---|---|
 | `HARNESS_DATABASE_URL` | `postgresql+psycopg://harness:harness@localhost:5433/harness` | app, Alembic |
 | `HARNESS_TEST_DATABASE_URL` | same server, database `harness_test` | tests |
+| `HARNESS_ASSET_DIR` | `apps/harness-content-api/var/assets` (git-ignored) | `LocalDiskStorage` |
+
+Asset bytes go through the `AssetStorage` protocol (`services/storage.py`: `put`, `get`, `delete`), so an S3 implementation can replace local disk by changing `get_storage`. A file is written before the database commit and the old file is deleted after it, so a failed request can leave an orphan file, but never a row without its bytes.
 
 ## Test
 

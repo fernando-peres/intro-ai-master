@@ -149,7 +149,7 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
           Trails
         </Link>
         <span className="text-xs text-gc-ink3">/</span>
-        <span className="truncate text-[12.5px] font-semibold text-gc-text">{flow.title}</span>
+        <h1 className="truncate text-[12.5px] font-semibold text-gc-text">{flow.title}</h1>
         <span className="rounded bg-gc-nav-bg px-[7px] py-[3px] font-mono text-[9px] tracking-[0.8px] text-gc-nav-ink uppercase">
           Trail
         </span>

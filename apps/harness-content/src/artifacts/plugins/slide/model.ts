@@ -7,7 +7,8 @@ export const SLIDE_THEMES = {
   dark: {
     label: "Dark",
     background: { kind: "gradient", from: "#2E2750", to: "#14131C", angle: 125 },
-    accent: "#6D5BD0",
+    // Lighter than the .pen #6D5BD0, which is under 3:1 on the gradient's top stop.
+    accent: "#8B7BE0",
     text: "#F4F2FB",
     body: "#C3BCDC",
     muted: "#9D93C9",

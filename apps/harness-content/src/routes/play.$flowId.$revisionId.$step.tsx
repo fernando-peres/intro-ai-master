@@ -140,7 +140,7 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
           />
         </header>
       ) : (
-        <div className="pointer-events-none absolute inset-x-4 top-4 z-20 flex items-center justify-between">
+        <header className="pointer-events-none absolute inset-x-4 top-4 z-20 flex items-center justify-between">
           <span className="pointer-events-auto flex h-[30px] items-center gap-[9px] rounded-lg border border-[#FFFFFF24] bg-[#15141Ddd] px-3">
             <RouteIcon className="size-3 text-[#B9B1DC]" />
             <span className="text-[11.5px] font-semibold text-[#F0EEF8]">{flow.title}</span>
@@ -157,7 +157,7 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
               <Minimize2Icon />
             </OverlayButton>
           </span>
-        </div>
+        </header>
       )}
 
       <div className="flex min-h-0 flex-1">
@@ -168,6 +168,9 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
             isDoc ? "overflow-y-auto" : "px-6 pt-16 pb-24",
           )}
         >
+          <h1 className="sr-only">
+            {flow.title}, step {index + 1} of {total}: {title}
+          </h1>
           <StepRenderer
             type={current.artifact.type}
             content={current.version.content}
@@ -208,7 +211,10 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
       </div>
 
       {!isDoc && (
-        <div className="absolute bottom-5 left-1/2 z-20 flex h-[46px] w-[400px] max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-[11px] rounded-xl border border-[#FFFFFF24] bg-[#15141Ddd] px-3">
+        <nav
+          aria-label="Trail controls"
+          className="absolute bottom-5 left-1/2 z-20 flex h-[46px] w-[400px] max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-[11px] rounded-xl border border-[#FFFFFF24] bg-[#15141Ddd] px-3"
+        >
           <button
             type="button"
             aria-label="Previous step"
@@ -256,19 +262,21 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
           >
             <ChevronRightIcon className="size-4" />
           </button>
-        </div>
+        </nav>
       )}
 
-      <div
-        role="progressbar"
-        aria-label="Trail progress"
-        aria-valuemin={1}
-        aria-valuemax={total}
-        aria-valuenow={index + 1}
-        className="h-[3px] shrink-0 bg-[#FFFFFF1A]"
-      >
-        <div className="h-full bg-gc-primary" style={{ width: `${progress}%` }} />
-      </div>
+      <footer className="shrink-0">
+        <div
+          role="progressbar"
+          aria-label="Trail progress"
+          aria-valuemin={1}
+          aria-valuemax={total}
+          aria-valuenow={index + 1}
+          className="h-[3px] bg-[#FFFFFF1A]"
+        >
+          <div className="h-full bg-gc-primary" style={{ width: `${progress}%` }} />
+        </div>
+      </footer>
     </div>
   )
 }

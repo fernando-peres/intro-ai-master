@@ -357,3 +357,25 @@ class Playback(ApiModel):
     flow: PlayFlow
     revision: RevisionSummary
     steps: list[PlayStep]
+
+
+class AssetOut(ApiModel):
+    id: str
+    artifact_id: str
+    name: str
+    mime_type: str
+    size_bytes: int
+    checksum: str
+    revision: int
+    created_by: str
+    updated_by: str
+    created_at: Stamp
+    updated_at: Stamp
+
+
+class AssetRename(ApiModel):
+    name: str = Field(min_length=1)
+
+
+class AssetText(ApiModel):
+    text: str
