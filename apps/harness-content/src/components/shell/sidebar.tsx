@@ -43,73 +43,78 @@ export function Sidebar() {
       aria-label="Library"
       className="flex w-[224px] shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-gc-border bg-gc-raised py-2"
     >
-      <SectionHeader label="Artifacts" onAdd={() => newLocation()} addLabel="New box" />
-      {tree.length === 0 && <EmptyRow>No boxes yet</EmptyRow>}
-      {tree.map((node) => (
-        <LocationBranch key={node.location.id} node={node} />
-      ))}
+      <Section label="Artifacts" onAdd={() => newLocation()} addLabel="New box">
+        {tree.length === 0 && <EmptyRow>No boxes yet</EmptyRow>}
+        {tree.map((node) => (
+          <LocationBranch key={node.location.id} node={node} />
+        ))}
+      </Section>
 
       <Spacer />
-      <SectionHeader label="Reviews" />
-      <Link to="/reviews" className="rounded-md [&.active]:bg-gc-row-bg">
-        <Row icon={InboxIcon} label="Review inbox" right={String(pending)} />
-      </Link>
-
-      <Spacer />
-      <SectionHeader label="Trails" onAdd={newTrail} addLabel="New trail" />
-      {flows.length === 0 && <EmptyRow>No trails yet</EmptyRow>}
-      {flows.map((flow) => (
-        <Link
-          key={flow.id}
-          to="/trails/$flowId"
-          params={{ flowId: flow.id }}
-          className="rounded-md [&.active]:bg-gc-row-bg"
-        >
-          <Row icon={RouteIcon} label={flow.title} right={String(flow.stepCount)} />
+      <Section label="Reviews">
+        <Link to="/reviews" className="rounded-md [&.active]:bg-gc-row-bg">
+          <Row icon={InboxIcon} label="Review inbox" right={String(pending)} />
         </Link>
-      ))}
+      </Section>
 
       <Spacer />
-      <SectionHeader label="Themes" />
-      {STUDIO_THEMES.map((option) => {
-        const selected = theme === option.id
-        return (
-          <button
-            key={option.id}
-            type="button"
-            aria-pressed={selected}
-            onClick={() => setTheme(option.id)}
-            className={cn(
-              "flex h-[23px] items-center gap-2 rounded-md px-2 text-left",
-              selected && "bg-gc-row-bg",
-            )}
+      <Section label="Trails" onAdd={newTrail} addLabel="New trail">
+        {flows.length === 0 && <EmptyRow>No trails yet</EmptyRow>}
+        {flows.map((flow) => (
+          <Link
+            key={flow.id}
+            to="/trails/$flowId"
+            params={{ flowId: flow.id }}
+            className="rounded-md [&.active]:bg-gc-row-bg"
           >
-            <span className="flex items-center gap-0.5 pl-2.5">
-              {option.swatches.map((color) => (
-                <span
-                  key={color}
-                  className="h-3 w-[5px] rounded-[1.5px]"
-                  style={{ background: color }}
-                />
-              ))}
-            </span>
-            <span
+            <Row icon={RouteIcon} label={flow.title} right={String(flow.stepCount)} />
+          </Link>
+        ))}
+      </Section>
+
+      <Spacer />
+      <Section label="Themes">
+        {STUDIO_THEMES.map((option) => {
+          const selected = theme === option.id
+          return (
+            <button
+              key={option.id}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => setTheme(option.id)}
               className={cn(
-                "text-[11px]",
-                selected ? "font-semibold text-gc-nav-ink" : "text-gc-ink2",
+                "flex h-[23px] items-center gap-2 rounded-md px-2 text-left",
+                selected && "bg-gc-row-bg",
               )}
             >
-              {option.label}
-            </span>
-          </button>
-        )
-      })}
+              <span className="flex items-center gap-0.5 pl-2.5">
+                {option.swatches.map((color) => (
+                  <span
+                    key={color}
+                    className="h-3 w-[5px] rounded-[1.5px]"
+                    style={{ background: color }}
+                  />
+                ))}
+              </span>
+              <span
+                className={cn(
+                  "text-[11px]",
+                  selected ? "font-semibold text-gc-nav-ink" : "text-gc-ink2",
+                )}
+              >
+                {option.label}
+              </span>
+            </button>
+          )
+        })}
+      </Section>
 
       <Spacer />
-      <SectionHeader label="Configuration" />
-      <Row icon={LayersIcon} label="Component registry" disabled />
-      <Row icon={GlobeIcon} label="Locales & versions" disabled />
-      <Row icon={ShieldIcon} label="Roles & access" disabled />
+      <Section label="Configuration">
+        <Row icon={LayersIcon} label="Component registry" disabled />
+        <Row icon={GlobeIcon} label="Locales & versions" disabled />
+        <Row icon={ShieldIcon} label="Roles & access" disabled />
+      </Section>
     </nav>
   )
 }
@@ -215,30 +220,46 @@ function LocationBranch({ node }: { node: LibraryNode }) {
   )
 }
 
-function SectionHeader({
+function Section({
   label,
   onAdd,
   addLabel,
+  children,
 }: {
   label: string
   onAdd?: () => void
   addLabel?: string
+  children: ReactNode
 }) {
+  const [open, setOpen] = useState(true)
+  const Chevron = open ? ChevronDownIcon : ChevronRightIcon
+
   return (
-    <div className="flex h-[22px] items-center justify-between px-2">
-      <span className="font-mono text-[9px] tracking-[1px] text-gc-ink3 uppercase">{label}</span>
-      {onAdd && (
+    <>
+      <div className="flex h-[22px] shrink-0 items-center justify-between px-2">
         <button
           type="button"
-          aria-label={addLabel}
-          title={addLabel}
-          onClick={onAdd}
-          className="flex size-4 items-center justify-center rounded border border-gc-border bg-gc-sunken text-gc-ink2 hover:text-gc-text"
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+          className="flex min-w-0 flex-1 items-center gap-1.5 text-left text-gc-ink3 hover:text-gc-text"
         >
-          <PlusIcon className="size-[9px]" />
+          <Chevron aria-hidden className="size-2.5 shrink-0" />
+          <span className="font-mono text-[9px] tracking-[1px] uppercase">{label}</span>
         </button>
-      )}
-    </div>
+        {onAdd && (
+          <button
+            type="button"
+            aria-label={addLabel}
+            title={addLabel}
+            onClick={onAdd}
+            className="flex size-4 items-center justify-center rounded border border-gc-border bg-gc-sunken text-gc-ink2 hover:text-gc-text"
+          >
+            <PlusIcon className="size-[9px]" />
+          </button>
+        )}
+      </div>
+      {open && children}
+    </>
   )
 }
 

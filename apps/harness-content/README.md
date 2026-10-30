@@ -45,7 +45,7 @@ src/
 scripts/              gen-api.mjs, pen-nodes.py (read design nodes from the .pen file)
 ```
 
-Trails: `/trails/$flowId` edits the flow's draft (autosaved with If-Match); `/play/$flowId/$revisionId/$step` plays a published revision full screen, one URL per step (← → to move, Space pauses a timed step, O opens the outline, Esc exits). A trail theme restyles slide and animation steps through the plugins' `withTheme`; a step can keep its artifact's own theme.
+Trails: `/trails/$flowId` edits the flow's draft (autosaved with If-Match); `/play/$flowId/$revisionId/$step` plays a published revision full screen, one URL per step (← → to move, Space pauses a timed step, I shows or hides the controls, O opens the outline, Esc exits). Artifact Preview uses the same full-screen stage and I and Esc keys, without step or progress. Slides and animations extend their background to every screen edge; documents use the full screen, with zoom buttons while the controls are shown. A trail theme restyles slide and animation steps through the plugins' `withTheme`; a step can keep its artifact's own theme.
 
 Resources: the workspace's **Resources** tab holds the artifact root's notes and files, shared by every locale and version.
 - Markdown notes have Write and Preview modes and save with **Save note** or ⌘S; leaving a note also saves it.

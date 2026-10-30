@@ -4,9 +4,11 @@ import { type KeyboardEvent, useEffect, useRef, useState } from "react"
 import type { EditorProps, RendererProps } from "@/artifacts/plugin"
 import { useSlideActions, useSlideEditor } from "@/artifacts/plugins/slide/editor-context"
 import {
+  backgroundToCss,
   CANVAS,
   createElement,
   type InsertKind,
+  resolveBackground,
   resolveText,
   SLIDE_THEMES,
   type SlideContent,
@@ -318,11 +320,16 @@ function ToolButton({
 }
 
 /** Read-only slide scaled to its container's width (preview, flow player). */
-export function SlideRenderer({ content }: RendererProps<SlideContent>) {
+export function SlideRenderer({ content, presenting }: RendererProps<SlideContent>) {
   const { box, fit } = useFitScale(0)
   return (
-    <div ref={box} className="flex h-full w-full items-center justify-center">
-      <SlideScene content={content} scale={fit} />
+    <div
+      ref={box}
+      data-testid="slide-renderer"
+      className="flex h-full w-full items-center justify-center"
+      style={presenting ? { background: backgroundToCss(resolveBackground(content)) } : undefined}
+    >
+      <SlideScene content={content} scale={fit} bare={presenting} />
     </div>
   )
 }

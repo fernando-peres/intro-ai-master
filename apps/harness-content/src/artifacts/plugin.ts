@@ -12,7 +12,13 @@ export type EditorProps<C> = {
   locale: string
 }
 
-export type RendererProps<C> = { content: C }
+export type RendererProps<C> = {
+  content: C
+  /** False hides the renderer's own controls while presenting; shown when absent. */
+  showControls?: boolean
+  /** Full-screen stage: the renderer's background reaches every edge. */
+  presenting?: boolean
+}
 
 export type ValidationResult<C> = { ok: true; content: C } | { ok: false; issues: string[] }
 
@@ -44,4 +50,6 @@ export type ArtifactPlugin<C = unknown> = {
   withTheme?: (content: C, theme: string) => C
   /** Caption under the stage, e.g. "16:9". */
   stageLabel?: string
+  /** The editor fills the stage edge to edge, with no padding or caption. */
+  fillStage?: boolean
 }

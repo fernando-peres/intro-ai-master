@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { emptyHistory, MERGE_WINDOW, record, redo, undo } from "@/artifacts/plugins/slide/history"
 import {
+  backgroundToCss,
   CANVAS,
   createElement,
   createEmptySlide,
@@ -182,5 +183,14 @@ describe("history", () => {
     history = record(history, "abc", "type", 200)
     history = record(history, "abcd", "type", 200 + MERGE_WINDOW + 1)
     expect(history.past).toEqual(["a", "abc", "abcd"])
+  })
+})
+
+describe("backgroundToCss", () => {
+  it("writes flat colours and gradients as CSS", () => {
+    expect(backgroundToCss({ kind: "flat", color: "#112233" })).toBe("#112233")
+    expect(backgroundToCss({ kind: "gradient", from: "#111111", to: "#222222", angle: 125 })).toBe(
+      "linear-gradient(125deg, #111111, #222222)",
+    )
   })
 })

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router"
-import { ArrowLeftIcon, ChevronDownIcon } from "lucide-react"
+import { ArrowLeftIcon, ChevronDownIcon, Minimize2Icon } from "lucide-react"
 import { Fragment, Suspense, useCallback, useState } from "react"
 import { toast } from "sonner"
 import { useAssets } from "@/api/assets"
@@ -19,6 +19,13 @@ import {
 import { getPlugin, validateContent } from "@/artifacts"
 import { typeInfo } from "@/components/artifact-types"
 import { Caption, LocaleLabel, type StatusKind, StatusLabel } from "@/components/labels"
+import {
+  OverlayButton,
+  PresentationActions,
+  PresentationBadge,
+  PresentationStage,
+  usePresentation,
+} from "@/components/presentation/presentation-stage"
 import { ActionButton } from "@/components/shell/form-controls"
 import { TopBarSlot } from "@/components/shell/top-bar-slots"
 import {
@@ -109,6 +116,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
     script: version.script,
   }))
   const [preview, setPreview] = useState(false)
+  const fillStage = plugin.fillStage && validation.ok && !preview
   const [tab, setTab] = useState<InspectorTab>("metadata")
   const [collapsed, setCollapsed] = useState(false)
   const [dialog, setDialog] = useState<DialogKind>(null)
@@ -187,9 +195,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
           <StatusLabel kind={status} />
         </TopBarSlot>
         <TopBarSlot side="end">
-          <ActionButton aria-pressed={preview} onClick={() => setPreview(!preview)}>
-            {preview ? "Back to editor" : "Preview"}
-          </ActionButton>
+          <ActionButton onClick={() => setPreview(true)}>Preview</ActionButton>
           <ReviewActionButton action={action} busy={fork.isPending} onRun={runAction} />
           {editable && (
             <ActionButton
@@ -234,7 +240,10 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
                 id="area-content"
                 role="tabpanel"
                 aria-labelledby="tab-content"
-                className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3.5 bg-gc-sunken p-6"
+                className={cn(
+                  "flex min-h-0 flex-1 flex-col items-center justify-center bg-gc-sunken",
+                  !fillStage && "gap-3.5 p-6",
+                )}
               >
                 <Suspense fallback={<Caption>Loading editor…</Caption>}>
                   {!validation.ok ? (
@@ -249,15 +258,29 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
                       </ul>
                     </div>
                   ) : preview ? (
-                    <plugin.Renderer content={draft.content} />
+                    <ArtifactPresentation
+                      name={artifact.title}
+                      isDoc={artifact.type === "doc"}
+                      onExit={() => setPreview(false)}
+                    >
+                      {(showControls) => (
+                        <plugin.Renderer
+                          content={draft.content}
+                          showControls={showControls}
+                          presenting
+                        />
+                      )}
+                    </ArtifactPresentation>
                   ) : (
                     <plugin.Editor {...editorProps} />
                   )}
                 </Suspense>
-                <Caption className="tracking-[0.8px]">
-                  Reusable artifact · {plugin.stageLabel ?? info.label} · {version.locale}{" "}
-                  {version.versionNumber ? `v${version.versionNumber}` : "draft"}
-                </Caption>
+                {!fillStage && (
+                  <Caption className="tracking-[0.8px]">
+                    Reusable artifact · {plugin.stageLabel ?? info.label} · {version.locale}{" "}
+                    {version.versionNumber ? `v${version.versionNumber}` : "draft"}
+                  </Caption>
+                )}
               </div>
             )}
           </section>
@@ -555,5 +578,35 @@ function AreaTabs({
         </button>
       ))}
     </div>
+  )
+}
+
+/** Preview: the trail player's full-screen stage, without trail progress. */
+function ArtifactPresentation({
+  name,
+  isDoc,
+  onExit,
+  children,
+}: {
+  name: string
+  isDoc: boolean
+  onExit: () => void
+  children: (showControls: boolean) => React.ReactNode
+}) {
+  const { stageRef, controls } = usePresentation(onExit)
+  return (
+    <PresentationStage stageRef={stageRef} isDoc={isDoc}>
+      <div className="flex min-w-0 flex-1 items-center justify-center">{children(controls)}</div>
+      {controls && (
+        <>
+          <PresentationActions>
+            <OverlayButton label="Exit (Esc)" onClick={onExit}>
+              <Minimize2Icon />
+            </OverlayButton>
+          </PresentationActions>
+          <PresentationBadge name={name} />
+        </>
+      )}
+    </PresentationStage>
   )
 }

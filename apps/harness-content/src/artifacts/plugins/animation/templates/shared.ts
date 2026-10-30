@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react"
 import { z } from "zod"
 import {
+  backgroundToCss,
   FONTS,
   SLIDE_THEMES,
   type SlideTheme,
@@ -92,8 +93,7 @@ export function schemeOf(props: CommonProps): SlideTheme {
 }
 
 export function backgroundCss(theme: SlideTheme): string {
-  const bg = theme.background
-  return bg.kind === "flat" ? bg.color : `linear-gradient(${bg.angle}deg, ${bg.from}, ${bg.to})`
+  return backgroundToCss(theme.background)
 }
 
 export { FONTS }

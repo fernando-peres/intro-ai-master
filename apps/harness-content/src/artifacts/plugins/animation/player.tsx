@@ -4,7 +4,13 @@ import { useAnimate, useReducedMotion } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 import type { EditorProps, RendererProps } from "@/artifacts/plugin"
 import { type AnimationContent, getTemplate } from "@/artifacts/plugins/animation/model"
+import {
+  backgroundCss,
+  type CommonProps,
+  schemeOf,
+} from "@/artifacts/plugins/animation/templates/shared"
 import { type Segment, sequenceDuration } from "@/artifacts/plugins/animation/templates/types"
+import { cn } from "@/lib/utils"
 
 const FRAME = { width: 1920, height: 1080 }
 const LOOP_GAP_MS = 900
@@ -41,7 +47,15 @@ function useFitScale() {
  * the first frame, so playback never continues from a state built with older props. With
  * reduced motion it shows the final frame and plays only when asked.
  */
-export function AnimationPlayer({ content }: { content: AnimationContent }) {
+export function AnimationPlayer({
+  content,
+  showControls = true,
+  presenting = false,
+}: {
+  content: AnimationContent
+  showControls?: boolean
+  presenting?: boolean
+}) {
   const template = getTemplate(content.template)
   const reduced = useReducedMotion() ?? false
   const key = JSON.stringify(content)
@@ -108,41 +122,60 @@ export function AnimationPlayer({ content }: { content: AnimationContent }) {
   }
 
   return (
-    <div className="flex size-full min-h-0 flex-col items-center gap-3">
+    <div
+      className="flex size-full min-h-0 flex-col items-center gap-3"
+      style={
+        presenting
+          ? { background: backgroundCss(schemeOf(content.props as CommonProps)) }
+          : undefined
+      }
+    >
       <div ref={box} className="flex min-h-0 w-full flex-1 items-center justify-center">
         <div
-          className="overflow-hidden rounded-md shadow-lg"
+          className={cn("overflow-hidden", !presenting && "rounded-md shadow-lg")}
           style={{ width: FRAME.width * fit, height: FRAME.height * fit }}
         >
           <div
             ref={scope}
             data-testid="animation-frame"
+            // The wrapper paints the background when presenting; a second one would show a seam.
+            className={cn(presenting && "[&>*]:bg-none! [&>*]:bg-transparent!")}
             style={{ ...FRAME, transform: `scale(${fit})`, transformOrigin: "top left" }}
           >
             <template.Scene key={run.id} props={content.props} hidden={run.play} />
           </div>
         </div>
       </div>
-      <div className="flex w-full max-w-[560px] shrink-0 items-center gap-2.5 rounded-md border border-gc-border bg-gc-raised px-2.5 py-1.5">
-        <PlayerButton label={status === "playing" ? "Pause" : "Play"} onClick={toggle}>
-          {status === "playing" ? <PauseIcon /> : <PlayIcon />}
-        </PlayerButton>
-        <PlayerButton label="Restart" onClick={restart}>
-          <RotateCcwIcon />
-        </PlayerButton>
-        <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-gc-sunken">
-          <div ref={bar} className="h-full origin-left bg-gc-primary" />
+      {showControls && (
+        <div
+          className={
+            presenting
+              ? "absolute bottom-2 left-[19px] z-30 flex w-[max(240px,min(560px,calc(100%-400px)))] flex-col gap-1"
+              : "contents"
+          }
+        >
+          <div className="flex w-full max-w-[560px] shrink-0 items-center gap-2.5 rounded-md border border-gc-border bg-gc-raised px-2.5 py-1.5">
+            <PlayerButton label={status === "playing" ? "Pause" : "Play"} onClick={toggle}>
+              {status === "playing" ? <PauseIcon /> : <PlayIcon />}
+            </PlayerButton>
+            <PlayerButton label="Restart" onClick={restart}>
+              <RotateCcwIcon />
+            </PlayerButton>
+            <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-gc-sunken">
+              <div ref={bar} className="h-full origin-left bg-gc-primary" />
+            </div>
+            <span ref={clock} className="w-[76px] text-right font-mono text-[10px] text-gc-ink2" />
+            <span className="font-mono text-[9px] tracking-[0.8px] text-gc-ink3 uppercase">
+              {status}
+              {loop ? " · loop" : ""}
+            </span>
+          </div>
+          {reduced && (
+            <p className="text-[10.5px] text-gc-ink3">
+              Reduced motion is on: showing the final frame. Press play to preview the motion.
+            </p>
+          )}
         </div>
-        <span ref={clock} className="w-[76px] text-right font-mono text-[10px] text-gc-ink2" />
-        <span className="font-mono text-[9px] tracking-[0.8px] text-gc-ink3 uppercase">
-          {status}
-          {loop ? " · loop" : ""}
-        </span>
-      </div>
-      {reduced && (
-        <p className="text-[10.5px] text-gc-ink3">
-          Reduced motion is on: showing the final frame. Press play to preview the motion.
-        </p>
       )}
     </div>
   )
@@ -174,6 +207,10 @@ export function AnimationEditorView({ content }: EditorProps<AnimationContent>) 
   return <AnimationPlayer content={content} />
 }
 
-export function AnimationRenderer({ content }: RendererProps<AnimationContent>) {
-  return <AnimationPlayer content={content} />
+export function AnimationRenderer({
+  content,
+  showControls,
+  presenting,
+}: RendererProps<AnimationContent>) {
+  return <AnimationPlayer content={content} showControls={showControls} presenting={presenting} />
 }

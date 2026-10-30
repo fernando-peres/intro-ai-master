@@ -31,11 +31,15 @@ export function StepRenderer({
   content,
   override,
   trailTheme,
+  showControls,
+  presenting,
 }: {
   type: ArtifactType
   content: unknown
   override: string | null | undefined
   trailTheme: string | null | undefined
+  showControls?: boolean
+  presenting?: boolean
 }) {
   const plugin = getPlugin(type)
   const themed = themedContent(type, content, override, trailTheme)
@@ -48,7 +52,11 @@ export function StepRenderer({
   }
   return (
     <Suspense fallback={<Caption>Loading…</Caption>}>
-      <plugin.Renderer content={themed.content} />
+      <plugin.Renderer
+        content={themed.content}
+        showControls={showControls}
+        presenting={presenting}
+      />
     </Suspense>
   )
 }

@@ -73,7 +73,7 @@ Dev auth only: the `X-User-Id` header names a seeded user (admin, author, review
 ## Accessibility
 
 - The studio chrome (graphite dark and light) and the six content themes meet WCAG AA text contrast. `src/lib/contrast.test.ts` checks every text-on-surface pair, and the README in `apps/harness-content` lists where the tokens differ from the design file.
-- The workspace tabs follow the WAI-ARIA tab pattern. The player has keyboard controls (← → Space O Esc) and landmarks.
+- The workspace tabs follow the WAI-ARIA tab pattern. The player has keyboard controls (← → Space I O Esc) and landmarks. Artifact Preview shares its full-screen stage and the I and Esc keys.
 - The main screens pass axe-core with no violations in both studio themes.
 
 ## Definition of done → tests

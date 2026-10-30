@@ -383,6 +383,10 @@ export function resolveBackground(content: SlideContent): SlideBackground {
   return content.background ?? SLIDE_THEMES[content.theme].background
 }
 
+export function backgroundToCss(bg: SlideBackground): string {
+  return bg.kind === "flat" ? bg.color : `linear-gradient(${bg.angle}deg, ${bg.from}, ${bg.to})`
+}
+
 export function slideSearchText(content: SlideContent): string {
   return content.elements
     .flatMap((el): string[] => {

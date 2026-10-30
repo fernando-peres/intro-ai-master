@@ -27,4 +27,5 @@ export const docPlugin: ArtifactPlugin<DocContent> = {
   InsertPanel: DocInsertPanel,
   Provider: DocEditorProvider,
   stageLabel: "Document",
+  fillStage: true,
 }

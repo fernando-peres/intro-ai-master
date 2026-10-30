@@ -48,10 +48,12 @@ type Props = {
   /** Omitted for read-only rendering (preview, flow player). */
   handlers?: SceneHandlers
   stageRef?: React.RefObject<Konva.Stage | null>
+  /** Skips the background; the caller paints it, so a gradient can run past the canvas. */
+  bare?: boolean
 }
 
 /** Draws a slide at `scale`; editor and renderer share it, so preview matches editing exactly. */
-export function SlideScene({ content, scale, handlers, stageRef }: Props) {
+export function SlideScene({ content, scale, handlers, stageRef, bare }: Props) {
   const theme = SLIDE_THEMES[content.theme]
   const fontsReady = useCanvasFonts()
   const ownStage = useRef<Konva.Stage>(null)
@@ -123,9 +125,11 @@ export function SlideScene({ content, scale, handlers, stageRef }: Props) {
         if (handlers && event.target === event.target.getStage()) handlers.onSelect(null, false)
       }}
     >
-      <Layer listening={false}>
-        <BackgroundRect content={content} />
-      </Layer>
+      {!bare && (
+        <Layer listening={false}>
+          <BackgroundRect content={content} />
+        </Layer>
+      )}
       <Layer key={fontsReady ? "fonts" : "fallback"}>
         <Rect
           name="backdrop"
