@@ -5,6 +5,10 @@
 
 In this document, *trail* and *flow* mean the same thing: an **Artifact Flow**.
 
+## Implemented so far
+
+Slides use saved artifact themes: 16 colour slots in four groups (surface, text, accent, diagram) plus a gradient flag, managed under Artifacts Design. Six built-ins are read-only. Typography, spacing, Box themes and Theme Versions below are not built. Without versions, editing a custom theme also changes published content that uses it, so the pinning in §5 is still open.
+
 ## 1. Vocabulary
 
 | Term | Meaning |

@@ -45,6 +45,7 @@ class ArtifactType(StrEnum):
     DOC = "doc"
     SLIDE = "slide"
     ANIMATION = "animation"
+    DIAGRAM = "diagram"
 
 
 class VersionState(StrEnum):
@@ -224,7 +225,7 @@ class Flow(Base):
     description: Mapped[str] = mapped_column(Text, default="")
     locale: Mapped[str] = mapped_column(String(35))
     meta: Mapped[dict[str, Any]] = mapped_column("metadata", JSONB, default=dict)
-    theme: Mapped[str | None] = mapped_column(String(32))
+    theme: Mapped[str | None] = mapped_column(String(64))
     created_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = _created()
     updated_at: Mapped[datetime] = _updated()
@@ -255,6 +256,10 @@ class FlowRevision(Base):
     change_comment: Mapped[str | None] = mapped_column(Text)
     #: Bumped on every draft save; the draft's ETag.
     edit_revision: Mapped[int] = mapped_column(Integer, default=1)
+    #: `schemas.Outline` as JSON; its step refs are this revision's step positions.
+    outline: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb")
+    )
     created_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
     published_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = _created()
@@ -278,7 +283,7 @@ class FlowStep(Base):
     label: Mapped[str | None] = mapped_column(Text)
     presenter_note: Mapped[str | None] = mapped_column(Text)
     advance_seconds: Mapped[int | None] = mapped_column(Integer)
-    theme_override: Mapped[str | None] = mapped_column(String(32))
+    theme_override: Mapped[str | None] = mapped_column(String(64))
 
 
 class Asset(Base):
@@ -299,5 +304,34 @@ class Asset(Base):
     revision: Mapped[int] = mapped_column(Integer, default=1)
     created_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
     updated_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = _created()
+    updated_at: Mapped[datetime] = _updated()
+
+
+class ArtifactTheme(Base):
+    """Colour slots slides render with. Built-ins are read-only and keep their short IDs."""
+
+    __tablename__ = "artifact_themes"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(Text)
+    builtin: Mapped[bool] = mapped_column(default=False)
+    tokens: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = _created()
+    updated_at: Mapped[datetime] = _updated()
+
+
+class ArtifactTemplate(Base):
+    """Reusable slide content based on a theme; artifacts copy it, nothing stays linked."""
+
+    __tablename__ = "artifact_templates"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(Text)
+    theme_id: Mapped[str] = mapped_column(ForeignKey("artifact_themes.id"), index=True)
+    layout: Mapped[str] = mapped_column(String(32))
+    content: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    use_count: Mapped[int] = mapped_column(Integer, default=0)
+    created_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = _created()
     updated_at: Mapped[datetime] = _updated()

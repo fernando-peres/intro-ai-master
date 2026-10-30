@@ -5,9 +5,10 @@ import { toast } from "sonner"
 import { useCreateFlow } from "@/api/flows"
 import { ActionButton, Field, Select, TextInput } from "@/components/shell/form-controls"
 import { LOCALES } from "@/lib/locales"
-import { TRAIL_THEMES } from "@/lib/trail"
+import { useTrailThemes } from "@/lib/trail"
 
 export function NewTrailDialog({ onClose }: { onClose: () => void }) {
+  const trailThemes = useTrailThemes()
   const create = useCreateFlow()
   const navigate = useNavigate()
   const [title, setTitle] = useState("")
@@ -61,7 +62,7 @@ export function NewTrailDialog({ onClose }: { onClose: () => void }) {
               <Field label="Trail theme">
                 <Select value={theme} onChange={(event) => setTheme(event.target.value)}>
                   <option value="">None — each artifact keeps its own</option>
-                  {TRAIL_THEMES.map((option) => (
+                  {trailThemes.map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.label}
                     </option>

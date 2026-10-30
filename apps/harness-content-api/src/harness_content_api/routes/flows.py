@@ -76,7 +76,7 @@ def replace_steps(
     body: DraftSteps,
     if_match: IfMatch = None,
 ) -> Any:
-    draft = flows.replace_steps(session, user, flow_id, if_match, body.steps)
+    draft = flows.replace_steps(session, user, flow_id, if_match, body.steps, body.outline)
     session.commit()
     return _revision(session, response, draft)
 

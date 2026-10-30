@@ -1,9 +1,4 @@
-import type {
-  SlideBackground,
-  SlideContent,
-  SlideElement,
-  SlideThemeId,
-} from "@/artifacts/plugins/slide/model"
+import type { SlideBackground, SlideContent, SlideElement } from "@/artifacts/plugins/slide/model"
 
 /** Pure edits on slide content; each returns new content and never mutates its input. */
 
@@ -101,7 +96,7 @@ export function duplicateElements(
   return [{ ...content, elements: [...content.elements, ...copies] }, copies.map((el) => el.id)]
 }
 
-export function setTheme(content: SlideContent, theme: SlideThemeId): SlideContent {
+export function setTheme(content: SlideContent, theme: string): SlideContent {
   return { ...content, theme }
 }
 

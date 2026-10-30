@@ -43,9 +43,9 @@ def empty_content(artifact_type: str) -> dict[str, Any]:
 
 def _components(content: dict[str, Any], field: str) -> list[tuple[str, str]]:
     """(path, component type) pairs named by `content`, per the registry's `componentField`."""
-    if field == "template":
-        template = content.get("template")
-        return [("template", template)] if isinstance(template, str) else []
+    if "[" not in field:
+        name = content.get(field)
+        return [(field, name if isinstance(name, str) else "")]
     key = field.split("[")[0]
     found: list[tuple[str, str]] = []
 
@@ -64,7 +64,7 @@ def _components(content: dict[str, Any], field: str) -> list[tuple[str, str]]:
 
 def _is_discriminator(error: ValidationError) -> bool:
     path = list(error.relative_path)
-    return error.validator in ("const", "enum") and path[-1:] in (["type"], ["template"], ["kind"])
+    return error.validator in ("const", "enum") and path[-1:] in (["type"], ["template"], ["engine"], ["kind"])
 
 
 def _leaf_errors(error: ValidationError) -> list[ValidationError]:

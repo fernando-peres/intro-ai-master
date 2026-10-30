@@ -24,6 +24,7 @@ from harness_content_api.errors import (
 from harness_content_api.ids import new_id
 from harness_content_api.models import (
     Artifact,
+    ArtifactType,
     ArtifactVersion,
     ReviewRequest,
     ReviewStatus,
@@ -32,7 +33,7 @@ from harness_content_api.models import (
     VersionState,
 )
 from harness_content_api.schemas import ArtifactCreate, ArtifactUpdate, VersionUpdate
-from harness_content_api.services import audit, content, locations
+from harness_content_api.services import audit, content, locations, templates, themes
 from harness_content_api.timestamps import utc_now
 
 
@@ -114,13 +115,23 @@ def describe(session: Session, artifact: Artifact) -> dict[str, Any]:
     }
 
 
+def _check_content(session: Session, artifact_type: str, body: dict) -> None:
+    content.check(artifact_type, body)
+    if artifact_type in (ArtifactType.SLIDE, ArtifactType.DIAGRAM):
+        themes.check_slide(session, body)
+
+
 def create_artifact(
     session: Session, user: User, data: ArtifactCreate
 ) -> tuple[Artifact, ArtifactVersion]:
     require(user, EDITORS, "create artifacts")
     locations.get_open(session, data.location_id)
-    body = data.content if data.content is not None else content.empty_content(data.type.value)
-    content.check(data.type.value, body)
+    template = (
+        templates.use(session, data.template_id, data.type.value) if data.template_id else None
+    )
+    fallback = template.content if template else content.empty_content(data.type.value)
+    body = data.content if data.content is not None else fallback
+    _check_content(session, data.type.value, body)
     artifact = Artifact(
         id=new_id("ra"),
         type=data.type,
@@ -279,7 +290,7 @@ def update_draft(
             currentRevision=version.revision,
         )
     if data.content is not None:
-        content.check(session.get(Artifact, version.artifact_id).type.value, data.content)
+        _check_content(session, session.get(Artifact, version.artifact_id).type.value, data.content)
     for name, value in data.model_dump(exclude_unset=True, exclude_none=True).items():
         setattr(version, name, value)
     version.revision += 1
@@ -326,7 +337,7 @@ def publish(
         raise Conflict("review_required", "Publishing needs an approved review")
     if review.content_hash != content_hash(version):
         raise Conflict("approval_stale", "The draft changed after approval; submit it again")
-    content.check(session.get(Artifact, version.artifact_id).type.value, version.content)
+    _check_content(session, session.get(Artifact, version.artifact_id).type.value, version.content)
 
     highest = session.scalar(
         select(func.max(ArtifactVersion.version_number)).where(

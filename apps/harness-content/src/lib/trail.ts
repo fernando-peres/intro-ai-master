@@ -1,5 +1,11 @@
 import type { Schemas } from "@/api/client"
-import { SLIDE_THEMES, type SlideThemeId } from "@/artifacts/plugins/slide/model"
+import {
+  getSlideTheme,
+  hasSlideTheme,
+  listSlideThemes,
+  type SlideTheme,
+  useSlideThemes,
+} from "@/artifacts/plugins/slide/themes"
 
 /** A draft step as the builder holds it: the API's step plus a stable client key for dnd. */
 export type TrailStep = Omit<Schemas["StepOut"], "id" | "position"> & { key: string }
@@ -7,18 +13,22 @@ export type TrailStep = Omit<Schemas["StepOut"], "id" | "position"> & { key: str
 /** `themeOverride` value meaning "keep the artifact's own theme instead of the trail's". */
 export const USE_ARTIFACT_THEME = "artifact"
 
-export const TRAIL_THEMES = Object.entries(SLIDE_THEMES).map(([id, theme]) => ({
-  id: id as SlideThemeId,
-  label: theme.label,
-  swatches: [
-    theme.background.kind === "flat" ? theme.background.color : theme.background.to,
-    theme.accent,
-    theme.text,
-  ],
-}))
+function swatches(theme: SlideTheme): string[] {
+  const { background } = theme
+  return [background.kind === "flat" ? background.color : background.to, theme.accent, theme.text]
+}
+
+/** The saved artifact themes a trail can use, kept current as they load or change. */
+export function useTrailThemes() {
+  return useSlideThemes().map((theme) => ({ id: theme.id, label: theme.label }))
+}
+
+export function themeSwatches(id: string | null | undefined): string[] | undefined {
+  return id && hasSlideTheme(id) ? swatches(getSlideTheme(id)) : undefined
+}
 
 export function themeLabel(id: string | null | undefined): string {
-  return TRAIL_THEMES.find((theme) => theme.id === id)?.label ?? "Artifact's own"
+  return listSlideThemes().find((theme) => theme.id === id)?.label ?? "Artifact's own"
 }
 
 let counter = 0

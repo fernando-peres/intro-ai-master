@@ -35,6 +35,7 @@ The two apps are separate projects: neither imports the other. They share exactl
 - **Flow (trail)** has draft and published *revisions*.
   - Each step pins `(artifact, locale, version)`. Publishing freezes the revision, so a published trail never changes when an artifact gets a new version.
   - The trail's "behind" report and its "use current defaults" action produce a new revision; they never rewrite an old one.
+  - A revision's **outline** groups its steps: the trail holds units, a unit holds pills, and a step sits at the root, in a unit or in a pill. Reading order is play order, so step positions follow the outline. The trail, each unit and each pill carry a **rationale** (summary, objectives, prerequisites, assessment, checklist). The outline is saved with the draft and frozen on publish.
 - **Archive**: an archived version stays readable through its link and in every trail that pins it, but cannot be pinned again.
 - **Asset**: a resource file attached to an artifact root.
   - Markdown and text notes can be edited, with an `If-Match` revision.
@@ -89,10 +90,14 @@ Dev auth only: the `X-User-Id` header names a seeded user (admin, author, review
 | 7 Flow reuse | `test_flows.py::test_flow_reuse_stays_pinned` |
 | 8 Recovery (archive) | `test_flows.py::test_archived_pins_stay_playable_but_cannot_be_reused`, `test_versioning.py::test_archive_keeps_content_and_number` |
 
+## Themes and templates
+
+There are two theme systems. **System themes** style the studio chrome (`data-theme`, chosen in `/configuration`, stored per browser). **Artifact themes** style slides: saved rows with 16 colour slots, managed in `/artifacts-design`. Built-ins are read-only, and `slide/themes.ts` keeps them as an offline fallback. **Templates** are named slide content based on a theme; a new artifact copies the content and stays independent of the template.
+
 ## Not built yet
 
 - Real authentication.
 - S3 storage: implement `AssetStorage` and return it from `get_storage`.
 - Asset references inside content: slide and doc images still take a URL, and an `<img>` cannot send `X-User-Id`.
-- Grouping steps inside a trail, and diagram, dataset and audio artifact types.
+- Diagram, dataset and audio artifact types.
 - AI generation behind the import endpoint.

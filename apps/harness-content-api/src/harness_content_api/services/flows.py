@@ -24,7 +24,7 @@ from harness_content_api.models import (
     User,
     VersionState,
 )
-from harness_content_api.schemas import FlowCreate, FlowUpdate, StepIn
+from harness_content_api.schemas import FlowCreate, FlowUpdate, Outline, StepIn, StepRef
 from harness_content_api.services import audit
 from harness_content_api.services.artifacts import parse_if_match
 from harness_content_api.timestamps import utc_now
@@ -100,7 +100,41 @@ def describe_revision(session: Session, revision: FlowRevision) -> dict[str, Any
                 "duration_seconds": _planned_seconds(artifact),
             }
         )
-    return columns | {"steps": steps}
+    return columns | {"steps": steps, "outline": outline_of(revision, len(steps))}
+
+
+def outline_of(revision: FlowRevision, step_count: int) -> dict[str, Any]:
+    """The stored outline, or every step at the root for revisions saved without one."""
+    if revision.outline:
+        return revision.outline
+    return _flat(step_count).model_dump(by_alias=True)
+
+
+def _flat(step_count: int) -> Outline:
+    return Outline(nodes=[StepRef(step=position) for position in range(1, step_count + 1)])
+
+
+def _check_outline(outline: Outline, step_count: int) -> None:
+    keys: list[str] = []
+    refs: list[int] = []
+
+    def walk(nodes: list) -> None:
+        for node in nodes:
+            if isinstance(node, StepRef):
+                refs.append(node.step)
+            else:
+                keys.append(node.key)
+                walk(node.children)
+
+    walk(outline.nodes)
+    if len(keys) != len(set(keys)):
+        raise Invalid("invalid_outline", "Unit and pill keys must be unique")
+    if refs != list(range(1, step_count + 1)):
+        raise Invalid(
+            "invalid_outline",
+            f"The outline must list steps 1..{step_count} once each, in play order",
+            refs=refs,
+        )
 
 
 def _planned_seconds(artifact: Artifact) -> int | None:
@@ -165,6 +199,7 @@ def ensure_draft(session: Session, user: User, flow_id: str) -> FlowRevision:
         flow_id=flow_id,
         state=RevisionState.DRAFT,
         parent_revision_id=latest.id if latest else None,
+        outline=dict(latest.outline) if latest else {},
         created_by=user.id,
     )
     session.add(draft)
@@ -215,18 +250,26 @@ def _locked_draft(session: Session, flow_id: str, if_match: str | None) -> FlowR
 
 
 def replace_steps(
-    session: Session, user: User, flow_id: str, if_match: str | None, steps: list[StepIn]
+    session: Session,
+    user: User,
+    flow_id: str,
+    if_match: str | None,
+    steps: list[StepIn],
+    outline: Outline | None = None,
 ) -> FlowRevision:
     require(user, EDITORS, "edit flows")
     draft = _locked_draft(session, flow_id, if_match)
     for position, step in enumerate(steps, start=1):
         _check_step(session, position, step)
+    outline = outline or _flat(len(steps))
+    _check_outline(outline, len(steps))
     session.execute(delete(FlowStep).where(FlowStep.revision_id == draft.id))
     session.flush()
     for position, step in enumerate(steps, start=1):
         session.add(
             FlowStep(id=new_id("fst"), revision_id=draft.id, position=position, **step.model_dump())
         )
+    draft.outline = outline.model_dump(by_alias=True)
     draft.edit_revision += 1
     session.flush()
     return draft
@@ -367,7 +410,12 @@ def playback(session: Session, user: User, flow_id: str, revision_id: str) -> di
                 "version": session.get(ArtifactVersion, step.artifact_version_id),
             }
         )
-    return {"flow": flow, "revision": revision, "steps": steps}
+    return {
+        "flow": flow,
+        "revision": revision,
+        "steps": steps,
+        "outline": outline_of(revision, len(steps)),
+    }
 
 
 def usages(session: Session, artifact_id: str) -> list[dict]:

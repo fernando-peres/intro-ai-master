@@ -70,6 +70,8 @@ Every `/api/v1` request names a user in `X-User-Id`; unknown or missing → `401
 
 Errors are `{"detail", "code", ...}`; timestamps are UTC `YYYY-MM-DD-HH-mm-ss`.
 
+Artifact themes and templates: `GET|POST /artifact-themes`, `PATCH /artifact-themes/{id}`, `POST /artifact-themes/{id}/duplicate` (built-ins are read-only); `GET|POST /artifact-templates`, `GET|PATCH|DELETE /artifact-templates/{id}`. `POST /artifacts` accepts `templateId`.
+
 ## Content registry
 
 Content is checked on create, import, draft save and publish against `src/harness_content_api/schemas/` (`registry.json` + one JSON Schema per type). The files are generated from the studio's Zod schemas: run `pnpm --filter harness-content export:schemas` after changing a plugin schema; a harness-content test fails while they are out of date. Unknown components are reported by name before field errors.

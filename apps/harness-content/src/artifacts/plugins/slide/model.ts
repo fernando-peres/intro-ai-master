@@ -1,65 +1,15 @@
 import { z } from "zod"
+import {
+  getSlideTheme,
+  SLIDE_THEMES,
+  type SlideTheme,
+  type SlideThemeId,
+} from "@/artifacts/plugins/slide/themes"
+
+export { SLIDE_THEMES, type SlideTheme, type SlideThemeId }
 
 /** Canvas units: every position, size and font size is stored at 1920×1080. */
 export const CANVAS = { width: 1920, height: 1080 } as const
-
-export const SLIDE_THEMES = {
-  dark: {
-    label: "Dark",
-    background: { kind: "gradient", from: "#2E2750", to: "#14131C", angle: 125 },
-    // Lighter than the .pen #6D5BD0, which is under 3:1 on the gradient's top stop.
-    accent: "#8B7BE0",
-    text: "#F4F2FB",
-    body: "#C3BCDC",
-    muted: "#9D93C9",
-    surface: "#FFFFFF14",
-    line: "#FFFFFF2E",
-  },
-  light: {
-    label: "Light",
-    background: { kind: "flat", color: "#FFFFFF" },
-    accent: "#3A3263",
-    text: "#18181B",
-    body: "#52525B",
-    muted: "#71717A",
-    surface: "#18181B0D",
-    line: "#18181B2E",
-  },
-  violet: {
-    label: "Violet",
-    background: { kind: "flat", color: "#110F1A" },
-    accent: "#8B5CF6",
-    text: "#F2F0FA",
-    body: "#C9C4DD",
-    muted: "#837E9B",
-    surface: "#FFFFFF14",
-    line: "#FFFFFF2E",
-  },
-  mint: {
-    label: "Mint",
-    background: { kind: "flat", color: "#0E1313" },
-    accent: "#2DD4A7",
-    text: "#E9F4EF",
-    body: "#BFD4CC",
-    muted: "#7C8F89",
-    surface: "#FFFFFF14",
-    line: "#FFFFFF2E",
-  },
-  cobalt: {
-    label: "Cobalt",
-    background: { kind: "flat", color: "#0C111C" },
-    accent: "#4F7CFF",
-    text: "#EAEFF9",
-    body: "#BCC7DC",
-    muted: "#7B879E",
-    surface: "#FFFFFF14",
-    line: "#FFFFFF2E",
-  },
-} as const
-
-export type SlideThemeId = keyof typeof SLIDE_THEMES
-export type SlideTheme = (typeof SLIDE_THEMES)[SlideThemeId]
-const THEME_IDS = Object.keys(SLIDE_THEMES) as [SlideThemeId, ...SlideThemeId[]]
 
 export const FONTS = {
   display: "Cormorant Garamond",
@@ -185,7 +135,7 @@ export const slideSchema = z.object({
   canvas: z
     .object({ width: z.literal(CANVAS.width), height: z.literal(CANVAS.height) })
     .default(CANVAS),
-  theme: z.enum(THEME_IDS).default("dark"),
+  theme: z.string().min(1).default("dark"),
   background: background.optional(),
   elements: z.array(element).default([]),
 })
@@ -380,7 +330,7 @@ export function resolveShape(element: SlideElement, theme: SlideTheme): Resolved
 }
 
 export function resolveBackground(content: SlideContent): SlideBackground {
-  return content.background ?? SLIDE_THEMES[content.theme].background
+  return content.background ?? getSlideTheme(content.theme).background
 }
 
 export function backgroundToCss(bg: SlideBackground): string {

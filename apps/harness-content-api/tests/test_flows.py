@@ -154,3 +154,72 @@ def test_viewer_sees_only_published_revisions(api):
     draft = api.set_steps(flow_id, [_step(artifact_id, v1_id)]).json()
     api.get("usr_viewer", f"/api/v1/flows/{flow_id}/revisions/{draft['id']}", expect=403)
     assert api.get("usr_viewer", f"/api/v1/flows/{flow_id}/revisions").json() == []
+
+
+def _unit(key: str, *children: dict, **rationale) -> dict:
+    return {
+        "kind": "unit",
+        "key": key,
+        "title": key.title(),
+        "rationale": rationale,
+        "children": [*children],
+    }
+
+
+def _pill(key: str, *children: dict) -> dict:
+    return {"kind": "pill", "key": key, "title": key.title(), "children": [*children]}
+
+
+def _ref(position: int) -> dict:
+    return {"kind": "step", "step": position}
+
+
+def test_outline_is_frozen_with_the_revision(api):
+    artifact_id, v1_id = _published_artifact(api)
+    flow_id = api.flow()
+    steps = [_step(artifact_id, v1_id) for _ in range(3)]
+    outline = {
+        "rationale": {"summary": "Why this trail", "objectives": ["Score a harness"]},
+        "nodes": [
+            _ref(1),
+            _unit("basics", _pill("scoring", _ref(2)), _ref(3), objectives=["Read a score"]),
+        ],
+    }
+    saved = api.set_steps(flow_id, steps, outline=outline).json()["outline"]
+    assert saved["rationale"]["objectives"] == ["Score a harness"]
+    unit = saved["nodes"][1]
+    assert (unit["key"], unit["rationale"]["objectives"]) == ("basics", ["Read a score"])
+    assert unit["children"][0]["children"] == [_ref(2)]
+
+    published = api.publish_flow(flow_id).json()
+    assert published["outline"] == saved
+    assert api.play(flow_id, published["id"])["outline"] == saved
+
+    draft = api.post("usr_author", f"/api/v1/flows/{flow_id}/draft").json()
+    assert draft["outline"] == saved
+    api.set_steps(flow_id, steps)
+    url = f"/api/v1/flows/{flow_id}/revisions/{published['id']}"
+    assert api.get("usr_author", url).json()["outline"] == saved
+
+
+def test_steps_without_an_outline_sit_at_the_root(api):
+    artifact_id, v1_id = _published_artifact(api)
+    flow_id = api.flow()
+    saved = api.set_steps(flow_id, [_step(artifact_id, v1_id)] * 2).json()["outline"]
+    assert saved["nodes"] == [_ref(1), _ref(2)]
+    assert saved["rationale"]["checklist"] == []
+
+
+def test_invalid_outlines_are_rejected(api):
+    artifact_id, v1_id = _published_artifact(api)
+    flow_id = api.flow()
+    steps = [_step(artifact_id, v1_id)] * 2
+    for nodes in (
+        [_ref(1), _ref(1)],
+        [_ref(1)],
+        [_ref(2), _ref(1)],
+        [_unit("a", _ref(1)), _unit("a", _ref(2))],
+    ):
+        response = api.set_steps(flow_id, steps, expect=422, outline={"nodes": nodes})
+        assert response.json()["code"] == "invalid_outline"
+    api.set_steps(flow_id, steps, expect=422, outline={"nodes": [_pill("p", _ref(1)), _ref(2)]})

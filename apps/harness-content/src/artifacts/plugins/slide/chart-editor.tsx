@@ -5,10 +5,10 @@ import {
   CHART_TYPES,
   type ChartData,
   type ChartElement,
-  SLIDE_THEMES,
   type SlideContent,
 } from "@/artifacts/plugins/slide/model"
 import { updateElement } from "@/artifacts/plugins/slide/ops"
+import { useSlideTheme } from "@/artifacts/plugins/slide/themes"
 import { PanelHeading } from "@/components/workspace/inspector"
 import { cn } from "@/lib/utils"
 
@@ -25,7 +25,7 @@ const cell =
 /** Edits the chart's data and options; the drawing re-renders from them on every change. */
 export function ChartEditor({ chart, content, onChange, readOnly }: Props) {
   const actions = useSlideActions(content, onChange)
-  const theme = SLIDE_THEMES[content.theme]
+  const theme = useSlideTheme(content.theme)
   const { data, options } = chart
   const setData = (next: ChartData, group: string | null = "chart:data") =>
     actions.apply(updateElement(content, chart.id, { data: next }), group)

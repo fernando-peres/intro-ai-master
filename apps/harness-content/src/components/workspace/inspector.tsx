@@ -4,7 +4,6 @@ import {
   MicIcon,
   PanelRightCloseIcon,
   PanelRightOpenIcon,
-  PlusIcon,
   SlidersHorizontalIcon,
   SquarePlusIcon,
   TagIcon,
@@ -14,6 +13,8 @@ import { type ReactNode, Suspense, useEffect, useState } from "react"
 import type { Schemas } from "@/api/client"
 import { useUpdateArtifact, useUsers } from "@/api/queries"
 import { Caption, type StatusKind, StatusLabel } from "@/components/labels"
+import { ChecklistEditor } from "@/components/workspace/checklist"
+import type { ChecklistItem } from "@/lib/outline"
 import { cn } from "@/lib/utils"
 import { formatDuration, parseDuration, scriptStats } from "@/lib/workflow"
 
@@ -178,9 +179,7 @@ function LabeledField({ label, children }: { label: string; children: ReactNode 
   )
 }
 
-type ChecklistItem = { label: string; done: boolean }
-
-function readChecklist(design: Record<string, unknown>): ChecklistItem[] {
+export function readChecklist(design: Record<string, unknown>): ChecklistItem[] {
   const raw = design.checklist
   if (!Array.isArray(raw)) return []
   return raw.flatMap((item) =>
@@ -205,9 +204,7 @@ export function MetadataPanel({ artifact, status, readOnly }: MetadataProps) {
   const [title, setTitle] = useState(artifact.title)
   const [duration, setDuration] = useState(formatDuration(durationSeconds))
   const [newTag, setNewTag] = useState("")
-  const [newItem, setNewItem] = useState("")
   const checklist = readChecklist(design)
-  const done = checklist.filter((item) => item.done).length
 
   useEffect(() => setTitle(artifact.title), [artifact.title])
   useEffect(() => setDuration(formatDuration(durationSeconds)), [durationSeconds])
@@ -305,64 +302,11 @@ export function MetadataPanel({ artifact, status, readOnly }: MetadataProps) {
       </div>
 
       <div className="h-px shrink-0 bg-gc-divider" />
-      <PanelHeading label="Checklist" right={`${done} / ${checklist.length}`} />
-      <div className="h-1 shrink-0 overflow-hidden rounded-sm bg-gc-sunken">
-        <div
-          className="h-full rounded-sm bg-gc-pass-base"
-          style={{ width: checklist.length ? `${(done / checklist.length) * 100}%` : 0 }}
-        />
-      </div>
-      <ul className="flex flex-col gap-[9px]">
-        {checklist.map((item, index) => (
-          <li key={item.label}>
-            <label className="flex items-center gap-[9px] text-[11px]">
-              <input
-                type="checkbox"
-                checked={item.done}
-                disabled={readOnly}
-                onChange={() =>
-                  saveDesign({
-                    checklist: checklist.map((entry, i) =>
-                      i === index ? { ...entry, done: !entry.done } : entry,
-                    ),
-                  })
-                }
-                className="size-3.5 accent-gc-pass-base"
-              />
-              <span className={item.done ? "text-gc-ink3 line-through" : "text-gc-text"}>
-                {item.label}
-              </span>
-            </label>
-          </li>
-        ))}
-      </ul>
-      {!readOnly && (
-        <form
-          className="flex items-center gap-1.5"
-          onSubmit={(event) => {
-            event.preventDefault()
-            const label = newItem.trim()
-            if (!label || checklist.some((entry) => entry.label === label)) return
-            saveDesign({ checklist: [...checklist, { label, done: false }] })
-            setNewItem("")
-          }}
-        >
-          <input
-            aria-label="New checklist item"
-            placeholder="Add a check"
-            value={newItem}
-            onChange={(event) => setNewItem(event.target.value)}
-            className={cn(fieldInput, "h-7")}
-          />
-          <button
-            type="submit"
-            aria-label="Add check"
-            className="flex size-7 shrink-0 items-center justify-center rounded-[5px] border border-gc-border bg-gc-sunken text-gc-ink2"
-          >
-            <PlusIcon className="size-3" />
-          </button>
-        </form>
-      )}
+      <ChecklistEditor
+        items={checklist}
+        readOnly={readOnly}
+        onChange={(items) => saveDesign({ checklist: items })}
+      />
       {update.isError && <Caption className="text-gc-fail-ink">{update.error.message}</Caption>}
     </>
   )

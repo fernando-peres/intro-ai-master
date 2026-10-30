@@ -3,6 +3,7 @@ import { resolve } from "node:path"
 import { describe, expect, it } from "vitest"
 import { SLIDE_THEMES } from "@/artifacts/plugins/slide/model"
 import { contrastRatio, themeTokens } from "@/lib/contrast"
+import { STUDIO_THEMES } from "@/lib/studio-theme"
 
 // Vitest stubs CSS imports (even `?raw`), so read the stylesheet itself.
 const themes = themeTokens(readFileSync(resolve(__dirname, "../index.css"), "utf8"))
@@ -57,7 +58,7 @@ describe("WCAG AA contrast", () => {
     expect(contrastRatio("#777777", "#ffffff")).toBeCloseTo(4.48, 2)
   })
 
-  it.each(["graphite-dark", "graphite-light"])("studio chrome: %s", (theme) => {
+  it.each(STUDIO_THEMES)("studio chrome: %s", (theme) => {
     expect(failures(theme, STUDIO)).toEqual([])
   })
 

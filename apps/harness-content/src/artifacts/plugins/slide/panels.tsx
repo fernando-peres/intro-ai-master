@@ -26,10 +26,8 @@ import {
   resolveBackground,
   resolveShape,
   resolveText,
-  SLIDE_THEMES,
   type SlideContent,
   type SlideElement,
-  type SlideThemeId,
 } from "@/artifacts/plugins/slide/model"
 import {
   addElement,
@@ -39,6 +37,7 @@ import {
   updateElement,
   updateStyle,
 } from "@/artifacts/plugins/slide/ops"
+import { useSlideTheme, useSlideThemes } from "@/artifacts/plugins/slide/themes"
 import { PanelHeading, Placeholder } from "@/components/workspace/inspector"
 import { cn } from "@/lib/utils"
 
@@ -210,7 +209,8 @@ const WEIGHTS = [
 export function SlideFormatPanel({ content, onChange, readOnly }: EditorProps<SlideContent>) {
   const actions = useSlideActions(content, onChange)
   const { selected } = useSlideEditor()
-  const theme = SLIDE_THEMES[content.theme]
+  const theme = useSlideTheme(content.theme)
+  const themes = useSlideThemes()
   const elements = content.elements.filter((el) => selected.includes(el.id))
   const single: SlideElement | undefined = elements.length === 1 ? elements[0] : undefined
   const background = resolveBackground(content)
@@ -222,9 +222,9 @@ export function SlideFormatPanel({ content, onChange, readOnly }: EditorProps<Sl
   return (
     <>
       <PanelHeading label="Theme" right={theme.label} />
-      <div className="grid grid-cols-5 gap-1.5 rounded-[7px] border border-gc-border bg-gc-sunken p-2">
-        {(Object.keys(SLIDE_THEMES) as SlideThemeId[]).map((id) => {
-          const option = SLIDE_THEMES[id]
+      <div className="grid grid-cols-3 gap-1.5 rounded-[7px] border border-gc-border bg-gc-sunken p-2">
+        {themes.map((option) => {
+          const { id } = option
           const swatchBg =
             option.background.kind === "flat" ? option.background.color : option.background.to
           return (
@@ -240,13 +240,14 @@ export function SlideFormatPanel({ content, onChange, readOnly }: EditorProps<Sl
               )}
             >
               <span className="flex h-[13px] w-full overflow-hidden rounded-[3px]">
-                {[swatchBg, option.accent, option.text].map((color) => (
-                  <span key={color} className="flex-1" style={{ background: color }} />
+                {[swatchBg, option.accent, option.text].map((color, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: three fixed swatch slots
+                  <span key={index} className="flex-1" style={{ background: color }} />
                 ))}
               </span>
               <span
                 className={cn(
-                  "font-mono text-[7.5px] tracking-[0.4px] uppercase",
+                  "w-full truncate text-center font-mono text-[7.5px] tracking-[0.4px] uppercase",
                   id === content.theme ? "text-gc-text" : "text-gc-ink3",
                 )}
               >
@@ -519,7 +520,7 @@ function TypographyFields({
   onStyle: (patch: Record<string, unknown>, group: string) => void
   onText: (text: string) => void
 }) {
-  const resolved = resolveText(element, SLIDE_THEMES[content.theme])
+  const resolved = resolveText(element, useSlideTheme(content.theme))
   return (
     <>
       <PanelHeading label="Typography" right={element.variant} />

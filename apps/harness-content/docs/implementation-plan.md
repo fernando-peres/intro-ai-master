@@ -23,6 +23,8 @@ python3 -I apps/harness-content/scripts/pen-nodes.py harness-sigmma.pen X3XV2 lK
 - API types are generated (`pnpm gen:api`); openapi-typescript runs on a `typescript5` alias because TypeScript 7 has no JS compiler API.
 - `docs/theme-definitions.md` (draft) adds Theme/ThemeVersion entities, box/flow themes and flow groups; it is not yet in any phase and changes P2/P3 data (Box.themeId, Flow.themeId, FlowGroup, FlowStep.themeSource).
 - API timestamps are UTC `YYYY-MM-DD-HH-mm-ss` strings.
+- Artifact themes are saved rows with 16 colour slots; built-ins (`dark`, `light`, `violet`, `mint`, `cobalt`, `ivory`) are read-only. Themes are not versioned yet, so editing a custom theme changes published content that uses it. Animations keep their own built-in `scheme`.
+- Templates are slide content copied into new artifacts; starter layouts live in the frontend and are not stored.
 
 ## Phases
 
@@ -151,6 +153,62 @@ Status: done
 - Done when: all definition-of-done items 1–8 pass as pytest/Vitest scenarios, and lint/typecheck/tests are green across the workspace.
 
 Log: 2026-10-30-11-07-59 — API: migration 0005 `assets` table; `AssetStorage` protocol with `LocalDiskStorage` (`HARNESS_ASSET_DIR`, atomic writes, the key changes with the content, the old file is deleted after commit). Endpoints: `POST /assets` (multipart, 20 MB, extension must match the bytes), list, metadata, sandboxed content, `PUT` text with If-Match, rename, and delete (blocked while any version's content mentions the asset). UI: a Resources tab with a notes list and files, search, drop zone or picker, a markdown note editor (Write/Preview with react-markdown, Save note / ⌘S, saves when you leave the note), image preview or download, inline rename, and a confirmed delete. Accessibility: a WCAG AA contrast test for the studio chrome, the content tokens and the slide themes. That moved gc-ink3 (both modes), light gc-warn-chip-ink and the dark slide accent off the .pen values, and added `gc-primary-ink`. Also: WAI-ARIA area tabs, h1 and landmarks on every page, a BlockNote editor label, and disabled sidebar rows without opacity. axe-core is clean on 10 screens × 2 themes, and every keyboard focus stop is visible. Docs: `docs/harness-content.md` (architecture, DoD → tests), plus updates to the root and both app READMEs. DoD 1 now pins a trail too. 60 API + 102 Vitest tests. Bug fixed: an empty new note showed the "OK" error. Deferred: S3, asset references in slide/doc images (an `<img>` cannot send X-User-Id), real auth. Pre-existing root `ruff check .` findings outside the harness apps (`.agents/skills/ui-ux-pro-max`, `scripts/generate_video.py`, a notebook) are untouched.
+
+### P13 — Configuration page + system themes (designs: u0uyhS)
+Status: done
+
+- `/configuration` with settings tabs; system themes move there from the sidebar, with 6 chrome themes and a Match system / Light / Dark mode.
+- Done when: every theme applies and survives reload with no flash, and Match system follows the OS.
+Log: 2026-10-30-14-30-00 — `/configuration?tab=`, shared `AreaTabs`, `graphite-violet|mint|cobalt|ivory` chrome tokens (contrast test covers all 6), `harness.studioMode` applied by the inline script before paint. Browser: each theme, reload, OS scheme change. Selected card reads ACTIVE rather than the design's DEFAULT. Deferred: custom chrome themes (New theme disabled), the other 3 settings tabs. axe not run.
+
+### P14 — Artifact themes (designs: dgK9B)
+Status: done
+
+- Saved themes with 16 slots through the API; `/artifacts-design` lists them and shows each slot; New, Duplicate and Edit. Slides, the Format panel and trail pickers resolve saved themes.
+- Done when: a duplicated theme, edited and applied, changes a slide's canvas and chart colours, and existing slides look the same.
+Log: 2026-10-30-14-30-00 — Migration 0007 (`artifact_themes`, seeded from `schemas/builtin-themes.json`; flow theme columns widened to 64). `/artifact-themes` endpoints with `usedBy`; `unknown_theme` on save and publish. `slide/themes.ts` holds the registry and the slot mapping, tested equal to `SLIDE_THEMES`. Browser: new theme edited, slide canvas and chart use it, trail created with it. Deferred: ThemeVersion pinning, animation restyling.
+
+### P15 — Templates (designs: qkxEA)
+Status: done
+
+- Templates tab with 8 starter layouts per theme and saved templates; New template opens the slide editor; New artifact can start from a template.
+- Done when: a template made from a starter is edited, saved and used for an artifact, and its count goes up.
+Log: 2026-10-30-14-30-00 — Migration 0008 (`artifact_templates`), `/artifact-templates` CRUD, `templateId` on artifact create. `slide/starter-layouts.ts`, `/design-templates/$templateId` (explicit Save, two-step Delete), lazily mounted previews. Browser: full flow, count ×1. Data table is built from rects and text because slides have no table element.
+
+### P16 — Diagram artifact type
+Status: in-progress
+
+- API: `ArtifactType.DIAGRAM`; migration 0009 recreates the `artifact_type` check constraint; `services/content.py` treats `engine` as the component field, like `template`; seed one published diagram per engine.
+- Studio plugin `src/artifacts/plugins/diagram/`: content `{schemaVersion, type: "diagram", theme, engine}`, either `flow` (nodes `{id, label, x, y, shape, tone}`, edges `{id, source, target, label?, animated}`, direction) or `mermaid` (`source`).
+  - Flow: `@xyflow/react` editor (drag, connect, rename, delete) and a read-only `fitView` renderer.
+  - Mermaid: lazily imported `mermaid`, a source editor with a live preview and inline parse errors, and a `securityLevel: "strict"` SVG renderer that scales to its box.
+  - `contentTheme`/`withTheme`; Format and Insert panels; the New artifact dialog enables Diagram and asks for the engine.
+- `pnpm export:schemas` and `pnpm gen:api`.
+- Done when: a flow diagram and a Mermaid diagram are created, edited, reviewed and published in the browser; importing an unknown engine is rejected by name; Vitest and pytest cover schema, search text and renderers (Mermaid mocked).
+
+### P17 — Shared embed infrastructure
+Status: todo
+
+- `src/components/embed/`: an `EmbedPicker` (moved from `doc/panels.tsx`, with a type filter) and an `<EmbeddedArtifact>` that loads the pinned version, validates it, applies the host theme and renders the plugin's Renderer to fill its box, with `playback: "static" | "auto"`. Only diagram and animation render live; other types keep the chip.
+- `src/lib/embeds.ts`: a shared `EmbedRef` and `embedsOf(content)` for docs and slides.
+- API: on import, submit and publish, every embed must name an existing published version of its artifact, not archived when newly pinned; errors are `{path, message}`.
+- "Update to current default" re-pins an embed.
+- Done when: Vitest covers the loading, invalid and missing states and the re-pin; pytest rejects a draft or foreign version id.
+
+### P18 — Doc embeds, live and resizable
+Status: todo
+
+- `raEmbed` accepts `diagram` and gains `width` (20–100 %), `aspect` (`16:9|4:3|1:1|3:4|auto`) and `align`. The block renders `EmbeddedArtifact` with a caption bar and a right-edge resize handle.
+- Insert panel and slash menu: Diagram and Animation open the picker; the Format panel edits width, aspect, align and re-pin for the selected embed.
+- Done when: a published diagram and animation are embedded, resized and read back in the reader view; the round-trip test covers the new props.
+
+### P19 — Slide embeds; `slide.diagram` removed
+Status: todo
+
+- `slide.embed` element `{box, ref, lockAspect, playback}`: a transparent Konva hit box keeps selection, snapping, transform, rotation and lock; an HTML overlay over the Stage renders `EmbeddedArtifact` at the scaled box. Embeds paint above canvas shapes, and the layers panel says so. Editor plays nothing; preview and present follow `playback`.
+- Insert panel gets an Embed section built on the picker; the `d` key opens it; the Format panel edits lock aspect, playback, fit to content and re-pin.
+- `slide.diagram` is deleted. Migration 0010 rewrites every stored slide version that uses it into native rect, text and arrow elements at the same paint position, recomputes `content_hash` and writes an audit row per version. This is a one-time exception to immutability: rendering is unchanged.
+- Done when: a diagram and an animation are embedded, moved, resized, rotated and locked, then previewed and presented with the theme applied; an old diagram slide renders as shapes after `alembic upgrade head`; fixtures and tests are updated.
 
 ## Critical files
 - New: `apps/harness-content-api/**`, `apps/harness-content/docs/implementation-plan.md`, `apps/harness-content/scripts/pen-nodes.py`, `.agents/skills/harness-next-phase/SKILL.md` (+ `.claude/skills` symlink).

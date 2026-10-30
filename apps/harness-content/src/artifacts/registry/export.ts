@@ -6,6 +6,7 @@ import {
 } from "@/artifacts/plugins/animation/model"
 import { DOC_BLOCK_TYPES, docSchema } from "@/artifacts/plugins/doc/content"
 import { slideSchema } from "@/artifacts/plugins/slide/model"
+import { BUILTIN_TOKENS } from "@/artifacts/plugins/slide/themes"
 
 /** Bumped when the manifest's own shape changes (not when a component is added). */
 export const REGISTRY_VERSION = 1
@@ -89,6 +90,7 @@ export function buildRegistry(): { registry: Registry; schemas: Record<string, u
   return {
     registry: { registryVersion: REGISTRY_VERSION, types },
     schemas: {
+      "builtin-themes.json": BUILTIN_TOKENS,
       "slide.v1.json": toJson(slideSchema),
       "doc.v1.json": toJson(docSchema),
       "animation.v1.json": toJson(animationContentSchema),

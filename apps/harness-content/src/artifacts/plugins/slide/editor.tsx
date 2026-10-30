@@ -10,7 +10,6 @@ import {
   type InsertKind,
   resolveBackground,
   resolveText,
-  SLIDE_THEMES,
   type SlideContent,
   type TextElement,
 } from "@/artifacts/plugins/slide/model"
@@ -28,6 +27,7 @@ import {
   updateElement,
 } from "@/artifacts/plugins/slide/ops"
 import { SlideScene } from "@/artifacts/plugins/slide/scene"
+import { useSlideTheme } from "@/artifacts/plugins/slide/themes"
 import { cn } from "@/lib/utils"
 
 /** MIME type for dragging palette entries onto the canvas. */
@@ -256,7 +256,7 @@ function TextOverlay({
   onCommit: (text: string) => void
 }) {
   const [text, setText] = useState(element.text)
-  const style = resolveText(element, SLIDE_THEMES[content.theme])
+  const style = resolveText(element, useSlideTheme(content.theme))
   return (
     <textarea
       aria-label="Edit text"

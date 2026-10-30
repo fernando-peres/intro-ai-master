@@ -460,3 +460,6 @@ The six original product questions are **answered and reflected in the requireme
 ---
 
 **Reference note:** The [ScienceDirect reusable learning object overview](https://www.sciencedirect.com/topics/social-sciences/reusable-learning-object) supports the core idea of instructional content broken into smaller objects that can be reused or linked into larger learning structures. Exact duration or mandatory single-objective constraints are product choices here, not universal technical rules of all RLO definitions.
+
+
+

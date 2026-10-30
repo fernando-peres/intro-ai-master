@@ -21,13 +21,13 @@ import {
   resolveBackground,
   resolveShape,
   resolveText,
-  SLIDE_THEMES,
   type SlideContent,
   type SlideElement,
   type SlideTheme,
 } from "@/artifacts/plugins/slide/model"
 import type { Transform } from "@/artifacts/plugins/slide/ops"
 import { snapBox, visualBounds } from "@/artifacts/plugins/slide/snapping"
+import { useSlideTheme } from "@/artifacts/plugins/slide/themes"
 
 /** Snap distance in screen pixels; hold Alt while dragging to place freely. */
 const SNAP_PX = 6
@@ -54,7 +54,7 @@ type Props = {
 
 /** Draws a slide at `scale`; editor and renderer share it, so preview matches editing exactly. */
 export function SlideScene({ content, scale, handlers, stageRef, bare }: Props) {
-  const theme = SLIDE_THEMES[content.theme]
+  const theme = useSlideTheme(content.theme)
   const fontsReady = useCanvasFonts()
   const ownStage = useRef<Konva.Stage>(null)
   const stage = stageRef ?? ownStage

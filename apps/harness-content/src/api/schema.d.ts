@@ -624,6 +624,95 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/artifact-themes": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Themes */
+    get: operations["list_themes_api_v1_artifact_themes_get"]
+    put?: never
+    /** Create Theme */
+    post: operations["create_theme_api_v1_artifact_themes_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/artifact-themes/{theme_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Update Theme */
+    patch: operations["update_theme_api_v1_artifact_themes__theme_id__patch"]
+    trace?: never
+  }
+  "/api/v1/artifact-themes/{theme_id}/duplicate": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Duplicate Theme */
+    post: operations["duplicate_theme_api_v1_artifact_themes__theme_id__duplicate_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/artifact-templates": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Templates */
+    get: operations["list_templates_api_v1_artifact_templates_get"]
+    put?: never
+    /** Create Template */
+    post: operations["create_template_api_v1_artifact_templates_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/artifact-templates/{template_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Template */
+    get: operations["get_template_api_v1_artifact_templates__template_id__get"]
+    put?: never
+    post?: never
+    /** Delete Template */
+    delete: operations["delete_template_api_v1_artifact_templates__template_id__delete"]
+    options?: never
+    head?: never
+    /** Update Template */
+    patch: operations["update_template_api_v1_artifact_templates__template_id__patch"]
+    trace?: never
+  }
   "/health": {
     parameters: {
       query?: never
@@ -694,6 +783,8 @@ export interface components {
       content?: {
         [key: string]: unknown
       } | null
+      /** Templateid */
+      templateId?: string | null
     }
     /** ArtifactCreated */
     ArtifactCreated: {
@@ -923,6 +1014,16 @@ export interface components {
       /** File */
       file: string
     }
+    /** ChecklistItem */
+    ChecklistItem: {
+      /** Label */
+      label: string
+      /**
+       * Done
+       * @default false
+       */
+      done?: boolean
+    }
     /** DraftCreate */
     DraftCreate: {
       /** Locale */
@@ -932,6 +1033,7 @@ export interface components {
     DraftSteps: {
       /** Steps */
       steps: components["schemas"]["StepIn"][]
+      outline?: components["schemas"]["Outline"] | null
     }
     /** FlowCreate */
     FlowCreate: {
@@ -1069,6 +1171,81 @@ export interface components {
       /** Position */
       position?: number | null
     }
+    /**
+     * Outline
+     * @description Units hold pills and steps, pills hold steps; reading order is the play order.
+     */
+    Outline: {
+      /**
+       * @default {
+       *       "summary": "",
+       *       "objectives": [],
+       *       "prerequisites": [],
+       *       "assessment": "",
+       *       "checklist": []
+       *     }
+       */
+      rationale?: components["schemas"]["Rationale"]
+      /**
+       * Nodes
+       * @default []
+       */
+      nodes?: (components["schemas"]["OutlineUnit"] | components["schemas"]["StepRef"])[]
+    }
+    /** OutlinePill */
+    OutlinePill: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      kind: "pill"
+      /** Key */
+      key: string
+      /** Title */
+      title: string
+      /**
+       * @default {
+       *       "summary": "",
+       *       "objectives": [],
+       *       "prerequisites": [],
+       *       "assessment": "",
+       *       "checklist": []
+       *     }
+       */
+      rationale?: components["schemas"]["Rationale"]
+      /**
+       * Children
+       * @default []
+       */
+      children?: components["schemas"]["StepRef"][]
+    }
+    /** OutlineUnit */
+    OutlineUnit: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      kind: "unit"
+      /** Key */
+      key: string
+      /** Title */
+      title: string
+      /**
+       * @default {
+       *       "summary": "",
+       *       "objectives": [],
+       *       "prerequisites": [],
+       *       "assessment": "",
+       *       "checklist": []
+       *     }
+       */
+      rationale?: components["schemas"]["Rationale"]
+      /**
+       * Children
+       * @default []
+       */
+      children?: (components["schemas"]["OutlinePill"] | components["schemas"]["StepRef"])[]
+    }
     /** PlayArtifact */
     PlayArtifact: {
       /** Id */
@@ -1113,6 +1290,7 @@ export interface components {
       revision: components["schemas"]["RevisionSummary"]
       /** Steps */
       steps: components["schemas"]["PlayStep"][]
+      outline: components["schemas"]["Outline"]
     }
     /** PublishRequest */
     PublishRequest: {
@@ -1123,6 +1301,34 @@ export interface components {
        * @default false
        */
       makeDefault?: boolean
+    }
+    /** Rationale */
+    Rationale: {
+      /**
+       * Summary
+       * @default
+       */
+      summary?: string
+      /**
+       * Objectives
+       * @default []
+       */
+      objectives?: string[]
+      /**
+       * Prerequisites
+       * @default []
+       */
+      prerequisites?: string[]
+      /**
+       * Assessment
+       * @default
+       */
+      assessment?: string
+      /**
+       * Checklist
+       * @default []
+       */
+      checklist?: components["schemas"]["ChecklistItem"][]
     }
     /** ReviewDecision */
     ReviewDecision: {
@@ -1219,6 +1425,7 @@ export interface components {
       publishedBy: string | null
       /** Steps */
       steps: components["schemas"]["StepOut"][]
+      outline: components["schemas"]["Outline"]
     }
     /**
      * RevisionState
@@ -1302,6 +1509,16 @@ export interface components {
       /** Durationseconds */
       durationSeconds?: number | null
     }
+    /** StepRef */
+    StepRef: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      kind: "step"
+      /** Step */
+      step: number
+    }
     /** SubmitReview */
     SubmitReview: {
       /** Reviewerid */
@@ -1318,6 +1535,122 @@ export interface components {
       tag: string
       /** Count */
       count: number
+    }
+    /** TemplateCreate */
+    TemplateCreate: {
+      /** Name */
+      name: string
+      /** Layout */
+      layout: string
+      /** Content */
+      content: {
+        [key: string]: unknown
+      }
+    }
+    /** TemplateOut */
+    TemplateOut: {
+      /** Id */
+      id: string
+      /** Name */
+      name: string
+      /** Themeid */
+      themeId: string
+      /** Layout */
+      layout: string
+      /** Content */
+      content: {
+        [key: string]: unknown
+      }
+      /** Usecount */
+      useCount: number
+      /** Createdat */
+      createdAt: string
+      /** Updatedat */
+      updatedAt: string
+    }
+    /** TemplateUpdate */
+    TemplateUpdate: {
+      /** Name */
+      name?: string | null
+      /** Content */
+      content?: {
+        [key: string]: unknown
+      } | null
+    }
+    /** ThemeCreate */
+    ThemeCreate: {
+      /** Name */
+      name: string
+      /**
+       * Fromthemeid
+       * @default dark
+       */
+      fromThemeId?: string
+    }
+    /** ThemeOut */
+    ThemeOut: {
+      /** Id */
+      id: string
+      /** Name */
+      name: string
+      /** Builtin */
+      builtin: boolean
+      tokens: components["schemas"]["ThemeTokens"]
+      /**
+       * Usedby
+       * @default 0
+       */
+      usedBy?: number
+      /** Createdat */
+      createdAt: string
+      /** Updatedat */
+      updatedAt: string
+    }
+    /** ThemeTokens */
+    ThemeTokens: {
+      /** Background */
+      background: string
+      /** Surface */
+      surface: string
+      /** Elevated */
+      elevated: string
+      /** Overlay */
+      overlay: string
+      /** Title */
+      title: string
+      /** Body */
+      body: string
+      /** Muted */
+      muted: string
+      /** Inverse */
+      inverse: string
+      /** Accent1 */
+      accent1: string
+      /** Accent2 */
+      accent2: string
+      /** Accent3 */
+      accent3: string
+      /** Accent4 */
+      accent4: string
+      /** Nodefill */
+      nodeFill: string
+      /** Nodestroke */
+      nodeStroke: string
+      /** Connector */
+      connector: string
+      /** Nodelabel */
+      nodeLabel: string
+      /**
+       * Backgroundgradient
+       * @default false
+       */
+      backgroundGradient?: boolean
+    }
+    /** ThemeUpdate */
+    ThemeUpdate: {
+      /** Name */
+      name?: string | null
+      tokens?: components["schemas"]["ThemeTokens"] | null
     }
     /** Usage */
     Usage: {
@@ -3049,6 +3382,311 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["AssetOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_themes_api_v1_artifact_themes_get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ThemeOut"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  create_theme_api_v1_artifact_themes_post: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ThemeCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ThemeOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_theme_api_v1_artifact_themes__theme_id__patch: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        theme_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ThemeUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ThemeOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  duplicate_theme_api_v1_artifact_themes__theme_id__duplicate_post: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        theme_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ThemeOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  list_templates_api_v1_artifact_templates_get: {
+    parameters: {
+      query?: {
+        themeId?: string | null
+      }
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TemplateOut"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  create_template_api_v1_artifact_templates_post: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TemplateCreate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TemplateOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_template_api_v1_artifact_templates__template_id__get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        template_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TemplateOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  delete_template_api_v1_artifact_templates__template_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        template_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  update_template_api_v1_artifact_templates__template_id__patch: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        template_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TemplateUpdate"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TemplateOut"]
         }
       }
       /** @description Validation Error */

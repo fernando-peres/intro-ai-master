@@ -10,14 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArtifactsDesignRouteImport } from './routes/artifacts-design'
+import { Route as ConfigurationRouteImport } from './routes/configuration'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as ArtifactsArtifactIdRouteImport } from './routes/artifacts.$artifactId'
+import { Route as DesignTemplatesTemplateIdRouteImport } from './routes/design-templates.$templateId'
 import { Route as TrailsFlowIdRouteImport } from './routes/trails.$flowId'
 import { Route as PlayFlowIdRevisionIdStepRouteImport } from './routes/play.$flowId.$revisionId.$step'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtifactsDesignRoute = ArtifactsDesignRouteImport.update({
+  id: '/artifacts-design',
+  path: '/artifacts-design',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigurationRoute = ConfigurationRouteImport.update({
+  id: '/configuration',
+  path: '/configuration',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsRoute = ReviewsRouteImport.update({
@@ -30,6 +43,12 @@ const ArtifactsArtifactIdRoute = ArtifactsArtifactIdRouteImport.update({
   path: '/artifacts/$artifactId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DesignTemplatesTemplateIdRoute =
+  DesignTemplatesTemplateIdRouteImport.update({
+    id: '/design-templates/$templateId',
+    path: '/design-templates/$templateId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TrailsFlowIdRoute = TrailsFlowIdRouteImport.update({
   id: '/trails/$flowId',
   path: '/trails/$flowId',
@@ -44,23 +63,32 @@ const PlayFlowIdRevisionIdStepRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/artifacts-design': typeof ArtifactsDesignRoute
+  '/configuration': typeof ConfigurationRoute
   '/reviews': typeof ReviewsRoute
   '/artifacts/$artifactId': typeof ArtifactsArtifactIdRoute
+  '/design-templates/$templateId': typeof DesignTemplatesTemplateIdRoute
   '/trails/$flowId': typeof TrailsFlowIdRoute
   '/play/$flowId/$revisionId/$step': typeof PlayFlowIdRevisionIdStepRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/artifacts-design': typeof ArtifactsDesignRoute
+  '/configuration': typeof ConfigurationRoute
   '/reviews': typeof ReviewsRoute
   '/artifacts/$artifactId': typeof ArtifactsArtifactIdRoute
+  '/design-templates/$templateId': typeof DesignTemplatesTemplateIdRoute
   '/trails/$flowId': typeof TrailsFlowIdRoute
   '/play/$flowId/$revisionId/$step': typeof PlayFlowIdRevisionIdStepRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/artifacts-design': typeof ArtifactsDesignRoute
+  '/configuration': typeof ConfigurationRoute
   '/reviews': typeof ReviewsRoute
   '/artifacts/$artifactId': typeof ArtifactsArtifactIdRoute
+  '/design-templates/$templateId': typeof DesignTemplatesTemplateIdRoute
   '/trails/$flowId': typeof TrailsFlowIdRoute
   '/play/$flowId/$revisionId/$step': typeof PlayFlowIdRevisionIdStepRoute
 }
@@ -68,30 +96,42 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/artifacts-design'
+    | '/configuration'
     | '/reviews'
     | '/artifacts/$artifactId'
+    | '/design-templates/$templateId'
     | '/trails/$flowId'
     | '/play/$flowId/$revisionId/$step'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/artifacts-design'
+    | '/configuration'
     | '/reviews'
     | '/artifacts/$artifactId'
+    | '/design-templates/$templateId'
     | '/trails/$flowId'
     | '/play/$flowId/$revisionId/$step'
   id:
     | '__root__'
     | '/'
+    | '/artifacts-design'
+    | '/configuration'
     | '/reviews'
     | '/artifacts/$artifactId'
+    | '/design-templates/$templateId'
     | '/trails/$flowId'
     | '/play/$flowId/$revisionId/$step'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArtifactsDesignRoute: typeof ArtifactsDesignRoute
+  ConfigurationRoute: typeof ConfigurationRoute
   ReviewsRoute: typeof ReviewsRoute
   ArtifactsArtifactIdRoute: typeof ArtifactsArtifactIdRoute
+  DesignTemplatesTemplateIdRoute: typeof DesignTemplatesTemplateIdRoute
   TrailsFlowIdRoute: typeof TrailsFlowIdRoute
   PlayFlowIdRevisionIdStepRoute: typeof PlayFlowIdRevisionIdStepRoute
 }
@@ -103,6 +143,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artifacts-design': {
+      id: '/artifacts-design'
+      path: '/artifacts-design'
+      fullPath: '/artifacts-design'
+      preLoaderRoute: typeof ArtifactsDesignRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuration': {
+      id: '/configuration'
+      path: '/configuration'
+      fullPath: '/configuration'
+      preLoaderRoute: typeof ConfigurationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reviews': {
@@ -117,6 +171,13 @@ declare module '@tanstack/react-router' {
       path: '/artifacts/$artifactId'
       fullPath: '/artifacts/$artifactId'
       preLoaderRoute: typeof ArtifactsArtifactIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/design-templates/$templateId': {
+      id: '/design-templates/$templateId'
+      path: '/design-templates/$templateId'
+      fullPath: '/design-templates/$templateId'
+      preLoaderRoute: typeof DesignTemplatesTemplateIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trails/$flowId': {
@@ -138,8 +199,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArtifactsDesignRoute: ArtifactsDesignRoute,
+  ConfigurationRoute: ConfigurationRoute,
   ReviewsRoute: ReviewsRoute,
   ArtifactsArtifactIdRoute: ArtifactsArtifactIdRoute,
+  DesignTemplatesTemplateIdRoute: DesignTemplatesTemplateIdRoute,
   TrailsFlowIdRoute: TrailsFlowIdRoute,
   PlayFlowIdRevisionIdStepRoute: PlayFlowIdRevisionIdStepRoute,
 }

@@ -15,7 +15,7 @@ export function TopBar() {
   const users = useUsers().data ?? []
   const queryClient = useQueryClient()
   const [user, setUser] = useState(getDevUser)
-  const dark = theme === "graphite-dark"
+  const dark = theme !== "graphite-light"
 
   const switchUser = (userId: string) => {
     setDevUser(userId)

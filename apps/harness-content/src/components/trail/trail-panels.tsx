@@ -12,18 +12,27 @@ import { ActionButton, Field, Select, TextInput } from "@/components/shell/form-
 import { StepRenderer } from "@/components/trail/themed-content"
 import { PanelHeading, Placeholder } from "@/components/workspace/inspector"
 import { LOCALES } from "@/lib/locales"
+import type { ContainerKey } from "@/lib/outline"
 import {
   formatClock,
   resolveTheme,
   stepSeconds,
-  TRAIL_THEMES,
   type TrailStep,
   themeLabel,
+  themeSwatches,
   USE_ARTIFACT_THEME,
+  useTrailThemes,
 } from "@/lib/trail"
 import { cn } from "@/lib/utils"
 
 type Flow = Schemas["FlowOut"]
+
+/** Where a step sits in the outline, and the places it can move to. */
+export type Placement = {
+  value: ContainerKey
+  options: { key: ContainerKey; label: string }[]
+  onChange: (container: ContainerKey) => void
+}
 
 export function TrailMetadataPanel({ flow, readOnly }: { flow: Flow; readOnly: boolean }) {
   const update = useUpdateFlow(flow.id)
@@ -89,10 +98,9 @@ export function TrailMetadataPanel({ flow, readOnly }: { flow: Flow; readOnly: b
 }
 
 function Swatches({ theme }: { theme: string | null | undefined }) {
-  const found = TRAIL_THEMES.find((entry) => entry.id === theme)
   return (
     <span className="flex items-center gap-0.5">
-      {(found?.swatches ?? ["#00000000", "#00000000", "#00000000"]).map((color, i) => (
+      {(themeSwatches(theme) ?? ["#00000000", "#00000000", "#00000000"]).map((color, i) => (
         <span
           // biome-ignore lint/suspicious/noArrayIndexKey: three fixed swatch slots
           key={i}
@@ -112,6 +120,7 @@ type StepsProps = {
 }
 
 export function TrailThemePanel({ flow, steps, readOnly, onStep }: StepsProps) {
+  const trailThemes = useTrailThemes()
   const update = useUpdateFlow(flow.id)
   const themeable = steps.filter((step) => getPlugin(step.artifactType).contentTheme)
   const overriding = steps.filter((step) => step.themeOverride).length
@@ -133,7 +142,7 @@ export function TrailThemePanel({ flow, steps, readOnly, onStep }: StepsProps) {
           className="min-w-0 flex-1"
         >
           <option value="">None — artifacts keep their own</option>
-          {TRAIL_THEMES.map((theme) => (
+          {trailThemes.map((theme) => (
             <option key={theme.id} value={theme.id}>
               {theme.label}
             </option>
@@ -225,12 +234,14 @@ export function TrailPreviewPanel({
   position,
   readOnly,
   onStep,
+  placement,
 }: {
   flow: Flow
   step: TrailStep | undefined
   position: number
   readOnly: boolean
   onStep: (key: string, patch: Partial<TrailStep>) => void
+  placement?: Placement
 }) {
   if (!step) return <Placeholder>Select a step to preview it and change its settings.</Placeholder>
   return (
@@ -241,6 +252,7 @@ export function TrailPreviewPanel({
       position={position}
       readOnly={readOnly}
       onStep={onStep}
+      placement={placement}
     />
   )
 }
@@ -251,13 +263,16 @@ function StepSettings({
   position,
   readOnly,
   onStep,
+  placement,
 }: {
   flow: Flow
   step: TrailStep
   position: number
   readOnly: boolean
   onStep: (key: string, patch: Partial<TrailStep>) => void
+  placement?: Placement
 }) {
+  const trailThemes = useTrailThemes()
   const version = useVersion(step.artifactVersionId ?? undefined).data?.version
   const versions = (useArtifactVersions(step.artifactId).data ?? []).filter(
     (entry) => entry.state === "published" && entry.locale === step.locale,
@@ -330,6 +345,21 @@ function StepSettings({
       </div>
       <div className="h-px bg-gc-divider" />
       <PanelHeading label="Step settings" />
+      {placement && (
+        <Field label="Placement">
+          <Select
+            disabled={readOnly}
+            value={placement.value ?? ""}
+            onChange={(event) => placement.onChange(event.target.value || null)}
+          >
+            {placement.options.map((option) => (
+              <option key={option.key ?? ""} value={option.key ?? ""}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+        </Field>
+      )}
       <Field label="Pinned version">
         <Select
           disabled={readOnly}
@@ -407,7 +437,7 @@ function StepSettings({
         >
           <option value="">Follow trail theme</option>
           <option value={USE_ARTIFACT_THEME}>Keep the artifact's theme</option>
-          {TRAIL_THEMES.map((theme) => (
+          {trailThemes.map((theme) => (
             <option key={theme.id} value={theme.id}>
               {theme.label}
             </option>

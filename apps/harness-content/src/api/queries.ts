@@ -16,6 +16,9 @@ export const keys = {
   flows: ["flows"] as const,
   users: ["users"] as const,
   me: ["me"] as const,
+  themes: ["artifact-themes"] as const,
+  templates: ["artifact-templates"] as const,
+  template: (id: string) => ["artifact-templates", "one", id] as const,
 }
 
 export function useLocations() {
@@ -86,6 +89,8 @@ export function useCreateArtifact() {
     onSuccess: () => {
       client.invalidateQueries({ queryKey: keys.artifacts })
       client.invalidateQueries({ queryKey: keys.tags })
+      client.invalidateQueries({ queryKey: keys.templates })
+      client.invalidateQueries({ queryKey: keys.themes })
     },
   })
 }
@@ -258,5 +263,104 @@ export function useImportArtifact() {
       client.invalidateQueries({ queryKey: keys.artifacts })
       client.invalidateQueries({ queryKey: keys.tags })
     },
+  })
+}
+
+export type ArtifactTheme = Schemas["ThemeOut"]
+export type ArtifactTemplate = Schemas["TemplateOut"]
+
+export function useArtifactThemes() {
+  return useQuery({
+    queryKey: keys.themes,
+    queryFn: () => unwrap(api.GET("/api/v1/artifact-themes")),
+  })
+}
+
+export function useCreateTheme() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (body: Schemas["ThemeCreate"]) =>
+      unwrap(api.POST("/api/v1/artifact-themes", { body })),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.themes }),
+  })
+}
+
+export function useDuplicateTheme() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (themeId: string) =>
+      unwrap(
+        api.POST("/api/v1/artifact-themes/{theme_id}/duplicate", {
+          params: { path: { theme_id: themeId } },
+        }),
+      ),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.themes }),
+  })
+}
+
+export function useUpdateTheme(themeId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (body: Schemas["ThemeUpdate"]) =>
+      unwrap(
+        api.PATCH("/api/v1/artifact-themes/{theme_id}", {
+          params: { path: { theme_id: themeId } },
+          body,
+        }),
+      ),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.themes }),
+  })
+}
+
+export function useTemplates() {
+  return useQuery({
+    queryKey: keys.templates,
+    queryFn: () => unwrap(api.GET("/api/v1/artifact-templates")),
+  })
+}
+
+export function useTemplate(templateId: string) {
+  return useQuery({
+    queryKey: keys.template(templateId),
+    queryFn: () =>
+      unwrap(
+        api.GET("/api/v1/artifact-templates/{template_id}", {
+          params: { path: { template_id: templateId } },
+        }),
+      ),
+  })
+}
+
+export function useCreateTemplate() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (body: Schemas["TemplateCreate"]) =>
+      unwrap(api.POST("/api/v1/artifact-templates", { body })),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.templates }),
+  })
+}
+
+export function useUpdateTemplate(templateId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (body: Schemas["TemplateUpdate"]) =>
+      unwrap(
+        api.PATCH("/api/v1/artifact-templates/{template_id}", {
+          params: { path: { template_id: templateId } },
+          body,
+        }),
+      ),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.templates }),
+  })
+}
+
+export function useDeleteTemplate(templateId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      api.DELETE("/api/v1/artifact-templates/{template_id}", {
+        params: { path: { template_id: templateId } },
+      }),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.templates }),
   })
 }

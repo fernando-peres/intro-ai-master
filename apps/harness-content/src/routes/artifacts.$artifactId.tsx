@@ -26,6 +26,7 @@ import {
   PresentationStage,
   usePresentation,
 } from "@/components/presentation/presentation-stage"
+import { AreaTabs } from "@/components/shell/area-tabs"
 import { ActionButton } from "@/components/shell/form-controls"
 import { TopBarSlot } from "@/components/shell/top-bar-slots"
 import {
@@ -214,7 +215,15 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
         <div className="flex min-h-0 flex-1">
           <section className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-10 shrink-0 items-center justify-between gap-4 border-b border-gc-border px-4">
-              <AreaTabs area={area} onArea={setArea} resourceCount={assets.length} />
+              <AreaTabs
+                label="Artifact areas"
+                tabs={[
+                  { id: "content", label: "Content Design" },
+                  { id: "resources", label: "Resources", badge: assets.length || undefined },
+                ]}
+                value={area}
+                onChange={setArea}
+              />
               {latestReview?.status === "changes_requested" && latestReview.decisionComment && (
                 <span className="truncate text-[11px] text-gc-risk-ink">
                   Changes requested: {latestReview.decisionComment}
@@ -522,61 +531,6 @@ function TrailBanner({ flowId, step }: { flowId: string; step?: number }) {
       >
         Done
       </button>
-    </div>
-  )
-}
-
-const AREAS: { id: Area; label: string }[] = [
-  { id: "content", label: "Content Design" },
-  { id: "resources", label: "Resources" },
-]
-
-/** WAI-ARIA tabs: arrow keys move between areas, only the selected tab is in the tab order. */
-function AreaTabs({
-  area,
-  onArea,
-  resourceCount,
-}: {
-  area: Area
-  onArea: (area: Area) => void
-  resourceCount: number
-}) {
-  const move = (event: React.KeyboardEvent, index: number) => {
-    const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0
-    if (!step) return
-    event.preventDefault()
-    const next = AREAS[(index + step + AREAS.length) % AREAS.length]
-    onArea(next.id)
-    document.getElementById(`tab-${next.id}`)?.focus()
-  }
-  return (
-    <div role="tablist" aria-label="Artifact areas" className="flex h-full items-center gap-1">
-      {AREAS.map((entry, index) => (
-        <button
-          key={entry.id}
-          id={`tab-${entry.id}`}
-          type="button"
-          role="tab"
-          aria-selected={area === entry.id}
-          aria-controls={`area-${entry.id}`}
-          tabIndex={area === entry.id ? 0 : -1}
-          onClick={() => onArea(entry.id)}
-          onKeyDown={(event) => move(event, index)}
-          className={cn(
-            "flex h-full items-center gap-1.5 border-b-2 px-3 text-xs",
-            area === entry.id
-              ? "border-gc-primary font-semibold text-gc-text"
-              : "border-transparent text-gc-ink3 hover:text-gc-ink2",
-          )}
-        >
-          {entry.label}
-          {entry.id === "resources" && resourceCount > 0 && (
-            <span className="rounded-[3px] bg-gc-sunken px-[5px] font-mono text-[8.5px] text-gc-ink2">
-              {resourceCount}
-            </span>
-          )}
-        </button>
-      ))}
     </div>
   )
 }

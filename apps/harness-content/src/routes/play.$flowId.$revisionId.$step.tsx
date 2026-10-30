@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { Minimize2Icon, PanelRightIcon } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { Schemas } from "@/api/client"
 import { usePlayback } from "@/api/flows"
 import {
@@ -11,6 +11,7 @@ import {
   usePresentation,
 } from "@/components/presentation/presentation-stage"
 import { StepRenderer } from "@/components/trail/themed-content"
+import { placementLabels } from "@/lib/outline"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/play/$flowId/$revisionId/$step")({ component: TrailPlayer })
@@ -48,6 +49,7 @@ function PlayerMessage({ flowId, children }: { flowId: string; children: string 
 function Presentation({ playback, index }: { playback: Playback; index: number }) {
   const navigate = useNavigate()
   const { flow, revision, steps } = playback
+  const placements = useMemo(() => placementLabels(playback.outline), [playback.outline])
   const current = steps[index]
   const total = steps.length
   const [outline, setOutline] = useState(false)
@@ -150,7 +152,10 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
               <Minimize2Icon />
             </OverlayButton>
           </PresentationActions>
-          <PresentationBadge name={flow.title} progress={{ step: index + 1, total }} />
+          <PresentationBadge
+            name={[flow.title, placements.get(index + 1)].filter(Boolean).join(" › ")}
+            progress={{ step: index + 1, total }}
+          />
           {outline && (
             <aside
               aria-label="Trail outline"
@@ -160,24 +165,30 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
                 OUTLINE · REV {revision.revision}
               </span>
               {steps.map((entry, i) => (
-                <button
-                  key={entry.id}
-                  type="button"
-                  aria-current={i === index ? "step" : undefined}
-                  onClick={() => go(i)}
-                  className={cn(
-                    "flex flex-col gap-0.5 rounded-md px-2 py-1.5 text-left",
-                    i === index ? "bg-[#6D5BD033]" : "hover:bg-[#FFFFFF0F]",
+                <div key={entry.id} className="flex flex-col gap-1">
+                  {placements.get(i + 1) !== placements.get(i) && placements.get(i + 1) && (
+                    <span className="px-1 pt-2 font-mono text-[8.5px] tracking-[0.6px] text-[#9D93C9] uppercase">
+                      {placements.get(i + 1)}
+                    </span>
                   )}
-                >
-                  <span className="flex items-center gap-2 text-[11px] text-[#F0EEF8]">
-                    <span className="font-mono text-[9px] text-[#9D93C9]">{i + 1}</span>
-                    {entry.label || entry.artifact.title}
-                  </span>
-                  {i === index && entry.presenterNote && (
-                    <span className="pl-4 text-[10px] text-[#B9B1DC]">{entry.presenterNote}</span>
-                  )}
-                </button>
+                  <button
+                    type="button"
+                    aria-current={i === index ? "step" : undefined}
+                    onClick={() => go(i)}
+                    className={cn(
+                      "flex flex-col gap-0.5 rounded-md px-2 py-1.5 text-left",
+                      i === index ? "bg-[#6D5BD033]" : "hover:bg-[#FFFFFF0F]",
+                    )}
+                  >
+                    <span className="flex items-center gap-2 text-[11px] text-[#F0EEF8]">
+                      <span className="font-mono text-[9px] text-[#9D93C9]">{i + 1}</span>
+                      {entry.label || entry.artifact.title}
+                    </span>
+                    {i === index && entry.presenterNote && (
+                      <span className="pl-4 text-[10px] text-[#B9B1DC]">{entry.presenterNote}</span>
+                    )}
+                  </button>
+                </div>
               ))}
             </aside>
           )}

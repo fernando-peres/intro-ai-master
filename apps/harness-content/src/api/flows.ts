@@ -28,16 +28,16 @@ export function useFlowDraft(flowId: string, enabled: boolean) {
   })
 }
 
-/** Replaces the draft's steps; resolves to the new ETag. */
+/** Replaces the draft's steps and outline; resolves to the new ETag. */
 export async function saveFlowSteps(
   flowId: string,
   etag: string,
-  steps: Schemas["StepIn"][],
+  body: Schemas["DraftSteps"],
 ): Promise<string> {
   const saved = await withEtag(
     api.PATCH("/api/v1/flows/{flow_id}/draft", {
       params: { path: { flow_id: flowId }, header: { "if-match": etag } },
-      body: { steps },
+      body,
     }),
   )
   return saved.etag

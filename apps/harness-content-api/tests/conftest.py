@@ -151,12 +151,13 @@ class Api:
         body = {"title": title, "locale": locale}
         return self.post("usr_author", "/api/v1/flows", body, expect=201).json()["id"]
 
-    def set_steps(self, flow_id: str, steps: list[dict], expect: int = 200):
+    def set_steps(
+        self, flow_id: str, steps: list[dict], expect: int = 200, outline: dict | None = None
+    ):
         etag = self.post("usr_author", f"/api/v1/flows/{flow_id}/draft").headers["ETag"]
         url = f"/api/v1/flows/{flow_id}/draft"
-        return self.patch(
-            "usr_author", url, {"steps": steps}, headers={"If-Match": etag}, expect=expect
-        )
+        body = {"steps": steps} | ({"outline": outline} if outline is not None else {})
+        return self.patch("usr_author", url, body, headers={"If-Match": etag}, expect=expect)
 
     def publish_flow(self, flow_id: str, comment: str = "Ready", expect: int = 200):
         url = f"/api/v1/flows/{flow_id}/publish"

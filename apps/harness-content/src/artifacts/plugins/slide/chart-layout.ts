@@ -34,12 +34,13 @@ export type ChartPrimitive =
       font: string
     }
 
-/** Categorical colours after the theme accent; a series' own `color` wins. */
-const PALETTE = ["#2DD4A7", "#F2A65A", "#E0607E", "#7FB3FF", "#C9A0FF", "#9AD07A"]
+/** Colours after the theme's accents; a series' own `color` wins. */
+const PALETTE = ["#7FB3FF", "#C9A0FF", "#9AD07A"]
 
 export function seriesColor(index: number, theme: SlideTheme, own?: string): string {
   if (own) return own
-  return index === 0 ? theme.accent : PALETTE[(index - 1) % PALETTE.length]
+  const colors = [...theme.series, ...PALETTE]
+  return index === 0 ? theme.accent : colors[(index - 1) % colors.length]
 }
 
 /** Rounds `value` up to 1, 2, 2.5 or 5 × 10ⁿ so axis ticks land on readable numbers. */

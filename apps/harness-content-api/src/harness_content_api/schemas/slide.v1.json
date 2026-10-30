@@ -34,13 +34,7 @@
     "theme": {
       "default": "dark",
       "type": "string",
-      "enum": [
-        "dark",
-        "light",
-        "violet",
-        "mint",
-        "cobalt"
-      ]
+      "minLength": 1
     },
     "background": {
       "oneOf": [

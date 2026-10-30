@@ -8,26 +8,30 @@ import {
   InboxIcon,
   LayersIcon,
   type LucideIcon,
+  PaletteIcon,
   PlusIcon,
   RouteIcon,
   ShieldIcon,
+  SunMoonIcon,
   WaypointsIcon,
 } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { useArtifactSearch, useFlows, useLocations, useReviews } from "@/api/queries"
 import { typeInfo } from "@/components/artifact-types"
 import { useStudioDialogs } from "@/components/shell/studio-dialogs"
+import { SETTINGS_TABS, type SettingsTab } from "@/lib/design-search"
 import { buildLibraryTree, type LibraryNode } from "@/lib/library-tree"
-import { type StudioTheme, useStudioTheme } from "@/lib/studio-theme"
 import { cn } from "@/lib/utils"
 
 /** Sidebar tree shows up to this many artifacts; search covers the rest. */
 const TREE_LIMIT = 200
 const KIND_LABEL = { box: "BOX", unit: "UNIT", section: "SEC" } as const
-const STUDIO_THEMES: { id: StudioTheme; label: string; swatches: string[] }[] = [
-  { id: "graphite-dark", label: "Graphite Dark", swatches: ["#14131C", "#6D5BD0", "#F4F2FB"] },
-  { id: "graphite-light", label: "Graphite Light", swatches: ["#FFFFFF", "#3A3263", "#18181B"] },
-]
+const SETTINGS_ICONS: Record<SettingsTab, LucideIcon> = {
+  "system-themes": SunMoonIcon,
+  "component-registry": LayersIcon,
+  "locales-versions": GlobeIcon,
+  "roles-access": ShieldIcon,
+}
 
 export function Sidebar() {
   const locations = useLocations().data ?? []
@@ -36,7 +40,6 @@ export function Sidebar() {
   const pending = useReviews({ status: "pending" }).data?.length ?? 0
   const tree = buildLibraryTree(locations, artifacts)
   const { newLocation, newTrail } = useStudioDialogs()
-  const { theme, setTheme } = useStudioTheme()
 
   return (
     <nav
@@ -73,47 +76,28 @@ export function Sidebar() {
       </Section>
 
       <Spacer />
-      <Section label="Themes">
-        {STUDIO_THEMES.map((option) => {
-          const selected = theme === option.id
-          return (
-            <button
-              key={option.id}
-              type="button"
-              aria-pressed={selected}
-              onClick={() => setTheme(option.id)}
-              className={cn(
-                "flex h-[23px] items-center gap-2 rounded-md px-2 text-left",
-                selected && "bg-gc-row-bg",
-              )}
-            >
-              <span className="flex items-center gap-0.5 pl-2.5">
-                {option.swatches.map((color) => (
-                  <span
-                    key={color}
-                    className="h-3 w-[5px] rounded-[1.5px]"
-                    style={{ background: color }}
-                  />
-                ))}
-              </span>
-              <span
-                className={cn(
-                  "text-[11px]",
-                  selected ? "font-semibold text-gc-nav-ink" : "text-gc-ink2",
-                )}
-              >
-                {option.label}
-              </span>
-            </button>
-          )
-        })}
+      <Section label="Design">
+        <Link
+          to="/artifacts-design"
+          search={{ tab: "themes" }}
+          className="rounded-md [&.active]:bg-gc-row-bg"
+        >
+          <Row icon={PaletteIcon} label="Artifacts Design" />
+        </Link>
       </Section>
 
       <Spacer />
       <Section label="Configuration">
-        <Row icon={LayersIcon} label="Component registry" disabled />
-        <Row icon={GlobeIcon} label="Locales & versions" disabled />
-        <Row icon={ShieldIcon} label="Roles & access" disabled />
+        {SETTINGS_TABS.map((tab) => (
+          <Link
+            key={tab.id}
+            to="/configuration"
+            search={{ tab: tab.id }}
+            className="rounded-md [&.active]:bg-gc-row-bg"
+          >
+            <Row icon={SETTINGS_ICONS[tab.id]} label={tab.label} />
+          </Link>
+        ))}
       </Section>
     </nav>
   )

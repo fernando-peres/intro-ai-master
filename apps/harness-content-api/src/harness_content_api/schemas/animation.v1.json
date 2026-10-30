@@ -68,7 +68,8 @@
                 "light": "Light",
                 "violet": "Violet",
                 "mint": "Mint",
-                "cobalt": "Cobalt"
+                "cobalt": "Cobalt",
+                "ivory": "Ivory"
               },
               "type": "string",
               "enum": [
@@ -76,7 +77,8 @@
                 "light",
                 "violet",
                 "mint",
-                "cobalt"
+                "cobalt",
+                "ivory"
               ]
             },
             "accent": {
@@ -239,7 +241,8 @@
                 "light": "Light",
                 "violet": "Violet",
                 "mint": "Mint",
-                "cobalt": "Cobalt"
+                "cobalt": "Cobalt",
+                "ivory": "Ivory"
               },
               "type": "string",
               "enum": [
@@ -247,7 +250,8 @@
                 "light",
                 "violet",
                 "mint",
-                "cobalt"
+                "cobalt",
+                "ivory"
               ]
             },
             "accent": {

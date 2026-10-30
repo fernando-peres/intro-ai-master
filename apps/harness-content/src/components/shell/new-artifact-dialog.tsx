@@ -4,7 +4,7 @@ import { XIcon } from "lucide-react"
 import { type FormEvent, useState } from "react"
 import { toast } from "sonner"
 import type { ArtifactType } from "@/api/client"
-import { useCreateArtifact, useImportArtifact, useLocations } from "@/api/queries"
+import { useCreateArtifact, useImportArtifact, useLocations, useTemplates } from "@/api/queries"
 import { getPlugin } from "@/artifacts"
 import { ARTIFACT_TYPES } from "@/components/artifact-types"
 import { Caption } from "@/components/labels"
@@ -19,6 +19,8 @@ type Props = { initialLocationId?: string; onClose: () => void }
 export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
   const locations = useLocations().data ?? []
   const create = useCreateArtifact()
+  const templates = useTemplates().data ?? []
+  const [templateId, setTemplateId] = useState("")
   const importArtifact = useImportArtifact()
   const navigate = useNavigate()
   const [mode, setMode] = useState<"empty" | "import">("empty")
@@ -53,8 +55,11 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
       return
     }
     try {
-      const content = getPlugin(type).createEmpty() as Record<string, unknown>
-      open((await create.mutateAsync({ type, title, locale, locationId, content })).artifact.id)
+      const start =
+        type === "slide" && templateId
+          ? { templateId }
+          : { content: getPlugin(type).createEmpty() as Record<string, unknown> }
+      open((await create.mutateAsync({ type, title, locale, locationId, ...start })).artifact.id)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not create the artifact")
     }
@@ -179,6 +184,21 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
                       )
                     })}
                   </fieldset>
+                  {type === "slide" && templates.length > 0 && (
+                    <Field label="Start from template">
+                      <Select
+                        value={templateId}
+                        onChange={(event) => setTemplateId(event.target.value)}
+                      >
+                        <option value="">Empty slide</option>
+                        {templates.map((template) => (
+                          <option key={template.id} value={template.id}>
+                            {template.name}
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                  )}
                 </>
               )}
 

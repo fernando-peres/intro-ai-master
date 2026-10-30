@@ -8,14 +8,16 @@
 /* BlockNote's shadcn UI ships Tailwind classes that must be generated too. */
 @source "../node_modules/@blocknote/shadcn";
 
-/* Studio chrome: Graphite Console, dark or light (`data-theme` on <html>). */
-@custom-variant dark (&:is([data-theme="graphite-dark"] *));
+/* Studio chrome: Graphite Console, one light and five dark themes (`data-theme` on <html>). */
+@custom-variant dark (&:is([data-theme]:not([data-theme="graphite-light"]) *));
 
 /*
  * Generated from harness-sigmma.pen variables: gc-d-* / gc-l-* (studio chrome) and the six
  * content themes (bg, accent, … per mode), which artifact renderers read via data-content-theme.
  * Deviations from the .pen values, for WCAG AA text contrast (src/lib/contrast.test.ts):
  * gc-ink3 (both modes), gc-warn-chip-ink (light), and gc-primary-ink, primary as text.
+ * Violet, mint, cobalt and ivory take page, raised, border and primary from the .pen previews
+ * (u0uyhS); the rest is derived from them and graphite-dark.
  */
 [data-theme="graphite-dark"] {
   --gc-page: #121214;
@@ -32,6 +34,138 @@
   --gc-primary: #6d5bd0;
   --gc-primary-ink: #8b7be0;
   --gc-on-solid: #ffffff;
+  --gc-fail-tint: #40201a;
+  --gc-fail-base: #d97a66;
+  --gc-fail-ink: #f0bdb2;
+  --gc-warn-tint: #3b3313;
+  --gc-warn-base: #bfa33a;
+  --gc-warn-ink: #eadfa6;
+  --gc-risk-tint: #40250f;
+  --gc-risk-base: #d4793f;
+  --gc-risk-ink: #f2c7a3;
+  --gc-pass-tint: #16331b;
+  --gc-pass-base: #4ca050;
+  --gc-pass-ink: #a9d9ac;
+  --gc-done-tint: #122844;
+  --gc-done-base: #4c8fd6;
+  --gc-done-ink: #a7ccee;
+  --gc-warn-chip-ink: #2b250d;
+}
+
+[data-theme="graphite-violet"] {
+  --gc-page: #0b0a10;
+  --gc-raised: #110f1a;
+  --gc-sunken: #181524;
+  --gc-border: #352f4c;
+  --gc-divider: #272238;
+  --gc-text: #fafafa;
+  --gc-ink2: #a1a1aa;
+  --gc-ink3: #9a9aa4;
+  --gc-nav-bg: #412c71;
+  --gc-nav-ink: #ffffff;
+  --gc-row-bg: #1d1730;
+  --gc-primary: #8b5cf6;
+  --gc-primary-ink: #a78bfa;
+  --gc-on-solid: #0b0a10;
+  --gc-fail-tint: #40201a;
+  --gc-fail-base: #d97a66;
+  --gc-fail-ink: #f0bdb2;
+  --gc-warn-tint: #3b3313;
+  --gc-warn-base: #bfa33a;
+  --gc-warn-ink: #eadfa6;
+  --gc-risk-tint: #40250f;
+  --gc-risk-base: #d4793f;
+  --gc-risk-ink: #f2c7a3;
+  --gc-pass-tint: #16331b;
+  --gc-pass-base: #4ca050;
+  --gc-pass-ink: #a9d9ac;
+  --gc-done-tint: #122844;
+  --gc-done-base: #4c8fd6;
+  --gc-done-ink: #a7ccee;
+  --gc-warn-chip-ink: #2b250d;
+}
+
+[data-theme="graphite-mint"] {
+  --gc-page: #080a0a;
+  --gc-raised: #0e1313;
+  --gc-sunken: #141b1a;
+  --gc-border: #2a3b36;
+  --gc-divider: #1f2b28;
+  --gc-text: #fafafa;
+  --gc-ink2: #a1a1aa;
+  --gc-ink3: #9a9aa4;
+  --gc-nav-bg: #185f4c;
+  --gc-nav-ink: #ffffff;
+  --gc-row-bg: #112622;
+  --gc-primary: #2dd4a7;
+  --gc-primary-ink: #2dd4a7;
+  --gc-on-solid: #080a0a;
+  --gc-fail-tint: #40201a;
+  --gc-fail-base: #d97a66;
+  --gc-fail-ink: #f0bdb2;
+  --gc-warn-tint: #3b3313;
+  --gc-warn-base: #bfa33a;
+  --gc-warn-ink: #eadfa6;
+  --gc-risk-tint: #40250f;
+  --gc-risk-base: #d4793f;
+  --gc-risk-ink: #f2c7a3;
+  --gc-pass-tint: #16331b;
+  --gc-pass-base: #4ca050;
+  --gc-pass-ink: #a9d9ac;
+  --gc-done-tint: #122844;
+  --gc-done-base: #4c8fd6;
+  --gc-done-ink: #a7ccee;
+  --gc-warn-chip-ink: #2b250d;
+}
+
+[data-theme="graphite-cobalt"] {
+  --gc-page: #060910;
+  --gc-raised: #0c111c;
+  --gc-sunken: #121826;
+  --gc-border: #28334c;
+  --gc-divider: #1d2539;
+  --gc-text: #fafafa;
+  --gc-ink2: #a1a1aa;
+  --gc-ink3: #9a9aa4;
+  --gc-nav-bg: #253974;
+  --gc-nav-ink: #ffffff;
+  --gc-row-bg: #131c33;
+  --gc-primary: #4f7cff;
+  --gc-primary-ink: #7a9cff;
+  --gc-on-solid: #060910;
+  --gc-fail-tint: #40201a;
+  --gc-fail-base: #d97a66;
+  --gc-fail-ink: #f0bdb2;
+  --gc-warn-tint: #3b3313;
+  --gc-warn-base: #bfa33a;
+  --gc-warn-ink: #eadfa6;
+  --gc-risk-tint: #40250f;
+  --gc-risk-base: #d4793f;
+  --gc-risk-ink: #f2c7a3;
+  --gc-pass-tint: #16331b;
+  --gc-pass-base: #4ca050;
+  --gc-pass-ink: #a9d9ac;
+  --gc-done-tint: #122844;
+  --gc-done-base: #4c8fd6;
+  --gc-done-ink: #a7ccee;
+  --gc-warn-chip-ink: #2b250d;
+}
+
+[data-theme="graphite-ivory"] {
+  --gc-page: #0d0a06;
+  --gc-raised: #140d08;
+  --gc-sunken: #211a14;
+  --gc-border: #554c42;
+  --gc-divider: #3b332b;
+  --gc-text: #fafafa;
+  --gc-ink2: #a1a1aa;
+  --gc-ink3: #9a9aa4;
+  --gc-nav-bg: #73716f;
+  --gc-nav-ink: #ffffff;
+  --gc-row-bg: #2c2521;
+  --gc-primary: #ffffff;
+  --gc-primary-ink: #ffffff;
+  --gc-on-solid: #0d0a06;
   --gc-fail-tint: #40201a;
   --gc-fail-base: #d97a66;
   --gc-fail-ink: #f0bdb2;
