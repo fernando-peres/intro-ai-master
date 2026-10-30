@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" data-theme="graphite-dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Harness · Reusable Artifacts</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect width='22' height='22' rx='6' fill='%23FAFAFA'/%3E%3Crect x='7' y='7' width='8' height='8' rx='2' fill='%23121214'/%3E%3C/svg%3E"
+    />
+    <script>
+      // Apply the stored studio theme before first paint (see src/lib/studio-theme.tsx).
+      try {
+        const theme = localStorage.getItem("harness.studioTheme")
+        if (theme === "graphite-dark" || theme === "graphite-light")
+          document.documentElement.dataset.theme = theme
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

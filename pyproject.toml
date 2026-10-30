@@ -12,11 +12,11 @@ dev = ["pytest>=8", "ruff>=0.6", "import-linter>=2.1"]
 package = false
 
 [tool.uv.workspace]
-members = ["apps/algo-server", "packages/algo", "packages/genai"]
+members = ["apps/algo-server", "apps/harness-content-api", "packages/algo", "packages/genai"]
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
-testpaths = ["apps/algo-server/tests", "packages/algo/tests", "packages/genai/tests"]
+testpaths = ["apps/algo-server/tests", "apps/harness-content-api/tests", "packages/algo/tests", "packages/genai/tests"]
 markers = ["slow: downloads and runs real models (GPT-2, GloVe, MiniLM)"]
 
 [tool.ruff]
@@ -24,16 +24,16 @@ target-version = "py314"
 line-length = 100
 
 [tool.importlinter]
-root_packages = ["algo", "algo_server", "genai"]
+root_packages = ["algo", "algo_server", "genai", "harness_content_api"]
 
 [[tool.importlinter.contracts]]
 name = "packages/* never import apps/*"
 type = "forbidden"
 source_modules = ["algo", "genai"]
-forbidden_modules = ["algo_server"]
+forbidden_modules = ["algo_server", "harness_content_api"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["algo", "algo_server", "genai"]
+known-first-party = ["algo", "algo_server", "genai", "harness_content_api"]

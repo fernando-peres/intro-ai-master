@@ -1,0 +1,156 @@
+# harness-content — implementation plan
+
+Walking skeleton for the Reusable Artifacts Studio described in [reusable-artifacts-prd-v0.1.md](reusable-artifacts-prd-v0.1.md). Designs live in `harness-sigmma.pen` at the repo root (node IDs per phase below).
+
+Run one phase at a time with `/harness-next-phase` (or "next phase"). Each phase moves `Status: todo` → `in-progress` → `done` and gets a `Log:` line when it finishes.
+
+Print a phase's design nodes:
+
+```bash
+python3 -I apps/harness-content/scripts/pen-nodes.py harness-sigmma.pen X3XV2 lKDrF
+```
+
+## Decisions
+
+- Backend: new FastAPI app `apps/harness-content-api` + Postgres. Slide canvas: react-konva. AI generation deferred; structured JSON import first (P11).
+- One slide RA = exactly one slide.
+- Reviewers cannot approve their own submissions; admins can override.
+- Archived versions cannot be chosen for new uses; pinned flows still read them; a version cannot be deleted while referenced.
+- Domain/API name `flow`; UI label "Trail".
+- Docker compose project name: `harness-sigma`.
+- Slide themes use the Format panel swatches (Dark = #14131C/#6D5BD0/#F4F2FB); the `.pen` six-mode content variables differ for dark/light and are not used by slides.
+- Two token systems from the `.pen` file: Graphite Console (`gc-d-*`/`gc-l-*`) is the studio chrome, switched with `data-theme="graphite-dark|graphite-light"`; the six content themes (dark, light, violet, mint, cobalt, ivory) are `--ct-*` variables under `data-content-theme`, for artifact renderers.
+- API types are generated (`pnpm gen:api`); openapi-typescript runs on a `typescript5` alias because TypeScript 7 has no JS compiler API.
+- `docs/theme-definitions.md` (draft) adds Theme/ThemeVersion entities, box/flow themes and flow groups; it is not yet in any phase and changes P2/P3 data (Box.themeId, Flow.themeId, FlowGroup, FlowStep.themeSource).
+- API timestamps are UTC `YYYY-MM-DD-HH-mm-ss` strings.
+
+## Phases
+
+### P1 — API foundation
+Status: done
+
+- New app `apps/harness-content-api` (uv, Python 3.14, package `harness_content_api`): FastAPI, SQLAlchemy 2, Alembic, psycopg 3, pydantic-settings. The layout follows `apps/algo-server` (`src/<pkg>/main.py`, routers per module, `/health`).
+- `docker-compose.yml` with Postgres 17. `HARNESS_DATABASE_URL` env var. A UTC timestamp helper `utc_stamp()` for rule 6.
+- Add it to the root `pyproject.toml`: workspace members, pytest testpaths, importlinter `root_packages`, ruff known-first-party.
+- pytest fixtures: a test database with a transaction rolled back after each test.
+- Ask the user whether "Postgres + separate FastAPI content service" should be recorded as an ADR (rule 3). Do not create one without asking.
+- Done when: `uv run pytest apps/harness-content-api`, `uv run lint-imports` and `alembic upgrade head` all pass.
+
+Log: 2026-10-29-21-33-45 — harness-content-api scaffold (FastAPI, SQLAlchemy 2, Alembic baseline 0001, psycopg 3), compose project `harness-sigma` (Postgres 17 on :5433), rolled-back test fixtures, `utc_stamp()`, root workspace wiring; ADR recorded. 8 tests pass.
+
+### P2 — Artifact domain, versions, review
+Status: done
+
+- Tables: `box/unit/section` (one `location` table with a `kind` column and a parent), `artifact`, `artifact_version`, `review_request`, `audit_event`, `user` (role ∈ admin/author/reviewer/viewer).
+- Invariants (PRD §5.3) live in a service layer, not in routes:
+  - creating an artifact also creates its first draft;
+  - editing a published version forks a new draft (`parent_version_id`);
+  - `PATCH` is rejected on published/archived versions;
+  - publishing needs an approved review whose `content_hash` matches the current content, plus a non-empty comment. It allocates `MAX+1` per `(artifact_id, locale)` inside the transaction; a unique constraint backs this up;
+  - one default version per locale (partial unique index);
+  - the artifact's status is derived from its versions.
+- Dev auth: `X-User-Id` header with seeded users. Permission checks follow the matrix in PRD §6.1. Optimistic concurrency uses `ETag`/`If-Match` on the version revision.
+- Endpoints: the artifact, version and review routes from PRD §10, plus location CRUD and move.
+- Done when: pytest scenarios cover PRD definition-of-done items 1, 2, 3 and 6, plus a race test showing two concurrent publishes never get the same number.
+
+Log: 2026-10-29-21-58-37 — migration 0002 (users, locations, artifacts, artifact_versions, review_requests, audit_events with DB-level version invariants); services for locations/artifacts/versions/reviews; dev `X-User-Id` auth + seed CLI; ETag/If-Match on drafts; `/resolve` with explicit locale_unavailable. 31 tests incl. DoD 1/2/3/6 and a publish race test (fails when the lock is removed). Authors edit only their own drafts; archived versions stay readable by id.
+
+### P3 — Flows, search, usages
+Status: done
+
+- Tables `flow`, `flow_revision`, `flow_step` (position, artifact_id, locale, artifact_version_id, label, theme_override).
+- Draft revision editing. Publishing freezes the draft and rejects drafts or missing versions. "Behind" report: for each pinned step, its version vs the current default (the O4eW8o publish panel). "Use current defaults" action. `GET /artifacts/{id}/usages`.
+- Search: `GET /artifacts?query&tag&type&locale&status&locationId` using Postgres `tsvector` on title/description/tags plus filters.
+- Done when: pytest covers definition-of-done items 7 and 8 and search vs tree navigation agreeing.
+
+Log: 2026-10-29-22-04-25 — migration 0003 (flows, flow_revisions with one draft per flow, flow_steps; trigger-maintained `search_vector` + GIN indexes); flow draft/publish/behind/use-current-defaults/play; usages, reuse count; prefix FTS search with tag/type/locale/status/subtree filters and pagination; `/tags`. 44 tests incl. DoD 7/8 and search vs tree. Trail grouping (units/sections inside a trail) still deferred to after P10.
+
+### P4 — Frontend shell + tokens + library (designs: wx1xG, l9RVX, ApENL)
+Status: done
+
+- Port the `.pen` variables (75 tokens × 6 themes) into `src/index.css` as CSS variables per `[data-theme]`, mapped onto the shadcn tokens. Fonts: Cormorant Garamond and IBM Plex Mono (already installed).
+- App shell: top bar (breadcrumb, type chip, Preview/Save, saved-at), left sidebar (Artifacts tree, Trails, Themes, Configuration), main area, collapsible inspector.
+- API client: `openapi-typescript` types generated from the FastAPI OpenAPI schema (a `pnpm gen:api` script), TanStack Query hooks, Vite proxy `/api` → `:8000`.
+- Routes: `/` (artifact search: filters, tag chips, results table), the new-artifact type picker dialog (Slide/Document/Animation enabled, Diagram/Dataset/Audio shown as "coming later"), `/artifacts/$id` placeholder.
+- Done when: `pnpm --filter harness-content test lint typecheck` passes; against the running API you can create a location and an artifact and find it in search (checked in the browser).
+
+Log: 2026-10-29-22-20-09 — tokens generated from the .pen (Graphite chrome dark/light + six `--ct-*` content themes); shell (top bar with dev-user picker, library tree, trails, themes); artifact search with URL-state filters, tag chips, semantic table, pagination; type-picker and location dialogs; artifact placeholder page; typed client via `pnpm gen:api`. next-themes replaced by a small studio-theme hook (React 19 script warning). Browser check run in headless Chrome via playwright-core (Claude in Chrome extension not connected): create box → create document → found by search, light theme, no console errors. 16 Vitest tests.
+
+### P5 — Artifact workspace + plugin contract (designs: X3XV2, S5V319, rwqcK, mkHdH)
+Status: done
+
+- `src/artifacts/plugin.ts`: the `ArtifactPlugin` contract from PRD §7.2, plus a registry. Content schemas use Zod v4.
+- Workspace shell: Content/Resources tabs, inspector tabs Metadata | Format | Script | Insert, metadata panel (title, ID, duration, owner, status, tags, checklist with progress), version switcher grouped by locale.
+- Draft autosave with `If-Match`, with unsaved and error states. Submit-for-review and review/publish dialog (mandatory comment). Review inbox list.
+- Script tab: narration text saved on the version. Audio is deferred.
+- "Editing from trail" banner when opened from a flow step.
+- Done when: a stub plugin round-trips through autosave, review and publish in the browser; Vitest covers the plugin registry and the autosave hook.
+
+Log: 2026-10-29-22-29-08 — API: migration 0004 `artifact_versions.script` (in the approval hash, copied on fork), review list items carry artifact title/type/locale. UI: `ArtifactPlugin` contract + registry with Zod validation/migration and a JSON stub for all three types; workspace with top-bar crumbs/version switcher/status, Preview, review actions (submit → decide → publish → edit as new draft), autosave with If-Match and conflict reload; inspector Metadata (title, duration, tags, checklist on artifact root) / Format / Script / Insert, collapsible rail; trail banner (`?trail=&step=`); review inbox. Browser round trip via playwright-core passes. 46 API + 33 Vitest tests. Deferred: Resources tab (P12), audio.
+
+### P6 — Doc plugin (designs: Fam8J, u1UbS, E2wz2e, Gbinq)
+Status: done
+
+- BlockNote (already a dependency) with custom blocks: callout, embedded RA reference (pinned to a version ID; the chip shows locale/version/usage count), table, code, toggle.
+- Insert palette (Text / Blocks / Media & Reuse) plus the `/` menu. Outline panel built from headings, with word count and read time. A read-only renderer.
+- Done when: a Vitest round trip (JSON → editor → JSON) shows no loss; the doc renders in preview.
+
+Log: 2026-10-29-22-35-35 — doc plugin on BlockNote 0.55 (shadcn view): persisted BlockNote block JSON restricted to an allowlist (Zod), custom `callout` (note/warning/rule) and `raEmbed` (pins artifact + version id, snapshot title/type/number, live flow-usage count) blocks; built-in table, code, toggle, quote, divider, image. Insert palette (Text / Blocks / Media & reuse + published-artifact embed picker) and `/` menu with Callout; Format panel = outline (click to jump) + words/read time/blocks/headings; read-only Renderer for preview. Editor lazy-loaded (own ~970 kB chunk). Plugin contract gained `Provider`, `artifactId`, `locale`; workspace edits validated content; new artifacts start from `createEmpty()`. Round-trip Vitest (editor → JSON → editor, twice) is lossless; browser check passes. Deferred: Diagram block (later type), image upload (P12 assets).
+
+### P7 — Slide plugin, canvas core (designs: X3XV2, lKDrF, GBr9d, i5WjYj)
+Status: done
+
+- react-konva stage at 1920×1080, scaled to fit, with a zoom readout. Element schema per PRD §7.4 (id, type, x/y/w/h/rotation, z, visible, locked, style).
+- Element types: text (title/body/bullets), rect, ellipse, line, arrow, image (URL asset for now), diagram placeholder.
+- Select and multi-select, move/resize/rotate with Konva `Transformer`, keyboard nudge and delete, undo/redo (a history reducer over the content).
+- Insert palette: click drops an element at the centre, or drag it onto the canvas. Format inspector: theme override, typography, flat/gradient background, reset to theme.
+- Done when: a Vitest JSON round trip passes, and the move/rotate/save/reload cycle works in the browser.
+
+Log: 2026-10-29-22-47-38 — slide plugin on react-konva 19 / konva 10: Zod model in 1920×1080 canvas units (text eyebrow/title/body/bullets, rect, ellipse, line, arrow, image URL, diagram placeholder; paint order = array order; style overrides over theme defaults); five slide themes taken from the Format design's swatches (dark/light/violet/mint/cobalt); one SlideScene renders editor and preview. Select/shift-multiselect, drag, Transformer resize/rotate, double-click text editing overlay, arrow nudge (2 / shift 20), delete, ⌘D duplicate, ⌘Z/⇧⌘Z undo with burst merging, T/B/L/D/I inserts, zoom fit/steps. Insert palette (click or drag onto canvas); Format: theme picker, arrange X/Y/W/H/rotate + lock, typography, shape/stroke, diagram steps, image URL/alt/fit, background theme/flat/gradient, reset to theme. Editor and panels lazy-loaded (341 kB chunk). Fixed during the check: Konva `#id` selectors fail for UUIDs starting with a digit (now a predicate lookup, regression-tested). 14 slide Vitest tests incl. JSON round trip; browser check (insert → drag → rotate → edit title → theme → reload/preview) passes. Deferred to P8 as planned: charts, groups, layers panel, alignment/snapping; theme OVERRIDE toggle waits on theme-definitions.md.
+
+### P8 — Slide plugin, charts + structure
+Status: in-progress
+
+- `slide.chart` (line/bar/pie): the persisted data+style model is rendered as Konva shapes. An inspector data grid edits series and labels, and the chart re-renders.
+- Groups, a layers panel (z-order, lock, hide), alignment and snapping guides.
+- Done when: definition-of-done item 4 works end to end with a hand-written slide JSON; Vitest checks that chart data survives a round trip.
+
+### P9 — Animation plugin
+Status: todo
+
+- Motion for React. A registry of 2 templates (`animation.reveal`, `animation.stepsDiagram`), each with a Zod props schema. The inspector form is generated from the schema (text, color, number range, enum, data list).
+- Player with play/pause/restart. The state resets when props change. Honors reduced motion.
+- Done when: definition-of-done item 5 works; Vitest checks that the form edits match the props the player renders.
+
+### P10 — Trail builder + player (designs: uZQNQ, O4eW8o, BJox0, VhdBV, UGout, rE5Bf, t3Hkh)
+Status: todo
+
+- Flow editor: a library picker, a list of steps reorderable with dnd-kit, with locale/version chosen per step. Step settings: advance on (manual or after a duration) and theme (inherit or override). Total duration.
+- Inspector tabs Metadata | Theme | Preview | Publish. The Publish panel shows the "N behind" list with update actions and republish.
+- Player route `/play/$flowId/$revisionId/$step`: renders slide/doc/animation full screen through the plugins, with previous/next, outline, a progress bar, a deep link per step, and a playback bar for timed advance.
+- Done when: in the browser you can build a 3-step trail, publish it, play it, then publish a new artifact version and see the trail still show the old one.
+- Deferred to a later phase: grouping steps into units/sections inside a trail (shown in uZQNQ).
+
+### P11 — Registry export + JSON import (the deferred AI entry point)
+Status: todo
+
+- `scripts/export-schemas.ts` in harness-content writes JSON Schema files (from Zod) and a component manifest into `harness_content_api/schemas/`. The API checks content against them on save and publish, and rejects unknown component types with clear errors.
+- `GET /registry` manifest. `POST /artifacts/import` takes structured JSON: it is validated with readable errors and opens in the editor.
+- Done when: importing valid JSON for each type gives an editable artifact, and importing an unknown component is rejected with a clear message.
+
+### P12 — Resources + hardening (designs: zTTl4)
+Status: todo
+
+- Resources tab: markdown notes (write/preview) and file attachments through `POST /assets`, using local disk storage behind an interface that S3 can replace later.
+- Accessibility pass (keyboard, labels, contrast in all 6 themes). Update the READMEs (root table, both apps). Add a `docs/` entry describing the harness architecture.
+- Done when: all definition-of-done items 1–8 pass as pytest/Vitest scenarios, and lint/typecheck/tests are green across the workspace.
+
+## Critical files
+- New: `apps/harness-content-api/**`, `apps/harness-content/docs/implementation-plan.md`, `apps/harness-content/scripts/pen-nodes.py`, `.agents/skills/harness-next-phase/SKILL.md` (+ `.claude/skills` symlink).
+- Modified: root `pyproject.toml` (workspace, importlinter, pytest), `apps/harness-content/src/index.css`, `src/main.tsx`, `src/routes/**`, `package.json` (react-konva, konva, motion, @dnd-kit, zod, openapi-typescript), `vite.config.ts` (proxy).
+- Reuse: the `apps/algo-server` structure for routers and tests; shadcn components already in `src/components/ui`; BlockNote, TanStack Router/Query/Form already installed.
+
+## Verification (each phase repeats its own "Done when"; overall)
+- `uv run pytest apps/harness-content-api && uv run lint-imports && uv run ruff check`
+- `pnpm --filter harness-content test && pnpm --filter harness-content lint && pnpm --filter harness-content typecheck`
+- Manual: `docker compose up -d` → `uv run fastapi dev` → `pnpm --filter harness-content dev`, then walk definition-of-done items 1–8 in the browser (claude-in-chrome screenshots compared against the `.pen` frames).

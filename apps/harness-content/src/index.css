@@ -1,0 +1,260 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/inter";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/700.css";
+@import "@fontsource/cormorant-garamond/600.css";
+
+/* BlockNote's shadcn UI ships Tailwind classes that must be generated too. */
+@source "../node_modules/@blocknote/shadcn";
+
+/* Studio chrome: Graphite Console, dark or light (`data-theme` on <html>). */
+@custom-variant dark (&:is([data-theme="graphite-dark"] *));
+
+/*
+ * Generated from harness-sigmma.pen variables: gc-d-* / gc-l-* (studio chrome) and the six
+ * content themes (bg, accent, … per mode), which artifact renderers read via data-content-theme.
+ */
+[data-theme="graphite-dark"] {
+  --gc-page: #121214;
+  --gc-raised: #171719;
+  --gc-sunken: #1c1c20;
+  --gc-border: #2a2a2f;
+  --gc-divider: #232327;
+  --gc-text: #fafafa;
+  --gc-ink2: #a1a1aa;
+  --gc-ink3: #71717a;
+  --gc-nav-bg: #4a3c7d;
+  --gc-nav-ink: #ffffff;
+  --gc-row-bg: #241f38;
+  --gc-primary: #6d5bd0;
+  --gc-on-solid: #ffffff;
+  --gc-fail-tint: #40201a;
+  --gc-fail-base: #d97a66;
+  --gc-fail-ink: #f0bdb2;
+  --gc-warn-tint: #3b3313;
+  --gc-warn-base: #bfa33a;
+  --gc-warn-ink: #eadfa6;
+  --gc-risk-tint: #40250f;
+  --gc-risk-base: #d4793f;
+  --gc-risk-ink: #f2c7a3;
+  --gc-pass-tint: #16331b;
+  --gc-pass-base: #4ca050;
+  --gc-pass-ink: #a9d9ac;
+  --gc-done-tint: #122844;
+  --gc-done-base: #4c8fd6;
+  --gc-done-ink: #a7ccee;
+  --gc-warn-chip-ink: #2b250d;
+}
+
+[data-theme="graphite-light"] {
+  --gc-page: #ffffff;
+  --gc-raised: #fafafa;
+  --gc-sunken: #f4f4f5;
+  --gc-border: #e4e4e7;
+  --gc-divider: #ededef;
+  --gc-text: #18181b;
+  --gc-ink2: #52525b;
+  --gc-ink3: #a1a1aa;
+  --gc-nav-bg: #ede9f8;
+  --gc-nav-ink: #3b2e80;
+  --gc-row-bg: #f4f1fc;
+  --gc-primary: #3a3263;
+  --gc-on-solid: #ffffff;
+  --gc-fail-tint: #f7dad4;
+  --gc-fail-base: #c2614f;
+  --gc-fail-ink: #7c2d1c;
+  --gc-warn-tint: #f5edc8;
+  --gc-warn-base: #c2a52b;
+  --gc-warn-ink: #6b5a10;
+  --gc-risk-tint: #fae2ce;
+  --gc-risk-base: #d1763c;
+  --gc-risk-ink: #7e3f15;
+  --gc-pass-tint: #d8edd5;
+  --gc-pass-base: #4f9f52;
+  --gc-pass-ink: #22552b;
+  --gc-done-tint: #d8e7f7;
+  --gc-done-base: #4c8fd6;
+  --gc-done-ink: #1e4c83;
+  --gc-warn-chip-ink: #4a3e0b;
+}
+
+[data-content-theme="dark"] {
+  --ct-bg: #0d0a06;
+  --ct-bg-surface: #140d08;
+  --ct-bg-elevated: #20150d;
+  --ct-divider: #35291f;
+  --ct-border: #554c42;
+  --ct-accent: #df753e;
+  --ct-text-primary: #f5ece0;
+  --ct-text-secondary: #d9cac1;
+  --ct-text-muted: #8c8378;
+}
+
+[data-content-theme="light"] {
+  --ct-bg: #f5ece0;
+  --ct-bg-surface: #fff9f3;
+  --ct-bg-elevated: #ffffff;
+  --ct-divider: #e8ddd5;
+  --ct-border: #d9cac1;
+  --ct-accent: #d96832;
+  --ct-text-primary: #1c120c;
+  --ct-text-secondary: #49392f;
+  --ct-text-muted: #76675d;
+}
+
+[data-content-theme="violet"] {
+  --ct-bg: #0b0a10;
+  --ct-bg-surface: #110f1a;
+  --ct-bg-elevated: #1a1726;
+  --ct-divider: #221e33;
+  --ct-border: #352f4c;
+  --ct-accent: #8b5cf6;
+  --ct-text-primary: #f2f0fa;
+  --ct-text-secondary: #c9c4dd;
+  --ct-text-muted: #837e9b;
+}
+
+[data-content-theme="mint"] {
+  --ct-bg: #080a0a;
+  --ct-bg-surface: #0e1313;
+  --ct-bg-elevated: #16201e;
+  --ct-divider: #17241f;
+  --ct-border: #2a3b36;
+  --ct-accent: #2dd4a7;
+  --ct-text-primary: #e9f4ef;
+  --ct-text-secondary: #bfd4cc;
+  --ct-text-muted: #7c8f89;
+}
+
+[data-content-theme="cobalt"] {
+  --ct-bg: #060910;
+  --ct-bg-surface: #0c111c;
+  --ct-bg-elevated: #131b2b;
+  --ct-divider: #161f33;
+  --ct-border: #28334c;
+  --ct-accent: #4f7cff;
+  --ct-text-primary: #eaeff9;
+  --ct-text-secondary: #bcc7dc;
+  --ct-text-muted: #7b879e;
+}
+
+[data-content-theme="ivory"] {
+  --ct-bg: #0d0a06;
+  --ct-bg-surface: #140d08;
+  --ct-bg-elevated: #20150d;
+  --ct-divider: #35291f;
+  --ct-border: #554c42;
+  --ct-accent: #ffffff;
+  --ct-text-primary: #f5ece0;
+  --ct-text-secondary: #d9cac1;
+  --ct-text-muted: #8c8378;
+}
+
+:root {
+  --radius: 0.375rem;
+  --background: var(--gc-page);
+  --foreground: var(--gc-text);
+  --card: var(--gc-raised);
+  --card-foreground: var(--gc-text);
+  --popover: var(--gc-raised);
+  --popover-foreground: var(--gc-text);
+  --primary: var(--gc-primary);
+  --primary-foreground: var(--gc-on-solid);
+  --secondary: var(--gc-sunken);
+  --secondary-foreground: var(--gc-ink2);
+  --muted: var(--gc-sunken);
+  --muted-foreground: var(--gc-ink3);
+  --accent: var(--gc-row-bg);
+  --accent-foreground: var(--gc-nav-ink);
+  --destructive: var(--gc-fail-base);
+  --border: var(--gc-border);
+  --input: var(--gc-border);
+  --ring: var(--gc-primary);
+}
+
+@theme inline {
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Cormorant Garamond", ui-serif, serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-gc-page: var(--gc-page);
+  --color-gc-raised: var(--gc-raised);
+  --color-gc-sunken: var(--gc-sunken);
+  --color-gc-border: var(--gc-border);
+  --color-gc-divider: var(--gc-divider);
+  --color-gc-text: var(--gc-text);
+  --color-gc-ink2: var(--gc-ink2);
+  --color-gc-ink3: var(--gc-ink3);
+  --color-gc-nav-bg: var(--gc-nav-bg);
+  --color-gc-nav-ink: var(--gc-nav-ink);
+  --color-gc-row-bg: var(--gc-row-bg);
+  --color-gc-primary: var(--gc-primary);
+  --color-gc-on-solid: var(--gc-on-solid);
+  --color-gc-fail-tint: var(--gc-fail-tint);
+  --color-gc-fail-base: var(--gc-fail-base);
+  --color-gc-fail-ink: var(--gc-fail-ink);
+  --color-gc-warn-tint: var(--gc-warn-tint);
+  --color-gc-warn-base: var(--gc-warn-base);
+  --color-gc-warn-ink: var(--gc-warn-ink);
+  --color-gc-risk-tint: var(--gc-risk-tint);
+  --color-gc-risk-base: var(--gc-risk-base);
+  --color-gc-risk-ink: var(--gc-risk-ink);
+  --color-gc-pass-tint: var(--gc-pass-tint);
+  --color-gc-pass-base: var(--gc-pass-base);
+  --color-gc-pass-ink: var(--gc-pass-ink);
+  --color-gc-done-tint: var(--gc-done-tint);
+  --color-gc-done-base: var(--gc-done-base);
+  --color-gc-done-ink: var(--gc-done-ink);
+  --color-gc-warn-chip-ink: var(--gc-warn-chip-ink);
+  --color-ct-bg: var(--ct-bg);
+  --color-ct-bg-surface: var(--ct-bg-surface);
+  --color-ct-bg-elevated: var(--ct-bg-elevated);
+  --color-ct-divider: var(--ct-divider);
+  --color-ct-border: var(--ct-border);
+  --color-ct-accent: var(--ct-accent);
+  --color-ct-text-primary: var(--ct-text-primary);
+  --color-ct-text-secondary: var(--ct-text-secondary);
+  --color-ct-text-muted: var(--ct-text-muted);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: dark;
+  }
+  html[data-theme="graphite-light"] {
+    color-scheme: light;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+}
+
+/* Documents sit on the workspace's page card; BlockNote should not paint its own surface. */
+.bn-container .bn-editor {
+  background: transparent;
+}

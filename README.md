@@ -6,6 +6,7 @@ Introduction to AI: a polyglot monorepo (Python, Node, React).
 apps/                    deployable apps; may depend on packages/*
   algo-server/           FastAPI service (Python 3.14)
   ai-intro/              React app (Vite, pnpm)
+  harness-content-api/   FastAPI + PostgreSQL service for the Reusable Artifacts Studio
 packages/                reusable libraries; never depend on apps/*
   algo/                  Python 3.14 package
   genai/                 Python 3.14: GPT-2 base model, prompts, OpenAI assistant
@@ -55,4 +56,4 @@ pnpm --filter ai-intro dev                                    # :5173, proxies /
 
 The Embeddings lab (chapter 05) runs two more real models: GloVe 6B 300d (~480 MB) and all-MiniLM-L6-v2 (~90 MB), downloaded on first use. With GPT-2 the server holds about 1.1 GB in memory. Set `HF_HOME` to move the Hugging Face cache.
 
-Per-project docs: [algo-server](apps/algo-server/README.md) · [ai-intro](apps/ai-intro/README.md) · [algo](packages/algo/README.md) · [genai](packages/genai/README.md)
+Per-project docs: [algo-server](apps/algo-server/README.md) · [ai-intro](apps/ai-intro/README.md) · [harness-content-api](apps/harness-content-api/README.md) · [algo](packages/algo/README.md) · [genai](packages/genai/README.md)
