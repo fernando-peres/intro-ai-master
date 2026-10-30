@@ -2,8 +2,15 @@
 
 import re
 
-V1 = {"schemaVersion": 1, "type": "slide", "elements": [{"id": "e1", "text": "v1"}]}
-V2 = {"schemaVersion": 1, "type": "slide", "elements": [{"id": "e1", "text": "v2"}]}
+
+def _slide(text: str) -> dict:
+    title = {"id": "e1", "type": "text", "variant": "title", "text": text}
+    box = {"x": 0, "y": 0, "width": 800, "height": 120}
+    return {"schemaVersion": 1, "type": "slide", "elements": [title | box]}
+
+
+V1 = _slide("v1")
+V2 = _slide("v2")
 
 
 def test_create_makes_root_and_first_draft(api):
@@ -100,7 +107,7 @@ def test_independent_locale_counters(api):
     api.ship(en2, "EN wording")
     pt = api.fork(artifact_id, en1, locale="pt-PT")
     assert pt["sourceVersionId"] == en1 and pt["parentVersionId"] is None
-    api.edit(pt["id"], {**V1, "elements": [{"id": "e1", "text": "pt"}]})
+    api.edit(pt["id"], _slide("pt"))
     api.ship(pt["id"], "Tradução")
 
     versions = api.get("usr_viewer", f"/api/v1/artifacts/{artifact_id}/versions").json()

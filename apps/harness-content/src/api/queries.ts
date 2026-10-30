@@ -248,3 +248,15 @@ export function useForkDraft(artifactId: string) {
 export function useMe() {
   return useQuery({ queryKey: keys.me, queryFn: () => unwrap(api.GET("/api/v1/me")) })
 }
+
+export function useImportArtifact() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (body: Schemas["ArtifactImport"]) =>
+      unwrap(api.POST("/api/v1/artifacts/import", { body })),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: keys.artifacts })
+      client.invalidateQueries({ queryKey: keys.tags })
+    },
+  })
+}

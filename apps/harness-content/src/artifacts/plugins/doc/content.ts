@@ -25,15 +25,54 @@ export type DocBlock = {
   children: DocBlock[]
 }
 
-const block: z.ZodType<DocBlock> = z.lazy(() =>
-  z.object({
+type DocBlockInput = Omit<DocBlock, "props" | "children"> & {
+  props?: Record<string, unknown>
+  children?: DocBlockInput[]
+}
+
+export const CALLOUT_TONE_IDS = ["note", "warning", "rule"] as const
+
+const CUSTOM_BLOCKS = ["callout", "raEmbed"] as const
+const BUILT_IN_BLOCKS = DOC_BLOCK_TYPES.filter(
+  (type): type is Exclude<(typeof DOC_BLOCK_TYPES)[number], (typeof CUSTOM_BLOCKS)[number]> =>
+    !(CUSTOM_BLOCKS as readonly string[]).includes(type),
+) as [string, ...string[]]
+
+// Built-in BlockNote props stay open; the custom blocks' props are typed, because their
+// renderers look the values up.
+const block: z.ZodType<DocBlock, DocBlockInput> = z.lazy(() => {
+  const shared = {
     id: z.string().min(1),
-    type: z.enum(DOC_BLOCK_TYPES),
-    props: z.record(z.string(), z.unknown()),
     content: z.unknown().optional(),
-    children: z.array(block),
-  }),
-)
+    children: z.array(block).default([]),
+  }
+  return z.discriminatedUnion("type", [
+    z.object({
+      ...shared,
+      type: z.literal("callout"),
+      props: z.looseObject({ tone: z.enum(CALLOUT_TONE_IDS).default("warning") }).prefault({}),
+    }),
+    z.object({
+      ...shared,
+      type: z.literal("raEmbed"),
+      props: z
+        .looseObject({
+          artifactId: z.string().default(""),
+          versionId: z.string().default(""),
+          locale: z.string().default("en"),
+          title: z.string().default(""),
+          artifactType: z.enum(["slide", "doc", "animation"]).default("slide"),
+          versionNumber: z.number().int().min(0).default(0),
+        })
+        .prefault({}),
+    }),
+    z.object({
+      ...shared,
+      type: z.enum(BUILT_IN_BLOCKS),
+      props: z.record(z.string(), z.unknown()).default({}),
+    }),
+  ]) as unknown as z.ZodType<DocBlock, DocBlockInput>
+})
 
 /**
  * Persisted document: BlockNote's block JSON (stable block ids, typed props, inline content)

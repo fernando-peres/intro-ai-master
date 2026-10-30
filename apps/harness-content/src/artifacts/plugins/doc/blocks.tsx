@@ -3,13 +3,14 @@ import { createReactBlockSpec } from "@blocknote/react"
 import { InfoIcon, OctagonAlertIcon, ScaleIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { api } from "@/api/client"
+import type { CALLOUT_TONE_IDS } from "@/artifacts/plugins/doc/content"
 import { cn } from "@/lib/utils"
 
 const CALLOUT_TONES = {
   note: { icon: InfoIcon, label: "Note", ink: "text-gc-done-base" },
   warning: { icon: OctagonAlertIcon, label: "Warning", ink: "text-gc-risk-base" },
   rule: { icon: ScaleIcon, label: "Rule", ink: "text-gc-primary" },
-} as const
+} as const satisfies Record<(typeof CALLOUT_TONE_IDS)[number], unknown>
 type CalloutTone = keyof typeof CALLOUT_TONES
 const TONE_ORDER = Object.keys(CALLOUT_TONES) as CalloutTone[]
 
@@ -21,7 +22,8 @@ export const calloutBlock = createReactBlockSpec(
   },
   {
     render: ({ block, editor, contentRef }) => {
-      const tone = CALLOUT_TONES[block.props.tone]
+      // Content is schema-checked, but never let a stray tone take the editor down.
+      const tone = CALLOUT_TONES[block.props.tone] ?? CALLOUT_TONES.warning
       const next = TONE_ORDER[(TONE_ORDER.indexOf(block.props.tone) + 1) % TONE_ORDER.length]
       return (
         <div className="flex w-full gap-2.5 rounded-md border-l-2 border-gc-primary bg-gc-sunken p-[11px]">

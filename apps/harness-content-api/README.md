@@ -40,7 +40,9 @@ Every `/api/v1` request names a user in `X-User-Id`; unknown or missing → `401
 | `GET/POST /locations`, `PATCH /locations/{id}`, `POST /locations/{id}/archive` | box → unit → section; a unit's parent is a box, a section's a unit |
 | `GET /artifacts?query=&tag=&type=&locale=&status=&locationId=&limit=&offset=` | prefix full-text over title, tags and description; `tag` repeats (any of); `locationId` includes its subtree; items add `locationPath`, `localeVersions`, `reuseCount` |
 | `GET /tags` | tag → artifact count |
-| `POST /artifacts` | creates the artifact and its first draft |
+| `POST /artifacts` | creates the artifact and its first draft (empty content comes from the registry) |
+| `POST /artifacts/import` | `{title, locationId, locale, content}`; type is `content.type`; `422` `unknown_type` / `unknown_component` / `invalid_content` with `issues: [{path, message}]` |
+| `GET /registry` | allowlisted components per type (animation templates include their props JSON Schema) and empty content |
 | `GET/PATCH /artifacts/{id}` | `status` is derived; `defaults` maps locale → default version id; `locationId` moves it |
 | `GET /artifacts/{id}/versions?locale=` | |
 | `GET /artifacts/{id}/usages` | every flow revision that references the artifact |
@@ -61,6 +63,10 @@ Every `/api/v1` request names a user in `X-User-Id`; unknown or missing → `401
 | `GET /flows/{id}/revisions/{revisionId}/play` | published revisions only; archived pinned versions still play |
 
 Errors are `{"detail", "code", ...}`; timestamps are UTC `YYYY-MM-DD-HH-mm-ss`.
+
+## Content registry
+
+Content is checked on create, import, draft save and publish against `src/harness_content_api/schemas/` (`registry.json` + one JSON Schema per type). The files are generated from the studio's Zod schemas: run `pnpm --filter harness-content export:schemas` after changing a plugin schema; a harness-content test fails while they are out of date. Unknown components are reported by name before field errors.
 
 ## Configuration
 

@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "type": {
+      "type": "string",
+      "const": "doc"
+    },
+    "blocks": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/__schema0"
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "type"
+  ],
+  "$defs": {
+    "__schema0": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "content": {},
+            "children": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/__schema0"
+              }
+            },
+            "type": {
+              "type": "string",
+              "const": "callout"
+            },
+            "props": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "tone": {
+                  "default": "warning",
+                  "type": "string",
+                  "enum": [
+                    "note",
+                    "warning",
+                    "rule"
+                  ]
+                }
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "id",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "content": {},
+            "children": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/__schema0"
+              }
+            },
+            "type": {
+              "type": "string",
+              "const": "raEmbed"
+            },
+            "props": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "artifactId": {
+                  "default": "",
+                  "type": "string"
+                },
+                "versionId": {
+                  "default": "",
+                  "type": "string"
+                },
+                "locale": {
+                  "default": "en",
+                  "type": "string"
+                },
+                "title": {
+                  "default": "",
+                  "type": "string"
+                },
+                "artifactType": {
+                  "default": "slide",
+                  "type": "string",
+                  "enum": [
+                    "slide",
+                    "doc",
+                    "animation"
+                  ]
+                },
+                "versionNumber": {
+                  "default": 0,
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "id",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "content": {},
+            "children": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/__schema0"
+              }
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "paragraph",
+                "heading",
+                "bulletListItem",
+                "numberedListItem",
+                "checkListItem",
+                "toggleListItem",
+                "quote",
+                "codeBlock",
+                "table",
+                "divider",
+                "image"
+              ]
+            },
+            "props": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "id",
+            "type"
+          ]
+        }
+      ]
+    }
+  }
+}

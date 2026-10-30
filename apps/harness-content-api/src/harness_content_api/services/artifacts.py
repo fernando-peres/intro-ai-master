@@ -32,7 +32,7 @@ from harness_content_api.models import (
     VersionState,
 )
 from harness_content_api.schemas import ArtifactCreate, ArtifactUpdate, VersionUpdate
-from harness_content_api.services import audit, locations
+from harness_content_api.services import audit, content, locations
 from harness_content_api.timestamps import utc_now
 
 
@@ -119,6 +119,8 @@ def create_artifact(
 ) -> tuple[Artifact, ArtifactVersion]:
     require(user, EDITORS, "create artifacts")
     locations.get_open(session, data.location_id)
+    body = data.content if data.content is not None else content.empty_content(data.type.value)
+    content.check(data.type.value, body)
     artifact = Artifact(
         id=new_id("ra"),
         type=data.type,
@@ -139,7 +141,7 @@ def create_artifact(
         artifact_id=artifact.id,
         locale=data.locale,
         state=VersionState.DRAFT,
-        content=data.content or {"schemaVersion": 1, "type": data.type.value},
+        content=body,
         created_by=user.id,
     )
     session.add(draft)
@@ -242,7 +244,7 @@ def create_draft(
             draft.source_version_id = source.id
     elif locale:
         draft.locale = locale
-        draft.content = {"schemaVersion": 1, "type": artifact.type.value}
+        draft.content = content.empty_content(artifact.type.value)
     else:
         raise Invalid("draft_source_required", "Pass fromVersionId, locale, or both")
     session.add(draft)
@@ -276,6 +278,8 @@ def update_draft(
             f"Draft is at revision {version.revision}, not {expected}",
             currentRevision=version.revision,
         )
+    if data.content is not None:
+        content.check(session.get(Artifact, version.artifact_id).type.value, data.content)
     for name, value in data.model_dump(exclude_unset=True, exclude_none=True).items():
         setattr(version, name, value)
     version.revision += 1
@@ -322,6 +326,7 @@ def publish(
         raise Conflict("review_required", "Publishing needs an approved review")
     if review.content_hash != content_hash(version):
         raise Conflict("approval_stale", "The draft changed after approval; submit it again")
+    content.check(session.get(Artifact, version.artifact_id).type.value, version.content)
 
     highest = session.scalar(
         select(func.max(ArtifactVersion.version_number)).where(

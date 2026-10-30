@@ -115,12 +115,13 @@ class Api:
         return self.post("usr_author", "/api/v1/locations", body, expect=201).json()["id"]
 
     def artifact(self, locale: str = "en", content: dict | None = None, **fields) -> dict:
+        kind = (content or {}).get("type", "slide")
         body = {
-            "type": "slide",
+            "type": kind,
             "title": "How the Harness Evaluates",
             "locationId": self.box(),
             "locale": locale,
-            "content": content or {"schemaVersion": 1, "type": "slide", "elements": []},
+            "content": content or {"schemaVersion": 1, "type": "slide"},
             **fields,
         }
         return self.post("usr_author", "/api/v1/artifacts", body, expect=201).json()

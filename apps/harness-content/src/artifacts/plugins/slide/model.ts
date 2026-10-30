@@ -82,9 +82,10 @@ const box = {
   y: z.number(),
   width: z.number().positive(),
   height: z.number().positive(),
-  rotation: z.number(),
-  visible: z.boolean(),
-  locked: z.boolean(),
+  // Defaults keep imported or generated elements terse; the editor always writes them.
+  rotation: z.number().default(0),
+  visible: z.boolean().default(true),
+  locked: z.boolean().default(false),
   name: z.string().optional(),
   /** Elements sharing a groupId select, move and reorder together. */
   groupId: z.string().optional(),
@@ -128,9 +129,9 @@ const chartData = z
 
 const chartOptions = z.object({
   title: z.string().optional(),
-  showLegend: z.boolean(),
-  showGrid: z.boolean(),
-  showValues: z.boolean(),
+  showLegend: z.boolean().default(true),
+  showGrid: z.boolean().default(true),
+  showValues: z.boolean().default(false),
   yMin: z.number().optional(),
   yMax: z.number().optional(),
 })
@@ -142,24 +143,29 @@ const element = z.discriminatedUnion("type", [
     type: z.literal("text"),
     variant: z.enum(TEXT_VARIANTS),
     text: z.string(),
-    style: textStyle,
+    style: textStyle.default({}),
   }),
-  z.object({ ...box, type: z.enum(["rect", "ellipse"]), style: shapeStyle }),
-  z.object({ ...box, type: z.enum(["line", "arrow"]), style: shapeStyle }),
+  z.object({ ...box, type: z.enum(["rect", "ellipse"]), style: shapeStyle.default({}) }),
+  z.object({ ...box, type: z.enum(["line", "arrow"]), style: shapeStyle.default({}) }),
   z.object({
     ...box,
     type: z.literal("image"),
     src: z.string(),
-    alt: z.string(),
-    fit: z.enum(["cover", "contain"]),
+    alt: z.string().default(""),
+    fit: z.enum(["cover", "contain"]).default("cover"),
   }),
-  z.object({ ...box, type: z.literal("diagram"), labels: z.array(z.string()), style: shapeStyle }),
+  z.object({
+    ...box,
+    type: z.literal("diagram"),
+    labels: z.array(z.string()),
+    style: shapeStyle.default({}),
+  }),
   z.object({
     ...box,
     type: z.literal("chart"),
     chartType: z.enum(CHART_TYPES),
     data: chartData,
-    options: chartOptions,
+    options: chartOptions.prefault({}),
   }),
 ])
 

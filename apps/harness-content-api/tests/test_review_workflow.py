@@ -1,7 +1,14 @@
 """PRD definition-of-done 6 and the §6.1 permission matrix."""
 
-CONTENT = {"schemaVersion": 1, "type": "doc", "blocks": [{"type": "paragraph", "text": "draft"}]}
-FIXED = {"schemaVersion": 1, "type": "doc", "blocks": [{"type": "paragraph", "text": "fixed"}]}
+
+def _doc(text: str) -> dict:
+    run = {"type": "text", "text": text, "styles": {}}
+    paragraph = {"id": "b1", "type": "paragraph", "content": [run]}
+    return {"schemaVersion": 1, "type": "doc", "blocks": [paragraph]}
+
+
+CONTENT = _doc("draft")
+FIXED = _doc("fixed")
 
 
 def test_request_changes_then_approve_and_publish(api):
@@ -113,7 +120,7 @@ def test_authors_edit_only_their_own_drafts(api, session):
 
     session.add(User(id="usr_author2", name="Other author", role=Role.AUTHOR))
     session.flush()
-    draft_id = api.artifact()["draft"]["id"]
+    draft_id = api.artifact(content=CONTENT)["draft"]["id"]
     response = api.patch(
         "usr_author2",
         f"/api/v1/artifact-versions/{draft_id}",

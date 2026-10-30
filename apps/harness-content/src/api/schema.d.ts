@@ -104,6 +104,46 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/artifacts/import": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Import Artifact
+     * @description Creates an artifact from generated JSON; 422 with `issues` names every problem.
+     */
+    post: operations["import_artifact_api_v1_artifacts_import_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/registry": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get Registry
+     * @description The allowlisted components and empty content per type, for generators and editors.
+     */
+    get: operations["get_registry_api_v1_registry_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/tags": {
     parameters: {
       query?: never
@@ -576,6 +616,39 @@ export interface components {
     ArtifactCreated: {
       artifact: components["schemas"]["ArtifactOut"]
       draft: components["schemas"]["VersionOut"]
+    }
+    /**
+     * ArtifactImport
+     * @description Structured JSON from an external generator; the artifact type is `content.type`.
+     */
+    ArtifactImport: {
+      /** Title */
+      title: string
+      /** Locationid */
+      locationId: string
+      /** Locale */
+      locale: string
+      /**
+       * Description
+       * @default
+       */
+      description?: string
+      /**
+       * Tags
+       * @default []
+       */
+      tags?: string[]
+      /**
+       * Instructionaldesign
+       * @default {}
+       */
+      instructionalDesign?: {
+        [key: string]: unknown
+      }
+      /** Content */
+      content: {
+        [key: string]: unknown
+      }
     }
     /** ArtifactListItem */
     ArtifactListItem: {
@@ -1529,6 +1602,74 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["ArtifactCreated"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  import_artifact_api_v1_artifacts_import_post: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArtifactImport"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ArtifactCreated"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  get_registry_api_v1_registry_get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: unknown
+          }
         }
       }
       /** @description Validation Error */

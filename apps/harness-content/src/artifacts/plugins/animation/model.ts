@@ -20,6 +20,9 @@ const variants = [
   }),
 ] as const
 
+/** The stored shape itself, without the legacy fill-in; the registry exports this one. */
+export const animationContentSchema = z.discriminatedUnion("template", variants)
+
 /**
  * Animation content: a registered template id plus its props, never component source.
  * Content saved before this plugin existed (no `template`) opens as the first template.
@@ -29,7 +32,7 @@ export const animationSchema = z.preprocess(
     raw && typeof raw === "object" && !("template" in raw)
       ? { ...raw, template: TEMPLATES[0].id, props: {} }
       : raw,
-  z.discriminatedUnion("template", variants),
+  animationContentSchema,
 )
 
 export type AnimationContent = z.output<typeof animationSchema>

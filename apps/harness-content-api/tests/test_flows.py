@@ -1,7 +1,14 @@
 """PRD definition-of-done 7–8 and the §5.5 flow-pinning rules."""
 
-V1 = {"schemaVersion": 1, "type": "slide", "elements": [{"id": "e1", "text": "v1"}]}
-V2 = {"schemaVersion": 1, "type": "slide", "elements": [{"id": "e1", "text": "v2"}]}
+
+def _slide(text: str) -> dict:
+    title = {"id": "e1", "type": "text", "variant": "title", "text": text}
+    box = {"x": 0, "y": 0, "width": 800, "height": 120}
+    return {"schemaVersion": 1, "type": "slide", "elements": [title | box]}
+
+
+V1 = _slide("v1")
+V2 = _slide("v2")
 
 
 def _published_artifact(api) -> tuple[str, str]:

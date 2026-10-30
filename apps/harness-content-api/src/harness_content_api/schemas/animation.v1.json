@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "type": {
+          "type": "string",
+          "const": "animation"
+        },
+        "template": {
+          "type": "string",
+          "const": "animation.reveal"
+        },
+        "props": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "eyebrow": {
+              "default": "01 · Overview",
+              "title": "Eyebrow",
+              "type": "string",
+              "maxLength": 60
+            },
+            "title": {
+              "default": "What a harness checks",
+              "title": "Title",
+              "type": "string",
+              "maxLength": 120
+            },
+            "points": {
+              "default": [
+                {
+                  "text": "Replays recorded traces"
+                },
+                {
+                  "text": "Scores answers against a rubric"
+                },
+                {
+                  "text": "Flags regressions before release"
+                }
+              ],
+              "title": "Points",
+              "minItems": 1,
+              "maxItems": 6,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "default": "A new point",
+                    "title": "Point",
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                }
+              }
+            },
+            "scheme": {
+              "default": "dark",
+              "title": "Colour scheme",
+              "labels": {
+                "dark": "Dark",
+                "light": "Light",
+                "violet": "Violet",
+                "mint": "Mint",
+                "cobalt": "Cobalt"
+              },
+              "type": "string",
+              "enum": [
+                "dark",
+                "light",
+                "violet",
+                "mint",
+                "cobalt"
+              ]
+            },
+            "accent": {
+              "default": "#7C6CF0",
+              "title": "Accent",
+              "control": "color",
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "transition": {
+              "default": "rise",
+              "title": "Transition",
+              "type": "string",
+              "enum": [
+                "fade",
+                "rise",
+                "slide",
+                "zoom",
+                "blur"
+              ]
+            },
+            "easing": {
+              "default": "easeOut",
+              "title": "Easing",
+              "labels": {
+                "easeOut": "Ease out",
+                "easeInOut": "Ease in-out",
+                "linear": "Linear",
+                "backOut": "Overshoot"
+              },
+              "type": "string",
+              "enum": [
+                "easeOut",
+                "easeInOut",
+                "linear",
+                "backOut"
+              ]
+            },
+            "loop": {
+              "default": false,
+              "title": "Loop playback",
+              "type": "boolean"
+            },
+            "duration": {
+              "default": 0.8,
+              "title": "Duration",
+              "step": 0.1,
+              "unit": "s",
+              "type": "number",
+              "minimum": 0.2,
+              "maximum": 3
+            },
+            "stagger": {
+              "default": 0.35,
+              "title": "Stagger",
+              "step": 0.05,
+              "unit": "s",
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1.5
+            }
+          }
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "type",
+        "template"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "type": {
+          "type": "string",
+          "const": "animation"
+        },
+        "template": {
+          "type": "string",
+          "const": "animation.stepsDiagram"
+        },
+        "props": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "title": {
+              "default": "From trace to verdict",
+              "title": "Title",
+              "type": "string",
+              "maxLength": 120
+            },
+            "steps": {
+              "default": [
+                {
+                  "label": "Record",
+                  "detail": "Capture the agent's trace"
+                },
+                {
+                  "label": "Replay",
+                  "detail": "Run it against the new build"
+                },
+                {
+                  "label": "Score",
+                  "detail": "Apply the rubric per step"
+                },
+                {
+                  "label": "Report",
+                  "detail": "Publish pass rate and diffs"
+                }
+              ],
+              "title": "Steps",
+              "minItems": 2,
+              "maxItems": 6,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "default": "New step",
+                    "title": "Label",
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "detail": {
+                    "default": "What happens here",
+                    "title": "Detail",
+                    "type": "string",
+                    "maxLength": 90
+                  }
+                }
+              }
+            },
+            "layout": {
+              "default": "row",
+              "title": "Layout",
+              "labels": {
+                "row": "Row",
+                "column": "Column"
+              },
+              "type": "string",
+              "enum": [
+                "row",
+                "column"
+              ]
+            },
+            "showNumbers": {
+              "default": true,
+              "title": "Show numbers",
+              "type": "boolean"
+            },
+            "scheme": {
+              "default": "dark",
+              "title": "Colour scheme",
+              "labels": {
+                "dark": "Dark",
+                "light": "Light",
+                "violet": "Violet",
+                "mint": "Mint",
+                "cobalt": "Cobalt"
+              },
+              "type": "string",
+              "enum": [
+                "dark",
+                "light",
+                "violet",
+                "mint",
+                "cobalt"
+              ]
+            },
+            "accent": {
+              "default": "#7C6CF0",
+              "title": "Accent",
+              "control": "color",
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "transition": {
+              "default": "rise",
+              "title": "Transition",
+              "type": "string",
+              "enum": [
+                "fade",
+                "rise",
+                "slide",
+                "zoom",
+                "blur"
+              ]
+            },
+            "easing": {
+              "default": "easeOut",
+              "title": "Easing",
+              "labels": {
+                "easeOut": "Ease out",
+                "easeInOut": "Ease in-out",
+                "linear": "Linear",
+                "backOut": "Overshoot"
+              },
+              "type": "string",
+              "enum": [
+                "easeOut",
+                "easeInOut",
+                "linear",
+                "backOut"
+              ]
+            },
+            "loop": {
+              "default": false,
+              "title": "Loop playback",
+              "type": "boolean"
+            },
+            "stepDuration": {
+              "default": 0.7,
+              "title": "Step duration",
+              "step": 0.1,
+              "unit": "s",
+              "type": "number",
+              "minimum": 0.2,
+              "maximum": 3
+            },
+            "pause": {
+              "default": 0.4,
+              "title": "Pause between steps",
+              "step": 0.1,
+              "unit": "s",
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            }
+          }
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "type",
+        "template"
+      ]
+    }
+  ]
+}

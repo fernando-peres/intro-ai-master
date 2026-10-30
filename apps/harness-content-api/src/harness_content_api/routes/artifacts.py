@@ -7,11 +7,13 @@ from sqlalchemy.orm import Session
 
 from harness_content_api.auth import CurrentUser
 from harness_content_api.db import get_session
+from harness_content_api.errors import Invalid
 from harness_content_api.models import ArtifactType, ArtifactVersion
 from harness_content_api.schemas import (
     ActivationUpdate,
     ArtifactCreate,
     ArtifactCreated,
+    ArtifactImport,
     ArtifactOut,
     ArtifactSearch,
     ArtifactUpdate,
@@ -25,7 +27,7 @@ from harness_content_api.schemas import (
     VersionSummary,
     VersionUpdate,
 )
-from harness_content_api.services import artifacts, flows, reviews, search
+from harness_content_api.services import artifacts, content, flows, reviews, search
 
 router = APIRouter(prefix="/api/v1", tags=["artifacts"])
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -41,6 +43,29 @@ def create_artifact(session: SessionDep, user: CurrentUser, body: ArtifactCreate
     artifact, draft = artifacts.create_artifact(session, user, body)
     session.commit()
     return {"artifact": artifacts.describe(session, artifact), "draft": draft}
+
+
+@router.post("/artifacts/import", response_model=ArtifactCreated, status_code=201)
+def import_artifact(session: SessionDep, user: CurrentUser, body: ArtifactImport) -> Any:
+    """Creates an artifact from generated JSON; 422 with `issues` names every problem."""
+    kind = body.content.get("type")
+    if kind not in {t.value for t in ArtifactType} or kind not in content.registry()["types"]:
+        supported = ", ".join(sorted(content.registry()["types"]))
+        raise Invalid(
+            "unknown_type",
+            f"content.type {kind!r} is not a registered artifact type ({supported})",
+            issues=[{"path": "type", "message": f"Expected one of: {supported}"}],
+        )
+    data = ArtifactCreate.model_validate(body.model_dump(by_alias=False) | {"type": kind})
+    artifact, draft = artifacts.create_artifact(session, user, data)
+    session.commit()
+    return {"artifact": artifacts.describe(session, artifact), "draft": draft}
+
+
+@router.get("/registry")
+def get_registry(_: CurrentUser) -> dict[str, Any]:
+    """The allowlisted components and empty content per type, for generators and editors."""
+    return content.registry()
 
 
 @router.get("/artifacts", response_model=ArtifactSearch)

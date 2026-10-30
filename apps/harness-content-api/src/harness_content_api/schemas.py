@@ -66,6 +66,18 @@ class ArtifactCreate(ApiModel):
     content: dict[str, Any] | None = None
 
 
+class ArtifactImport(ApiModel):
+    """Structured JSON from an external generator; the artifact type is `content.type`."""
+
+    title: str = Field(min_length=1)
+    location_id: str
+    locale: Locale
+    description: str = ""
+    tags: list[str] = []
+    instructional_design: dict[str, Any] = {}
+    content: dict[str, Any]
+
+
 class ArtifactUpdate(ApiModel):
     title: str | None = Field(default=None, min_length=1)
     description: str | None = None
