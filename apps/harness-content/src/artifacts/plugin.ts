@@ -38,6 +38,10 @@ export type ArtifactPlugin<C = unknown> = {
   InsertPanel?: ComponentType<EditorProps<C>>
   /** Wraps the whole workspace, so Editor and inspector panels can share live editor state. */
   Provider?: ComponentType<{ children: ReactNode }>
+  /** The content's own presentation theme id; absent when the type has no theme. */
+  contentTheme?: (content: C) => string
+  /** The content restyled with a trail theme id; the stored version is never changed. */
+  withTheme?: (content: C, theme: string) => C
   /** Caption under the stage, e.g. "16:9". */
   stageLabel?: string
 }

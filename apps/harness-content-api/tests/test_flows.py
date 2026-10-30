@@ -116,6 +116,8 @@ def test_flow_permissions_and_concurrency(api):
 def test_steps_keep_order_and_settings(api):
     first, first_v = _published_artifact(api)
     second, second_v = _published_artifact(api)
+    design = {"instructionalDesign": {"durationSeconds": 90}}
+    api.patch("usr_author", f"/api/v1/artifacts/{first}", design)
     flow_id = api.flow()
     steps = [
         _step(second, second_v, advanceSeconds=42, themeOverride="violet"),
@@ -127,12 +129,14 @@ def test_steps_keep_order_and_settings(api):
     assert [s["position"] for s in draft["steps"]] == [1, 2, 3]
     assert draft["steps"][0]["themeOverride"] == "violet"
     assert draft["steps"][1]["artifactTitle"] == "How the Harness Evaluates"
+    assert [s["durationSeconds"] for s in draft["steps"]] == [None, 90, None]
 
     revision_id = api.publish_flow(flow_id).json()["id"]
     played = api.play(flow_id, revision_id)
     assert played["flow"]["id"] == flow_id
     assert played["steps"][0]["advanceSeconds"] == 42
     assert played["steps"][1]["presenterNote"] == "Slow down"
+    assert played["steps"][1]["durationSeconds"] == 90
     flow = api.get("usr_viewer", f"/api/v1/flows/{flow_id}").json()
     assert (flow["latestRevision"], flow["draftRevisionId"], flow["stepCount"]) == (1, None, 3)
 

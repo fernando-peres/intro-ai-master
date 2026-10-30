@@ -21,6 +21,7 @@ import { Caption, LocaleLabel, type StatusKind, StatusLabel } from "@/components
 import { ActionButton } from "@/components/shell/form-controls"
 import { TopBarSlot } from "@/components/shell/top-bar-slots"
 import {
+  ARTIFACT_TABS,
   Inspector,
   type InspectorTab,
   MetadataPanel,
@@ -246,6 +247,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
           </section>
 
           <Inspector
+            tabs={ARTIFACT_TABS}
             tab={tab}
             onTab={setTab}
             collapsed={collapsed}

@@ -41,7 +41,7 @@ export const ARTIFACT_TYPES: ArtifactTypeInfo[] = [
   {
     type: "animation",
     label: "Animation",
-    description: "Timed sequence rendered to video with narration.",
+    description: "A template-driven animation with editable text, data, colours and timing.",
     icon: SparklesIcon,
     chip: "bg-gc-risk-tint text-gc-risk-ink",
     ink: "text-gc-risk-base",

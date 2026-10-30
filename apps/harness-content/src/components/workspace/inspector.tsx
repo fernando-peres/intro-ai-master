@@ -19,22 +19,32 @@ import { formatDuration, parseDuration, scriptStats } from "@/lib/workflow"
 
 export type InspectorTab = "metadata" | "format" | "script" | "insert"
 
-const TABS: { id: InspectorTab; label: string; icon: LucideIcon }[] = [
+export type InspectorTabDef<T extends string> = { id: T; label: string; icon: LucideIcon }
+
+export const ARTIFACT_TABS: InspectorTabDef<InspectorTab>[] = [
   { id: "metadata", label: "Metadata", icon: FileTextIcon },
   { id: "format", label: "Format", icon: SlidersHorizontalIcon },
   { id: "script", label: "Script", icon: MicIcon },
   { id: "insert", label: "Insert", icon: SquarePlusIcon },
 ]
 
-type Props = {
-  tab: InspectorTab
-  onTab: (tab: InspectorTab) => void
+type Props<T extends string> = {
+  tabs: InspectorTabDef<T>[]
+  tab: T
+  onTab: (tab: T) => void
   collapsed: boolean
   onCollapse: (collapsed: boolean) => void
-  panels: Record<InspectorTab, ReactNode>
+  panels: Record<T, ReactNode>
 }
 
-export function Inspector({ tab, onTab, collapsed, onCollapse, panels }: Props) {
+export function Inspector<T extends string>({
+  tabs,
+  tab,
+  onTab,
+  collapsed,
+  onCollapse,
+  panels,
+}: Props<T>) {
   if (collapsed) {
     return (
       <aside
@@ -44,7 +54,7 @@ export function Inspector({ tab, onTab, collapsed, onCollapse, panels }: Props) 
         <RailButton label="Expand inspector" onClick={() => onCollapse(false)} bordered>
           <PanelRightOpenIcon />
         </RailButton>
-        {TABS.slice(0, 3).map((entry) => (
+        {tabs.slice(0, 3).map((entry) => (
           <RailButton
             key={entry.id}
             label={entry.label}
@@ -75,7 +85,7 @@ export function Inspector({ tab, onTab, collapsed, onCollapse, panels }: Props) 
         role="tablist"
         className="flex h-9 shrink-0 items-center gap-[3px] border-b border-gc-border px-2"
       >
-        {TABS.map((entry) => (
+        {tabs.map((entry) => (
           <button
             key={entry.id}
             type="button"
@@ -93,7 +103,10 @@ export function Inspector({ tab, onTab, collapsed, onCollapse, panels }: Props) 
           </button>
         ))}
       </div>
-      <div role="tabpanel" className="flex min-h-0 flex-1 flex-col gap-[13px] overflow-y-auto p-3">
+      <div
+        role="tabpanel"
+        className="flex min-h-0 flex-1 flex-col gap-[13px] overflow-y-auto p-3 *:shrink-0"
+      >
         <Suspense fallback={<Placeholder>Loading…</Placeholder>}>{panels[tab]}</Suspense>
       </div>
     </aside>

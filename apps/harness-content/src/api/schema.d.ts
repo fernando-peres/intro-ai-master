@@ -902,6 +902,8 @@ export interface components {
       presenterNote: string | null
       /** Advanceseconds */
       advanceSeconds: number | null
+      /** Durationseconds */
+      durationSeconds: number | null
       /** Themeoverride */
       themeOverride: string | null
       artifact: components["schemas"]["PlayArtifact"]
@@ -1099,6 +1101,8 @@ export interface components {
       /** Versionnumber */
       versionNumber: number | null
       versionState: components["schemas"]["VersionState"] | null
+      /** Durationseconds */
+      durationSeconds?: number | null
     }
     /** SubmitReview */
     SubmitReview: {

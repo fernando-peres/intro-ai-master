@@ -97,9 +97,15 @@ def describe_revision(session: Session, revision: FlowRevision) -> dict[str, Any
                 "artifact_type": artifact.type,
                 "version_number": version.version_number if version else None,
                 "version_state": version.state if version else None,
+                "duration_seconds": _planned_seconds(artifact),
             }
         )
     return columns | {"steps": steps}
+
+
+def _planned_seconds(artifact: Artifact) -> int | None:
+    value = (artifact.instructional_design or {}).get("durationSeconds")
+    return value if isinstance(value, int) and value > 0 else None
 
 
 def list_flows(session: Session) -> list[Flow]:
@@ -355,6 +361,7 @@ def playback(session: Session, user: User, flow_id: str, revision_id: str) -> di
                 "label": step.label,
                 "presenter_note": step.presenter_note,
                 "advance_seconds": step.advance_seconds,
+                "duration_seconds": _planned_seconds(artifact),
                 "theme_override": step.theme_override,
                 "artifact": artifact,
                 "version": session.get(ArtifactVersion, step.artifact_version_id),

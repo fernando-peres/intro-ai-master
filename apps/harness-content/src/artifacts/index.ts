@@ -1,10 +1,9 @@
+import { animationPlugin } from "@/artifacts/plugins/animation"
 import { docPlugin } from "@/artifacts/plugins/doc"
 import { slidePlugin } from "@/artifacts/plugins/slide"
-import { createStubPlugin } from "@/artifacts/plugins/stub"
 import { registerPlugin } from "@/artifacts/registry"
 
-// Types without their own editor yet use the JSON stub.
-registerPlugin(createStubPlugin("animation"))
+registerPlugin(animationPlugin)
 registerPlugin(docPlugin)
 registerPlugin(slidePlugin)
 

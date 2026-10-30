@@ -1,7 +1,9 @@
 import type Konva from "konva"
 import { useEffect, useRef, useState } from "react"
 import {
+  Arc,
   Arrow,
+  Circle,
   Ellipse,
   Group,
   Image as KonvaImage,
@@ -12,6 +14,7 @@ import {
   Text,
   Transformer,
 } from "react-konva"
+import { layoutChart } from "@/artifacts/plugins/slide/chart-layout"
 import {
   CANVAS,
   FONTS,
@@ -24,6 +27,11 @@ import {
   type SlideTheme,
 } from "@/artifacts/plugins/slide/model"
 import type { Transform } from "@/artifacts/plugins/slide/ops"
+import { snapBox, visualBounds } from "@/artifacts/plugins/slide/snapping"
+
+/** Snap distance in screen pixels; hold Alt while dragging to place freely. */
+const SNAP_PX = 6
+const GUIDE = "#F472B6"
 
 export type SceneHandlers = {
   selected: readonly string[]
@@ -50,6 +58,30 @@ export function SlideScene({ content, scale, handlers, stageRef }: Props) {
   const stage = stageRef ?? ownStage
   const transformer = useRef<Konva.Transformer>(null)
   const selected = handlers?.selected ?? []
+  const [guides, setGuides] = useState<{ vertical: number[]; horizontal: number[] }>({
+    vertical: [],
+    horizontal: [],
+  })
+
+  const free = useRef(false)
+  /** Konva's drag hook, in absolute (screen) coordinates; snaps the box's edges and centre. */
+  const snapDrag = (element: SlideElement) => (pos: Konva.Vector2d) => {
+    if (free.current) {
+      setGuides({ vertical: [], horizontal: [] })
+      return pos
+    }
+    const targets = [
+      { x: 0, y: 0, width: CANVAS.width, height: CANVAS.height },
+      ...content.elements
+        .filter((el) => el.visible && !selected.includes(el.id) && el.id !== element.id)
+        .map(visualBounds),
+    ]
+    // Snap what the eye sees: rotated elements contribute their rotated bounds.
+    const moving = visualBounds({ ...element, x: pos.x / scale, y: pos.y / scale })
+    const snap = snapBox(moving, targets, SNAP_PX / scale)
+    setGuides({ vertical: snap.vertical, horizontal: snap.horizontal })
+    return { x: pos.x + snap.dx * scale, y: pos.y + snap.dy * scale }
+  }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: nodes remount when content changes, so re-attach
   useEffect(() => {
@@ -119,7 +151,14 @@ export function SlideScene({ content, scale, handlers, stageRef }: Props) {
                 }
               }}
               onDblClick={() => element.type === "text" && handlers?.onEditText(element.id)}
-              onDragEnd={() => handlers?.onTransform(collect())}
+              dragBoundFunc={handlers ? snapDrag(element) : undefined}
+              onDragStart={(event) => {
+                free.current = event.evt.altKey
+              }}
+              onDragEnd={() => {
+                setGuides({ vertical: [], horizontal: [] })
+                handlers?.onTransform(collect())
+              }}
             >
               <ElementShape element={element} theme={theme} />
             </Group>
@@ -145,6 +184,26 @@ export function SlideScene({ content, scale, handlers, stageRef }: Props) {
           />
         )}
       </Layer>
+      {handlers && (
+        <Layer listening={false}>
+          {guides.vertical.map((x) => (
+            <Line
+              key={`v${x}`}
+              points={[x, 0, x, CANVAS.height]}
+              stroke={GUIDE}
+              strokeWidth={1.5 / scale}
+            />
+          ))}
+          {guides.horizontal.map((y) => (
+            <Line
+              key={`h${y}`}
+              points={[0, y, CANVAS.width, y]}
+              stroke={GUIDE}
+              strokeWidth={1.5 / scale}
+            />
+          ))}
+        </Layer>
+      )}
     </Stage>
   )
 }
@@ -197,20 +256,23 @@ function ElementShape({ element, theme }: { element: SlideElement; theme: SlideT
               .map((line) => (line.trim() ? `•   ${line}` : line))
               .join("\n")
           : element.text
+      // No fixed height: Konva drops lines that overflow it, so text stays visible past the box.
       return (
-        <Text
-          width={width}
-          height={height}
-          text={style.uppercase ? text.toUpperCase() : text}
-          fontFamily={style.fontFamily}
-          fontSize={style.fontSize}
-          fontStyle={String(style.fontWeight)}
-          fill={style.color}
-          align={style.align}
-          lineHeight={style.lineHeight}
-          letterSpacing={style.letterSpacing}
-          wrap="word"
-        />
+        <>
+          <Rect width={width} height={height} fill="transparent" />
+          <Text
+            width={width}
+            text={style.uppercase ? text.toUpperCase() : text}
+            fontFamily={style.fontFamily}
+            fontSize={style.fontSize}
+            fontStyle={String(style.fontWeight)}
+            fill={style.color}
+            align={style.align}
+            lineHeight={style.lineHeight}
+            letterSpacing={style.letterSpacing}
+            wrap="word"
+          />
+        </>
       )
     }
     case "rect": {
@@ -266,6 +328,8 @@ function ElementShape({ element, theme }: { element: SlideElement; theme: SlideT
       return <ImageShape element={element} theme={theme} />
     case "diagram":
       return <DiagramShape element={element} theme={theme} />
+    case "chart":
+      return <ChartShape element={element} theme={theme} />
   }
 }
 
@@ -387,6 +451,84 @@ function DiagramShape({
             )}
           </Group>
         )
+      })}
+    </>
+  )
+}
+
+/** Draws the chart from its data on every render; see chart-layout.ts. */
+function ChartShape({
+  element,
+  theme,
+}: {
+  element: Extract<SlideElement, { type: "chart" }>
+  theme: SlideTheme
+}) {
+  return (
+    <>
+      <Rect width={element.width} height={element.height} fill="transparent" />
+      {layoutChart(element, theme).map((prim, index) => {
+        // Primitives are positional and rebuilt from the data on every render.
+        const key = index
+        switch (prim.kind) {
+          case "rect":
+            return (
+              <Rect
+                key={key}
+                x={prim.x}
+                y={prim.y}
+                width={prim.width}
+                height={prim.height}
+                fill={prim.fill}
+                cornerRadius={prim.radius}
+              />
+            )
+          case "line":
+            return (
+              <Line
+                key={key}
+                points={prim.points}
+                stroke={prim.stroke}
+                strokeWidth={prim.width}
+                dash={prim.dash}
+                lineCap="round"
+                lineJoin="round"
+              />
+            )
+          case "dot":
+            return <Circle key={key} x={prim.x} y={prim.y} radius={prim.radius} fill={prim.fill} />
+          case "arc":
+            return (
+              <Arc
+                key={key}
+                x={prim.x}
+                y={prim.y}
+                innerRadius={0}
+                outerRadius={prim.radius}
+                angle={prim.angle}
+                rotation={prim.rotation}
+                fill={prim.fill}
+              />
+            )
+          case "text":
+            return (
+              <Text
+                key={key}
+                x={prim.x}
+                y={prim.y}
+                width={prim.width}
+                text={prim.text}
+                fontSize={prim.size}
+                fontFamily={prim.font}
+                fill={prim.fill}
+                align={prim.align}
+                wrap="none"
+                ellipsis
+              />
+            )
+          default:
+            return null
+        }
       })}
     </>
   )

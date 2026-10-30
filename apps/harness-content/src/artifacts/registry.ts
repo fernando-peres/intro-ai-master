@@ -3,7 +3,7 @@ import type { ArtifactPlugin, ValidationResult } from "@/artifacts/plugin"
 
 const plugins = new Map<ArtifactType, ArtifactPlugin<unknown>>()
 
-/** Registers (or replaces) the plugin for its type; later phases swap stubs for real editors. */
+/** Registers (or replaces) the plugin for its type. */
 export function registerPlugin<C>(plugin: ArtifactPlugin<C>): void {
   plugins.set(plugin.type, plugin as ArtifactPlugin<unknown>)
 }

@@ -137,6 +137,15 @@ importers:
       '@blocknote/shadcn':
         specifier: ^0.55.0
         version: 0.55.0(@floating-ui/dom@1.8.0)(@types/hast@3.0.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(tailwindcss@4.3.3)
+      '@dnd-kit/core':
+        specifier: ^6.3.1
+        version: 6.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@dnd-kit/sortable':
+        specifier: ^10.0.0
+        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
+      '@dnd-kit/utilities':
+        specifier: ^3.2.2
+        version: 3.2.2(react@19.3.0)
       '@fontsource-variable/inter':
         specifier: ^5.3.0
         version: 5.3.0
@@ -170,6 +179,9 @@ importers:
       lucide-react:
         specifier: ^1.51.0
         version: 1.54.0(@types/react@19.3.0)(react@19.3.0)
+      motion:
+        specifier: ^12.43.0
+        version: 12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       openapi-fetch:
         specifier: ^0.17.0
         version: 0.17.0
@@ -614,6 +626,28 @@ packages:
   '@csstools/css-tokenizer@4.0.2':
     resolution: {integrity: sha512-OoKoR0f76dCY666JlcbhmVTs2drYj1GUXZTYTcbUgJjh9Nv41aFfZ21bPQTERm5+L5cBDo466NltB2lplS5GBw==}
     engines: {node: '>=20.19.0'}
+
+  '@dnd-kit/accessibility@3.1.1':
+    resolution: {integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==}
+    peerDependencies:
+      react: '>=16.8.0'
+
+  '@dnd-kit/core@6.3.1':
+    resolution: {integrity: sha512-xkGBRQQab4RLwgXxoqETICr6S5JlogafbhNsidmrkVv2YRs5MLwpjoF2qpiGjQt8S9AoxtIV603s0GIUpY5eYQ==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@dnd-kit/sortable@10.0.0':
+    resolution: {integrity: sha512-+xqhmIIzvAYMGfBYYnbKuNicfSsk4RksY2XdmJhT+HAC01nix6fHCztU68jooFiMUB01Ky3F0FyOvhG/BZrWkg==}
+    peerDependencies:
+      '@dnd-kit/core': ^6.3.0
+      react: '>=16.8.0'
+
+  '@dnd-kit/utilities@3.2.2':
+    resolution: {integrity: sha512-+MKAJEOfaBe5SmV6t34p80MMKhjvUz0vRrvVJbPT0WElzaOJ/1xs+D+KDv+tD/NE5ujfrChEcshd4fLn0wpiqg==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   '@emoji-mart/data@1.2.1':
     resolution: {integrity: sha512-no2pQMWiBy6gpBEiqGeU77/bFejDqUTRY7KX+0+iur13op3bqUsXdnwoZs6Xb1zbv0gAj5VvS1PWoUUckSr5Dw==}
@@ -1723,6 +1757,20 @@ packages:
       picomatch:
         optional: true
 
+  framer-motion@12.43.0:
+    resolution: {integrity: sha512-1eaL3RvR/kAlbG7UYcpMptEyzPoENO0c6w7ZnB3/hh2vSAz/6uGAFn6fdoqTBguNstf3MsFhJHsD/0DHiclG+g==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -2024,6 +2072,26 @@ packages:
   minimatch@5.1.9:
     resolution: {integrity: sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==}
     engines: {node: '>=10'}
+
+  motion-dom@12.43.0:
+    resolution: {integrity: sha512-azKON4d9S65PEoFUiQTMTgPheEmzf2QngdRc50AKfJp9Q9mmcBVw22c8eMq9k8kxOFHdL7+WZY7N/5F/lwiDag==}
+
+  motion-utils@12.39.0:
+    resolution: {integrity: sha512-8nadJAJjTtqRkmRF36FoJTrywK9nnFmnPwnSMyxaOCU7GDjN9RTMJIxx9De8ErM+vpPhMccr/6fo5WciyQLnMQ==}
+
+  motion@12.43.0:
+    resolution: {integrity: sha512-BQgQbSa9Hn3/mtbib0MK53y6JSANa+YKUKlaYnWzAVDH424RYQ5LVpV3pNiWH00BA2z4ojsSdMzqT7g2FQwjuQ==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -2339,6 +2407,9 @@ packages:
 
   trim-lines@3.0.1:
     resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   tsx@4.23.15:
     resolution: {integrity: sha512-Yiex1Ovn8z2xPpOWckIiysV1SSyRMY9BkLF++q0yKiDxCqRhosKfMg3janKkiLBwZ5c/YryloKwGZcrEmtwxKw==}
@@ -2900,6 +2971,31 @@ snapshots:
       css-tree: 3.2.1
 
   '@csstools/css-tokenizer@4.0.2': {}
+
+  '@dnd-kit/accessibility@3.1.1(react@19.3.0)':
+    dependencies:
+      react: 19.3.0
+      tslib: 2.8.1
+
+  '@dnd-kit/core@6.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+    dependencies:
+      '@dnd-kit/accessibility': 3.1.1(react@19.3.0)
+      '@dnd-kit/utilities': 3.2.2(react@19.3.0)
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      tslib: 2.8.1
+
+  '@dnd-kit/sortable@10.0.0(@dnd-kit/core@6.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)':
+    dependencies:
+      '@dnd-kit/core': 6.3.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@dnd-kit/utilities': 3.2.2(react@19.3.0)
+      react: 19.3.0
+      tslib: 2.8.1
+
+  '@dnd-kit/utilities@3.2.2(react@19.3.0)':
+    dependencies:
+      react: 19.3.0
+      tslib: 2.8.1
 
   '@emoji-mart/data@1.2.1': {}
 
@@ -3834,6 +3930,15 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.7
 
+  framer-motion@12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      motion-dom: 12.43.0
+      motion-utils: 12.39.0
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+
   fsevents@2.3.3:
     optional: true
 
@@ -4090,6 +4195,20 @@ snapshots:
   minimatch@5.1.9:
     dependencies:
       brace-expansion: 2.1.7
+
+  motion-dom@12.43.0:
+    dependencies:
+      motion-utils: 12.39.0
+
+  motion-utils@12.39.0: {}
+
+  motion@12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      framer-motion: 12.43.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
 
   ms@2.1.3: {}
 
@@ -4393,6 +4512,8 @@ snapshots:
       punycode: 2.3.1
 
   trim-lines@3.0.1: {}
+
+  tslib@2.8.1: {}
 
   tsx@4.23.15:
     dependencies:

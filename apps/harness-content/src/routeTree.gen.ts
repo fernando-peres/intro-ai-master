@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as ArtifactsArtifactIdRouteImport } from './routes/artifacts.$artifactId'
+import { Route as TrailsFlowIdRouteImport } from './routes/trails.$flowId'
+import { Route as PlayFlowIdRevisionIdStepRouteImport } from './routes/play.$flowId.$revisionId.$step'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +30,70 @@ const ArtifactsArtifactIdRoute = ArtifactsArtifactIdRouteImport.update({
   path: '/artifacts/$artifactId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrailsFlowIdRoute = TrailsFlowIdRouteImport.update({
+  id: '/trails/$flowId',
+  path: '/trails/$flowId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayFlowIdRevisionIdStepRoute =
+  PlayFlowIdRevisionIdStepRouteImport.update({
+    id: '/play/$flowId/$revisionId/$step',
+    path: '/play/$flowId/$revisionId/$step',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/reviews': typeof ReviewsRoute
   '/artifacts/$artifactId': typeof ArtifactsArtifactIdRoute
+  '/trails/$flowId': typeof TrailsFlowIdRoute
+  '/play/$flowId/$revisionId/$step': typeof PlayFlowIdRevisionIdStepRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/reviews': typeof ReviewsRoute
   '/artifacts/$artifactId': typeof ArtifactsArtifactIdRoute
+  '/trails/$flowId': typeof TrailsFlowIdRoute
+  '/play/$flowId/$revisionId/$step': typeof PlayFlowIdRevisionIdStepRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/reviews': typeof ReviewsRoute
   '/artifacts/$artifactId': typeof ArtifactsArtifactIdRoute
+  '/trails/$flowId': typeof TrailsFlowIdRoute
+  '/play/$flowId/$revisionId/$step': typeof PlayFlowIdRevisionIdStepRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/reviews' | '/artifacts/$artifactId'
+  fullPaths:
+    | '/'
+    | '/reviews'
+    | '/artifacts/$artifactId'
+    | '/trails/$flowId'
+    | '/play/$flowId/$revisionId/$step'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/reviews' | '/artifacts/$artifactId'
-  id: '__root__' | '/' | '/reviews' | '/artifacts/$artifactId'
+  to:
+    | '/'
+    | '/reviews'
+    | '/artifacts/$artifactId'
+    | '/trails/$flowId'
+    | '/play/$flowId/$revisionId/$step'
+  id:
+    | '__root__'
+    | '/'
+    | '/reviews'
+    | '/artifacts/$artifactId'
+    | '/trails/$flowId'
+    | '/play/$flowId/$revisionId/$step'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ReviewsRoute: typeof ReviewsRoute
   ArtifactsArtifactIdRoute: typeof ArtifactsArtifactIdRoute
+  TrailsFlowIdRoute: typeof TrailsFlowIdRoute
+  PlayFlowIdRevisionIdStepRoute: typeof PlayFlowIdRevisionIdStepRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +119,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtifactsArtifactIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trails/$flowId': {
+      id: '/trails/$flowId'
+      path: '/trails/$flowId'
+      fullPath: '/trails/$flowId'
+      preLoaderRoute: typeof TrailsFlowIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/$flowId/$revisionId/$step': {
+      id: '/play/$flowId/$revisionId/$step'
+      path: '/play/$flowId/$revisionId/$step'
+      fullPath: '/play/$flowId/$revisionId/$step'
+      preLoaderRoute: typeof PlayFlowIdRevisionIdStepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +140,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ReviewsRoute: ReviewsRoute,
   ArtifactsArtifactIdRoute: ArtifactsArtifactIdRoute,
+  TrailsFlowIdRoute: TrailsFlowIdRoute,
+  PlayFlowIdRevisionIdStepRoute: PlayFlowIdRevisionIdStepRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

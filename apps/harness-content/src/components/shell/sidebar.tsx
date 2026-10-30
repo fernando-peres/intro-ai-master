@@ -35,7 +35,7 @@ export function Sidebar() {
   const flows = useFlows().data ?? []
   const pending = useReviews({ status: "pending" }).data?.length ?? 0
   const tree = buildLibraryTree(locations, artifacts)
-  const { newLocation } = useStudioDialogs()
+  const { newLocation, newTrail } = useStudioDialogs()
   const { theme, setTheme } = useStudioTheme()
 
   return (
@@ -56,10 +56,17 @@ export function Sidebar() {
       </Link>
 
       <Spacer />
-      <SectionHeader label="Trails" />
+      <SectionHeader label="Trails" onAdd={newTrail} addLabel="New trail" />
       {flows.length === 0 && <EmptyRow>No trails yet</EmptyRow>}
       {flows.map((flow) => (
-        <Row key={flow.id} icon={RouteIcon} label={flow.title} right={String(flow.stepCount)} />
+        <Link
+          key={flow.id}
+          to="/trails/$flowId"
+          params={{ flowId: flow.id }}
+          className="rounded-md [&.active]:bg-gc-row-bg"
+        >
+          <Row icon={RouteIcon} label={flow.title} right={String(flow.stepCount)} />
+        </Link>
       ))}
 
       <Spacer />

@@ -38,17 +38,20 @@ src/
   components/shell/   top bar (with page slots), library sidebar, create dialogs
   components/workspace/ artifact workspace: inspector panels, review/publish dialogs
   components/search/  artifact search table and filters
+  components/trail/   trail builder: sortable steps, library picker, inspector panels, themed step renderer
   components/ui/      shadcn components (button, card, dialog, input, sonner)
   hooks/              useAutosave (debounced, If-Match, conflict stop)
-  lib/                stamps (UTC YYYY-MM-DD-HH-mm-ss), library tree, URL search state, review workflow
+  lib/                stamps (UTC YYYY-MM-DD-HH-mm-ss), library tree, URL search state, review workflow, trail steps/themes
 scripts/              gen-api.mjs, pen-nodes.py (read design nodes from the .pen file)
 ```
+
+Trails: `/trails/$flowId` edits the flow's draft (autosaved with If-Match); `/play/$flowId/$revisionId/$step` plays a published revision full screen, one URL per step (← → to move, Space pauses a timed step, O opens the outline, Esc exits). A trail theme restyles slide and animation steps through the plugins' `withTheme`; a step can keep its artifact's own theme.
 
 Requests carry `X-User-Id` from the **Dev user** picker in the top bar (stored in localStorage).
 
 ## Artifact plugins
 
-Each artifact type registers an `ArtifactPlugin` (`src/artifacts/plugin.ts`): a Zod schema, `createEmpty`, `migrate`, an `Editor` and a `Renderer` over the same content, and optional `FormatPanel` / `InsertPanel` for the inspector. `src/artifacts/index.ts` registers them; a type without its own editor uses the JSON stub.
+Each artifact type registers an `ArtifactPlugin` (`src/artifacts/plugin.ts`): a Zod schema, `createEmpty`, `migrate`, an `Editor` and a `Renderer` over the same content, and optional `FormatPanel` / `InsertPanel` for the inspector. `src/artifacts/index.ts` registers them. Animation content is a registered template id plus its props (`src/artifacts/plugins/animation/templates/`); the inspector form is generated from each template's props schema, so a new template only needs props built from `field.*`, a `Scene` and a `sequence`.
 
 ## Adding a route
 

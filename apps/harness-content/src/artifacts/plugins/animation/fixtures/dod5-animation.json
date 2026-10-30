@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "type": "animation",
+  "template": "animation.stepsDiagram",
+  "props": {
+    "title": "How an eval run works",
+    "steps": [
+      { "label": "Collect", "detail": "Sample production traces" },
+      { "label": "Replay", "detail": "Run each trace on the candidate" },
+      { "label": "Grade", "detail": "Score with the rubric" }
+    ],
+    "scheme": "dark",
+    "accent": "#6D5BD0",
+    "transition": "rise",
+    "stepDuration": 0.6
+  }
+}

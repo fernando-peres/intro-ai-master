@@ -3,7 +3,9 @@ import type { ArtifactPlugin } from "@/artifacts/plugin"
 import { SlideEditorProvider } from "@/artifacts/plugins/slide/editor-context"
 import {
   createEmptySlide,
+  SLIDE_THEMES,
   type SlideContent,
+  type SlideThemeId,
   slideAssets,
   slideSchema,
   slideSearchText,
@@ -26,5 +28,8 @@ export const slidePlugin: ArtifactPlugin<SlideContent> = {
   FormatPanel: lazy(() => panelsModule().then((m) => ({ default: m.SlideFormatPanel }))),
   InsertPanel: lazy(() => panelsModule().then((m) => ({ default: m.SlideInsertPanel }))),
   Provider: SlideEditorProvider,
+  contentTheme: (content) => content.theme,
+  withTheme: (content, theme) =>
+    theme in SLIDE_THEMES ? { ...content, theme: theme as SlideThemeId } : content,
   stageLabel: "16:9",
 }

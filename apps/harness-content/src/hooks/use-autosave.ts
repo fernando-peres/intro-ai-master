@@ -19,6 +19,8 @@ export type Autosave = {
   error: string | null
   /** Saves now instead of waiting for the debounce. */
   flush: () => Promise<void>
+  /** The ETag of the last successful save, for other writes to the same resource. */
+  currentEtag: () => string | undefined
 }
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
@@ -89,5 +91,6 @@ export function useAutosave<T>({
     return () => clearTimeout(timer)
   }, [value, enabled, delayMs, run])
 
-  return { status, savedAt, error, flush: run }
+  const currentEtag = useCallback(() => tag.current, [])
+  return { status, savedAt, error, flush: run, currentEtag }
 }

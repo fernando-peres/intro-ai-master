@@ -16,8 +16,13 @@ import {
   addElement,
   applyTransforms,
   duplicateElements,
+  expandToGroups,
+  groupElements,
   moveBy,
+  type Reorder,
   removeElements,
+  reorder,
+  ungroupElements,
   updateElement,
 } from "@/artifacts/plugins/slide/ops"
 import { SlideScene } from "@/artifacts/plugins/slide/scene"
@@ -34,6 +39,7 @@ const INSERT_KEYS: Record<string, InsertKind> = {
   l: "bullets",
   d: "diagram",
   i: "image",
+  c: "chart",
 }
 const NUDGE_LARGE = 20
 
@@ -83,6 +89,20 @@ export function SlideEditorView({ content, onChange, readOnly }: EditorProps<Sli
       return
     }
     if (readOnly) return
+    if (mod && event.key.toLowerCase() === "g" && selection.length) {
+      event.preventDefault()
+      actions.apply(
+        event.shiftKey ? ungroupElements(content, selection) : groupElements(content, selection),
+      )
+      return
+    }
+    if (mod && (event.key === "]" || event.key === "[") && selection.length) {
+      event.preventDefault()
+      const up = event.key === "]"
+      const move: Reorder = event.altKey ? (up ? "front" : "back") : up ? "forward" : "backward"
+      actions.apply(reorder(content, selection, move))
+      return
+    }
     if (mod && event.key.toLowerCase() === "d" && selection.length) {
       event.preventDefault()
       const [next, ids] = duplicateElements(content, selection)
@@ -166,7 +186,7 @@ export function SlideEditorView({ content, onChange, readOnly }: EditorProps<Sli
       <div
         ref={box}
         role="application"
-        aria-label="Slide canvas. Arrow keys move the selection, Delete removes it."
+        aria-label="Slide canvas. Arrow keys move the selection, Delete removes it, ⌘G groups, ⌘] and ⌘[ change layer order."
         // biome-ignore lint/a11y/noNoninteractiveTabindex: the canvas takes focus for its keyboard shortcuts
         tabIndex={0}
         onKeyDown={onKeyDown}
@@ -186,12 +206,16 @@ export function SlideEditorView({ content, onChange, readOnly }: EditorProps<Sli
               editingId,
               onSelect: (id, additive) => {
                 box.current?.focus()
-                if (!id) setSelected([])
-                else if (additive) {
-                  setSelected(
-                    selection.includes(id) ? selection.filter((s) => s !== id) : [...selection, id],
-                  )
-                } else setSelected([id])
+                if (!id) {
+                  setSelected([])
+                  return
+                }
+                // A click selects the element's whole group; the layers list can pick one member.
+                const unit = expandToGroups(content, [id])
+                if (!additive) setSelected(unit)
+                else if (selection.includes(id))
+                  setSelected(selection.filter((s) => !unit.includes(s)))
+                else setSelected([...selection, ...unit])
               },
               onTransform: (transforms) =>
                 !readOnly && actions.apply(applyTransforms(content, transforms)),

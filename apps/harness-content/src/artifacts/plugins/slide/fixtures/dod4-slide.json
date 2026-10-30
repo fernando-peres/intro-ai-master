@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "type": "slide",
+  "canvas": { "width": 1920, "height": 1080 },
+  "theme": "dark",
+  "elements": [
+    {
+      "id": "el-eyebrow",
+      "type": "text",
+      "variant": "eyebrow",
+      "text": "03 · Evaluation",
+      "x": 120,
+      "y": 96,
+      "width": 900,
+      "height": 50,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "style": {}
+    },
+    {
+      "id": "el-title",
+      "type": "text",
+      "variant": "title",
+      "text": "How the Harness Evaluates",
+      "x": 120,
+      "y": 150,
+      "width": 1300,
+      "height": 140,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "style": {}
+    },
+    {
+      "id": "el-card-a",
+      "type": "rect",
+      "x": 120,
+      "y": 360,
+      "width": 520,
+      "height": 300,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "style": {}
+    },
+    {
+      "id": "el-card-b",
+      "type": "ellipse",
+      "x": 700,
+      "y": 380,
+      "width": 260,
+      "height": 260,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "style": { "fill": "#6D5BD033" }
+    },
+    {
+      "id": "el-image",
+      "type": "image",
+      "src": "",
+      "alt": "Trace replay diagram",
+      "fit": "cover",
+      "x": 120,
+      "y": 720,
+      "width": 840,
+      "height": 260,
+      "rotation": 0,
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "el-chart",
+      "type": "chart",
+      "chartType": "line",
+      "data": {
+        "labels": ["Run 1", "Run 2", "Run 3", "Run 4", "Run 5"],
+        "series": [
+          { "name": "Trace replay", "values": [62, 68, 71, 79, 84] },
+          { "name": "Rubric pass", "values": [44, 52, 61, 66, 73] }
+        ]
+      },
+      "options": {
+        "title": "Pass rate by run (%)",
+        "showLegend": true,
+        "showGrid": true,
+        "showValues": false
+      },
+      "x": 1040,
+      "y": 360,
+      "width": 760,
+      "height": 620,
+      "rotation": 0,
+      "visible": true,
+      "locked": false
+    }
+  ]
+}

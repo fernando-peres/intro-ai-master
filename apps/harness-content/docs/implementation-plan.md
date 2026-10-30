@@ -109,27 +109,31 @@ Status: done
 Log: 2026-10-29-22-47-38 — slide plugin on react-konva 19 / konva 10: Zod model in 1920×1080 canvas units (text eyebrow/title/body/bullets, rect, ellipse, line, arrow, image URL, diagram placeholder; paint order = array order; style overrides over theme defaults); five slide themes taken from the Format design's swatches (dark/light/violet/mint/cobalt); one SlideScene renders editor and preview. Select/shift-multiselect, drag, Transformer resize/rotate, double-click text editing overlay, arrow nudge (2 / shift 20), delete, ⌘D duplicate, ⌘Z/⇧⌘Z undo with burst merging, T/B/L/D/I inserts, zoom fit/steps. Insert palette (click or drag onto canvas); Format: theme picker, arrange X/Y/W/H/rotate + lock, typography, shape/stroke, diagram steps, image URL/alt/fit, background theme/flat/gradient, reset to theme. Editor and panels lazy-loaded (341 kB chunk). Fixed during the check: Konva `#id` selectors fail for UUIDs starting with a digit (now a predicate lookup, regression-tested). 14 slide Vitest tests incl. JSON round trip; browser check (insert → drag → rotate → edit title → theme → reload/preview) passes. Deferred to P8 as planned: charts, groups, layers panel, alignment/snapping; theme OVERRIDE toggle waits on theme-definitions.md.
 
 ### P8 — Slide plugin, charts + structure
-Status: in-progress
+Status: done
 
 - `slide.chart` (line/bar/pie): the persisted data+style model is rendered as Konva shapes. An inspector data grid edits series and labels, and the chart re-renders.
 - Groups, a layers panel (z-order, lock, hide), alignment and snapping guides.
 - Done when: definition-of-done item 4 works end to end with a hand-written slide JSON; Vitest checks that chart data survives a round trip.
 
+Log: 2026-10-30-07-47-31 — `chart` element (line/bar/pie) persisting labels + numeric series (+ per-series colour) and options (title, legend, grid, values, y range); drawn from a pure `layoutChart` into Konva shapes, so data edits re-render; chart editor with type switch, options and an editable data grid (add/remove rows and series). Groups as a shared `groupId` (click selects the group; layers list can pick one member; ⌘G / ⇧⌘G), layers panel (top-first, nested groups, show/hide, lock, select), z-order front/forward/backward/back (⌘] ⌘[ ⌥⌘] ⌥⌘[), align six ways (to selection, or to slide for one element/group) and distribute; drag snapping to slide and sibling edges/centres via `dragBoundFunc` using rotated visual bounds (Alt = free), with guides. Fixed on the way: inspector items shrank instead of scrolling (`*:shrink-0`); slide text no longer drops lines past its box. Hand-written DoD 4 fixture (`fixtures/dod4-slide.json`) passes in Vitest and in the browser (title font/colour, move + rotate, snap to x=120, group, chart value edit, reload). 63 Vitest tests. Note: align/distribute still use unrotated boxes.
+
 ### P9 — Animation plugin
-Status: todo
+Status: done
 
 - Motion for React. A registry of 2 templates (`animation.reveal`, `animation.stepsDiagram`), each with a Zod props schema. The inspector form is generated from the schema (text, color, number range, enum, data list).
 - Player with play/pause/restart. The state resets when props change. Honors reduced motion.
 - Done when: definition-of-done item 5 works; Vitest checks that the form edits match the props the player renders.
+Log: 2026-10-30-09-09-28 — Motion 12 animation plugin replaces the JSON stub (stub removed). Content = `{template, props}`; templates `animation.reveal` and `animation.stepsDiagram` build props from `field.*` helpers (Zod + `.meta`), shared scheme/accent/transition/easing/loop. Inspector form generated from the props' JSON Schema (text, textarea, color, range, enum, toggle, data list; unmappable props throw); Insert lists templates, switching keeps shared props. Player: one Motion sequence over `data-anim` parts, play/pause/restart, progress, loop; any content change remounts and restarts; reduced motion shows the final frame and plays on request. Legacy stub content opens as Reveal. DoD 5 Vitest (`fixtures/dod5-animation.json`, form → saved props → player frame) + headless-Chrome check (edit labels, add step, scheme, accent, duration, transition → saved; pause holds; reduced-motion reload shows edits). 69 Vitest. Deferred: scrubbing, playback speed control, thumbnails, video/GIF export.
 
 ### P10 — Trail builder + player (designs: uZQNQ, O4eW8o, BJox0, VhdBV, UGout, rE5Bf, t3Hkh)
-Status: todo
+Status: done
 
 - Flow editor: a library picker, a list of steps reorderable with dnd-kit, with locale/version chosen per step. Step settings: advance on (manual or after a duration) and theme (inherit or override). Total duration.
 - Inspector tabs Metadata | Theme | Preview | Publish. The Publish panel shows the "N behind" list with update actions and republish.
 - Player route `/play/$flowId/$revisionId/$step`: renders slide/doc/animation full screen through the plugins, with previous/next, outline, a progress bar, a deep link per step, and a playback bar for timed advance.
 - Done when: in the browser you can build a 3-step trail, publish it, play it, then publish a new artifact version and see the trail still show the old one.
 - Deferred to a later phase: grouping steps into units/sections inside a trail (shown in uZQNQ).
+Log: 2026-10-30-10-02-41 — API: steps and playback carry the artifact's planned `durationSeconds`. UI: sidebar trails + New trail dialog (title, locale, theme); `/trails/$flowId` builder over the flow draft (autosave with If-Match; `useAutosave` now exposes `currentEtag`), dnd-kit sortable steps (pointer + keyboard), library picker (published artifacts, locale + pinned version, label), BEHIND/OVERRIDE/timer badges, total duration; inspector (now tab-generic) Metadata (title, description, locale, revisions) / Theme (trail theme, per-step Follow trail \| Use artifact) / Preview (themed renderer, edit artifact with trail banner, play from step, pinned version, label, advance manual\|after N s, note, theme) / Publish (pinned references with Update, use current defaults, change comment, publish/republish). Plugin contract gains `contentTheme`/`withTheme` (slide theme, animation scheme). Player `/play/$flowId/$revisionId/$step` renders outside the studio shell: trail badge, outline with presenter notes, prev/next + keys, timed auto-advance with pause, progress bar; doc steps get the reading header. Trail themes = the five slide themes (theme-definitions.md still pending). Browser check: 3-step trail built, reordered by keyboard, timed step, override, published, played (deep links, auto-advance), slide v2 published → revision 1 still plays v1 and the builder shows 1 behind. 75 Vitest, 46 API. Deferred: unit/section grouping in trails, "after audio" advance, presenter view.
 
 ### P11 — Registry export + JSON import (the deferred AI entry point)
 Status: todo

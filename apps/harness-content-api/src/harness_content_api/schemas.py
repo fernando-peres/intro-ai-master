@@ -265,6 +265,8 @@ class StepOut(StepIn):
     artifact_type: ArtifactType
     version_number: int | None
     version_state: VersionState | None
+    #: The artifact's planned duration (`instructionalDesign.durationSeconds`), if set.
+    duration_seconds: int | None = None
 
 
 class RevisionSummary(ApiModel):
@@ -326,6 +328,7 @@ class PlayStep(ApiModel):
     label: str | None
     presenter_note: str | None
     advance_seconds: int | None
+    duration_seconds: int | None
     theme_override: str | None
     artifact: PlayArtifact
     version: VersionOut

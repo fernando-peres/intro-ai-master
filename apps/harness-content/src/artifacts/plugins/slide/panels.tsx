@@ -15,8 +15,10 @@ import {
 } from "lucide-react"
 import type { ReactNode } from "react"
 import type { EditorProps } from "@/artifacts/plugin"
+import { ChartEditor } from "@/artifacts/plugins/slide/chart-editor"
 import { INSERT_MIME } from "@/artifacts/plugins/slide/editor"
 import { useSlideActions, useSlideEditor } from "@/artifacts/plugins/slide/editor-context"
+import { AlignPanel, LayersPanel } from "@/artifacts/plugins/slide/layers-panel"
 import {
   createElement,
   FONTS,
@@ -63,7 +65,7 @@ const PALETTE: { group: string; entries: PaletteEntry[] }[] = [
     entries: [
       { kind: "diagram", label: "Diagram placeholder", icon: WorkflowIcon, key: "D" },
       { kind: "image", label: "Image", icon: ImageIcon, key: "I" },
-      { label: "Chart", icon: BarChart3Icon, hint: "Data-editable charts arrive in P8" },
+      { kind: "chart", label: "Chart", icon: BarChart3Icon, key: "C" },
     ],
   },
   {
@@ -255,6 +257,9 @@ export function SlideFormatPanel({ content, onChange, readOnly }: EditorProps<Sl
         })}
       </div>
 
+      <LayersPanel content={content} onChange={onChange} readOnly={readOnly} />
+      <AlignPanel content={content} onChange={onChange} readOnly={readOnly} />
+
       {elements.length === 0 && (
         <Placeholder>Select an element on the canvas to arrange and style it.</Placeholder>
       )}
@@ -311,7 +316,11 @@ export function SlideFormatPanel({ content, onChange, readOnly }: EditorProps<Sl
         />
       )}
 
-      {single && single.type !== "text" && single.type !== "image" && (
+      {single?.type === "chart" && (
+        <ChartEditor chart={single} content={content} onChange={onChange} readOnly={disabled} />
+      )}
+
+      {single && single.type !== "text" && single.type !== "image" && single.type !== "chart" && (
         <>
           <PanelHeading
             label={single.type === "line" || single.type === "arrow" ? "Stroke" : "Shape"}
