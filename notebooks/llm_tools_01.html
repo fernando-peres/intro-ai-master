@@ -321,6 +321,8 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3)
 .scenes { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
 .scene { font:500 12px var(--mono); padding:5px 11px; border-radius:999px; border:1px solid var(--border); background:var(--page); color:var(--ink2); cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
 .scene:hover { color:var(--text); }
+.scene .cnt { font:600 10px var(--mono); padding:1px 6px; border-radius:999px; background:var(--sunken); color:var(--ink3); }
+.scene.cur .cnt { background:color-mix(in srgb, currentColor 14%, transparent); color:inherit; }
 .scene.cur.fail { background:var(--fail-tint); color:var(--fail-ink); border-color:transparent; }
 .scene.cur.warn { background:var(--warn-tint); color:var(--warn-ink); border-color:transparent; }
 .scene.cur.pass { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
@@ -880,6 +882,18 @@ function withoutScene(qCell, wCell, verdict) {
 }
 
 const players = new Set();
+let hoverPlayer = null;
+document.addEventListener("keydown", ev => {
+  if (ev.ctrlKey || ev.metaKey || ev.altKey || /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)) return;
+  const P = [...players].find(p => p.root.isConnected && p.root.contains(document.activeElement)) || (hoverPlayer?.root.isConnected ? hoverPlayer : null);
+  if (!P) return;
+  if (ev.key === "ArrowRight") P.fwd();
+  else if (ev.key === "ArrowLeft") P.back();
+  else if (ev.key === " ") P.play();
+  else if (/^[1-9]$/.test(ev.key)) P.scene_(+ev.key - 1);
+  else return;
+  ev.preventDefault();
+});
 let PID = 0;
 function stopPlayers() { players.forEach(p => { p.stop(); if (!p.root.isConnected) players.delete(p); }); }
 
@@ -887,10 +901,11 @@ function makePlayer(host, cfg) {
   const id = "pl" + (++PID);
   host.innerHTML = `<div class="panel loop player${cfg.idleWorld ? " idle-world" : ""}" data-step="0">
     <div class="loop-diagram">
-      ${cfg.scenes.length > 1 ? `<div class="scenes">${cfg.scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${s.tone === "pass" ? "✓" : "✕"} ${esc(s.label)}</button>`).join('<span class="arr">▸</span>')}</div>` : ""}
+      ${cfg.scenes.length > 1 ? `<div class="scenes">${cfg.scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${s.tone === "pass" ? "✓" : "✕"} ${esc(s.label)}<span class="cnt">0/${s.hops.length}</span></button>`).join('<span class="arr">·</span>')}</div>` : ""}
       <div class="svgwrap"></div>
       <div class="controls">
         <button class="btn solid play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play</span></button>
+        <button class="btn backb" aria-label="Step back"><span class="mono" style="font-size:11px">←</span> Back</button>
         <button class="btn stepb">Step <span class="mono" style="font-size:11px">→</span></button>
         <button class="btn resetb">Reset</button>
         <div class="prog"></div>
@@ -967,16 +982,18 @@ function makePlayer(host, cfg) {
   }
 
   function setScene(i) {
-    P.scene = i; P.n = 0;
+    P.scene = i;
     const sc = cfg.scenes[i];
     $(".svgwrap", root).innerHTML = svgFor(sc);
     root.querySelectorAll(".scene").forEach(b => b.classList.toggle("cur", +b.dataset.i === i));
     $(".prog", root).innerHTML = sc.hops.map(() => "<i></i>").join("");
-    setStep(0);
+    setStep(P.steps[i]);
   }
   function setStep(n) {
-    P.n = n; root.dataset.step = n;
+    P.steps[P.scene] = n; root.dataset.step = n;
     const sc = cfg.scenes[P.scene], h = sc.hops[n - 1];
+    const cnt = $(`.scene[data-i="${P.scene}"] .cnt`, root);
+    if (cnt) cnt.textContent = n === sc.hops.length ? "done" : `${n}/${sc.hops.length}`;
     root.querySelectorAll(".hop").forEach(g => {
       const s = +g.dataset.step, hop = sc.hops[s - 1];
       g.classList.toggle("on", s === n); g.classList.toggle("past", n > 0 && s < n);
@@ -986,7 +1003,7 @@ function makePlayer(host, cfg) {
     root.querySelectorAll(".prog i").forEach((el, i) => el.classList.toggle("on", i < n));
     const cap = $(".caption", root);
     if (!h) {
-      cap.innerHTML = `<div class="t">${esc(sc.label)}: ${sc.hops.length} steps</div><p>Press Play to watch this run, or Step through it. Every payload shown is from the saved notebook run.</p>`;
+      cap.innerHTML = `<div class="t">${esc(sc.label)}: ${sc.hops.length} steps</div><p>Press Play to run <em>this</em> scene only, or step through it with the buttons or the ← → keys. Each scene keeps its own place, so you can switch back and forth while explaining. Every payload shown comes from the saved notebook run.</p>`;
     } else {
       const isJson = /^[[{]/.test(h.payload);
       cap.innerHTML = `<div class="t"><span class="badge" style="background:${h.kind === "run" ? "var(--done-base)" : h.kind === "mem" ? `var(--${h.tone}-base)` : "var(--accent)"};color:#fff">${n}</span>${esc(h.title)}</div>
@@ -1003,24 +1020,29 @@ function makePlayer(host, cfg) {
     }
     cfg.onHop?.(sc, h);
   }
-  function advance() {
-    const sc = cfg.scenes[P.scene];
-    if (P.n < sc.hops.length) { setStep(P.n + 1); return true; }
-    if (P.scene < cfg.scenes.length - 1) { setScene(P.scene + 1); setStep(1); return true; }
-    return false;
-  }
+  const len = () => cfg.scenes[P.scene].hops.length;
+  const cur = () => P.steps[P.scene];
+  function advance() { if (cur() < len()) { setStep(cur() + 1); return true; } return false; }
   P.stop = () => { clearInterval(P.timer); P.timer = null; $(".play span", root).textContent = "Play"; };
-  const atEnd = () => P.scene === cfg.scenes.length - 1 && P.n === cfg.scenes[P.scene].hops.length;
-  $(".play", root).addEventListener("click", () => {
+  P.play = () => {
     if (P.timer) return P.stop();
-    if (atEnd()) setScene(0);
+    if (cur() >= len()) setStep(0);
     $(".play span", root).textContent = "Pause";
     advance();
-    P.timer = setInterval(() => { if (!advance()) P.stop(); }, 2600);
-  });
-  $(".stepb", root).addEventListener("click", () => { P.stop(); if (!advance()) setScene(0); });
-  $(".resetb", root).addEventListener("click", () => { P.stop(); setScene(0); });
-  root.querySelectorAll(".scene").forEach(b => b.addEventListener("click", () => { P.stop(); setScene(+b.dataset.i); }));
+    P.timer = setInterval(() => { if (!advance() || cur() >= len()) P.stop(); }, 2600);
+    if (cur() >= len()) P.stop();
+  };
+  P.fwd = () => { P.stop(); if (!advance()) setStep(0); };
+  P.back = () => { P.stop(); setStep(Math.max(0, cur() - 1)); };
+  P.scene_ = i => { if (i < cfg.scenes.length && i !== P.scene) { P.stop(); setScene(i); } };
+  $(".play", root).addEventListener("click", P.play);
+  $(".stepb", root).addEventListener("click", P.fwd);
+  $(".backb", root).addEventListener("click", P.back);
+  $(".resetb", root).addEventListener("click", () => { P.stop(); setStep(0); });
+  root.querySelectorAll(".scene").forEach(b => b.addEventListener("click", () => P.scene_(+b.dataset.i)));
+  root.addEventListener("mouseenter", () => (hoverPlayer = P));
+  root.addEventListener("mouseleave", () => { if (hoverPlayer === P) hoverPlayer = null; });
+  P.steps = cfg.scenes.map(() => 0);
   players.add(P);
   setScene(0);
   return P;
