@@ -4,13 +4,21 @@ A five-slide HTML deck built on the `class_06/` engine (same `deck.js` runtime, 
 
 ## Run
 
-Run a server from the repo root (the Three.js diagram is an ES module):
+The slide 5 diagram loads Three.js code as ES modules, and browsers block those when a page is opened straight from disk (`file://`). Serve the repo instead. From the repo root:
 
 ```bash
-python3 -m http.server 8000
+just serve
 ```
 
-Then open http://localhost:8000/presentation/06/. Three.js and the handwriting font (Architects Daughter) load from CDNs. Without internet, the notes fall back to CMU Serif.
+Then open http://localhost:8000/presentation/06/. To use another port, run `just serve 8080`. Stop the server with `Ctrl+C`.
+
+Without `just`, run the same thing directly from the repo root:
+
+```bash
+uv run python -m http.server 8000
+```
+
+Serve from the repo root, not from this folder: the deck loads fonts from `../fonts/`. Three.js and the handwriting font (Architects Daughter) load from CDNs. Without internet, the notes fall back to CMU Serif.
 
 ## Slides
 
