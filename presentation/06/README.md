@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A nineteen-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A twenty-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -43,6 +43,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 17 | Why model optimization alone is not enough | `.layout-dark-1` + `.point-list.is-compact` + `.takeaway` |
 | 18 | Training vs. improving the system (cost) | `.layout-dark-1` + `.dark-table.cost-table` + `.rationale` + `.source` |
 | 19 | The rising cost of training frontier models | `.layout-dark-1` + `.cost-chart` + `.source` |
+| 20 | Main takeaways (unit 2) | `.layout-dark-1` + `.point-list.is-takeaways` |
 
 ## Templates: what changes in each instance
 
