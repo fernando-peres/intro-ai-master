@@ -1,12 +1,12 @@
 """Box → Unit → Section tree. A unit's parent is a box; a section's parent is a unit."""
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from harness_content_api.auth import EDITORS, require
 from harness_content_api.errors import Conflict, Invalid, NotFound
 from harness_content_api.ids import new_id
-from harness_content_api.models import Location, LocationKind, User
+from harness_content_api.models import Artifact, Location, LocationKind, User
 from harness_content_api.schemas import LocationCreate, LocationUpdate
 from harness_content_api.services import audit
 
@@ -47,6 +47,12 @@ def list_all(session: Session, include_archived: bool = False) -> list[Location]
     if not include_archived:
         query = query.where(Location.is_archived.is_(False))
     return list(session.scalars(query))
+
+
+def artifact_counts(session: Session) -> dict[str, int]:
+    """Artifacts directly in each location; locations holding none are absent."""
+    query = select(Artifact.location_id, func.count()).group_by(Artifact.location_id)
+    return {location_id: count for location_id, count in session.execute(query)}
 
 
 def create(session: Session, user: User, data: LocationCreate) -> Location:

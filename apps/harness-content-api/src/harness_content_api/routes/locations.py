@@ -20,6 +20,11 @@ def list_locations(
     return locations.list_all(session, include_archived)
 
 
+@router.get("/artifact-counts", response_model=dict[str, int])
+def artifact_counts(session: SessionDep, _: CurrentUser) -> dict[str, int]:
+    return locations.artifact_counts(session)
+
+
 @router.post("", response_model=LocationOut, status_code=201)
 def create_location(session: SessionDep, user: CurrentUser, body: LocationCreate) -> Location:
     location = locations.create(session, user, body)

@@ -72,6 +72,75 @@ describe("useAutosave", () => {
     expect(save).toHaveBeenLastCalledWith({ text: "reloaded + edit" }, '"3"')
   })
 
+  it("saves a pending edit on unmount", async () => {
+    const save = vi.fn(async () => '"2"')
+    const { rerender, unmount } = setup(save)
+    rerender({ value: { text: "pending" }, etag: '"1"', enabled: true })
+    unmount()
+    await act(() => vi.advanceTimersByTimeAsync(0))
+    expect(save).toHaveBeenCalledTimes(1)
+    expect(save).toHaveBeenCalledWith({ text: "pending" }, '"1"')
+  })
+
+  it("does not save on unmount when clean, disabled or in conflict", async () => {
+    const save = vi.fn(async () => '"2"')
+    setup(save).unmount()
+    const disabled = setup(save)
+    disabled.rerender({ value: { text: "x" }, etag: '"1"', enabled: false })
+    disabled.unmount()
+    await act(() => vi.advanceTimersByTimeAsync(0))
+    expect(save).not.toHaveBeenCalled()
+
+    const conflicted = vi.fn().mockRejectedValue(new ApiError(412, "revision_mismatch", "no", {}))
+    const { rerender, unmount } = setup(conflicted)
+    rerender({ value: { text: "mine" }, etag: '"1"', enabled: true })
+    await act(() => vi.advanceTimersByTimeAsync(500))
+    unmount()
+    await act(() => vi.advanceTimersByTimeAsync(0))
+    expect(conflicted).toHaveBeenCalledTimes(1)
+  })
+
+  it("warns before the tab closes only while something is unsaved", async () => {
+    const closing = () => {
+      const event = new Event("beforeunload", { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+    const { rerender } = setup(vi.fn(async () => '"2"'))
+    expect(closing()).toBe(false)
+    rerender({ value: { text: "x" }, etag: '"1"', enabled: true })
+    expect(closing()).toBe(true)
+    await act(() => vi.advanceTimersByTimeAsync(500))
+    expect(closing()).toBe(false)
+  })
+
+  it("is clean again when an edit is undone before its save runs", async () => {
+    const save = vi.fn(async () => '"2"')
+    const { result, rerender } = setup(save)
+    rerender({ value: { text: "x" }, etag: '"1"', enabled: true })
+    expect(result.current.status).toBe("dirty")
+    rerender({ value: { text: "a" }, etag: '"1"', enabled: true })
+    expect(result.current.status).toBe("idle")
+    await act(() => vi.advanceTimersByTimeAsync(1000))
+    expect(save).not.toHaveBeenCalled()
+  })
+
+  it("flush reports whether anything is left unsaved", async () => {
+    const save = vi.fn().mockRejectedValueOnce(new Error("offline")).mockResolvedValue('"2"')
+    const { result, rerender } = setup(save)
+    rerender({ value: { text: "x" }, etag: '"1"', enabled: true })
+    let clean: boolean | undefined
+    await act(async () => {
+      clean = await result.current.flush()
+    })
+    expect(clean).toBe(false)
+    expect(result.current.status).toBe("error")
+    await act(async () => {
+      clean = await result.current.flush()
+    })
+    expect(clean).toBe(true)
+  })
+
   it("reports other failures as errors and retries on the next change", async () => {
     const save = vi.fn().mockRejectedValueOnce(new Error("offline")).mockResolvedValue('"2"')
     const { result, rerender } = setup(save)

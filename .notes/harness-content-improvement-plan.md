@@ -1,6 +1,6 @@
 # harness-content: improvement plan
 
-Created 2026-10-30-14-16-50 UTC. Nothing here is implemented. It reviews the working tree, including uncommitted work. Other work was changing `apps/harness-content` and `apps/harness-content-api` during the review (new design-template and theme files, `src/index.css`, a new `dist` build), so line numbers may have drifted and those changes aren't covered. Recheck each item against current code before starting it.
+Created 2026-10-30-14-16-50 UTC. Implemented 2026-10-30 except E4 (see Status at the end). It reviews the working tree, including uncommitted work. Other work was changing `apps/harness-content` and `apps/harness-content-api` during the review (new design-template and theme files, `src/index.css`, a new `dist` build), so line numbers may have drifted and those changes aren't covered. Recheck each item against current code before starting it.
 
 ## Summary
 
@@ -252,3 +252,26 @@ Rough size: A is small, B1 is large, C1 and D are medium to large, and the rest 
 - Search state in the URL, plus ⌘K.
 - The full-screen player with deep links per step.
 - The dense, tool-like character. These fixes should make it readable without turning it into a spacious consumer app.
+
+## Status
+
+Done with defaults D1–D4: A1–A5, B1–B6, C1–C8, D1, E1, E2, E3, E5, E8, E6 (kept: the finding is the doc callout's intentional accent), E7 (measured below).
+
+- C3: checkboxes removed; the API has no bulk endpoint. B4: sort arrow removed; the API has no sort parameter.
+- E7, uncompressed: editor chunks 949 KB and 341 KB, `native` 418 KB. All lazy-loaded with their routes; interaction not profiled.
+- C4: also removed the disabled Diagram, Dataset and Audio clip cards from the new-artifact dialog (D3).
+
+Verified 2026-10-30, dark theme at 1280×800, on `/`, `/reviews`, `/configuration`, `/artifacts-design`, the slide, doc and animation editors, and a trail:
+
+- `undersized-ui-text` and `tiny-text`: zero on all of them. `/` is also clean at 1024×768.
+- `low-contrast`: one finding, in the animation fixture's authored `accent` (`#6D5BD0`), so it is artifact content, not chrome.
+- `flat-type-hierarchy`: one new finding on `/artifacts-design` (body 12px, h2 13px, h1 14px), left open.
+- Not rerun: the detector on the other five themes, a screen reader, and 200% zoom.
+
+- E1: `PRODUCT.md`, `DESIGN.md` and `.impeccable/design.json` in `apps/harness-content`.
+- E8: `seed --demo` fills a separate `harness_demo` database; steps are in the API README. The `harness` database is unchanged.
+- C4: the Diagram card is gone too, though diagram is partly built (API enum, plugin model). Add it back to `ARTIFACT_TYPES` once it can be created.
+
+Not done:
+
+- E4: the repo has no CI workflows to add the detector to. Add it when CI is first set up.

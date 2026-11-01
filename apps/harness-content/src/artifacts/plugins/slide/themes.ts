@@ -15,6 +15,16 @@ export type SlideTheme = {
   muted: string
   surface: string
   line: string
+  /** Replaces the default font per text role; absent roles keep the defaults. */
+  fonts?: ThemeFonts
+}
+
+export type ThemeFonts = {
+  title: string
+  body: string
+  eyebrow: string
+  eyebrowWeight?: number | null
+  code: string
 }
 
 const SERIES = ["#2DD4A7", "#F2A65A", "#E0607E"]
@@ -88,6 +98,25 @@ export const SLIDE_THEMES = {
     surface: "#FFFFFF14",
     line: "#FFFFFF2E",
   },
+  "nova-ims-green": {
+    label: "Nova IMS Green",
+    background: { kind: "flat", color: "#0D0A06" },
+    accent: "#86EFB8",
+    // Not the #0D0A06 activation colour: a chart series in it would vanish on this background.
+    series: ["#0096FF", "#5FBF8C", "#0069B3"],
+    text: "#FFFFFF",
+    body: "#D9D9D6",
+    muted: "#A3A39E",
+    surface: "#FFFFFF14",
+    line: "#FFFFFF2E",
+    fonts: {
+      title: "Borna",
+      body: "Prompt",
+      eyebrow: "Prompt",
+      eyebrowWeight: 300,
+      code: "Fira Code",
+    },
+  },
 } as const satisfies Record<string, SlideTheme>
 
 export type SlideThemeId = keyof typeof SLIDE_THEMES
@@ -132,7 +161,10 @@ export const THEME_GROUPS = [
 ] as const
 
 export type ThemeSlot = (typeof THEME_GROUPS)[number]["slots"][number][0]
-export type ThemeTokens = Record<ThemeSlot, string> & { backgroundGradient?: boolean }
+export type ThemeTokens = Record<ThemeSlot, string> & {
+  backgroundGradient?: boolean
+  fonts?: ThemeFonts | null
+}
 
 /** The fields a slide reads, from a saved theme's slots. */
 export function tokensToSlideTheme(name: string, tokens: ThemeTokens): SlideTheme {
@@ -148,6 +180,7 @@ export function tokensToSlideTheme(name: string, tokens: ThemeTokens): SlideThem
     muted: tokens.muted,
     surface: tokens.surface,
     line: tokens.connector,
+    ...(tokens.fonts && { fonts: tokens.fonts }),
   }
 }
 
@@ -167,6 +200,24 @@ export const BUILTIN_NAMES: Record<SlideThemeId, string> = {
   mint: "Mint Clinic",
   cobalt: "Cobalt Deep",
   ivory: "Ivory Press",
+  "nova-ims-green": "Nova IMS Green",
+}
+
+const ramp = (color: string) => [0, 0.1, 0.2, 0.3].map((amount) => mix(color, "#000000", amount))
+
+export const NOVA_BACKGROUNDS = {
+  cover: "#10FF80",
+  slide: "#0D0A06",
+  takeaways: "#101240",
+  lesson: "#28352D",
+} as const
+
+/** One-click colours in the Format panel, for themes that define them. */
+export const THEME_PALETTES: Record<string, { colors: string[]; backgrounds: string[] }> = {
+  "nova-ims-green": {
+    colors: ["#86EFB8", "#0D0A06", "#0096FF"].flatMap(ramp),
+    backgrounds: Object.values(NOVA_BACKGROUNDS),
+  },
 }
 
 /** Slots seeded for a built-in theme; the ones slides don't read yet are derived from it. */
@@ -195,6 +246,7 @@ function builtinTokens(theme: SlideTheme): ThemeTokens {
     connector: theme.line,
     nodeLabel: theme.text,
     backgroundGradient: gradient,
+    ...(theme.fonts && { fonts: theme.fonts }),
   }
 }
 

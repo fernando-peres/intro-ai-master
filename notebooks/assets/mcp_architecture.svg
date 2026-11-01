@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" role="img" aria-label="An MCP host runs one client per server. Each client speaks JSON-RPC to one server, and each server reaches its own system.">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#5b6472"/></marker>
+  </defs>
+  <style>
+    text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #1c2430; }
+    .h { font-size: 15px; font-weight: 650; }
+    .s { font-size: 12.5px; fill: #5b6472; }
+    .l { font-size: 12px; fill: #5b6472; }
+    .box { fill: #ffffff; stroke: #c9d0da; stroke-width: 1.2; }
+    .srv { fill: #e8f1ff; stroke: #2f6fde; stroke-width: 1.2; }
+    .wire { stroke: #5b6472; stroke-width: 1.4; fill: none; }
+  </style>
+  <rect width="880" height="340" rx="14" fill="#f6f7f9"/>
+
+  <rect x="24" y="24" width="300" height="292" rx="12" fill="#eceff3" stroke="#c9d0da"/>
+  <text class="h" x="42" y="52">Host application</text>
+  <text class="s" x="42" y="71">Chatbot, IDE, this notebook</text>
+
+  <rect class="box" x="42" y="90" width="112" height="208" rx="10"/>
+  <text class="h" x="98" y="186" text-anchor="middle">LLM</text>
+  <text class="s" x="98" y="206" text-anchor="middle">picks a tool,</text>
+  <text class="s" x="98" y="222" text-anchor="middle">never runs it</text>
+
+  <rect class="box" x="192" y="104" width="116" height="66" rx="10"/>
+  <text class="h" x="250" y="133" text-anchor="middle">MCP client</text>
+  <text class="s" x="250" y="152" text-anchor="middle">one per server</text>
+  <rect class="box" x="192" y="218" width="116" height="66" rx="10"/>
+  <text class="h" x="250" y="247" text-anchor="middle">MCP client</text>
+  <text class="s" x="250" y="266" text-anchor="middle">one per server</text>
+  <path class="wire" d="M154 170 192 140" marker-end="url(#a)" marker-start="url(#a)"/>
+  <path class="wire" d="M154 218 192 248" marker-end="url(#a)" marker-start="url(#a)"/>
+
+  <rect class="srv" x="470" y="104" width="170" height="66" rx="10"/>
+  <text class="h" x="555" y="133" text-anchor="middle">Fetch server</text>
+  <text class="s" x="555" y="152" text-anchor="middle">tool: fetch</text>
+  <rect class="srv" x="470" y="218" width="170" height="66" rx="10"/>
+  <text class="h" x="555" y="247" text-anchor="middle">Filesystem server</text>
+  <text class="s" x="555" y="266" text-anchor="middle">tools: read_text_file, …</text>
+
+  <path class="wire" d="M308 137H470" marker-end="url(#a)" marker-start="url(#a)"/>
+  <path class="wire" d="M308 251H470" marker-end="url(#a)" marker-start="url(#a)"/>
+  <text class="l" x="389" y="126" text-anchor="middle">JSON-RPC</text>
+  <text class="l" x="389" y="240" text-anchor="middle">JSON-RPC</text>
+  <text class="l" x="389" y="194" text-anchor="middle">the MCP standard</text>
+
+  <rect class="box" x="714" y="104" width="142" height="66" rx="10"/>
+  <text class="h" x="785" y="142" text-anchor="middle">The web</text>
+  <rect class="box" x="714" y="218" width="142" height="66" rx="10"/>
+  <text class="h" x="785" y="256" text-anchor="middle">Your files</text>
+  <path class="wire" d="M640 137H714" marker-end="url(#a)" marker-start="url(#a)"/>
+  <path class="wire" d="M640 251H714" marker-end="url(#a)" marker-start="url(#a)"/>
+</svg>

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
-import { Minimize2Icon, PanelRightIcon } from "lucide-react"
+import { CircleHelpIcon, Minimize2Icon, PanelRightIcon } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import type { Schemas } from "@/api/client"
 import { usePlayback } from "@/api/flows"
@@ -8,9 +8,13 @@ import {
   PresentationActions,
   PresentationBadge,
   PresentationStage,
+  ShortcutsHelp,
+  STAGE_SHORTCUTS,
   usePresentation,
 } from "@/components/presentation/presentation-stage"
 import { StepRenderer } from "@/components/trail/themed-content"
+import { usePageTitle } from "@/hooks/use-page-title"
+import { friendlyError } from "@/lib/errors"
 import { placementLabels } from "@/lib/outline"
 import { cn } from "@/lib/utils"
 
@@ -18,12 +22,19 @@ export const Route = createFileRoute("/play/$flowId/$revisionId/$step")({ compon
 
 type Playback = Schemas["Playback"]
 const TICK_MS = 100
+const SHORTCUTS = [
+  { keys: "→ / PgDn", action: "Next step" },
+  { keys: "← / PgUp", action: "Previous step" },
+  { keys: "Space", action: "Pause or resume a timed step" },
+  { keys: "O", action: "Show or hide the outline" },
+  ...STAGE_SHORTCUTS,
+]
 
 function TrailPlayer() {
   const { flowId, revisionId, step } = Route.useParams()
   const playback = usePlayback(flowId, revisionId)
   if (playback.error) {
-    return <PlayerMessage flowId={flowId}>{playback.error.message}</PlayerMessage>
+    return <PlayerMessage flowId={flowId}>{friendlyError(playback.error)}</PlayerMessage>
   }
   if (!playback.data) return <PlayerMessage flowId={flowId}>Loading trail…</PlayerMessage>
   const total = playback.data.steps.length
@@ -33,9 +44,9 @@ function TrailPlayer() {
 
 function PlayerMessage({ flowId, children }: { flowId: string; children: string }) {
   return (
-    <div className="flex h-svh flex-col items-center justify-center gap-3 bg-[#08080B] text-[12px] text-[#D8D4EA]">
+    <div className="flex h-svh flex-col items-center justify-center gap-3 bg-ov-stage text-body text-ov-ink">
       <p>{children}</p>
-      <Link to="/trails/$flowId" params={{ flowId }} className="text-[#9D93C9] underline">
+      <Link to="/trails/$flowId" params={{ flowId }} className="text-ov-muted underline">
         Back to the trail
       </Link>
     </div>
@@ -43,12 +54,13 @@ function PlayerMessage({ flowId, children }: { flowId: string; children: string 
 }
 
 /**
- * One step of a published revision, full screen. The URL is the deep link: each step change
+ * One step of a revision (published, or the draft being built), full screen. The URL is the deep link: each step change
  * navigates, so the browser's back button walks the trail too.
  */
 function Presentation({ playback, index }: { playback: Playback; index: number }) {
   const navigate = useNavigate()
   const { flow, revision, steps } = playback
+  usePageTitle(flow.title)
   const placements = useMemo(() => placementLabels(playback.outline), [playback.outline])
   const current = steps[index]
   const total = steps.length
@@ -77,7 +89,7 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
     () => navigate({ to: "/trails/$flowId", params: { flowId: flow.id } }),
     [navigate, flow.id],
   )
-  const { stageRef, controls, setControls } = usePresentation(exit)
+  const { stageRef, controls, setControls, help, setHelp } = usePresentation(exit)
 
   useEffect(() => {
     if (advance === null || !running) return
@@ -119,7 +131,7 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
         aria-valuemin={1}
         aria-valuemax={total}
         aria-valuenow={index + 1}
-        className="absolute inset-x-0 top-0 z-20 h-[3px] bg-[#FFFFFF1A]"
+        className="absolute inset-x-0 top-0 z-20 h-[3px] bg-ov-track"
       >
         <div className="h-full bg-gc-primary" style={{ width: `${progress}%` }} />
       </div>
@@ -142,9 +154,13 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
         />
       </main>
 
+      {help && <ShortcutsHelp shortcuts={SHORTCUTS} onClose={() => setHelp(false)} />}
       {controls && (
         <>
           <PresentationActions>
+            <OverlayButton label="Keyboard shortcuts (?)" onClick={() => setHelp(!help)}>
+              <CircleHelpIcon />
+            </OverlayButton>
             <OverlayButton label="Outline (O)" onClick={() => setOutline(!outline)}>
               <PanelRightIcon />
             </OverlayButton>
@@ -159,15 +175,15 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
           {outline && (
             <aside
               aria-label="Trail outline"
-              className="absolute inset-y-0 right-0 z-20 flex w-[280px] flex-col gap-1 overflow-y-auto border-l border-[#FFFFFF1F] bg-[#15141Df2] px-3 pt-14 pb-12"
+              className="absolute inset-y-0 right-0 z-20 flex w-[280px] max-w-full flex-col gap-1 overflow-y-auto border-l border-ov-line bg-ov-panel px-3 pt-14 pb-12"
             >
-              <span className="px-1 pb-1 font-mono text-[9px] tracking-[1px] text-[#9D93C9]">
-                OUTLINE · REV {revision.revision}
+              <span className="px-1 pb-1 font-mono text-label tracking-[0.5px] text-ov-muted">
+                OUTLINE · {revision.revision ? `REV ${revision.revision}` : "DRAFT"}
               </span>
               {steps.map((entry, i) => (
                 <div key={entry.id} className="flex flex-col gap-1">
                   {placements.get(i + 1) !== placements.get(i) && placements.get(i + 1) && (
-                    <span className="px-1 pt-2 font-mono text-[8.5px] tracking-[0.6px] text-[#9D93C9] uppercase">
+                    <span className="px-1 pt-2 font-mono text-label tracking-[0.6px] text-ov-muted uppercase">
                       {placements.get(i + 1)}
                     </span>
                   )}
@@ -177,15 +193,15 @@ function Presentation({ playback, index }: { playback: Playback; index: number }
                     onClick={() => go(i)}
                     className={cn(
                       "flex flex-col gap-0.5 rounded-md px-2 py-1.5 text-left",
-                      i === index ? "bg-[#6D5BD033]" : "hover:bg-[#FFFFFF0F]",
+                      i === index ? "bg-ov-current" : "hover:bg-ov-hover",
                     )}
                   >
-                    <span className="flex items-center gap-2 text-[11px] text-[#F0EEF8]">
-                      <span className="font-mono text-[9px] text-[#9D93C9]">{i + 1}</span>
+                    <span className="flex items-center gap-2 text-ui text-ov-text">
+                      <span className="font-mono text-label text-ov-muted">{i + 1}</span>
                       {entry.label || entry.artifact.title}
                     </span>
                     {i === index && entry.presenterNote && (
-                      <span className="pl-4 text-[10px] text-[#B9B1DC]">{entry.presenterNote}</span>
+                      <span className="pl-4 text-label text-ov-soft">{entry.presenterNote}</span>
                     )}
                   </button>
                 </div>

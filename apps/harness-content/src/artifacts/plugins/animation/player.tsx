@@ -31,11 +31,15 @@ function useFitScale() {
   useEffect(() => {
     const node = box.current
     if (!node) return
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect
+    const measure = (width: number, height: number) => {
       const next = Math.min(width / FRAME.width, height / FRAME.height)
       if (next > 0) setFit(next)
-    })
+    }
+    // Measured now as well: a page that is not rendering frames may never call the observer.
+    measure(node.clientWidth, node.clientHeight)
+    const observer = new ResizeObserver(([entry]) =>
+      measure(entry.contentRect.width, entry.contentRect.height),
+    )
     observer.observe(node)
     return () => observer.disconnect()
   }, [])
@@ -51,13 +55,15 @@ export function AnimationPlayer({
   content,
   showControls = true,
   presenting = false,
+  still = false,
 }: {
   content: AnimationContent
   showControls?: boolean
   presenting?: boolean
+  still?: boolean
 }) {
   const template = getTemplate(content.template)
-  const reduced = useReducedMotion() ?? false
+  const reduced = (useReducedMotion() ?? false) || still
   const key = JSON.stringify(content)
   const [run, setRun] = useState({ key, id: 0, play: !reduced })
   if (run.key !== key) setRun({ key, id: run.id + 1, play: !reduced })
@@ -164,14 +170,14 @@ export function AnimationPlayer({
             <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-gc-sunken">
               <div ref={bar} className="h-full origin-left bg-gc-primary" />
             </div>
-            <span ref={clock} className="w-[76px] text-right font-mono text-[10px] text-gc-ink2" />
-            <span className="font-mono text-[9px] tracking-[0.8px] text-gc-ink3 uppercase">
+            <span ref={clock} className="w-[76px] text-right font-mono text-label text-gc-ink2" />
+            <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">
               {status}
               {loop ? " · loop" : ""}
             </span>
           </div>
           {reduced && (
-            <p className="text-[10.5px] text-gc-ink3">
+            <p className="text-label text-gc-ink3">
               Reduced motion is on: showing the final frame. Press play to preview the motion.
             </p>
           )}
@@ -211,6 +217,14 @@ export function AnimationRenderer({
   content,
   showControls,
   presenting,
+  still,
 }: RendererProps<AnimationContent>) {
-  return <AnimationPlayer content={content} showControls={showControls} presenting={presenting} />
+  return (
+    <AnimationPlayer
+      content={content}
+      showControls={showControls}
+      presenting={presenting}
+      still={still}
+    />
+  )
 }

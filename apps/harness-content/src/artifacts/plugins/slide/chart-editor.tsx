@@ -20,7 +20,7 @@ type Props = {
 }
 
 const cell =
-  "h-6 w-full min-w-0 rounded-[4px] border border-transparent bg-transparent px-1.5 text-[10.5px] text-gc-text outline-none hover:border-gc-border focus:border-gc-primary focus:bg-gc-raised disabled:opacity-60"
+  "h-6 w-full min-w-0 rounded-[4px] border border-transparent bg-transparent px-1.5 text-label text-gc-text outline-none hover:border-gc-border focus:border-gc-primary focus:bg-gc-raised disabled:opacity-60"
 
 /** Edits the chart's data and options; the drawing re-renders from them on every change. */
 export function ChartEditor({ chart, content, onChange, readOnly }: Props) {
@@ -90,7 +90,7 @@ export function ChartEditor({ chart, content, onChange, readOnly }: Props) {
             disabled={readOnly}
             onClick={() => actions.apply(updateElement(content, chart.id, { chartType: type }))}
             className={cn(
-              "h-6 rounded-[5px] text-[10.5px] capitalize",
+              "h-6 rounded-[5px] text-label capitalize",
               chart.chartType === type
                 ? "bg-gc-row-bg font-semibold text-gc-nav-ink"
                 : "text-gc-ink3",
@@ -106,9 +106,9 @@ export function ChartEditor({ chart, content, onChange, readOnly }: Props) {
         disabled={readOnly}
         value={options.title ?? ""}
         onChange={(event) => setOptions({ title: event.target.value || undefined }, "chart:title")}
-        className="h-7 rounded-[5px] border border-gc-border bg-gc-sunken px-2 text-[11px] text-gc-text outline-none focus:border-gc-primary"
+        className="h-7 rounded-[5px] border border-gc-border bg-gc-sunken px-2 text-ui text-gc-text outline-none focus:border-gc-primary"
       />
-      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-gc-ink2">
+      <div className="flex flex-wrap gap-x-3 gap-y-1 text-label text-gc-ink2">
         {(
           [
             ["showLegend", "Legend"],
@@ -129,14 +129,14 @@ export function ChartEditor({ chart, content, onChange, readOnly }: Props) {
         ))}
       </div>
       {chart.chartType === "pie" && data.series.length > 1 && (
-        <p className="text-[10.5px] text-gc-ink3">A pie chart draws the first series only.</p>
+        <p className="text-label text-gc-ink3">A pie chart draws the first series only.</p>
       )}
 
       <div className="overflow-x-auto rounded-md border border-gc-border bg-gc-sunken">
         <table aria-label="Chart data" className="w-full border-collapse">
           <thead>
             <tr className="border-b border-gc-border">
-              <th className="w-[38%] px-1 py-1 text-left font-mono text-[8.5px] font-normal tracking-[0.8px] text-gc-ink3">
+              <th className="w-[38%] px-1 py-1 text-left font-mono text-label font-normal tracking-[0.5px] text-gc-ink3">
                 LABEL
               </th>
               {data.series.map((series, s) => (
@@ -256,7 +256,7 @@ function AddButton({ onClick, children }: { onClick: () => void; children: strin
     <button
       type="button"
       onClick={onClick}
-      className="flex h-6 flex-1 items-center justify-center gap-1 rounded-[5px] border border-dashed border-gc-border text-[10.5px] text-gc-ink2 hover:text-gc-text"
+      className="flex h-6 flex-1 items-center justify-center gap-1 rounded-[5px] border border-dashed border-gc-border text-label text-gc-ink2 hover:text-gc-text"
     >
       <PlusIcon className="size-3" />
       {children}

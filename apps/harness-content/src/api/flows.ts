@@ -5,7 +5,7 @@ import { keys } from "./queries"
 export type Revision = Schemas["RevisionOut"]
 export type RevisionWithEtag = { revision: Revision; etag: string }
 
-const draftKey = (flowId: string) => ["flows", flowId, "draft"] as const
+export const flowDraftKey = (flowId: string) => ["flows", flowId, "draft"] as const
 
 async function withEtag(
   request: Promise<{ data?: Revision; error?: unknown; response: Response }>,
@@ -16,31 +16,59 @@ async function withEtag(
 }
 
 /** The flow's draft, created from the latest published revision when there is none. */
-export function useFlowDraft(flowId: string, enabled: boolean) {
+export const fetchFlowDraft = (flowId: string) =>
+  withEtag(api.POST("/api/v1/flows/{flow_id}/draft", { params: { path: { flow_id: flowId } } }))
+
+export function useArtifactTrails(artifactId: string) {
   return useQuery({
-    queryKey: draftKey(flowId),
-    enabled,
-    staleTime: Number.POSITIVE_INFINITY,
+    queryKey: ["artifacts", artifactId, "trails"],
     queryFn: () =>
-      withEtag(
-        api.POST("/api/v1/flows/{flow_id}/draft", { params: { path: { flow_id: flowId } } }),
+      unwrap(
+        api.GET("/api/v1/artifacts/{artifact_id}/trails", {
+          params: { path: { artifact_id: artifactId } },
+        }),
       ),
   })
 }
 
-/** Replaces the draft's steps and outline; resolves to the new ETag. */
-export async function saveFlowSteps(
+/** Adds the artifact to a trail's draft, or removes it; published revisions are untouched. */
+export function useSetArtifactTrail(artifactId: string) {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ flowId, member }: { flowId: string; member: boolean }) => {
+      const params = { params: { path: { artifact_id: artifactId, flow_id: flowId } } }
+      const url = "/api/v1/artifacts/{artifact_id}/trails/{flow_id}"
+      const { error } = await (member ? api.PUT(url, params) : api.DELETE(url, params))
+      if (error) throw error
+    },
+    onSuccess: (_, { flowId }) => {
+      client.invalidateQueries({ queryKey: ["artifacts", artifactId, "trails"] })
+      client.invalidateQueries({ queryKey: flowDraftKey(flowId) })
+    },
+  })
+}
+
+export function useFlowDraft(flowId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: flowDraftKey(flowId),
+    enabled,
+    staleTime: Number.POSITIVE_INFINITY,
+    queryFn: () => fetchFlowDraft(flowId),
+  })
+}
+
+/** Replaces the draft's steps and outline. */
+export function saveFlowSteps(
   flowId: string,
   etag: string,
   body: Schemas["DraftSteps"],
-): Promise<string> {
-  const saved = await withEtag(
+): Promise<RevisionWithEtag> {
+  return withEtag(
     api.PATCH("/api/v1/flows/{flow_id}/draft", {
       params: { path: { flow_id: flowId }, header: { "if-match": etag } },
       body,
     }),
   )
-  return saved.etag
 }
 
 export function useCreateFlow() {
@@ -115,6 +143,8 @@ export function usePlayback(flowId: string, revisionId: string) {
   return useQuery({
     queryKey: ["flows", flowId, "play", revisionId],
     staleTime: Number.POSITIVE_INFINITY,
+    // A draft changes between plays: never reopen the player on an old copy.
+    gcTime: 0,
     queryFn: () =>
       unwrap(
         api.GET("/api/v1/flows/{flow_id}/revisions/{revision_id}/play", {

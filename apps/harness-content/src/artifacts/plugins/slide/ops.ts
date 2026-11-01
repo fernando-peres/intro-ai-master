@@ -108,6 +108,11 @@ export function setBackground(
   return background ? { ...rest, background } : rest
 }
 
+/** The template's elements and background on this slide; the slide keeps its theme. */
+export function applyTemplate(content: SlideContent, template: SlideContent): SlideContent {
+  return setBackground({ ...content, elements: template.elements }, template.background)
+}
+
 /** Drops explicit style overrides (of `ids`, or every element) and, for all, the background. */
 export function resetToTheme(content: SlideContent, ids?: readonly string[]): SlideContent {
   const cleared = {

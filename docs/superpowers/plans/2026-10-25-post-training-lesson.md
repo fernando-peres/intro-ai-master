@@ -10,7 +10,7 @@
 
 **Tech Stack:** Python 3.14, PyTorch, FastAPI/Pydantic, React + TanStack Query, vitest, pytest.
 
-**Spec:** `docs/specs/26-10-25-transformers.md`, "3. Post-training" and "Constraints".
+**Spec:** `apps/ai-intro/docs/26-10-25-transformers.md`, "3. Post-training" and "Constraints".
 
 ## Global Constraints
 
@@ -93,4 +93,4 @@ Then **Other techniques** table (DPO, LoRA/PEFT, continued pretraining, rejectio
 
 ### Task 5: Docs
 
-Modify `docs/specs/26-10-25-transformers.md` (section 3 → built, with the PPO simplifications and the Adaptation-dataset ruling; API table; Phases; Verification), `docs/prd.md` (Post-training row **Built.**), `apps/algo-server/README.md`, `packages/genai/README.md`, `apps/ai-intro/README.md`. Then the full verification: Python fast suite, ruff, lint-imports; frontend tsc, biome, full vitest; servers up, drive the lesson headlessly (SFT → ranking → RM → PPO → compare), check GPT → ChatGPT's lineage row, dark/light, 390 px.
+Modify `apps/ai-intro/docs/26-10-25-transformers.md` (section 3 → built, with the PPO simplifications and the Adaptation-dataset ruling; API table; Phases; Verification), `docs/prd.md` (Post-training row **Built.**), `apps/algo-server/README.md`, `packages/genai/README.md`, `apps/ai-intro/README.md`. Then the full verification: Python fast suite, ruff, lint-imports; frontend tsc, biome, full vitest; servers up, drive the lesson headlessly (SFT → ranking → RM → PPO → compare), check GPT → ChatGPT's lineage row, dark/light, 390 px.

@@ -15,6 +15,7 @@ import {
   Transformer,
 } from "react-konva"
 import { layoutChart } from "@/artifacts/plugins/slide/chart-layout"
+import { type EmbedBox, EmbedOverlay } from "@/artifacts/plugins/slide/embed-overlay"
 import {
   CANVAS,
   FONTS,
@@ -50,12 +51,16 @@ type Props = {
   stageRef?: React.RefObject<Konva.Stage | null>
   /** Skips the background; the caller paints it, so a gradient can run past the canvas. */
   bare?: boolean
+  /** Embeds play nothing, as in the editor. */
+  still?: boolean
 }
 
+const CORNER_ANCHORS = ["top-left", "top-right", "bottom-left", "bottom-right"]
+
 /** Draws a slide at `scale`; editor and renderer share it, so preview matches editing exactly. */
-export function SlideScene({ content, scale, handlers, stageRef, bare }: Props) {
+export function SlideScene({ content, scale, handlers, stageRef, bare, still }: Props) {
   const theme = useSlideTheme(content.theme)
-  const fontsReady = useCanvasFonts()
+  const fontsReady = useCanvasFonts(canvasFonts(content, theme))
   const ownStage = useRef<Konva.Stage>(null)
   const stage = stageRef ?? ownStage
   const transformer = useRef<Konva.Transformer>(null)
@@ -64,6 +69,35 @@ export function SlideScene({ content, scale, handlers, stageRef, bare }: Props) 
     vertical: [],
     horizontal: [],
   })
+
+  // Where embeds are mid-drag: their HTML overlays follow Konva, which commits only on release.
+  const [liveBoxes, setLiveBoxes] = useState<Record<string, EmbedBox>>({})
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a commit replaces the live boxes
+  useEffect(() => setLiveBoxes({}), [content])
+  const trackEmbed = (element: SlideElement) => (event: Konva.KonvaEventObject<unknown>) => {
+    if (element.type !== "embed") return
+    const node = event.target
+    setLiveBoxes((boxes) => ({
+      ...boxes,
+      [element.id]: {
+        x: node.x(),
+        y: node.y(),
+        width: element.width * node.scaleX(),
+        height: element.height * node.scaleY(),
+        rotation: node.rotation(),
+      },
+    }))
+  }
+
+  // Above the embed overlays, so handles and guides stay visible and usable over an embed.
+  const topLayer = useRef<Konva.Layer>(null)
+  useEffect(() => {
+    if (topLayer.current) topLayer.current.getCanvas()._canvas.style.zIndex = "2"
+  })
+  const lockedEmbed = (() => {
+    const only = selected.length === 1 && content.elements.find((el) => el.id === selected[0])
+    return Boolean(only && only.type === "embed" && only.lockAspect)
+  })()
 
   const free = useRef(false)
   /** Konva's drag hook, in absolute (screen) coordinates; snaps the box's edges and centre. */
@@ -94,7 +128,7 @@ export function SlideScene({ content, scale, handlers, stageRef, bare }: Props) 
       .filter((target): target is Konva.Node => Boolean(target?.draggable()))
     node.nodes(targets)
     node.getLayer()?.batchDraw()
-  }, [selected, content, stage])
+  }, [selected, content, stage, fontsReady])
 
   const collect = (): Transform[] =>
     selected.flatMap((id) => {
@@ -114,101 +148,118 @@ export function SlideScene({ content, scale, handlers, stageRef, bare }: Props) 
     })
 
   return (
-    <Stage
-      ref={stage}
-      width={CANVAS.width * scale}
-      height={CANVAS.height * scale}
-      scaleX={scale}
-      scaleY={scale}
-      listening={Boolean(handlers)}
-      onMouseDown={(event) => {
-        if (handlers && event.target === event.target.getStage()) handlers.onSelect(null, false)
-      }}
-    >
-      {!bare && (
-        <Layer listening={false}>
-          <BackgroundRect content={content} />
-        </Layer>
-      )}
-      <Layer key={fontsReady ? "fonts" : "fallback"}>
-        <Rect
-          name="backdrop"
-          width={CANVAS.width}
-          height={CANVAS.height}
-          onMouseDown={() => handlers?.onSelect(null, false)}
-        />
-        {content.elements.map((element) =>
-          element.visible ? (
-            <Group
-              key={element.id}
-              id={element.id}
-              x={element.x}
-              y={element.y}
-              rotation={element.rotation}
-              draggable={Boolean(handlers) && !element.locked}
-              opacity={handlers?.editingId === element.id ? 0 : 1}
-              onMouseDown={(event) => {
-                event.cancelBubble = true
-                const additive = event.evt.shiftKey || event.evt.metaKey || event.evt.ctrlKey
-                if (additive || !selected.includes(element.id)) {
-                  handlers?.onSelect(element.id, additive)
-                }
-              }}
-              onDblClick={() => element.type === "text" && handlers?.onEditText(element.id)}
-              dragBoundFunc={handlers ? snapDrag(element) : undefined}
-              onDragStart={(event) => {
-                free.current = event.evt.altKey
-              }}
-              onDragEnd={() => {
-                setGuides({ vertical: [], horizontal: [] })
-                handlers?.onTransform(collect())
-              }}
-            >
-              <ElementShape element={element} theme={theme} />
-            </Group>
-          ) : null,
+    <div className="relative isolate" style={{ width: CANVAS.width * scale }}>
+      <Stage
+        ref={stage}
+        width={CANVAS.width * scale}
+        height={CANVAS.height * scale}
+        scaleX={scale}
+        scaleY={scale}
+        listening={Boolean(handlers)}
+        onMouseDown={(event) => {
+          if (handlers && event.target === event.target.getStage()) handlers.onSelect(null, false)
+        }}
+      >
+        {!bare && (
+          <Layer listening={false}>
+            <BackgroundRect content={content} />
+          </Layer>
         )}
-        {handlers && (
-          <Transformer
-            ref={transformer}
-            rotationSnaps={[0, 45, 90, 135, 180, 225, 270, 315]}
-            anchorSize={9}
-            borderStrokeWidth={1.5}
-            anchorStrokeWidth={1.5}
-            rotateAnchorOffset={28}
-            anchorStroke="#6D5BD0"
-            borderStroke="#6D5BD0"
-            anchorCornerRadius={2}
-            keepRatio={false}
-            ignoreStroke
-            boundBoxFunc={(previous, next) =>
-              Math.abs(next.width) < 8 || Math.abs(next.height) < 8 ? previous : next
-            }
-            onTransformEnd={() => handlers.onTransform(collect())}
+        <Layer key={fontsReady}>
+          <Rect
+            name="backdrop"
+            width={CANVAS.width}
+            height={CANVAS.height}
+            onMouseDown={() => handlers?.onSelect(null, false)}
           />
-        )}
-      </Layer>
-      {handlers && (
-        <Layer listening={false}>
-          {guides.vertical.map((x) => (
-            <Line
-              key={`v${x}`}
-              points={[x, 0, x, CANVAS.height]}
-              stroke={GUIDE}
-              strokeWidth={1.5 / scale}
-            />
-          ))}
-          {guides.horizontal.map((y) => (
-            <Line
-              key={`h${y}`}
-              points={[0, y, CANVAS.width, y]}
-              stroke={GUIDE}
-              strokeWidth={1.5 / scale}
-            />
-          ))}
+          {content.elements.map((element) =>
+            element.visible ? (
+              <Group
+                key={element.id}
+                id={element.id}
+                x={element.x}
+                y={element.y}
+                rotation={element.rotation}
+                draggable={Boolean(handlers) && !element.locked}
+                opacity={handlers?.editingId === element.id ? 0 : 1}
+                onMouseDown={(event) => {
+                  event.cancelBubble = true
+                  const additive = event.evt.shiftKey || event.evt.metaKey || event.evt.ctrlKey
+                  if (additive || !selected.includes(element.id)) {
+                    handlers?.onSelect(element.id, additive)
+                  }
+                }}
+                onDblClick={() => element.type === "text" && handlers?.onEditText(element.id)}
+                dragBoundFunc={handlers ? snapDrag(element) : undefined}
+                onDragStart={(event) => {
+                  free.current = event.evt.altKey
+                }}
+                onDragMove={trackEmbed(element)}
+                onTransform={trackEmbed(element)}
+                onDragEnd={() => {
+                  setGuides({ vertical: [], horizontal: [] })
+                  handlers?.onTransform(collect())
+                }}
+              >
+                <ElementShape element={element} theme={theme} />
+              </Group>
+            ) : null,
+          )}
         </Layer>
+        {handlers && (
+          <Layer ref={topLayer}>
+            <Transformer
+              ref={transformer}
+              rotationSnaps={[0, 45, 90, 135, 180, 225, 270, 315]}
+              anchorSize={9}
+              borderStrokeWidth={1.5}
+              anchorStrokeWidth={1.5}
+              rotateAnchorOffset={28}
+              anchorStroke="#6D5BD0"
+              borderStroke="#6D5BD0"
+              anchorCornerRadius={2}
+              keepRatio={lockedEmbed}
+              enabledAnchors={lockedEmbed ? CORNER_ANCHORS : undefined}
+              ignoreStroke
+              boundBoxFunc={(previous, next) =>
+                Math.abs(next.width) < 8 || Math.abs(next.height) < 8 ? previous : next
+              }
+              onTransformEnd={() => handlers.onTransform(collect())}
+            />
+            {guides.vertical.map((x) => (
+              <Line
+                key={`v${x}`}
+                listening={false}
+                points={[x, 0, x, CANVAS.height]}
+                stroke={GUIDE}
+                strokeWidth={1.5 / scale}
+              />
+            ))}
+            {guides.horizontal.map((y) => (
+              <Line
+                key={`h${y}`}
+                listening={false}
+                points={[0, y, CANVAS.width, y]}
+                stroke={GUIDE}
+                strokeWidth={1.5 / scale}
+              />
+            ))}
+          </Layer>
+        )}
+      </Stage>
+      {content.elements.map((element) =>
+        element.type === "embed" && element.visible ? (
+          <EmbedOverlay
+            key={element.id}
+            element={element}
+            box={liveBoxes[element.id] ?? element}
+            scale={scale}
+            hostTheme={content.theme}
+            still={Boolean(handlers) || Boolean(still)}
+          />
+        ) : null,
       )}
-    </Stage>
+    </div>
   )
 }
 
@@ -330,8 +381,9 @@ function ElementShape({ element, theme }: { element: SlideElement; theme: SlideT
     }
     case "image":
       return <ImageShape element={element} theme={theme} />
-    case "diagram":
-      return <DiagramShape element={element} theme={theme} />
+    case "embed":
+      // Only the hit box: selection, snapping and transforms stay in Konva.
+      return <Rect width={width} height={height} fill="transparent" />
     case "chart":
       return <ChartShape element={element} theme={theme} />
   }
@@ -402,62 +454,6 @@ function containBox(image: HTMLImageElement, width: number, height: number) {
   const w = image.naturalWidth * scale
   const h = image.naturalHeight * scale
   return { x: (width - w) / 2, y: (height - h) / 2, width: w, height: h }
-}
-
-function DiagramShape({
-  element,
-  theme,
-}: {
-  element: Extract<SlideElement, { type: "diagram" }>
-  theme: SlideTheme
-}) {
-  const style = resolveShape(element, theme)
-  const labels = element.labels.length ? element.labels : ["Step"]
-  const gap = 90
-  const nodeWidth = (element.width - gap * (labels.length - 1)) / labels.length
-  const midY = element.height / 2
-  return (
-    <>
-      {labels.map((label, index) => {
-        const x = index * (nodeWidth + gap)
-        return (
-          // biome-ignore lint/suspicious/noArrayIndexKey: steps are positional and labels may repeat
-          <Group key={index}>
-            <Rect
-              x={x}
-              width={nodeWidth}
-              height={element.height}
-              fill={style.fill}
-              stroke={style.stroke}
-              strokeWidth={style.strokeWidth}
-              cornerRadius={style.cornerRadius}
-            />
-            <Text
-              x={x}
-              width={nodeWidth}
-              height={element.height}
-              align="center"
-              verticalAlign="middle"
-              text={label}
-              fontFamily={FONTS.ui}
-              fontSize={36}
-              fill={theme.text}
-            />
-            {index < labels.length - 1 && (
-              <Arrow
-                points={[x + nodeWidth + 18, midY, x + nodeWidth + gap - 18, midY]}
-                stroke={theme.muted}
-                fill={theme.muted}
-                strokeWidth={4}
-                pointerLength={14}
-                pointerWidth={14}
-              />
-            )}
-          </Group>
-        )
-      })}
-    </>
-  )
 }
 
 /** Draws the chart from its data on every render; see chart-layout.ts. */
@@ -554,22 +550,33 @@ function useLoadedImage(src: string): HTMLImageElement | null {
   return image
 }
 
-/** Canvas text only uses fonts the page has loaded; load ours, then redraw once. */
-function useCanvasFonts(): boolean {
-  const [ready, setReady] = useState(false)
+/** Every face this slide draws with, sorted so an unchanged slide gives the same key. */
+function canvasFonts(content: SlideContent, theme: SlideTheme): string {
+  const faces = new Set([
+    `600 40px "${FONTS.display}"`,
+    `400 40px "${FONTS.ui}"`,
+    `600 40px "${FONTS.ui}"`,
+    `400 40px "${FONTS.mono}"`,
+  ])
+  for (const element of content.elements) {
+    if (element.type !== "text") continue
+    const { fontWeight, fontFamily } = resolveText(element, theme)
+    faces.add(`${fontWeight} 40px "${fontFamily}"`)
+  }
+  return [...faces].sort().join("|")
+}
+
+/** Canvas text only uses fonts the page has loaded; load ours, then redraw once per face set. */
+function useCanvasFonts(faces: string): string {
+  const [ready, setReady] = useState("fallback")
   useEffect(() => {
     let live = true
-    Promise.all([
-      document.fonts.load(`600 40px "${FONTS.display}"`),
-      document.fonts.load(`400 40px "${FONTS.ui}"`),
-      document.fonts.load(`600 40px "${FONTS.ui}"`),
-      document.fonts.load(`400 40px "${FONTS.mono}"`),
-    ])
+    Promise.all(faces.split("|").map((face) => document.fonts.load(face)))
       .catch(() => undefined)
-      .then(() => live && setReady(true))
+      .then(() => live && setReady(faces))
     return () => {
       live = false
     }
-  }, [])
+  }, [faces])
   return ready
 }

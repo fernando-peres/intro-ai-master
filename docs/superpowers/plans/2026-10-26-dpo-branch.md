@@ -6,7 +6,7 @@
 
 **Architecture:** `toy_posttraining.dpo()` optimises the toy GPT with the DPO loss `−log σ(β[(log π(y_w|x) − log π_ref(y_w|x)) − (log π(y_l|x) − log π_ref(y_l|x))])` against the SFT weights frozen as the reference; it is an alternative to PPO, so a run takes one branch (`stage` becomes `"dpo"`) and the other is refused until Reset. One new route, one new panel, the Compare columns and the lineage logic extended to the new stage.
 
-**Spec:** `docs/specs/26-10-25-transformers.md`, section 3 (DPO was listed under "Other techniques"; it stays listed there as a *modern* alternative, now runnable).
+**Spec:** `apps/ai-intro/docs/26-10-25-transformers.md`, section 3 (DPO was listed under "Other techniques"; it stays listed there as a *modern* alternative, now runnable).
 
 ## Global Constraints
 

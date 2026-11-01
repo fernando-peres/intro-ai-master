@@ -61,8 +61,11 @@ const block: z.ZodType<DocBlock, DocBlockInput> = z.lazy(() => {
           versionId: z.string().default(""),
           locale: z.string().default("en"),
           title: z.string().default(""),
-          artifactType: z.enum(["slide", "doc", "animation"]).default("slide"),
+          artifactType: z.enum(["slide", "doc", "animation", "diagram"]).default("slide"),
           versionNumber: z.number().int().min(0).default(0),
+          width: z.number().min(20).max(100).default(100),
+          aspect: z.enum(["16:9", "4:3", "1:1", "3:4", "auto"]).default("16:9"),
+          align: z.enum(["left", "center", "right"]).default("center"),
         })
         .prefault({}),
     }),

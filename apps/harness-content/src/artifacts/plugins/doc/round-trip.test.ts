@@ -52,6 +52,20 @@ const SAMPLE: DocPartialBlock[] = [
       versionNumber: 2,
     },
   },
+  {
+    type: "raEmbed",
+    props: {
+      artifactId: "ra_3",
+      versionId: "rav_4",
+      locale: "en",
+      title: "Pipeline",
+      artifactType: "diagram",
+      versionNumber: 1,
+      width: 45,
+      aspect: "3:4",
+      align: "right",
+    },
+  },
   { type: "heading", props: { level: 3 }, content: "Edge cases" },
 ]
 
@@ -86,7 +100,12 @@ describe("doc content round trip", () => {
   it("keeps custom block props and the pinned embed", () => {
     const callout = authored.blocks.find((entry) => entry.type === "callout")
     expect(callout?.props.tone).toBe("rule")
-    expect(docEmbeds(authored)).toEqual([{ artifactId: "ra_1", versionId: "rav_2" }])
+    expect(docEmbeds(authored)).toEqual([
+      { artifactId: "ra_1", versionId: "rav_2" },
+      { artifactId: "ra_3", versionId: "rav_4" },
+    ])
+    const resized = authored.blocks.find((entry) => entry.props.artifactId === "ra_3")
+    expect(resized?.props).toMatchObject({ width: 45, aspect: "3:4", align: "right" })
     expect(docAssets(authored)).toEqual(["https://example.com/axes.png"])
   })
 

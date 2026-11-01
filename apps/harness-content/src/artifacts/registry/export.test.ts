@@ -19,7 +19,7 @@ describe("component registry", () => {
   })
 
   it("lists every type with valid empty content and namespaced, versioned components", () => {
-    expect(Object.keys(registry.types).sort()).toEqual(["animation", "doc", "slide"])
+    expect(Object.keys(registry.types).sort()).toEqual(["animation", "diagram", "doc", "slide"])
     for (const [type, entry] of Object.entries(registry.types)) {
       const plugin = getPlugin(type as "slide")
       expect(plugin.schema.safeParse(entry.emptyContent).success).toBe(true)

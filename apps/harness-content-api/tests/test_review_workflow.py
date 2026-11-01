@@ -166,3 +166,50 @@ def test_review_list_carries_artifact_context(api):
     assert item["artifactId"] == created["artifact"]["id"]
     assert item["artifactTitle"] == "How the Harness Evaluates"
     assert (item["artifactType"], item["locale"]) == ("slide", "pt-PT")
+
+
+APPROVE_AND_PUBLISH = "/api/v1/reviews/{}/approve-and-publish"
+SLIDE_FOR_REVIEW = {"schemaVersion": 1, "type": "slide", "elements": []}
+
+
+def _pending(api) -> tuple[str, str]:
+    version_id = api.artifact(content=SLIDE_FOR_REVIEW)["draft"]["id"]
+    return version_id, api.submit(version_id)
+
+
+def _review_status(api, version_id: str) -> str:
+    url = f"/api/v1/reviews?versionId={version_id}"
+    return api.get("usr_reviewer", url).json()[0]["status"]
+
+
+def test_approve_and_publish_is_one_step(api):
+    version_id, review_id = _pending(api)
+    body = {"comment": "Good", "changeComment": "First cut", "makeDefault": True}
+    published = api.post("usr_reviewer", APPROVE_AND_PUBLISH.format(review_id), body).json()
+    assert (published["state"], published["versionNumber"]) == ("published", 1)
+    assert published["changeComment"] == "First cut"
+    assert _review_status(api, version_id) == "approved"
+
+
+def test_failed_publish_leaves_the_review_pending(api):
+    version_id, review_id = _pending(api)
+    url = APPROVE_AND_PUBLISH.format(review_id)
+    api.post("usr_reviewer", url, {"changeComment": "  "}, expect=422)
+    assert _review_status(api, version_id) == "pending"
+    current = api.get("usr_reviewer", f"/api/v1/artifact-versions/{version_id}").json()
+    assert current["state"] == "draft"
+
+
+def test_stale_draft_cannot_be_approved_and_published(api):
+    version_id, review_id = _pending(api)
+    api.edit(version_id, {**SLIDE_FOR_REVIEW, "theme": "mint"})
+    url = APPROVE_AND_PUBLISH.format(review_id)
+    blocked = api.post("usr_reviewer", url, {"changeComment": "Go"}, expect=409)
+    assert blocked.json()["code"] == "approval_stale"
+
+
+def test_approve_and_publish_keeps_the_review_rules(api):
+    _, review_id = _pending(api)
+    url = APPROVE_AND_PUBLISH.format(review_id)
+    api.post("usr_author", url, {"changeComment": "Go"}, expect=403)
+    api.post("usr_viewer", url, {"changeComment": "Go"}, expect=403)

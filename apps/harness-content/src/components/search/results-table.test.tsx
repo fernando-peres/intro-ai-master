@@ -4,9 +4,9 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router"
-import { fireEvent, render, screen, within } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import { ResultsTable } from "@/components/search/results-table"
 import { artifact } from "@/test/fixtures"
 
@@ -39,15 +39,7 @@ const ITEMS = [
 
 describe("ResultsTable", () => {
   it("renders the design's columns for each artifact", async () => {
-    renderWithRouter(
-      <ResultsTable
-        items={ITEMS}
-        selected={new Set()}
-        onToggle={() => {}}
-        onToggleAll={() => {}}
-        now={new Date(Date.UTC(2026, 9, 29, 14, 0, 0))}
-      />,
-    )
+    renderWithRouter(<ResultsTable items={ITEMS} now={new Date(Date.UTC(2026, 9, 29, 14, 0, 0))} />)
     const row = (await screen.findByText("Harness scoring")).closest("tr") as HTMLElement
     const cells = within(row)
     expect(cells.getByText("eval")).toBeTruthy()
@@ -62,26 +54,27 @@ describe("ResultsTable", () => {
     expect(link.getAttribute("href")).toBe("/artifacts/ra_1")
 
     const other = screen.getByText("Welcome tour").closest("tr") as HTMLElement
-    expect(within(other).getByText("Box level")).toBeTruthy()
+    expect(within(other).queryByText("Box level")).toBeNull()
   })
 
-  it("reports row and header selection", async () => {
-    const onToggle = vi.fn()
-    const onToggleAll = vi.fn()
-    renderWithRouter(
-      <ResultsTable
-        items={ITEMS}
-        selected={new Set(["ra_1"])}
-        onToggle={onToggle}
-        onToggleAll={onToggleAll}
-      />,
-    )
-    const box = await screen.findByRole("checkbox", { name: "Select Welcome tour" })
-    fireEvent.click(box)
-    expect(onToggle).toHaveBeenCalledWith("ra_2")
-    const checked = screen.getByRole("checkbox", { name: "Select Harness scoring" })
-    expect((checked as HTMLInputElement).checked).toBe(true)
-    fireEvent.click(screen.getByRole("checkbox", { name: "Select all" }))
-    expect(onToggleAll).toHaveBeenCalled()
+  it("exposes real table semantics", async () => {
+    renderWithRouter(<ResultsTable items={ITEMS} />)
+    await screen.findByText("Harness scoring")
+    expect(screen.getAllByRole("columnheader").map((th) => th.textContent)).toEqual([
+      "Name",
+      "Tags",
+      "Location",
+      "Versions",
+      "Status",
+      "Reuse",
+      "Updated",
+    ])
+    expect(screen.getAllByRole("row")).toHaveLength(3)
+  })
+
+  it("drops the tags column when nothing is tagged", async () => {
+    renderWithRouter(<ResultsTable items={[ITEMS[1]]} />)
+    await screen.findByText("Welcome tour")
+    expect(screen.queryByRole("columnheader", { name: "Tags" })).toBeNull()
   })
 })

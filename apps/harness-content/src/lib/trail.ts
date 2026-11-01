@@ -55,6 +55,14 @@ export function newStep(fields: Omit<TrailStep, "key">): TrailStep {
   return { ...fields, key: `s${++counter}` }
 }
 
+/** The steps at the 1-based positions in `selected` ("1,3"), always in trail order. */
+export function selectedSteps<T>(steps: T[], selected: string): { step: T; position: number }[] {
+  const wanted = new Set(selected.split(",").map(Number))
+  return steps
+    .map((step, index) => ({ step, position: index + 1 }))
+    .filter(({ position }) => wanted.has(position))
+}
+
 /** Timed steps last `advanceSeconds`; manual steps count their artifact's planned duration. */
 export function stepSeconds(step: Pick<TrailStep, "advanceSeconds" | "durationSeconds">): number {
   return step.advanceSeconds ?? step.durationSeconds ?? 0

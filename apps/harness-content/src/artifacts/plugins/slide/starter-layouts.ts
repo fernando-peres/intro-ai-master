@@ -1,4 +1,9 @@
-import { CANVAS, type SlideContent, type SlideElement } from "@/artifacts/plugins/slide/model"
+import {
+  CANVAS,
+  type SlideContent,
+  type SlideElement,
+  type TextElement,
+} from "@/artifacts/plugins/slide/model"
 
 export const STARTER_LAYOUTS = [
   { id: "cover", label: "Cover" },
@@ -12,19 +17,30 @@ export const STARTER_LAYOUTS = [
 ] as const
 export type StarterLayout = (typeof STARTER_LAYOUTS)[number]["id"]
 
-const LEFT = 140
+export const LEFT = 140
+
 const WIDTH = CANVAS.width - LEFT * 2
 
-type Box = { x: number; y: number; width: number; height: number }
-type Variant = "eyebrow" | "title" | "body" | "bullets"
+export type Box = { x: number; y: number; width: number; height: number }
+type Variant = TextElement["variant"]
 
-function text(id: string, variant: Variant, value: string, box: Box): SlideElement {
-  const common = { rotation: 0, visible: true, locked: false, style: {} }
+export function text(
+  id: string,
+  variant: Variant,
+  value: string,
+  box: Box,
+  style: TextElement["style"] = {},
+): SlideElement {
+  const common = { rotation: 0, visible: true, locked: false, style }
   return { ...box, ...common, id, type: "text", variant, text: value }
 }
 
-function rect(id: string, box: Box): SlideElement {
-  return { ...box, id, type: "rect", rotation: 0, visible: true, locked: false, style: {} }
+export function rect(
+  id: string,
+  box: Box,
+  style: Extract<SlideElement, { type: "rect" | "ellipse" }>["style"] = {},
+): SlideElement {
+  return { ...box, id, type: "rect", rotation: 0, visible: true, locked: false, style }
 }
 
 function arrow(id: string, box: Box): SlideElement {

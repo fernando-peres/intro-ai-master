@@ -71,12 +71,12 @@ export function AnimationInsertPanel({
                     : "border-gc-border bg-gc-sunken hover:bg-gc-raised",
                 )}
               >
-                <span className="flex items-center justify-between text-[11.5px] font-semibold text-gc-text">
+                <span className="flex items-center justify-between text-ui font-semibold text-gc-text">
                   {template.label}
                   {active && <CheckIcon className="size-3 text-gc-primary-ink" />}
                 </span>
-                <span className="text-[10.5px] text-gc-ink3">{template.description}</span>
-                <span className="font-mono text-[8.5px] tracking-[0.5px] text-gc-ink3">
+                <span className="text-label text-gc-ink3">{template.description}</span>
+                <span className="font-mono text-label tracking-[0.5px] text-gc-ink3">
                   {template.id}
                 </span>
               </button>

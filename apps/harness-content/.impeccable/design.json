@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-30-16-40-00",
+  "title": "Design System: Graphite Console",
+  "extensions": {
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "1279px"
+      },
+      {
+        "name": "too-narrow-to-edit",
+        "value": "1023px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid action; one per area.",
+      "html": "<button class=\"ds-btn-primary\">Publish</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;height:28px;padding:0 11px;border:0;border-radius:6px;background:var(--gc-primary,#6d5bd0);color:var(--gc-on-solid,#fff);font-size:12px;font-weight:600}.ds-btn-primary:hover{filter:brightness(1.1)}.ds-btn-primary:focus-visible{outline:2px solid var(--gc-primary,#6d5bd0);outline-offset:1px}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Default secondary action.",
+      "html": "<button class=\"ds-btn-quiet\">Preview</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;height:28px;padding:0 11px;border:1px solid var(--gc-border,#2a2a2f);border-radius:6px;background:var(--gc-sunken,#1c1c20);color:var(--gc-ink2,#a1a1aa);font-size:12px}.ds-btn-quiet:hover{color:var(--gc-text,#fafafa)}.ds-btn-quiet:focus-visible{outline:2px solid var(--gc-primary,#6d5bd0);outline-offset:1px}"
+    },
+    {
+      "name": "Caption",
+      "kind": "custom",
+      "description": "Mono uppercase field and section label.",
+      "html": "<span class=\"ds-caption\">Artifact type</span>",
+      "css": ".ds-caption{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--gc-ink3,#8a8a94)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Graphite Console"
+  }
+}

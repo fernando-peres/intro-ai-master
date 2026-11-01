@@ -7,6 +7,7 @@ import { NewTemplateDialog, Templates } from "@/components/design/templates"
 import { Caption } from "@/components/labels"
 import { AreaTabs } from "@/components/shell/area-tabs"
 import { ActionButton } from "@/components/shell/form-controls"
+import { usePageTitle } from "@/hooks/use-page-title"
 import { type DesignTab, parseDesignSearch } from "@/lib/design-search"
 
 export const Route = createFileRoute("/artifacts-design")({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/artifacts-design")({
 type NewTemplate = React.ComponentProps<typeof NewTemplateDialog>["initial"]
 
 function ArtifactsDesign() {
+  usePageTitle("Artifacts Design")
   const { tab, theme } = Route.useSearch()
   const navigate = useNavigate()
   const me = useMe().data

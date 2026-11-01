@@ -5,6 +5,7 @@ import {
   type SlideTheme,
   type SlideThemeId,
 } from "@/artifacts/plugins/slide/themes"
+import type { EmbedRef } from "@/lib/embeds"
 
 export { SLIDE_THEMES, type SlideTheme, type SlideThemeId }
 
@@ -15,6 +16,11 @@ export const FONTS = {
   display: "Cormorant Garamond",
   ui: "Inter Variable",
   mono: "IBM Plex Mono",
+  borna: "Borna",
+  prompt: "Prompt",
+  cmuSerif: "CMU Serif",
+  lexend: "Lexend",
+  firaCode: "Fira Code",
 } as const
 
 const color = z
@@ -88,6 +94,8 @@ const chartOptions = z.object({
 })
 export type ChartData = z.infer<typeof chartData>
 
+export const SLIDE_EMBED_TYPES = ["diagram", "animation"] as const
+
 const element = z.discriminatedUnion("type", [
   z.object({
     ...box,
@@ -107,9 +115,17 @@ const element = z.discriminatedUnion("type", [
   }),
   z.object({
     ...box,
-    type: z.literal("diagram"),
-    labels: z.array(z.string()),
-    style: shapeStyle.default({}),
+    type: z.literal("embed"),
+    ref: z.object({
+      artifactId: z.string().min(1),
+      versionId: z.string().min(1),
+      locale: z.string().default("en"),
+      title: z.string().default(""),
+      artifactType: z.enum(SLIDE_EMBED_TYPES),
+      versionNumber: z.number().int().min(0).default(0),
+    }),
+    lockAspect: z.boolean().default(true),
+    playback: z.enum(["static", "auto"]).default("static"),
   }),
   z.object({
     ...box,
@@ -123,6 +139,7 @@ const element = z.discriminatedUnion("type", [
 export type SlideElement = z.infer<typeof element>
 export type TextElement = Extract<SlideElement, { type: "text" }>
 export type ChartElement = Extract<SlideElement, { type: "chart" }>
+export type EmbeddedElement = Extract<SlideElement, { type: "embed" }>
 export type ElementType = SlideElement["type"]
 
 /**
@@ -152,7 +169,6 @@ export type InsertKind =
   | "line"
   | "arrow"
   | "image"
-  | "diagram"
   | "chart"
 
 const SIZES: Record<InsertKind, { width: number; height: number }> = {
@@ -165,7 +181,6 @@ const SIZES: Record<InsertKind, { width: number; height: number }> = {
   line: { width: 500, height: 24 },
   arrow: { width: 500, height: 40 },
   image: { width: 640, height: 360 },
-  diagram: { width: 1400, height: 160 },
   chart: { width: 1100, height: 620 },
 }
 
@@ -206,13 +221,6 @@ export function createElement(
       return { ...base, type: kind, style: {} }
     case "image":
       return { ...base, type: "image", src: "", alt: "", fit: "cover" }
-    case "diagram":
-      return {
-        ...base,
-        type: "diagram",
-        labels: ["Run trace", "Rubric pass", "Verdict"],
-        style: {},
-      }
     case "chart":
       return {
         ...base,
@@ -228,6 +236,30 @@ export function createElement(
         options: { showLegend: true, showGrid: true, showValues: false },
       }
   }
+}
+
+const EMBED_SIZE = { width: 960, height: 540 }
+
+/** A new embed centred on the canvas. */
+export function createEmbed(ref: EmbedRef): EmbeddedElement {
+  return {
+    id: crypto.randomUUID(),
+    x: (CANVAS.width - EMBED_SIZE.width) / 2,
+    y: (CANVAS.height - EMBED_SIZE.height) / 2,
+    ...EMBED_SIZE,
+    rotation: 0,
+    visible: true,
+    locked: false,
+    type: "embed",
+    ref: ref as EmbeddedElement["ref"],
+    lockAspect: true,
+    playback: "static",
+  }
+}
+
+/** Keeps the width and sets the height from width ÷ height. */
+export function fitEmbedToAspect(element: EmbeddedElement, aspect: number) {
+  return { width: element.width, height: Math.max(1, Math.round(element.width / aspect)) }
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -262,16 +294,16 @@ export type ResolvedText = {
 export function resolveText(element: TextElement, theme: SlideTheme): ResolvedText {
   const variant = {
     eyebrow: {
-      fontFamily: FONTS.mono,
+      fontFamily: theme.fonts?.eyebrow ?? FONTS.mono,
       fontSize: 31,
-      fontWeight: 400,
+      fontWeight: theme.fonts?.eyebrowWeight ?? 400,
       color: theme.muted,
       lineHeight: 1.2,
       letterSpacing: 4.8,
       uppercase: true,
     },
     title: {
-      fontFamily: FONTS.display,
+      fontFamily: theme.fonts?.title ?? FONTS.display,
       fontSize: 103,
       fontWeight: 600,
       color: theme.text,
@@ -280,7 +312,7 @@ export function resolveText(element: TextElement, theme: SlideTheme): ResolvedTe
       uppercase: false,
     },
     body: {
-      fontFamily: FONTS.ui,
+      fontFamily: theme.fonts?.body ?? FONTS.ui,
       fontSize: 39,
       fontWeight: 400,
       color: theme.body,
@@ -289,7 +321,7 @@ export function resolveText(element: TextElement, theme: SlideTheme): ResolvedTe
       uppercase: false,
     },
     bullets: {
-      fontFamily: FONTS.ui,
+      fontFamily: theme.fonts?.body ?? FONTS.ui,
       fontSize: 39,
       fontWeight: 400,
       color: theme.body,
@@ -324,8 +356,7 @@ export function resolveShape(element: SlideElement, theme: SlideTheme): Resolved
     fill: style.fill ?? (lineLike ? theme.line : theme.surface),
     stroke: style.stroke ?? (lineLike ? theme.muted : theme.line),
     strokeWidth: style.strokeWidth ?? (lineLike ? 6 : 3),
-    cornerRadius:
-      style.cornerRadius ?? (element.type === "rect" || element.type === "diagram" ? 17 : 0),
+    cornerRadius: style.cornerRadius ?? (element.type === "rect" ? 17 : 0),
   }
 }
 
@@ -343,8 +374,8 @@ export function slideSearchText(content: SlideContent): string {
       switch (el.type) {
         case "text":
           return [el.text]
-        case "diagram":
-          return el.labels
+        case "embed":
+          return [el.ref.title]
         case "image":
           return [el.alt]
         case "chart":

@@ -1,3 +1,22 @@
+def test_artifact_counts_are_direct_and_follow_moves(api):
+    box = api.box()
+    unit = api.post(
+        "usr_author",
+        "/api/v1/locations",
+        {"kind": "unit", "title": "Foundations", "parentId": box},
+        expect=201,
+    ).json()["id"]
+    artifact = api.artifact()["artifact"]
+    home = artifact["locationId"]
+    before = api.get("usr_viewer", "/api/v1/locations/artifact-counts").json()
+    assert unit not in before
+
+    api.patch("usr_author", f"/api/v1/artifacts/{artifact['id']}", {"locationId": unit})
+    after = api.get("usr_viewer", "/api/v1/locations/artifact-counts").json()
+    assert after[unit] == 1
+    assert after.get(home, 0) == before[home] - 1
+
+
 def test_tree_rules_and_artifact_move(api):
     box = api.box()
     unit = api.post(

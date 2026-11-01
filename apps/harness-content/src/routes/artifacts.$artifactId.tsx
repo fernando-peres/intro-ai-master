@@ -1,6 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router"
 import { ArrowLeftIcon, ChevronDownIcon, Minimize2Icon } from "lucide-react"
-import { Fragment, Suspense, useCallback, useState } from "react"
+import { Fragment, Suspense, useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useAssets } from "@/api/assets"
 import type { Schemas } from "@/api/client"
@@ -15,6 +16,7 @@ import {
   useReviews,
   useVersion,
   type VersionWithEtag,
+  versionKey,
 } from "@/api/queries"
 import { getPlugin, validateContent } from "@/artifacts"
 import { typeInfo } from "@/components/artifact-types"
@@ -24,11 +26,17 @@ import {
   PresentationActions,
   PresentationBadge,
   PresentationStage,
+  ShortcutsHelp,
+  STAGE_SHORTCUTS,
   usePresentation,
 } from "@/components/presentation/presentation-stage"
 import { AreaTabs } from "@/components/shell/area-tabs"
+import { DesktopOnly } from "@/components/shell/desktop-only"
 import { ActionButton } from "@/components/shell/form-controls"
+import { ErrorState, WorkspaceSkeleton } from "@/components/shell/page-states"
+import { SaveIndicator } from "@/components/shell/save-indicator"
 import { TopBarSlot } from "@/components/shell/top-bar-slots"
+import { ArtifactTrails } from "@/components/workspace/artifact-trails"
 import {
   ARTIFACT_TABS,
   Inspector,
@@ -43,7 +51,10 @@ import {
   PublishDialog,
   SubmitReviewDialog,
 } from "@/components/workspace/review-dialogs"
-import { type Autosave, useAutosave } from "@/hooks/use-autosave"
+import { useAutosave } from "@/hooks/use-autosave"
+import { COMPACT, matchesMedia } from "@/hooks/use-media-query"
+import { usePageTitle } from "@/hooks/use-page-title"
+import { friendlyError } from "@/lib/errors"
 import { locationTrail } from "@/lib/library-tree"
 import { relativeTime } from "@/lib/stamps"
 import { cn } from "@/lib/utils"
@@ -60,25 +71,48 @@ export const Route = createFileRoute("/artifacts/$artifactId")({
       step: Number.isInteger(step) && step > 0 ? step : undefined,
     }
   },
-  component: ArtifactWorkspace,
+  component: () => (
+    <DesktopOnly>
+      <ArtifactWorkspace />
+    </DesktopOnly>
+  ),
 })
 
 function ArtifactWorkspace() {
   const { artifactId } = Route.useParams()
   const search = Route.useSearch()
   const artifact = useArtifact(artifactId)
-  const versions = useArtifactVersions(artifactId).data ?? []
+  const versionList = useArtifactVersions(artifactId)
+  const versions = versionList.data ?? []
   const selected = pickVersion(versions, search.v)
   const loaded = useVersion(selected?.id)
 
-  if (artifact.isError) {
+  const failure =
+    (!artifact.data && artifact.error) ||
+    (!versionList.data && versionList.error) ||
+    (!loaded.data && loaded.error)
+  if (failure) {
     return (
-      <p role="alert" className="p-6 text-[11.5px] text-gc-fail-ink">
-        {artifact.error.message}
-      </p>
+      <ErrorState
+        title="Could not open this artifact"
+        error={failure}
+        onRetry={() => {
+          artifact.refetch()
+          versionList.refetch()
+          if (selected) loaded.refetch()
+        }}
+      />
     )
   }
-  if (!artifact.data || !loaded.data) return null
+  if (versionList.data && !selected) {
+    return (
+      <ErrorState
+        title="Nothing to open"
+        message="This artifact has no versions yet, or the linked version no longer exists."
+      />
+    )
+  }
+  if (!artifact.data || !loaded.data) return <WorkspaceSkeleton label="Loading artifact" />
   return (
     <VersionEditor
       key={`${loaded.data.version.id}:${loaded.data.etag}`}
@@ -103,6 +137,7 @@ type Area = "content" | "resources"
 
 function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
   const { version, etag } = loaded
+  usePageTitle(artifact.title)
   const search = Route.useSearch()
   const navigate = useNavigate({ from: "/artifacts/$artifactId" })
   const me = useMe().data
@@ -119,7 +154,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
   const [preview, setPreview] = useState(false)
   const fillStage = plugin.fillStage && validation.ok && !preview
   const [tab, setTab] = useState<InspectorTab>("metadata")
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => matchesMedia(COMPACT))
   const [dialog, setDialog] = useState<DialogKind>(null)
   const [area, setArea] = useState<Area>("content")
   const assets = useAssets(artifact.id).data ?? []
@@ -136,6 +171,14 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
     [version.id],
   )
   const autosave = useAutosave({ value: draft, etag, enabled: editable, save })
+  const client = useQueryClient()
+  // The cached copy predates this session's saves; drop it once the final save has settled.
+  useEffect(
+    () => () => {
+      autosave.flush().finally(() => client.invalidateQueries({ queryKey: versionKey(version.id) }))
+    },
+    [autosave.flush, client, version.id],
+  )
   const action = nextReviewAction(version, latestReview, me)
   const status: StatusKind =
     version.state === "draft" && latestReview?.status === "pending" ? "review" : version.state
@@ -157,13 +200,13 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
         const created = await fork.mutateAsync(version.id)
         navigate({ search: (prev) => ({ ...prev, v: created.id }) })
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Could not start a draft")
+        toast.error(friendlyError(error))
       }
       return
     }
     if (action.kind === "submit") {
-      await autosave.flush()
-      setDialog("submit")
+      if (await autosave.flush()) setDialog("submit")
+      else toast.error("Save your changes before submitting for review")
     }
     if (action.kind === "decide") setDialog("decide")
     if (action.kind === "publish") setDialog("publish")
@@ -178,14 +221,14 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
             <Link
               to="/"
               search={{ location: artifact.locationId }}
-              className="truncate text-xs text-gc-ink3 hover:text-gc-ink2"
+              className="truncate text-ui text-gc-ink3 hover:text-gc-ink2 max-xl:hidden"
             >
               {trail.at(-1)}
             </Link>
           )}
-          <span className="text-xs text-gc-ink3">/</span>
-          <h1 className="truncate text-[12.5px] font-semibold text-gc-text">{artifact.title}</h1>
-          <span className="rounded bg-gc-nav-bg px-[7px] py-[3px] font-mono text-[9px] tracking-[0.8px] text-gc-nav-ink uppercase">
+          <span className="text-ui text-gc-ink3 max-xl:hidden">/</span>
+          <h1 className="truncate text-body font-semibold text-gc-text">{artifact.title}</h1>
+          <span className="rounded bg-gc-nav-bg px-[7px] max-xl:hidden py-[3px] font-mono text-label tracking-[0.5px] text-gc-nav-ink uppercase">
             {info.label}
           </span>
           <VersionSwitcher
@@ -207,7 +250,13 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
               Save {info.label.toLowerCase()}
             </ActionButton>
           )}
-          <SaveMeta autosave={autosave} version={version} editable={editable} onReload={reload} />
+          <SaveIndicator
+            autosave={autosave}
+            editable={editable}
+            updatedAt={version.updatedAt}
+            readOnlyLabel={version.state === "draft" ? "Read only" : "Read only · frozen"}
+            onReload={reload}
+          />
         </TopBarSlot>
 
         {search.trail && <TrailBanner flowId={search.trail} step={search.step} />}
@@ -225,7 +274,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
                 onChange={setArea}
               />
               {latestReview?.status === "changes_requested" && latestReview.decisionComment && (
-                <span className="truncate text-[11px] text-gc-risk-ink">
+                <span className="truncate text-ui text-gc-risk-ink">
                   Changes requested: {latestReview.decisionComment}
                 </span>
               )}
@@ -256,7 +305,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
               >
                 <Suspense fallback={<Caption>Loading editor…</Caption>}>
                   {!validation.ok ? (
-                    <div role="alert" className="max-w-xl text-[11.5px] text-gc-fail-ink">
+                    <div role="alert" className="max-w-xl text-ui text-gc-fail-ink">
                       <p className="font-semibold">
                         This content does not match the {info.label} schema:
                       </p>
@@ -285,7 +334,7 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
                   )}
                 </Suspense>
                 {!fillStage && (
-                  <Caption className="tracking-[0.8px]">
+                  <Caption className="tracking-[0.5px]">
                     Reusable artifact · {plugin.stageLabel ?? info.label} · {version.locale}{" "}
                     {version.versionNumber ? `v${version.versionNumber}` : "draft"}
                   </Caption>
@@ -313,11 +362,18 @@ function VersionEditor({ artifact, versions, loaded, reload }: EditorProps) {
               onCollapse={setCollapsed}
               panels={{
                 metadata: (
-                  <MetadataPanel
-                    artifact={artifact}
-                    status={status}
-                    readOnly={!me || me.role === "viewer"}
-                  />
+                  <>
+                    <MetadataPanel
+                      artifact={artifact}
+                      status={status}
+                      readOnly={!me || me.role === "viewer"}
+                    />
+                    <ArtifactTrails
+                      artifactId={artifact.id}
+                      published={Object.keys(artifact.defaults).length > 0}
+                      readOnly={!me || me.role === "viewer"}
+                    />
+                  </>
                 ),
                 format: plugin.FormatPanel ? (
                   <plugin.FormatPanel {...editorProps} />
@@ -447,65 +503,6 @@ function ReviewActionButton({
   )
 }
 
-function SaveMeta({
-  autosave,
-  version,
-  editable,
-  onReload,
-}: {
-  autosave: Autosave
-  version: Schemas["VersionOut"]
-  editable: boolean
-  onReload: () => void
-}) {
-  if (autosave.status === "conflict") {
-    return (
-      <span className="flex items-center gap-2 pl-2 font-mono text-[9.5px] tracking-[0.6px] text-gc-fail-ink">
-        CHANGED ELSEWHERE
-        <ActionButton className="h-6" onClick={onReload}>
-          Reload
-        </ActionButton>
-      </span>
-    )
-  }
-  const { text, tone, title } = describeSave(autosave, version, editable)
-  return (
-    <span
-      title={title}
-      className="flex items-center gap-[7px] pl-2 font-mono text-[9.5px] tracking-[0.6px] text-gc-ink3"
-    >
-      <span aria-hidden className={cn("size-1.5 rounded-full", tone)} />
-      <span role="status">{text}</span>
-    </span>
-  )
-}
-
-/** Header save indicator; the tooltip carries the exact UTC stamp. */
-function describeSave(autosave: Autosave, version: Schemas["VersionOut"], editable: boolean) {
-  if (!editable) {
-    const frozen = version.state !== "draft"
-    return { text: frozen ? "READ ONLY · FROZEN" : "READ ONLY", tone: "bg-gc-ink3", title: "" }
-  }
-  switch (autosave.status) {
-    case "dirty":
-      return { text: "UNSAVED", tone: "bg-gc-warn-base", title: "" }
-    case "saving":
-      return { text: "SAVING…", tone: "bg-gc-warn-base", title: "" }
-    case "error":
-      return { text: "SAVE FAILED", tone: "bg-gc-fail-base", title: autosave.error ?? "" }
-    default: {
-      const at = autosave.savedAt
-      return {
-        text: at ? "SAVED" : `SAVED ${relativeTime(version.updatedAt).toUpperCase()}`,
-        tone: "bg-gc-pass-base",
-        title: at ? toStamp(at) : version.updatedAt,
-      }
-    }
-  }
-}
-
-const toStamp = (date: Date) => date.toISOString().slice(0, 19).replace(/[T:]/g, "-")
-
 function TrailBanner({ flowId, step }: { flowId: string; step?: number }) {
   const flow = useFlow(flowId).data
   const router = useRouter()
@@ -513,21 +510,21 @@ function TrailBanner({ flowId, step }: { flowId: string; step?: number }) {
   return (
     <div className="flex h-8 shrink-0 items-center justify-between border-b border-gc-border bg-gc-row-bg px-4">
       <div className="flex items-center gap-2.5">
-        <span className="flex h-[22px] items-center gap-1.5 rounded-[5px] border border-gc-border bg-gc-raised px-2 text-[11px] font-semibold text-gc-nav-ink">
+        <span className="flex h-[22px] items-center gap-1.5 rounded-[5px] border border-gc-border bg-gc-raised px-2 text-ui font-semibold text-gc-nav-ink">
           <ArrowLeftIcon className="size-3" />
           {flow.title}
         </span>
-        <span className="font-mono text-[8.5px] tracking-[0.8px] text-gc-nav-ink">
+        <span className="font-mono text-label tracking-[0.5px] text-gc-nav-ink">
           EDITING STEP {step ?? "?"} OF {flow.stepCount}
         </span>
-        <span className="font-mono text-[8px] tracking-[0.4px] text-gc-ink3">
+        <span className="font-mono text-label tracking-[0.4px] text-gc-ink3">
           · CHANGES AFFECT EVERY FLOW USING THIS ARTIFACT
         </span>
       </div>
       <button
         type="button"
         onClick={() => router.history.back()}
-        className="h-[22px] rounded-[5px] bg-gc-primary px-2.5 text-[11px] font-semibold text-gc-on-solid"
+        className="h-[22px] rounded-[5px] bg-gc-primary px-2.5 text-ui font-semibold text-gc-on-solid"
       >
         Done
       </button>
@@ -547,10 +544,11 @@ function ArtifactPresentation({
   onExit: () => void
   children: (showControls: boolean) => React.ReactNode
 }) {
-  const { stageRef, controls } = usePresentation(onExit)
+  const { stageRef, controls, help, setHelp } = usePresentation(onExit)
   return (
     <PresentationStage stageRef={stageRef} isDoc={isDoc}>
       <div className="flex min-w-0 flex-1 items-center justify-center">{children(controls)}</div>
+      {help && <ShortcutsHelp shortcuts={STAGE_SHORTCUTS} onClose={() => setHelp(false)} />}
       {controls && (
         <>
           <PresentationActions>

@@ -1,6 +1,6 @@
 import type { ArtifactType } from "@/api/client"
 
-const TYPES: ArtifactType[] = ["slide", "doc", "animation"]
+const TYPES: ArtifactType[] = ["slide", "doc", "animation", "diagram"]
 
 export type ImportIssue = { path: string; message: string }
 

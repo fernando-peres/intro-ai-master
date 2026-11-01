@@ -1,18 +1,16 @@
 import { Link, useNavigate } from "@tanstack/react-router"
-import { type FormEvent, type ReactNode, Suspense, useEffect, useRef, useState } from "react"
+import { type FormEvent, Suspense, useState } from "react"
 import { toast } from "sonner"
 import { useArtifactThemes, useCreateTemplate, useTemplates } from "@/api/queries"
 import { getPlugin, validateContent } from "@/artifacts"
-import {
-  STARTER_LAYOUTS,
-  type StarterLayout,
-  starterLayout,
-} from "@/artifacts/plugins/slide/starter-layouts"
+import { buildLayout, type LayoutId, layoutsFor } from "@/artifacts/plugins/slide/theme-layouts"
 import { Chips, FormDialog, themeChips } from "@/components/design/artifact-themes"
 import { Caption } from "@/components/labels"
 import { Field, Select, TextInput } from "@/components/shell/form-controls"
+import { WhenVisible } from "@/components/shell/when-visible"
+import { friendlyError } from "@/lib/errors"
 
-type NewTemplate = { layout: StarterLayout; theme: string; name: string }
+type NewTemplate = { layout: LayoutId; theme: string; name: string }
 
 /** Starter layouts and saved templates for one theme (design qkxEA). */
 export function Templates({
@@ -27,12 +25,13 @@ export function Templates({
   const themes = useArtifactThemes().data ?? []
   const saved = (useTemplates().data ?? []).filter((template) => template.themeId === themeId)
   const theme = themes.find((entry) => entry.id === themeId)
+  const layouts = layoutsFor(themeId)
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto p-5">
       <div className="flex h-8 shrink-0 items-center justify-between">
         {/* biome-ignore lint/a11y/noLabelWithoutControl: the Select below renders the control */}
         <label className="flex items-center gap-2.5">
-          <Caption className="tracking-[1px]">BASED ON THEME</Caption>
+          <Caption className="tracking-[0.5px]">BASED ON THEME</Caption>
           {theme && <Chips colors={themeChips(theme)} size="sm" />}
           <Select value={themeId} onChange={(event) => onTheme(event.target.value)}>
             {themes.map((entry) => (
@@ -42,7 +41,7 @@ export function Templates({
             ))}
           </Select>
         </label>
-        <Caption>{STARTER_LAYOUTS.length + saved.length} TEMPLATES</Caption>
+        <Caption>{layouts.length + saved.length} TEMPLATES</Caption>
       </div>
       <ul className="grid grid-cols-4 gap-3">
         {saved.map((template) => (
@@ -60,7 +59,7 @@ export function Templates({
             </Link>
           </li>
         ))}
-        {STARTER_LAYOUTS.map((layout) => (
+        {layouts.map((layout) => (
           <li key={layout.id}>
             <button
               type="button"
@@ -68,11 +67,7 @@ export function Templates({
               className="block w-full text-left"
               onClick={() => onNew({ layout: layout.id, theme: themeId, name: layout.label })}
             >
-              <Card
-                name={layout.label}
-                meta="STARTER"
-                content={starterLayout(layout.id, themeId)}
-              />
+              <Card name={layout.label} meta="STARTER" content={buildLayout(layout.id, themeId)} />
             </button>
           </li>
         ))}
@@ -86,8 +81,8 @@ function Card({ name, meta, content }: { name: string; meta: string; content: un
     <span className="flex flex-col overflow-hidden rounded-lg border border-gc-border bg-gc-raised hover:border-gc-primary">
       <Preview content={content} />
       <span className="flex items-center justify-between gap-2 border-t border-gc-border px-3 py-2.5">
-        <span className="truncate text-[11.5px] font-semibold text-gc-text">{name}</span>
-        <span className="shrink-0 font-mono text-[8.5px] text-gc-ink3">{meta}</span>
+        <span className="truncate text-ui font-semibold text-gc-text">{name}</span>
+        <span className="shrink-0 font-mono text-label text-gc-ink3">{meta}</span>
       </span>
     </span>
   )
@@ -110,24 +105,6 @@ function Preview({ content }: { content: unknown }) {
   )
 }
 
-function WhenVisible({ children }: { children: ReactNode }) {
-  const box = useRef<HTMLSpanElement>(null)
-  const [seen, setSeen] = useState(false)
-  useEffect(() => {
-    if (!box.current) return
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) setSeen(true)
-    })
-    observer.observe(box.current)
-    return () => observer.disconnect()
-  }, [])
-  return (
-    <span ref={box} className="block h-full w-full">
-      {seen && children}
-    </span>
-  )
-}
-
 /** Creates the template from a starter layout, then opens it in the slide editor. */
 export function NewTemplateDialog({
   initial,
@@ -142,10 +119,16 @@ export function NewTemplateDialog({
   const [name, setName] = useState(initial.name)
   const [theme, setTheme] = useState(initial.theme)
   const [layout, setLayout] = useState(initial.layout)
+  const layouts = layoutsFor(theme)
+  const pickTheme = (next: string) => {
+    setTheme(next)
+    const options = layoutsFor(next)
+    if (!options.some((option) => option.id === layout)) setLayout(options[0].id)
+  }
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     try {
-      const content = starterLayout(layout, theme) as unknown as Record<string, unknown>
+      const content = buildLayout(layout, theme) as unknown as Record<string, unknown>
       const template = await create.mutateAsync({ name: name.trim(), layout, content })
       onClose()
       navigate({
@@ -153,7 +136,7 @@ export function NewTemplateDialog({
         params: { templateId: template.id },
       })
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create the template")
+      toast.error(friendlyError(error))
     }
   }
   return (
@@ -174,7 +157,7 @@ export function NewTemplateDialog({
         />
       </Field>
       <Field label="Based on theme">
-        <Select value={theme} onChange={(event) => setTheme(event.target.value)}>
+        <Select value={theme} onChange={(event) => pickTheme(event.target.value)}>
           {themes.map((entry) => (
             <option key={entry.id} value={entry.id}>
               {entry.name}
@@ -183,8 +166,8 @@ export function NewTemplateDialog({
         </Select>
       </Field>
       <Field label="Layout">
-        <Select value={layout} onChange={(event) => setLayout(event.target.value as StarterLayout)}>
-          {STARTER_LAYOUTS.map((option) => (
+        <Select value={layout} onChange={(event) => setLayout(event.target.value as LayoutId)}>
+          {layouts.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
             </option>

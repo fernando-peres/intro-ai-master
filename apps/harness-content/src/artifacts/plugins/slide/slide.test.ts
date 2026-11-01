@@ -17,6 +17,7 @@ import {
 } from "@/artifacts/plugins/slide/model"
 import {
   addElement,
+  applyTemplate,
   applyTransforms,
   duplicateElements,
   moveBy,
@@ -38,7 +39,6 @@ const KINDS: InsertKind[] = [
   "line",
   "arrow",
   "image",
-  "diagram",
 ]
 
 /** What a save and reload does: JSON out, JSON in, schema parse. */
@@ -155,8 +155,8 @@ describe("theme resolution", () => {
     })
   })
 
-  it("indexes text, diagram labels and alt text for search", () => {
-    const slide = addElement(createEmptySlide(), createElement("diagram"))
+  it("indexes text and chart labels for search", () => {
+    const slide = addElement(createEmptySlide(), createElement("chart"))
     expect(slideSearchText(slide)).toContain("Untitled slide")
     expect(slideSearchText(slide)).toContain("Rubric pass")
   })
@@ -192,5 +192,31 @@ describe("backgroundToCss", () => {
     expect(backgroundToCss({ kind: "gradient", from: "#111111", to: "#222222", angle: 125 })).toBe(
       "linear-gradient(125deg, #111111, #222222)",
     )
+  })
+})
+
+describe("applyTemplate", () => {
+  const slide: SlideContent = {
+    ...createEmptySlide(),
+    theme: "mint",
+    background: { kind: "flat", color: "#111111" },
+  }
+
+  it("takes elements and background but keeps the theme", () => {
+    const template: SlideContent = {
+      ...createEmptySlide(),
+      theme: "dark",
+      background: { kind: "flat", color: "#222222" },
+      elements: [],
+    }
+    expect(applyTemplate(slide, template)).toMatchObject({
+      theme: "mint",
+      elements: [],
+      background: { kind: "flat", color: "#222222" },
+    })
+  })
+
+  it("clears the background when the template has none", () => {
+    expect(applyTemplate(slide, createEmptySlide()).background).toBeUndefined()
   })
 })

@@ -4,6 +4,7 @@ import { type FormEvent, useState } from "react"
 import { toast } from "sonner"
 import { useCreateFlow } from "@/api/flows"
 import { ActionButton, Field, Select, TextInput } from "@/components/shell/form-controls"
+import { friendlyError } from "@/lib/errors"
 import { LOCALES } from "@/lib/locales"
 import { useTrailThemes } from "@/lib/trail"
 
@@ -22,7 +23,7 @@ export function NewTrailDialog({ onClose }: { onClose: () => void }) {
       onClose()
       navigate({ to: "/trails/$flowId", params: { flowId: flow.id } })
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create the trail")
+      toast.error(friendlyError(error))
     }
   }
 
@@ -33,10 +34,10 @@ export function NewTrailDialog({ onClose }: { onClose: () => void }) {
         <DialogPrimitive.Popup className="fixed top-1/2 left-1/2 z-50 w-[420px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[10px] border border-gc-border bg-gc-raised outline-none">
           <form onSubmit={submit}>
             <div className="border-b border-gc-border px-[18px] py-4">
-              <DialogPrimitive.Title className="text-[15px] font-bold text-gc-text">
+              <DialogPrimitive.Title className="text-title font-bold text-gc-text">
                 New trail
               </DialogPrimitive.Title>
-              <DialogPrimitive.Description className="mt-[3px] text-[11.5px] text-gc-ink3">
+              <DialogPrimitive.Description className="mt-[3px] text-ui text-gc-ink3">
                 A trail plays existing artifacts in order. Each step pins one published version.
               </DialogPrimitive.Description>
             </div>

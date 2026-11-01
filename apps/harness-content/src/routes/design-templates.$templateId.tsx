@@ -12,6 +12,8 @@ import { validateContent } from "@/artifacts"
 import { slidePlugin } from "@/artifacts/plugins/slide"
 import { Caption } from "@/components/labels"
 import { ActionButton, TextInput } from "@/components/shell/form-controls"
+import { ErrorState, WorkspaceSkeleton } from "@/components/shell/page-states"
+import { friendlyError } from "@/lib/errors"
 
 export const Route = createFileRoute("/design-templates/$templateId")({
   component: TemplatePage,
@@ -22,14 +24,16 @@ const plugin = slidePlugin
 function TemplatePage() {
   const { templateId } = Route.useParams()
   const query = useTemplate(templateId)
-  if (query.isError) {
+  if (query.isError && !query.data) {
     return (
-      <p role="alert" className="p-6 text-[11.5px] text-gc-fail-ink">
-        {query.error.message}
-      </p>
+      <ErrorState
+        title="Could not open this template"
+        error={query.error}
+        onRetry={() => query.refetch()}
+      />
     )
   }
-  if (!query.data) return <Caption className="p-6">Loading…</Caption>
+  if (!query.data) return <WorkspaceSkeleton label="Loading template" />
   return <TemplateEditor key={templateId} template={query.data} />
 }
 
@@ -51,7 +55,7 @@ function TemplateEditor({ template }: { template: ArtifactTemplate }) {
       { name: name.trim(), content: content as unknown as Record<string, unknown> },
       {
         onSuccess: () => setDirty(false),
-        onError: (error) => toast.error(error.message),
+        onError: (error) => toast.error(friendlyError(error)),
       },
     )
 
@@ -64,7 +68,7 @@ function TemplateEditor({ template }: { template: ArtifactTemplate }) {
 
   if (!content) {
     return (
-      <p role="alert" className="p-6 text-[11.5px] text-gc-fail-ink">
+      <p role="alert" className="p-6 text-ui text-gc-fail-ink">
         This template's content does not match the slide schema.
       </p>
     )
@@ -112,7 +116,7 @@ function TemplateEditor({ template }: { template: ArtifactTemplate }) {
                   onClick={() =>
                     remove.mutate(undefined, {
                       onSuccess: () => navigate({ to: "/artifacts-design", search: back }),
-                      onError: (error) => toast.error(error.message),
+                      onError: (error) => toast.error(friendlyError(error)),
                     })
                   }
                 >

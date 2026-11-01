@@ -20,7 +20,7 @@ from harness_content_api.models import (
     User,
     VersionState,
 )
-from harness_content_api.services import audit
+from harness_content_api.services import audit, embeds
 from harness_content_api.services.artifacts import content_hash
 from harness_content_api.timestamps import utc_now
 
@@ -72,6 +72,7 @@ def submit(
         raise NotFound("version_not_found", f"Version {version_id} does not exist")
     if version.state != VersionState.DRAFT:
         raise Conflict("version_immutable", f"Version {version_id} is {version.state}")
+    embeds.check_version(session, version)
     if reviewer_id is not None:
         reviewer = session.get(User, reviewer_id)
         if reviewer is None or reviewer.role not in PUBLISHERS:

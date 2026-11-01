@@ -12,22 +12,37 @@ import {
   MinusIcon,
   PilcrowIcon,
   QuoteIcon,
-  SearchIcon,
+  SparklesIcon,
   TableIcon,
   WorkflowIcon,
 } from "lucide-react"
-import { useState } from "react"
-import type { ArtifactListItem } from "@/api/client"
-import { useArtifactSearch } from "@/api/queries"
+import { useEffect, useState } from "react"
+import type { ArtifactType } from "@/api/client"
 import type { EditorProps } from "@/artifacts/plugin"
-import type { DocEditor, DocPartialBlock } from "@/artifacts/plugins/doc/blocks"
+import type { DocPartialBlock } from "@/artifacts/plugins/doc/blocks"
 import { type DocContent, docOutline, docStats } from "@/artifacts/plugins/doc/content"
 import { useDocEditor } from "@/artifacts/plugins/doc/editor-context"
-import { typeInfo } from "@/components/artifact-types"
+import {
+  type DocEmbedProps,
+  EMBED_ALIGNS,
+  EMBED_ASPECTS,
+  EMBED_MAX_WIDTH,
+  EMBED_MIN_WIDTH,
+} from "@/artifacts/plugins/doc/embed-block"
+import { insertBlock } from "@/artifacts/plugins/doc/insert"
+import { EmbedPicker } from "@/components/embed/embed-picker"
+import { EmbedRepin, isLiveEmbed } from "@/components/embed/embedded-artifact"
+import { Field, Select } from "@/components/shell/form-controls"
 import { PanelHeading, Placeholder } from "@/components/workspace/inspector"
 import { cn } from "@/lib/utils"
 
-type PaletteItem = { label: string; icon: LucideIcon; block?: DocPartialBlock; hint?: string }
+type PaletteItem = {
+  label: string
+  icon: LucideIcon
+  block?: DocPartialBlock
+  /** Opens the embed picker for this type instead of inserting a block. */
+  embed?: ArtifactType
+}
 
 const PALETTE: { group: string; items: PaletteItem[] }[] = [
   {
@@ -63,25 +78,14 @@ const PALETTE: { group: string; items: PaletteItem[] }[] = [
     group: "Media & reuse",
     items: [
       { label: "Image", icon: ImageIcon, block: { type: "image" } },
-      { label: "Diagram", icon: WorkflowIcon, hint: "Diagram artifacts arrive later" },
+      { label: "Diagram", icon: WorkflowIcon, embed: "diagram" },
+      { label: "Animation", icon: SparklesIcon, embed: "animation" },
     ],
   },
 ]
 
-/** Inserts after the block holding the cursor, replacing it when it is an empty paragraph. */
-export function insertBlock(editor: DocEditor, block: DocPartialBlock): void {
-  const current = editor.getTextCursorPosition().block
-  const empty =
-    current.type === "paragraph" && Array.isArray(current.content) && current.content.length === 0
-  const [inserted] = empty
-    ? [editor.updateBlock(current, block)]
-    : editor.insertBlocks([block], current, "after")
-  if (inserted && inserted.content !== undefined) editor.setTextCursorPosition(inserted, "end")
-  editor.focus()
-}
-
 export function DocInsertPanel({ readOnly, artifactId, locale }: EditorProps<DocContent>) {
-  const { editor } = useDocEditor()
+  const { editor, setEmbedPicker } = useDocEditor()
   if (readOnly || !editor) {
     return <Placeholder>Blocks can be inserted into drafts you can edit.</Placeholder>
   }
@@ -95,10 +99,12 @@ export function DocInsertPanel({ readOnly, artifactId, locale }: EditorProps<Doc
               <button
                 key={item.label}
                 type="button"
-                disabled={!item.block}
-                title={item.hint}
-                onClick={() => item.block && insertBlock(editor, item.block)}
-                className="flex h-8 items-center gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5 text-[11px] text-gc-ink2 hover:text-gc-text disabled:cursor-not-allowed disabled:opacity-45"
+                onClick={() =>
+                  item.embed
+                    ? setEmbedPicker(item.embed)
+                    : item.block && insertBlock(editor, item.block)
+                }
+                className="flex h-8 items-center gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5 text-ui text-gc-ink2 hover:text-gc-text"
               >
                 <item.icon className="size-3.5 text-gc-ink3" />
                 {item.label}
@@ -110,95 +116,15 @@ export function DocInsertPanel({ readOnly, artifactId, locale }: EditorProps<Doc
       <EmbedPicker
         excludeId={artifactId}
         locale={locale}
-        onPick={(block) => insertBlock(editor, block)}
+        onPick={(props) => insertBlock(editor, { type: "raEmbed", props })}
       />
       <Placeholder>Or type / in the page to insert inline.</Placeholder>
     </>
   )
 }
 
-/** The pinned version an embed would use: the default in `locale`, else any default. */
-export function embedTarget(item: ArtifactListItem, locale: string) {
-  const chosen = item.defaults[locale] ? locale : Object.keys(item.defaults)[0]
-  if (!chosen) return null
-  const number = item.localeVersions.find((entry) => entry.locale === chosen)?.defaultNumber
-  return { locale: chosen, versionId: item.defaults[chosen], versionNumber: number ?? 0 }
-}
-
-function EmbedPicker({
-  excludeId,
-  locale,
-  onPick,
-}: {
-  excludeId: string
-  locale: string
-  onPick: (block: DocPartialBlock) => void
-}) {
-  const [query, setQuery] = useState("")
-  const results = useArtifactSearch({
-    query: query || undefined,
-    status: "has-published",
-    limit: 6,
-  })
-  const items = (results.data?.items ?? []).filter((item) => item.id !== excludeId)
-  return (
-    <section className="flex flex-col gap-1.5">
-      <PanelHeading label="Embed artifact" right="pins a version" />
-      <label className="flex h-[30px] items-center gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5 focus-within:border-gc-primary">
-        <SearchIcon aria-hidden className="size-3 text-gc-ink3" />
-        <input
-          aria-label="Search published artifacts"
-          placeholder="Search published artifacts"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          className="min-w-0 flex-1 bg-transparent text-[11px] text-gc-text outline-none placeholder:text-gc-ink3"
-        />
-      </label>
-      <ul className="flex flex-col gap-1">
-        {items.map((item) => {
-          const target = embedTarget(item, locale)
-          const info = typeInfo(item.type)
-          if (!target) return null
-          return (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() =>
-                  onPick({
-                    type: "raEmbed",
-                    props: {
-                      artifactId: item.id,
-                      versionId: target.versionId,
-                      locale: target.locale,
-                      title: item.title,
-                      artifactType: item.type,
-                      versionNumber: target.versionNumber,
-                    },
-                  })
-                }
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-gc-sunken"
-              >
-                <info.icon className={cn("size-3 shrink-0", info.ink)} />
-                <span className="min-w-0 flex-1 truncate text-[11px] text-gc-ink2">
-                  {item.title}
-                </span>
-                <span className="font-mono text-[8.5px] text-gc-ink3 uppercase">
-                  {target.locale} v{target.versionNumber}
-                </span>
-              </button>
-            </li>
-          )
-        })}
-        {results.isSuccess && items.length === 0 && (
-          <li className="px-2 text-[11px] text-gc-ink3">No published artifacts match.</li>
-        )}
-      </ul>
-    </section>
-  )
-}
-
 /** Outline from headings (click to jump) and document stats. */
-export function DocFormatPanel({ content }: EditorProps<DocContent>) {
+export function DocFormatPanel({ content, readOnly }: EditorProps<DocContent>) {
   const { editor } = useDocEditor()
   const outline = docOutline(content)
   const stats = docStats(content)
@@ -212,6 +138,7 @@ export function DocFormatPanel({ content }: EditorProps<DocContent>) {
   }
   return (
     <>
+      <SelectedEmbed content={content} readOnly={readOnly} />
       <PanelHeading label="Outline" right={`${outline.length} headings`} />
       {outline.length === 0 && <Placeholder>Add headings to build an outline.</Placeholder>}
       <ol className="flex flex-col gap-0.5">
@@ -228,7 +155,7 @@ export function DocFormatPanel({ content }: EditorProps<DocContent>) {
             >
               <span
                 className={cn(
-                  "font-mono text-[8px] tracking-[0.5px]",
+                  "font-mono text-label tracking-[0.5px]",
                   index === 0 ? "text-gc-nav-ink" : "text-gc-ink3",
                 )}
               >
@@ -236,7 +163,7 @@ export function DocFormatPanel({ content }: EditorProps<DocContent>) {
               </span>
               <span
                 className={cn(
-                  "truncate text-[10.5px]",
+                  "truncate text-label",
                   index === 0 ? "font-semibold text-gc-nav-ink" : "text-gc-ink2",
                 )}
               >
@@ -258,11 +185,82 @@ export function DocFormatPanel({ content }: EditorProps<DocContent>) {
   )
 }
 
+/** Width, aspect, align and re-pin for the embed holding the cursor. */
+function SelectedEmbed({ content, readOnly }: { content: DocContent; readOnly: boolean }) {
+  const { editor } = useDocEditor()
+  const [blockId, setBlockId] = useState<string | null>(null)
+  useEffect(() => {
+    if (!editor) return
+    const read = () => {
+      const block = editor.getTextCursorPosition().block
+      setBlockId(block.type === "raEmbed" ? block.id : null)
+    }
+    read()
+    return editor.onSelectionChange(read)
+  }, [editor])
+  // `content` re-renders this panel on every edit, so the block read here is current.
+  const block = editor && blockId ? editor.getBlock(blockId) : undefined
+  if (!editor || !block || block.type !== "raEmbed" || !content) return null
+  const embed = block.props as DocEmbedProps
+  const patch = (props: Partial<DocEmbedProps>) => editor.updateBlock(block, { props })
+  return (
+    <>
+      <PanelHeading label="Embed" right={`${embed.locale} v${embed.versionNumber}`} />
+      {isLiveEmbed(embed) ? (
+        <>
+          <Field label={`Width ${embed.width}%`}>
+            <input
+              type="range"
+              aria-label="Embed width"
+              disabled={readOnly}
+              min={EMBED_MIN_WIDTH}
+              max={EMBED_MAX_WIDTH}
+              value={embed.width}
+              onChange={(event) => patch({ width: Number(event.target.value) })}
+              className="accent-gc-primary"
+            />
+          </Field>
+          <Field label="Aspect">
+            <Select
+              disabled={readOnly}
+              value={embed.aspect}
+              onChange={(event) => patch({ aspect: event.target.value as DocEmbedProps["aspect"] })}
+            >
+              {EMBED_ASPECTS.map((aspect) => (
+                <option key={aspect} value={aspect}>
+                  {aspect === "auto" ? "Auto (fixed height)" : aspect}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Align">
+            <Select
+              disabled={readOnly}
+              value={embed.align}
+              onChange={(event) => patch({ align: event.target.value as DocEmbedProps["align"] })}
+            >
+              {EMBED_ALIGNS.map((align) => (
+                <option key={align} value={align}>
+                  {align.charAt(0).toUpperCase() + align.slice(1)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </>
+      ) : (
+        <Placeholder>This type shows as a chip, so it has no size to edit.</Placeholder>
+      )}
+      {!readOnly && embed.artifactId && <EmbedRepin embed={embed} onRepin={patch} />}
+      <div className="h-px shrink-0 bg-gc-divider" />
+    </>
+  )
+}
+
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex flex-col gap-[3px] rounded-md border border-gc-border bg-gc-sunken p-[9px]">
-      <span className="font-mono text-[13px] text-gc-text">{value}</span>
-      <span className="font-mono text-[8px] tracking-[0.6px] text-gc-ink3 uppercase">{label}</span>
+      <span className="font-mono text-body text-gc-text">{value}</span>
+      <span className="font-mono text-label tracking-[0.6px] text-gc-ink3 uppercase">{label}</span>
     </div>
   )
 }

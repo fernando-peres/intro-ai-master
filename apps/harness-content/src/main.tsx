@@ -3,6 +3,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
+import { RouteError } from "@/components/shell/route-error"
 import { Toaster } from "@/components/ui/sonner"
 import { StudioThemeProvider } from "@/lib/studio-theme"
 import { routeTree } from "./routeTree.gen"
@@ -11,7 +12,7 @@ import "./index.css"
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 5_000, refetchOnWindowFocus: false } },
 })
-const router = createRouter({ routeTree })
+const router = createRouter({ routeTree, defaultErrorComponent: RouteError })
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -9,8 +9,11 @@ import { cn } from "@/lib/utils"
 export function usePresentation(onExit: () => void) {
   const stageRef = useRef<HTMLDivElement>(null)
   const [controls, setControls] = useState(false)
+  const [help, setHelp] = useState(false)
   const exit = useRef(onExit)
   exit.current = onExit
+  const helpRef = useRef(help)
+  helpRef.current = help
 
   useEffect(() => {
     const stage = stageRef.current
@@ -33,8 +36,12 @@ export function usePresentation(onExit: () => void) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.target instanceof HTMLElement && event.target.closest("input, textarea")) return
-      if (event.key === "Escape") exit.current()
-      else if (
+      if (event.key === "?") setHelp((shown) => !shown)
+      else if (event.key === "Escape") {
+        // Closing the list must not also leave the presentation.
+        if (helpRef.current) setHelp(false)
+        else exit.current()
+      } else if (
         event.key.toLowerCase() === "i" &&
         !event.metaKey &&
         !event.ctrlKey &&
@@ -47,7 +54,7 @@ export function usePresentation(onExit: () => void) {
     return () => window.removeEventListener("keydown", onKey)
   }, [])
 
-  return { stageRef, controls, setControls }
+  return { stageRef, controls, setControls, help, setHelp }
 }
 
 /** Covers the viewport; the document type keeps the studio's page colors. */
@@ -68,7 +75,7 @@ export function PresentationStage({
       data-theme={isDoc ? undefined : "graphite-dark"}
       className={cn(
         "fixed inset-0 z-50 flex overflow-hidden outline-none",
-        isDoc ? "bg-gc-page" : "bg-[#07070A]",
+        isDoc ? "bg-gc-page" : "bg-ov-stage",
       )}
     >
       {children}
@@ -94,7 +101,7 @@ export function OverlayButton({
       title={label}
       onClick={onClick}
       disabled={disabled}
-      className="flex size-[30px] items-center justify-center rounded-lg border border-[#FFFFFF24] bg-[#15141Ddd] text-[#D8D4EA] backdrop-blur-lg disabled:opacity-40 [&_svg]:size-[13px]"
+      className="flex size-[30px] items-center justify-center rounded-lg border border-ov-line bg-ov-surface text-ov-ink backdrop-blur-lg disabled:opacity-40 [&_svg]:size-[13px]"
     >
       {children}
     </button>
@@ -104,6 +111,46 @@ export function OverlayButton({
 /** The top-right button group of the visible controls. */
 export function PresentationActions({ children }: { children: ReactNode }) {
   return <div className="absolute top-5 right-[19px] z-30 flex items-center gap-2">{children}</div>
+}
+
+type Shortcut = { keys: string; action: string }
+
+export const STAGE_SHORTCUTS: Shortcut[] = [
+  { keys: "I", action: "Show or hide the controls" },
+  { keys: "?", action: "Show or hide this list" },
+  { keys: "Esc", action: "Exit" },
+]
+
+/** The keyboard list, reachable with `?` even while the controls are hidden. */
+export function ShortcutsHelp({
+  shortcuts,
+  onClose,
+}: {
+  shortcuts: Shortcut[]
+  onClose: () => void
+}) {
+  return (
+    <div
+      role="dialog"
+      aria-label="Keyboard shortcuts"
+      className="absolute top-1/2 left-1/2 z-40 w-[320px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-ov-line bg-ov-panel p-4"
+    >
+      <div className="flex items-center justify-between pb-3">
+        <h2 className="text-body font-semibold text-ov-text">Keyboard shortcuts</h2>
+        <button type="button" onClick={onClose} className="text-ui text-ov-muted underline">
+          Close
+        </button>
+      </div>
+      <dl className="flex flex-col gap-2">
+        {shortcuts.map((entry) => (
+          <div key={entry.keys} className="flex items-center justify-between gap-4">
+            <dt className="text-ui text-ov-ink">{entry.action}</dt>
+            <dd className="shrink-0 font-mono text-label text-ov-soft">{entry.keys}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
 }
 
 const ZOOM_STEPS = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3]
@@ -128,7 +175,7 @@ export function PresentationZoom({
       </OverlayButton>
       <span
         aria-live="polite"
-        className="flex h-[30px] w-12 items-center justify-center rounded-lg border border-[#FFFFFF24] bg-[#15141Ddd] font-mono text-[9.5px] text-[#D8D4EA] backdrop-blur-lg"
+        className="flex h-[30px] w-12 items-center justify-center rounded-lg border border-ov-line bg-ov-surface font-mono text-label text-ov-ink backdrop-blur-lg"
       >
         {Math.round(zoom * 100)}%
       </span>
@@ -158,22 +205,22 @@ export function PresentationBadge({
   return (
     <div
       className={cn(
-        "absolute right-[19px] bottom-2 z-30 flex h-[30px] max-w-[calc(100%-2rem)] items-center gap-[9px] rounded-lg border border-[#FFFFFF24] bg-[#15141Ddd] px-3 backdrop-blur-lg",
+        "absolute right-[19px] bottom-2 z-30 flex h-[30px] max-w-[calc(100%-2rem)] items-center gap-[9px] rounded-lg border border-ov-line bg-ov-surface px-3 backdrop-blur-lg",
         progress && "w-[349px]",
       )}
     >
-      <RouteIcon className="size-3 shrink-0 text-[#B9B1DC]" />
-      <span className="truncate text-[11.5px] font-semibold text-[#F0EEF8]">{name}</span>
+      <RouteIcon className="size-3 shrink-0 text-ov-soft" />
+      <span className="truncate text-ui font-semibold text-ov-text">{name}</span>
       {progress && (
         <>
-          <span className="h-3 w-px shrink-0 bg-[#FFFFFF2E]" />
-          <span className="shrink-0 font-mono text-[9px] tracking-[0.6px] text-[#9D93C9]">
+          <span className="h-3 w-px shrink-0 bg-ov-line" />
+          <span className="shrink-0 font-mono text-label tracking-[0.6px] text-ov-muted">
             STEP {progress.step} / {progress.total}
           </span>
-          <span className="h-[3px] min-w-4 flex-1 overflow-hidden rounded-sm bg-[#FFFFFF33]">
-            <span className="block h-full bg-[#FFFFFFC4]" style={{ width: `${percent}%` }} />
+          <span className="h-[3px] min-w-4 flex-1 overflow-hidden rounded-sm bg-ov-track">
+            <span className="block h-full bg-ov-bar" style={{ width: `${percent}%` }} />
           </span>
-          <span className="shrink-0 font-mono text-[8.5px] tracking-[1px] text-[#FFFFFFA6]">
+          <span className="shrink-0 font-mono text-label tracking-[0.5px] text-ov-dim">
             {percent}%
           </span>
         </>

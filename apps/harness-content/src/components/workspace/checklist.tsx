@@ -5,7 +5,7 @@ import type { ChecklistItem } from "@/lib/outline"
 import { cn } from "@/lib/utils"
 
 const addInput =
-  "h-7 w-full rounded-[5px] border border-gc-border bg-gc-sunken px-[9px] text-[11.5px] text-gc-text outline-none focus:border-gc-primary"
+  "h-7 w-full rounded-[5px] border border-gc-border bg-gc-sunken px-[9px] text-ui text-gc-text outline-none focus:border-gc-primary"
 
 function AddForm({
   label,
@@ -66,7 +66,7 @@ export function ChecklistEditor({ items, readOnly, onChange }: ChecklistProps) {
       <ul className="flex flex-col gap-[9px]">
         {items.map((item, index) => (
           <li key={item.label}>
-            <label className="flex items-center gap-[9px] text-[11px]">
+            <label className="flex items-center gap-[9px] text-ui">
               <input
                 type="checkbox"
                 checked={item.done}
@@ -128,10 +128,10 @@ export function StringListEditor({
               // biome-ignore lint/suspicious/noArrayIndexKey: entries may repeat; order is the identity
               key={index}
               className={cn(
-                "flex items-start gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-[7px] text-[11px] text-gc-text",
+                "flex items-start gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-[7px] text-ui text-gc-text",
               )}
             >
-              <span className="font-mono text-[9px] text-gc-ink3">{index + 1}.</span>
+              <span className="font-mono text-label text-gc-ink3">{index + 1}.</span>
               <span className="min-w-0 flex-1">{item}</span>
               {!readOnly && (
                 <button

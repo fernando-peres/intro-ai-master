@@ -18,14 +18,21 @@ export function artifactStatusKind(status: string): StatusKind {
   return "draft"
 }
 
-export function StatusLabel({ kind, className }: { kind: StatusKind; className?: string }) {
+type StatusLabelProps = {
+  kind: StatusKind
+  className?: string
+  /** In long lists published is the default: only the exceptions get a chip. */
+  quietPublished?: boolean
+}
+
+export function StatusLabel({ kind, className, quietPublished }: StatusLabelProps) {
   const style = STATUS_STYLES[kind]
+  const quiet = quietPublished && kind === "published"
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-[5px] rounded-[3px] px-[7px] py-[3px] font-mono text-[8.5px] tracking-[0.6px] uppercase",
-        style.box,
-        style.ink,
+        "inline-flex items-center gap-[5px] rounded-[3px] px-[7px] align-middle py-[3px] font-mono text-label tracking-[0.6px] uppercase",
+        quiet ? "px-0 text-gc-ink3" : [style.box, style.ink],
         className,
       )}
     >
@@ -47,10 +54,10 @@ export function LocaleLabel({ locale, version, published }: LocaleLabelProps) {
   const plain = version === undefined
   return (
     <span className="inline-flex items-center gap-1.5 rounded-[3px] border border-gc-border bg-gc-sunken px-[7px] py-[3px] font-mono">
-      <span className="text-[9px] font-bold text-gc-text uppercase">{locale}</span>
+      <span className="text-label font-bold text-gc-text uppercase">{locale}</span>
       {!plain && (
         <>
-          <span className="text-[8.5px] text-gc-ink3">{version ? `v${version}` : "draft"}</span>
+          <span className="text-label text-gc-ink3">{version ? `v${version}` : "draft"}</span>
           <span
             role="img"
             aria-label={published ? "published" : "draft"}
@@ -67,7 +74,7 @@ export function LocaleLabel({ locale, version, published }: LocaleLabelProps) {
 
 export function TagChip({ children }: { children: string }) {
   return (
-    <span className="rounded-[3px] border border-gc-border bg-gc-sunken px-1.5 py-0.5 font-mono text-[8.5px] text-gc-ink2">
+    <span className="rounded-[3px] border border-gc-border bg-gc-sunken px-1.5 py-0.5 font-mono text-label text-gc-ink2">
       {children}
     </span>
   )
@@ -82,7 +89,7 @@ export function FilterTag({ label, selected, className, ...props }: FilterTagPro
       type="button"
       aria-pressed={selected}
       className={cn(
-        "inline-flex h-[22px] items-center gap-[5px] rounded-full px-[9px] font-mono text-[9px]",
+        "inline-flex h-[22px] items-center gap-[5px] rounded-full px-[9px] font-mono text-label",
         selected
           ? "bg-gc-nav-bg text-gc-nav-ink"
           : "border border-gc-border bg-gc-sunken text-gc-ink2 hover:text-gc-text",
@@ -100,7 +107,7 @@ export function FilterTag({ label, selected, className, ...props }: FilterTagPro
 export function Caption({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
-      className={cn("font-mono text-[8.5px] tracking-[1px] text-gc-ink3 uppercase", className)}
+      className={cn("font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase", className)}
       {...props}
     />
   )

@@ -25,6 +25,7 @@ const STUDIO: [string, string, number][] = [
     [`gc-${tone}-ink`, `gc-${tone}-tint`, TEXT] as [string, string, number],
     [`gc-${tone}-ink`, "gc-raised", TEXT] as [string, string, number],
   ]),
+  ["gc-primary", "gc-page", GRAPHIC],
   ["gc-primary", "gc-raised", GRAPHIC],
   ["gc-primary", "gc-sunken", GRAPHIC],
 ]

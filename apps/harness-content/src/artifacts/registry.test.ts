@@ -10,7 +10,7 @@ describe("plugin registry", () => {
       listPlugins()
         .map((plugin) => plugin.type)
         .sort(),
-    ).toEqual(["animation", "doc", "slide"])
+    ).toEqual(["animation", "diagram", "doc", "slide"])
     for (const plugin of listPlugins()) {
       expect(validateContent(plugin, plugin.createEmpty())).toMatchObject({ ok: true })
     }

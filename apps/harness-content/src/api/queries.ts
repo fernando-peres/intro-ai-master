@@ -8,6 +8,7 @@ export type ArtifactSearchParams = NonNullable<
 
 export const keys = {
   locations: ["locations"] as const,
+  locationCounts: ["locations", "artifact-counts"] as const,
   artifacts: ["artifacts"] as const,
   search: (params: ArtifactSearchParams) => ["artifacts", "search", params] as const,
   artifact: (id: string) => ["artifacts", id] as const,
@@ -25,6 +26,14 @@ export function useLocations() {
   return useQuery({
     queryKey: keys.locations,
     queryFn: () => unwrap(api.GET("/api/v1/locations")),
+  })
+}
+
+/** Location id → artifacts directly in it. */
+export function useLocationCounts() {
+  return useQuery({
+    queryKey: keys.locationCounts,
+    queryFn: () => unwrap(api.GET("/api/v1/locations/artifact-counts")),
   })
 }
 
@@ -77,7 +86,27 @@ export function useCreateLocation() {
   return useMutation({
     mutationFn: (body: Schemas["LocationCreate"]) =>
       unwrap(api.POST("/api/v1/locations", { body })),
+    // Returned so `mutateAsync` resolves once the new location is in the tree.
     onSuccess: () => client.invalidateQueries({ queryKey: keys.locations }),
+  })
+}
+
+export function useUpdateLocation() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, ...body }: Schemas["LocationUpdate"] & { id: string }) =>
+      unwrap(
+        api.PATCH("/api/v1/locations/{location_id}", {
+          params: { path: { location_id: id } },
+          body,
+        }),
+      ),
+    // Search results carry location titles in `locationPath`.
+    onSuccess: () =>
+      Promise.all([
+        client.invalidateQueries({ queryKey: keys.locations }),
+        client.invalidateQueries({ queryKey: ["artifacts", "search"] }),
+      ]),
   })
 }
 
@@ -88,6 +117,7 @@ export function useCreateArtifact() {
       unwrap(api.POST("/api/v1/artifacts", { body })),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: keys.artifacts })
+      client.invalidateQueries({ queryKey: keys.locationCounts })
       client.invalidateQueries({ queryKey: keys.tags })
       client.invalidateQueries({ queryKey: keys.templates })
       client.invalidateQueries({ queryKey: keys.themes })
@@ -98,7 +128,7 @@ export function useCreateArtifact() {
 export type Version = Schemas["VersionOut"]
 export type VersionWithEtag = { version: Version; etag: string }
 
-const versionKey = (versionId: string) => ["versions", versionId] as const
+export const versionKey = (versionId: string) => ["versions", versionId] as const
 
 /** A version plus the ETag that draft saves must send back as If-Match. */
 export function useVersion(versionId: string | undefined) {
@@ -173,6 +203,7 @@ export function useUpdateArtifact(artifactId: string) {
     onSuccess: (artifact) => {
       client.setQueryData(keys.artifact(artifactId), artifact)
       client.invalidateQueries({ queryKey: ["artifacts", "search"] })
+      client.invalidateQueries({ queryKey: keys.locationCounts })
       client.invalidateQueries({ queryKey: keys.tags })
     },
   })
@@ -211,6 +242,20 @@ export function useDecideReview() {
           : api.POST("/api/v1/reviews/{review_id}/request-changes", options),
       )
     },
+    onSuccess: refresh,
+  })
+}
+
+export function useApproveAndPublish() {
+  const refresh = useRefreshVersions()
+  return useMutation({
+    mutationFn: ({ reviewId, ...body }: { reviewId: string } & Schemas["ApproveAndPublish"]) =>
+      unwrap(
+        api.POST("/api/v1/reviews/{review_id}/approve-and-publish", {
+          params: { path: { review_id: reviewId } },
+          body,
+        }),
+      ),
     onSuccess: refresh,
   })
 }
@@ -261,6 +306,7 @@ export function useImportArtifact() {
       unwrap(api.POST("/api/v1/artifacts/import", { body })),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: keys.artifacts })
+      client.invalidateQueries({ queryKey: keys.locationCounts })
       client.invalidateQueries({ queryKey: keys.tags })
     },
   })

@@ -223,3 +223,97 @@ def test_invalid_outlines_are_rejected(api):
         response = api.set_steps(flow_id, steps, expect=422, outline={"nodes": nodes})
         assert response.json()["code"] == "invalid_outline"
     api.set_steps(flow_id, steps, expect=422, outline={"nodes": [_pill("p", _ref(1)), _ref(2)]})
+
+
+def _trail(api, artifact_id: str, flow_id: str) -> dict:
+    trails = api.get("usr_viewer", f"/api/v1/artifacts/{artifact_id}/trails").json()
+    return next(entry for entry in trails if entry["flowId"] == flow_id)
+
+
+def test_artifact_joins_and_leaves_a_trail_keeping_the_outline(api):
+    first, first_v = _published_artifact(api)
+    second, second_v = _published_artifact(api)
+    third, third_v = _published_artifact(api)
+    flow_id = api.flow("Linked")
+    url = f"/api/v1/artifacts/{third}/trails/{flow_id}"
+    unit = {
+        "kind": "unit",
+        "key": "u1",
+        "title": "Unit",
+        "children": [{"kind": "step", "step": 1}],
+    }
+    api.set_steps(
+        flow_id,
+        [_step(first, first_v), _step(second, second_v)],
+        outline={"nodes": [unit, {"kind": "step", "step": 2}]},
+    )
+
+    api.put("usr_author", url, expect=204)
+    api.put("usr_author", url, expect=204)
+    draft = api.get("usr_author", f"/api/v1/flows/{flow_id}/draft").json()
+    assert [step["artifactVersionId"] for step in draft["steps"]] == [first_v, second_v, third_v]
+    assert draft["outline"]["nodes"][0]["title"] == "Unit"
+    assert draft["outline"]["nodes"][-1]["step"] == 3
+    assert _trail(api, third, flow_id)["inDraft"] is True
+
+    api.delete("usr_author", f"/api/v1/artifacts/{first}/trails/{flow_id}", expect=204)
+    draft = api.get("usr_author", f"/api/v1/flows/{flow_id}/draft").json()
+    assert [step["position"] for step in draft["steps"]] == [1, 2]
+    assert draft["outline"]["nodes"][0]["children"] == []
+    assert [node["step"] for node in draft["outline"]["nodes"][1:]] == [1, 2]
+
+
+def test_leaving_a_trail_only_changes_the_draft(api):
+    artifact_id, v1_id = _published_artifact(api)
+    flow_id = api.flow("Frozen")
+    api.set_steps(flow_id, [_step(artifact_id, v1_id)])
+    revision = api.publish_flow(flow_id).json()
+
+    api.delete("usr_author", f"/api/v1/artifacts/{artifact_id}/trails/{flow_id}", expect=204)
+    trail = _trail(api, artifact_id, flow_id)
+    assert (trail["inDraft"], trail["publishedRevisions"]) == (False, [1])
+    frozen = api.get("usr_author", f"/api/v1/flows/{flow_id}/revisions/{revision['id']}").json()
+    assert len(frozen["steps"]) == 1
+
+
+def test_only_editors_can_link_published_artifacts(api):
+    artifact_id, _ = _published_artifact(api)
+    flow_id = api.flow("Guarded")
+    url = f"/api/v1/artifacts/{artifact_id}/trails/{flow_id}"
+    api.put("usr_viewer", url, expect=403)
+    api.delete("usr_viewer", url, expect=403)
+    unpublished = api.artifact(content=V1)["artifact"]["id"]
+    blocked = api.put("usr_author", f"/api/v1/artifacts/{unpublished}/trails/{flow_id}", expect=409)
+    assert blocked.json()["code"] == "artifact_not_published"
+
+
+def test_draft_plays_in_its_current_order(api):
+    first, first_v = _published_artifact(api)
+    added, _ = _published_artifact(api)
+    flow_id = api.flow("Live")
+    api.set_steps(flow_id, [_step(first, first_v)])
+    published = api.publish_flow(flow_id).json()["id"]
+    api.put("usr_author", f"/api/v1/artifacts/{added}/trails/{flow_id}", expect=204)
+    draft = api.get("usr_author", f"/api/v1/flows/{flow_id}/draft").json()
+    url = f"/api/v1/flows/{flow_id}/revisions/{draft['id']}/play"
+
+    played = api.get("usr_author", url).json()
+    assert [step["artifact"]["id"] for step in played["steps"]] == [first, added]
+    assert len(api.play(flow_id, published)["steps"]) == 1
+    api.get("usr_viewer", url, expect=403)
+
+
+def test_draft_play_skips_unpinned_steps_and_renumbers(api):
+    first, first_v = _published_artifact(api)
+    second, second_v = _published_artifact(api)
+    flow_id = api.flow("Partial")
+    api.set_steps(flow_id, [_step(first, None), _step(second, second_v)])
+    draft = api.get("usr_author", f"/api/v1/flows/{flow_id}/draft").json()
+    url = f"/api/v1/flows/{flow_id}/revisions/{draft['id']}/play"
+
+    played = api.get("usr_author", url).json()
+    assert [step["position"] for step in played["steps"]] == [1]
+    assert played["outline"]["nodes"] == [{"kind": "step", "step": 1}]
+
+    api.set_steps(flow_id, [_step(first, None)])
+    assert api.get("usr_author", url, expect=409).json()["code"] == "empty_flow"

@@ -8,7 +8,7 @@
 
 **Tech Stack:** React 19, TanStack Router, TypeScript, Vite, Vitest, Testing Library, existing Tailwind/CSS tokens.
 
-**Spec:** `docs/specs/26-10-10-prgramming-vs-ml.md` and `docs/specs/26-10-11-machine-learning.md`
+**Spec:** `apps/ai-intro/docs/26-10-10-prgramming-vs-ml.md` and `apps/ai-intro/docs/26-10-11-machine-learning.md`
 
 ## Global Constraints
 

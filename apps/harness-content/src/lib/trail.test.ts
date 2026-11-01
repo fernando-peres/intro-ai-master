@@ -5,6 +5,7 @@ import {
   moveItem,
   newStep,
   resolveTheme,
+  selectedSteps,
   stepSeconds,
   toStepIn,
   totalSeconds,
@@ -65,5 +66,16 @@ describe("theme resolution", () => {
     })
     expect(resolveTheme("mint", "violet", "dark")).toEqual({ theme: "mint", source: "step" })
     expect(resolveTheme(null, null, "cobalt")).toEqual({ theme: "cobalt", source: "artifact" })
+  })
+})
+
+describe("selectedSteps", () => {
+  it("keeps trail order and leaves out unselected steps", () => {
+    const picked = selectedSteps(["a", "b", "c", "d"], "4,1,3")
+    expect(picked).toEqual([
+      { step: "a", position: 1 },
+      { step: "c", position: 3 },
+      { step: "d", position: 4 },
+    ])
   })
 })

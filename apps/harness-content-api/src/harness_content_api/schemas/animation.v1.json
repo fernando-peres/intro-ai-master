@@ -69,7 +69,8 @@
                 "violet": "Violet",
                 "mint": "Mint",
                 "cobalt": "Cobalt",
-                "ivory": "Ivory"
+                "ivory": "Ivory",
+                "nova-ims-green": "Nova IMS Green"
               },
               "type": "string",
               "enum": [
@@ -78,7 +79,8 @@
                 "violet",
                 "mint",
                 "cobalt",
-                "ivory"
+                "ivory",
+                "nova-ims-green"
               ]
             },
             "accent": {
@@ -242,7 +244,8 @@
                 "violet": "Violet",
                 "mint": "Mint",
                 "cobalt": "Cobalt",
-                "ivory": "Ivory"
+                "ivory": "Ivory",
+                "nova-ims-green": "Nova IMS Green"
               },
               "type": "string",
               "enum": [
@@ -251,7 +254,8 @@
                 "violet",
                 "mint",
                 "cobalt",
-                "ivory"
+                "ivory",
+                "nova-ims-green"
               ]
             },
             "accent": {

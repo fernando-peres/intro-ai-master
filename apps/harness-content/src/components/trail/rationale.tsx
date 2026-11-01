@@ -9,6 +9,7 @@ import { Caption, LocaleLabel } from "@/components/labels"
 import { ChecklistEditor, StringListEditor } from "@/components/workspace/checklist"
 import { PanelHeading, Placeholder, readChecklist } from "@/components/workspace/inspector"
 import { MarkdownPreview } from "@/components/workspace/resources"
+import { friendlyError } from "@/lib/errors"
 import { locationTrail } from "@/lib/library-tree"
 import {
   type ContainerKey,
@@ -174,7 +175,7 @@ function NavItem({
         onClick={onClick}
         style={{ paddingLeft: 8 + depth * 14 }}
         className={cn(
-          "flex h-7 w-full items-center gap-1.5 rounded-md pr-2 text-left text-[11px]",
+          "flex h-7 w-full items-center gap-1.5 rounded-md pr-2 text-left text-ui",
           selected
             ? "bg-gc-row-bg font-semibold text-gc-nav-ink"
             : "text-gc-ink2 hover:bg-gc-sunken",
@@ -182,19 +183,19 @@ function NavItem({
       >
         <span className="shrink-0 text-gc-ink3">{icon}</span>
         {tag && (
-          <span className="font-mono text-[7.5px] tracking-[0.6px] text-gc-ink3 uppercase">
+          <span className="font-mono text-label tracking-[0.6px] text-gc-ink3 uppercase">
             {tag}
           </span>
         )}
         <span className="min-w-0 flex-1 truncate">{label}</span>
-        <span className="font-mono text-[8.5px] text-gc-ink3">{meta}</span>
+        <span className="font-mono text-label text-gc-ink3">{meta}</span>
       </button>
     </li>
   )
 }
 
 const textArea =
-  "min-h-16 rounded-md border border-gc-border bg-gc-raised px-2.5 py-2 text-[11.5px] leading-[1.55] text-gc-text outline-none read-only:text-gc-ink2 focus-visible:border-gc-primary"
+  "min-h-16 rounded-md border border-gc-border bg-gc-raised px-2.5 py-2 text-ui leading-[1.55] text-gc-text outline-none read-only:text-gc-ink2 focus-visible:border-gc-primary"
 
 function Divider() {
   return <div className="h-px bg-gc-divider" />
@@ -220,12 +221,12 @@ function RationaleEditor({
     <>
       <header className="flex items-end justify-between gap-4">
         <span className="flex min-w-0 flex-col gap-1">
-          <span className="font-mono text-[9px] tracking-[1px] text-gc-ink3 uppercase">
+          <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">
             {kind} rationale
           </span>
-          <h2 className="truncate text-[16px] font-semibold text-gc-text">{title}</h2>
+          <h2 className="truncate text-title font-semibold text-gc-text">{title}</h2>
         </span>
-        <span className="flex flex-col items-end gap-1 font-mono text-[9px] text-gc-ink3">
+        <span className="flex flex-col items-end gap-1 font-mono text-label text-gc-ink3">
           <span>PLANNED {formatClock(totalSeconds(steps))}</span>
           <span>{steps.length} STEPS</span>
         </span>
@@ -278,8 +279,8 @@ function RationaleEditor({
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <dt className="font-mono text-[8.5px] tracking-[0.8px] text-gc-ink3 uppercase">{label}</dt>
-      <dd className="min-w-0 text-[11.5px] text-gc-text">{children}</dd>
+      <dt className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">{label}</dt>
+      <dd className="min-w-0 text-ui text-gc-text">{children}</dd>
     </div>
   )
 }
@@ -301,7 +302,7 @@ function ArtifactInfo({
   const assets = useAssets(step.artifactId).data ?? []
   const info = typeInfo(step.artifactType)
 
-  if (artifact.error) return <Caption>{artifact.error.message}</Caption>
+  if (artifact.error) return <Caption>{friendlyError(artifact.error)}</Caption>
   if (!artifact.data) return <Placeholder>Loading the artifact…</Placeholder>
   const data = artifact.data
   const design = data.instructionalDesign ?? {}
@@ -321,11 +322,11 @@ function ArtifactInfo({
             <info.icon className="size-4" />
           </span>
           <span className="flex min-w-0 flex-col gap-1">
-            <span className="font-mono text-[9px] tracking-[1px] text-gc-ink3 uppercase">
+            <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">
               Step {position} · {info.label}
               {where ? ` · ${where}` : ""}
             </span>
-            <h2 className="truncate text-[16px] font-semibold text-gc-text">
+            <h2 className="truncate text-title font-semibold text-gc-text">
               {step.label || data.title}
             </h2>
           </span>
@@ -334,7 +335,7 @@ function ArtifactInfo({
           to="/artifacts/$artifactId"
           params={{ artifactId: step.artifactId }}
           search={{ v: step.artifactVersionId ?? undefined, trail: flowId, step: position }}
-          className="flex h-7 shrink-0 items-center gap-1.5 rounded-md border border-gc-border bg-gc-raised px-[11px] text-[11px] text-gc-ink2 hover:text-gc-text"
+          className="flex h-7 shrink-0 items-center gap-1.5 rounded-md border border-gc-border bg-gc-raised px-[11px] text-ui text-gc-ink2 hover:text-gc-text"
         >
           <ExternalLinkIcon className="size-[11px]" />
           Open artifact
@@ -367,7 +368,7 @@ function ArtifactInfo({
                 {data.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex h-[22px] items-center gap-1 rounded-full border border-gc-border bg-gc-sunken px-2 font-mono text-[9px] text-gc-ink2"
+                    className="inline-flex h-[22px] items-center gap-1 rounded-full border border-gc-border bg-gc-sunken px-2 font-mono text-label text-gc-ink2"
                   >
                     <TagIcon aria-hidden className="size-2.5 text-gc-ink3" />
                     {tag}
@@ -388,12 +389,10 @@ function ArtifactInfo({
       <PanelHeading label="Notes" right={`${notes.length + (step.presenterNote ? 1 : 0)}`} />
       {step.presenterNote && (
         <section className="rounded-[7px] border border-gc-border bg-gc-raised px-3 py-2.5">
-          <span className="font-mono text-[8.5px] tracking-[0.8px] text-gc-ink3 uppercase">
+          <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">
             Presenter note on this step
           </span>
-          <p className="mt-1 text-[11.5px] whitespace-pre-wrap text-gc-ink2">
-            {step.presenterNote}
-          </p>
+          <p className="mt-1 text-ui whitespace-pre-wrap text-gc-ink2">{step.presenterNote}</p>
         </section>
       )}
       {notes.map((asset) => (
@@ -412,11 +411,11 @@ function ArtifactInfo({
               key={asset.id}
               className="flex h-9 items-center gap-2.5 rounded-md border border-gc-border bg-gc-raised px-2.5"
             >
-              <span className="rounded-[3px] bg-gc-sunken px-[5px] py-0.5 font-mono text-[8px] text-gc-ink2">
+              <span className="rounded-[3px] bg-gc-sunken px-[5px] py-0.5 font-mono text-label text-gc-ink2">
                 {typeChip(asset)}
               </span>
-              <span className="min-w-0 flex-1 truncate text-[11px] text-gc-text">{asset.name}</span>
-              <span className="font-mono text-[9px] text-gc-ink3">
+              <span className="min-w-0 flex-1 truncate text-ui text-gc-text">{asset.name}</span>
+              <span className="font-mono text-label text-gc-ink3">
                 {formatBytes(asset.sizeBytes)}
               </span>
               <button
@@ -440,7 +439,7 @@ function NoteCard({ asset }: { asset: Asset }) {
   const text = useAssetText(asset.id, asset.revision).data
   return (
     <section aria-label={asset.name} className="rounded-[7px] border border-gc-border bg-gc-raised">
-      <span className="block border-b border-gc-divider px-3 py-2 font-mono text-[9px] text-gc-ink2">
+      <span className="block border-b border-gc-divider px-3 py-2 font-mono text-label text-gc-ink2">
         {asset.name}
       </span>
       {text === undefined ? <Placeholder>Loading…</Placeholder> : <MarkdownPreview text={text} />}

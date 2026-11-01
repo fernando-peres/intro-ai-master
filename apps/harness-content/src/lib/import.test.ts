@@ -18,7 +18,9 @@ describe("readImport", () => {
     expect(syntax.ok).toBe(false)
     expect(readImport('{"schemaVersion":1,"type":"video"}')).toEqual({
       ok: false,
-      issues: [{ path: "type", message: 'Expected one of slide, doc, animation, got "video"' }],
+      issues: [
+        { path: "type", message: 'Expected one of slide, doc, animation, diagram, got "video"' },
+      ],
     })
     expect(readImport("[1]")).toMatchObject({ ok: false })
   })

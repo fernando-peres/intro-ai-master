@@ -1,12 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { BookmarkIcon, PlusIcon, SearchIcon, SlidersHorizontalIcon, XIcon } from "lucide-react"
+import { PlusIcon, SearchIcon, XIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useArtifactSearch, useLocations, useTags } from "@/api/queries"
 import { Caption, FilterTag } from "@/components/labels"
+import { LocationContent, LocationHeader } from "@/components/library/location-view"
 import { FilterPill } from "@/components/search/filter-pill"
 import { ResultsTable } from "@/components/search/results-table"
 import { ActionButton } from "@/components/shell/form-controls"
+import { ErrorState, ListSkeleton } from "@/components/shell/page-states"
 import { useStudioDialogs } from "@/components/shell/studio-dialogs"
+import { usePageTitle } from "@/hooks/use-page-title"
 import { LOCALES } from "@/lib/locales"
 import { type LibrarySearch, PAGE_SIZE, parseLibrarySearch, toApiQuery } from "@/lib/search-params"
 
@@ -24,7 +27,7 @@ function ArtifactSearchPage() {
   const locations = useLocations().data ?? []
   const tags = useTags().data ?? []
   const { newArtifact } = useStudioDialogs()
-  const [selected, setSelected] = useState<Set<string>>(new Set())
+  usePageTitle("Artifact search")
   const [showAllTags, setShowAllTags] = useState(false)
 
   const update = (patch: Partial<LibrarySearch>) =>
@@ -42,6 +45,11 @@ function ArtifactSearchPage() {
     ? tagNames
     : [...new Set([...activeTags, ...tagNames])].slice(0, VISIBLE_TAGS)
 
+  const refined = Boolean(search.q || search.type || search.status || search.locale || search.tags)
+  const filtered = refined || Boolean(search.location)
+  // Any other filter is a search, so it keeps the scoped table.
+  const browsing = refined ? undefined : scoped
+
   const toggleTag = (tag: string) => {
     const next = new Set(activeTags)
     if (next.has(tag)) next.delete(tag)
@@ -49,37 +57,29 @@ function ArtifactSearchPage() {
     update({ tags: next.size ? [...next] : undefined })
   }
 
-  const toggle = (artifactId: string) =>
-    setSelected((previous) => {
-      const next = new Set(previous)
-      if (next.has(artifactId)) next.delete(artifactId)
-      else next.add(artifactId)
-      return next
-    })
-
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-gc-page">
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-gc-border px-4">
-        <div className="flex items-center gap-[9px]">
-          <h1 className="text-sm font-bold text-gc-text">Artifact search</h1>
-          <Caption className="tracking-[0.6px]">
-            {total} reusable artifacts · {boxes.length} boxes
-          </Caption>
-        </div>
-        <div className="flex items-center gap-2">
-          <ActionButton disabled title="Saved searches arrive later">
-            <BookmarkIcon />
-            Save search
-          </ActionButton>
-          <ActionButton variant="primary" onClick={() => newArtifact(search.location)}>
-            <PlusIcon />
-            New artifact
-          </ActionButton>
-        </div>
-      </header>
+      {browsing ? (
+        <LocationHeader location={browsing} />
+      ) : (
+        <header className="flex h-12 shrink-0 items-center justify-between border-b border-gc-border px-4">
+          <div className="flex items-center gap-[9px]">
+            <h1 className="text-sm font-bold text-gc-text">Artifact search</h1>
+            <Caption className="tracking-[0.5px] max-sm:hidden">
+              {results.data ? `${total} reusable artifacts · ${boxes.length} boxes` : ""}
+            </Caption>
+          </div>
+          <div className="flex items-center gap-2">
+            <ActionButton variant="primary" onClick={() => newArtifact(search.location)}>
+              <PlusIcon />
+              New artifact
+            </ActionButton>
+          </div>
+        </header>
+      )}
 
       <div className="flex shrink-0 flex-col gap-2.5 border-b border-gc-border px-4 py-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={search.q ?? ""} onChange={(q) => update({ q: q || undefined })} />
           <FilterPill
             label="Type"
@@ -88,6 +88,7 @@ function ArtifactSearchPage() {
               { value: "slide", label: "Slide" },
               { value: "doc", label: "Document" },
               { value: "animation", label: "Animation" },
+              { value: "diagram", label: "Diagram" },
             ]}
             onChange={(type) => update({ type: type as LibrarySearch["type"] })}
           />
@@ -122,10 +123,6 @@ function ArtifactSearchPage() {
             ]}
             onChange={(location) => update({ location })}
           />
-          <ActionButton className="h-[30px] px-2.5" disabled title="More filters arrive later">
-            <SlidersHorizontalIcon />
-            More
-          </ActionButton>
         </div>
         {tagNames.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5">
@@ -142,7 +139,7 @@ function ArtifactSearchPage() {
               <button
                 type="button"
                 onClick={() => setShowAllTags(!showAllTags)}
-                className="font-mono text-[8.5px] tracking-[0.5px] text-gc-ink3 uppercase hover:text-gc-ink2"
+                className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase hover:text-gc-ink2"
               >
                 {showAllTags ? "Fewer" : `+${tagNames.length - VISIBLE_TAGS} more`}
               </button>
@@ -151,7 +148,7 @@ function ArtifactSearchPage() {
               <button
                 type="button"
                 onClick={() => update({ tags: undefined })}
-                className="ml-1 flex items-center gap-[5px] text-[10.5px] text-gc-ink3 hover:text-gc-ink2"
+                className="ml-1 flex items-center gap-[5px] text-label text-gc-ink3 hover:text-gc-ink2"
               >
                 <XIcon className="size-2.5" />
                 Clear all
@@ -161,52 +158,62 @@ function ArtifactSearchPage() {
         )}
       </div>
 
-      {results.isError ? (
-        <p role="alert" className="p-6 text-[11.5px] text-gc-fail-ink">
-          Could not load artifacts: {results.error.message}. Is harness-content-api running?
-        </p>
-      ) : (
-        <ResultsTable
-          items={items}
-          selected={selected}
-          onToggle={toggle}
-          onToggleAll={() =>
-            setSelected(
-              items.every((item) => selected.has(item.id))
-                ? new Set()
-                : new Set(items.map((item) => item.id)),
-            )
-          }
+      {browsing ? (
+        <LocationContent location={browsing} />
+      ) : results.isError && !results.data ? (
+        <ErrorState
+          title="Could not load artifacts"
+          error={results.error}
+          onRetry={() => results.refetch()}
         />
-      )}
-      {!results.isError && !results.isPending && items.length === 0 && (
-        <p className="px-4 py-6 text-[11.5px] text-gc-ink3">
-          No artifacts match. Clear a filter or create one with “New artifact”.
-        </p>
+      ) : results.isPending ? (
+        <ListSkeleton label="Loading artifacts" />
+      ) : items.length === 0 ? (
+        <NoResults filtered={filtered} onClear={() => navigate({ search: {} })} />
+      ) : (
+        <ResultsTable items={items} />
       )}
 
-      <footer className="flex h-9 shrink-0 items-center justify-between border-t border-gc-border bg-gc-raised px-4">
-        <Caption className="tracking-[0.6px]">
-          Showing {first}–{first === 0 ? 0 : first + items.length - 1} of {total}
-          {selected.size > 0 && ` · ${selected.size} selected`}
-        </Caption>
-        <div className="flex items-center gap-2">
-          <ActionButton
-            className="h-6"
-            disabled={page <= 1}
-            onClick={() => navigate({ search: (prev) => ({ ...prev, page: page - 1 }) })}
-          >
-            Previous
-          </ActionButton>
-          <ActionButton
-            className="h-6"
-            disabled={page * PAGE_SIZE >= total}
-            onClick={() => navigate({ search: (prev) => ({ ...prev, page: page + 1 }) })}
-          >
-            Next
-          </ActionButton>
-        </div>
-      </footer>
+      {!browsing && (
+        <footer className="flex h-9 shrink-0 items-center justify-between border-t border-gc-border bg-gc-raised px-4">
+          <Caption className="tracking-[0.6px]">
+            {results.data &&
+              `Showing ${first}–${first === 0 ? 0 : first + items.length - 1} of ${total}`}
+          </Caption>
+          <div className="flex items-center gap-2">
+            <ActionButton
+              className="h-6"
+              disabled={page <= 1}
+              onClick={() => navigate({ search: (prev) => ({ ...prev, page: page - 1 }) })}
+            >
+              Previous
+            </ActionButton>
+            <ActionButton
+              className="h-6"
+              disabled={page * PAGE_SIZE >= total}
+              onClick={() => navigate({ search: (prev) => ({ ...prev, page: page + 1 }) })}
+            >
+              Next
+            </ActionButton>
+          </div>
+        </footer>
+      )}
+    </div>
+  )
+}
+
+function NoResults({ filtered, onClear }: { filtered: boolean; onClear: () => void }) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 p-10 text-center">
+      <p className="text-body font-semibold text-gc-text">
+        {filtered ? "No artifacts match these filters" : "No artifacts yet"}
+      </p>
+      <p className="max-w-md text-ui text-gc-ink2">
+        {filtered
+          ? "Try fewer filters, or clear them to see the whole library."
+          : "Artifacts are reusable slides, documents and animations. Create one to get started."}
+      </p>
+      {filtered && <ActionButton onClick={onClear}>Clear all filters</ActionButton>}
     </div>
   )
 }
@@ -236,7 +243,7 @@ function SearchBox({ value, onChange }: { value: string; onChange: (value: strin
   }, [])
 
   return (
-    <label className="flex h-[30px] min-w-0 flex-1 items-center justify-between gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5 focus-within:border-gc-primary">
+    <label className="flex h-[30px] min-w-[220px] flex-1 items-center justify-between gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5 focus-within:border-gc-primary">
       <span className="flex min-w-0 flex-1 items-center gap-2">
         <SearchIcon aria-hidden className="size-3 shrink-0 text-gc-ink3" />
         <input
@@ -246,10 +253,10 @@ function SearchBox({ value, onChange }: { value: string; onChange: (value: strin
           placeholder="Search by name, tag or description"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
-          className="min-w-0 flex-1 bg-transparent text-[11.5px] text-gc-text caret-gc-primary outline-none placeholder:text-gc-ink3"
+          className="min-w-0 flex-1 bg-transparent text-ui text-gc-text caret-gc-primary outline-none placeholder:text-gc-ink3"
         />
       </span>
-      <kbd className="rounded-[3px] border border-gc-border bg-gc-raised px-[5px] py-0.5 font-mono text-[8.5px] text-gc-ink3">
+      <kbd className="rounded-[3px] border border-gc-border bg-gc-raised px-[5px] py-0.5 font-mono text-label text-gc-ink3">
         ⌘K
       </kbd>
     </label>

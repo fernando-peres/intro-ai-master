@@ -455,35 +455,58 @@
               },
               "type": {
                 "type": "string",
-                "const": "diagram"
+                "const": "embed"
               },
-              "labels": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "style": {
-                "default": {},
+              "ref": {
                 "type": "object",
                 "properties": {
-                  "fill": {
+                  "artifactId": {
                     "type": "string",
-                    "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+                    "minLength": 1
                   },
-                  "stroke": {
+                  "versionId": {
                     "type": "string",
-                    "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+                    "minLength": 1
                   },
-                  "strokeWidth": {
-                    "type": "number",
-                    "minimum": 0
+                  "locale": {
+                    "default": "en",
+                    "type": "string"
                   },
-                  "cornerRadius": {
-                    "type": "number",
-                    "minimum": 0
+                  "title": {
+                    "default": "",
+                    "type": "string"
+                  },
+                  "artifactType": {
+                    "type": "string",
+                    "enum": [
+                      "diagram",
+                      "animation"
+                    ]
+                  },
+                  "versionNumber": {
+                    "default": 0,
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   }
-                }
+                },
+                "required": [
+                  "artifactId",
+                  "versionId",
+                  "artifactType"
+                ]
+              },
+              "lockAspect": {
+                "default": true,
+                "type": "boolean"
+              },
+              "playback": {
+                "default": "static",
+                "type": "string",
+                "enum": [
+                  "static",
+                  "auto"
+                ]
               }
             },
             "required": [
@@ -493,7 +516,7 @@
               "width",
               "height",
               "type",
-              "labels"
+              "ref"
             ]
           },
           {

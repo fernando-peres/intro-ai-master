@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.14, PyTorch (already a `genai[gpt2]` dependency), FastAPI/Pydantic, React + TanStack Query, vitest, pytest.
 
-**Spec:** `docs/specs/26-10-25-transformers.md`, section "2. Pretraining (Phase 2, outline)".
+**Spec:** `apps/ai-intro/docs/26-10-25-transformers.md`, section "2. Pretraining (Phase 2, outline)".
 
 ## Global Constraints
 
@@ -234,7 +234,7 @@ Behaviour to pin:
 ### Task 6: Docs
 
 **Files:**
-- Modify: `docs/specs/26-10-25-transformers.md` (section 2 → "built", describe the page and endpoints as implemented; API table rows; Phases table; Verification), `docs/prd.md` (Pretraining row → **Built.**), `apps/algo-server/README.md` (endpoint table), `packages/genai/README.md` (modules list + checkpoint note), `apps/ai-intro/README.md` (Transformers sentence).
+- Modify: `apps/ai-intro/docs/26-10-25-transformers.md` (section 2 → "built", describe the page and endpoints as implemented; API table rows; Phases table; Verification), `docs/prd.md` (Pretraining row → **Built.**), `apps/algo-server/README.md` (endpoint table), `packages/genai/README.md` (modules list + checkpoint note), `apps/ai-intro/README.md` (Transformers sentence).
 
 - [ ] **Step 1: Update the five documents.**
 - [ ] **Step 2: Run the full verification** — `uv run pytest -m "not slow"`, `uv run ruff check apps packages`, `uv run lint-imports`; from `apps/ai-intro`: `pnpm exec tsc --noEmit`, `npx biome check src`, `npx vitest run`. Then start both servers, open `/learn/generative-ai/pretraining`, Train to ~300 steps and confirm " Paris" climbs, switch to the pretrained checkpoint, try the noisy corpus for the memorisation message, check dark/light and 390 px.

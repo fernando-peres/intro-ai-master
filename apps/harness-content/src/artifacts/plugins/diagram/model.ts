@@ -104,6 +104,20 @@ export function diagramSearchText(content: DiagramContent): string {
     .join("\n")
 }
 
+const NODE_WIDTH = 180
+const NODE_HEIGHT = { rect: 56, pill: 56, diamond: 96 }
+const FIT_PADDING = 48
+
+/** Width ÷ height of the drawn graph, roughly as `fitView` frames it; null with no nodes. */
+export function flowAspect(content: FlowDiagram): number | null {
+  if (!content.nodes.length) return null
+  const right = Math.max(...content.nodes.map((n) => n.x + NODE_WIDTH))
+  const bottom = Math.max(...content.nodes.map((n) => n.y + NODE_HEIGHT[n.shape]))
+  const width = right - Math.min(...content.nodes.map((n) => n.x)) + FIT_PADDING
+  const height = bottom - Math.min(...content.nodes.map((n) => n.y)) + FIT_PADDING
+  return width / height
+}
+
 /** A node id not used in `content`. */
 export function nextNodeId(content: FlowDiagram): string {
   const used = new Set(content.nodes.map((n) => n.id))

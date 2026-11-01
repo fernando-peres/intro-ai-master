@@ -12,8 +12,10 @@ import {
 import { type ReactNode, Suspense, useEffect, useState } from "react"
 import type { Schemas } from "@/api/client"
 import { useUpdateArtifact, useUsers } from "@/api/queries"
-import { Caption, type StatusKind, StatusLabel } from "@/components/labels"
+import { type StatusKind, StatusLabel } from "@/components/labels"
+import { AreaTabs, tabIds } from "@/components/shell/area-tabs"
 import { ChecklistEditor } from "@/components/workspace/checklist"
+import { friendlyError } from "@/lib/errors"
 import type { ChecklistItem } from "@/lib/outline"
 import { cn } from "@/lib/utils"
 import { formatDuration, parseDuration, scriptStats } from "@/lib/workflow"
@@ -77,35 +79,25 @@ export function Inspector<T extends string>({
       className="flex w-[300px] shrink-0 flex-col border-l border-gc-border bg-gc-raised"
     >
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-gc-border px-3">
-        <span className="font-mono text-[9px] tracking-[1px] text-gc-ink3">INSPECTOR</span>
+        <span className="font-mono text-label tracking-[0.5px] text-gc-ink3">INSPECTOR</span>
         <RailButton label="Collapse inspector" onClick={() => onCollapse(true)} bordered small>
           <PanelRightCloseIcon />
         </RailButton>
       </div>
-      <div
-        role="tablist"
-        className="flex h-9 shrink-0 items-center gap-[3px] border-b border-gc-border px-2"
-      >
-        {tabs.map((entry) => (
-          <button
-            key={entry.id}
-            type="button"
-            role="tab"
-            aria-selected={entry.id === tab}
-            onClick={() => onTab(entry.id)}
-            className={cn(
-              "rounded-[5px] px-2.5 py-[5px] text-[11px]",
-              entry.id === tab
-                ? "bg-gc-row-bg font-semibold text-gc-nav-ink"
-                : "text-gc-ink3 hover:text-gc-ink2",
-            )}
-          >
-            {entry.label}
-          </button>
-        ))}
+      <div className="flex h-9 shrink-0 items-center border-b border-gc-border px-2">
+        <AreaTabs
+          label="Inspector sections"
+          prefix="inspector"
+          variant="pill"
+          tabs={tabs.map(({ id, label }) => ({ id, label }))}
+          value={tab}
+          onChange={onTab}
+        />
       </div>
       <div
         role="tabpanel"
+        id={tabIds(tab, "inspector").panel}
+        aria-labelledby={tabIds(tab, "inspector").tab}
         className="flex min-h-0 flex-1 flex-col gap-[13px] overflow-y-auto p-3 *:shrink-0"
       >
         <Suspense fallback={<Placeholder>Loading…</Placeholder>}>{panels[tab]}</Suspense>
@@ -137,7 +129,7 @@ function RailButton({
       onClick={onClick}
       className={cn(
         "flex items-center justify-center rounded-md text-gc-ink2 hover:text-gc-text [&_svg]:size-3",
-        small ? "size-[22px]" : "size-[26px]",
+        small ? "size-6" : "size-[26px]",
         bordered && "border border-gc-border bg-gc-sunken",
         selected && "bg-gc-row-bg text-gc-nav-ink",
       )}
@@ -150,9 +142,9 @@ function RailButton({
 export function PanelHeading({ label, right }: { label: string; right?: ReactNode }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="font-mono text-[9px] tracking-[1px] text-gc-ink3 uppercase">{label}</span>
+      <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">{label}</span>
       {right && (
-        <span className="font-mono text-[8.5px] tracking-[0.5px] text-gc-ink3 uppercase">
+        <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">
           {right}
         </span>
       )}
@@ -161,19 +153,17 @@ export function PanelHeading({ label, right }: { label: string; right?: ReactNod
 }
 
 export function Placeholder({ children }: { children: ReactNode }) {
-  return <p className="text-[11px] leading-relaxed text-gc-ink3">{children}</p>
+  return <p className="text-ui leading-relaxed text-gc-ink3">{children}</p>
 }
 
 const fieldInput =
-  "h-[30px] w-full rounded-[5px] border border-gc-border bg-gc-sunken px-[9px] text-[11.5px] text-gc-text outline-none read-only:text-gc-ink2 focus:border-gc-primary"
+  "h-[30px] w-full rounded-[5px] border border-gc-border bg-gc-sunken px-[9px] text-ui text-gc-text outline-none read-only:text-gc-ink2 focus:border-gc-primary"
 
 function LabeledField({ label, children }: { label: string; children: ReactNode }) {
   return (
     // biome-ignore lint/a11y/noLabelWithoutControl: the control is passed in as children
     <label className="flex min-w-0 flex-1 flex-col gap-[5px]">
-      <span className="font-mono text-[8.5px] tracking-[0.8px] text-gc-ink3 uppercase">
-        {label}
-      </span>
+      <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">{label}</span>
       {children}
     </label>
   )
@@ -230,7 +220,7 @@ export function MetadataPanel({ artifact, status, readOnly }: MetadataProps) {
         <div className="flex gap-2.5">
           <LabeledField label="ID">
             <input
-              className={cn(fieldInput, "font-mono text-[10px]")}
+              className={cn(fieldInput, "font-mono text-label")}
               readOnly
               value={artifact.slug}
             />
@@ -254,25 +244,26 @@ export function MetadataPanel({ artifact, status, readOnly }: MetadataProps) {
             <input className={fieldInput} readOnly value={owner?.name ?? artifact.createdBy} />
           </LabeledField>
           <div className="flex min-w-0 flex-1 flex-col gap-[5px]">
-            <span className="font-mono text-[8.5px] tracking-[0.8px] text-gc-ink3">STATUS</span>
+            <span className="font-mono text-label tracking-[0.5px] text-gc-ink3">STATUS</span>
             <span className="flex h-[30px] items-center">
               <StatusLabel kind={status} />
             </span>
           </div>
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="font-mono text-[8.5px] tracking-[0.8px] text-gc-ink3">TAGS</span>
+          <span className="font-mono text-label tracking-[0.5px] text-gc-ink3">TAGS</span>
           <div className="flex flex-wrap items-center gap-1.5">
             {artifact.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex h-[22px] items-center gap-1 rounded-full border border-gc-border bg-gc-sunken px-2 font-mono text-[9px] text-gc-ink2"
+                className="inline-flex h-[22px] items-center gap-1 rounded-full border border-gc-border bg-gc-sunken px-2 font-mono text-label text-gc-ink2"
               >
                 <TagIcon aria-hidden className="size-2.5 text-gc-ink3" />
                 {tag}
                 {!readOnly && (
                   <button
                     type="button"
+                    className="-mr-1.5 flex size-5 items-center justify-center"
                     aria-label={`Remove tag ${tag}`}
                     onClick={() => update.mutate({ tags: artifact.tags.filter((t) => t !== tag) })}
                   >
@@ -294,7 +285,7 @@ export function MetadataPanel({ artifact, status, readOnly }: MetadataProps) {
                   if (!artifact.tags.includes(tag)) update.mutate({ tags: [...artifact.tags, tag] })
                   setNewTag("")
                 }}
-                className="h-[22px] w-20 rounded-full border border-dashed border-gc-border bg-transparent px-2 font-mono text-[9px] text-gc-ink2 outline-none focus:border-gc-primary"
+                className="h-[22px] w-20 rounded-full border border-dashed border-gc-border bg-transparent px-2 font-mono text-label text-gc-ink2 outline-none focus:border-gc-primary"
               />
             )}
           </div>
@@ -307,7 +298,11 @@ export function MetadataPanel({ artifact, status, readOnly }: MetadataProps) {
         readOnly={readOnly}
         onChange={(items) => saveDesign({ checklist: items })}
       />
-      {update.isError && <Caption className="text-gc-fail-ink">{update.error.message}</Caption>}
+      {update.isError && (
+        <p role="alert" className="text-ui text-gc-fail-ink">
+          {friendlyError(update.error)}
+        </p>
+      )}
     </>
   )
 }
@@ -329,7 +324,7 @@ export function ScriptPanel({ script, onChange, readOnly }: ScriptProps) {
         value={script}
         onChange={(event) => onChange(event.target.value)}
         placeholder="What the presenter says on this artifact. Cues like [[pause 0.4s]] are not counted."
-        className="h-[168px] shrink-0 resize-none rounded-md border border-gc-border bg-gc-sunken p-2.5 text-[10.5px] leading-[1.6] text-gc-ink2 outline-none focus:border-gc-primary"
+        className="h-[168px] shrink-0 resize-none rounded-md border border-gc-border bg-gc-sunken p-2.5 text-label leading-[1.6] text-gc-ink2 outline-none focus:border-gc-primary"
       />
       <div className="h-px shrink-0 bg-gc-divider" />
       <PanelHeading label="Audio" />

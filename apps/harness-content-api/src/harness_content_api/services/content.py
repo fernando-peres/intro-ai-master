@@ -64,7 +64,8 @@ def _components(content: dict[str, Any], field: str) -> list[tuple[str, str]]:
 
 def _is_discriminator(error: ValidationError) -> bool:
     path = list(error.relative_path)
-    return error.validator in ("const", "enum") and path[-1:] in (["type"], ["template"], ["engine"], ["kind"])
+    fields = (["type"], ["template"], ["engine"], ["kind"])
+    return error.validator in ("const", "enum") and path[-1:] in fields
 
 
 def _leaf_errors(error: ValidationError) -> list[ValidationError]:

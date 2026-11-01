@@ -8,10 +8,11 @@ import {
   docSearchText,
 } from "@/artifacts/plugins/doc/content"
 import { DocEditorProvider } from "@/artifacts/plugins/doc/editor-context"
-import { DocFormatPanel, DocInsertPanel } from "@/artifacts/plugins/doc/panels"
 
 // BlockNote is large; load it only when a document is opened.
 const editorModule = () => import("@/artifacts/plugins/doc/editor")
+// Lazy as well: the panels reach `@/artifacts` through the embed components, which imports this file.
+const panelsModule = () => import("@/artifacts/plugins/doc/panels")
 
 export const docPlugin: ArtifactPlugin<DocContent> = {
   type: "doc",
@@ -23,8 +24,8 @@ export const docPlugin: ArtifactPlugin<DocContent> = {
   getSearchText: docSearchText,
   Editor: lazy(() => editorModule().then((m) => ({ default: m.DocEditorView }))),
   Renderer: lazy(() => editorModule().then((m) => ({ default: m.DocRenderer }))),
-  FormatPanel: DocFormatPanel,
-  InsertPanel: DocInsertPanel,
+  FormatPanel: lazy(() => panelsModule().then((m) => ({ default: m.DocFormatPanel }))),
+  InsertPanel: lazy(() => panelsModule().then((m) => ({ default: m.DocInsertPanel }))),
   Provider: DocEditorProvider,
   stageLabel: "Document",
   fillStage: true,

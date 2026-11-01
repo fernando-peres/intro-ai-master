@@ -19,12 +19,14 @@ import {
   ChevronRightIcon,
   GripVerticalIcon,
   ListChecksIcon,
+  ListPlusIcon,
   PaletteIcon,
   PlusIcon,
   TimerIcon,
   XIcon,
 } from "lucide-react"
 import { type ReactNode, useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 import { typeInfo } from "@/components/artifact-types"
 import { LocaleLabel } from "@/components/labels"
 import {
@@ -42,7 +44,7 @@ import {
   type TrailOutline,
 } from "@/lib/outline"
 import { formatClock, stepSeconds, type TrailStep, totalSeconds } from "@/lib/trail"
-import { cn } from "@/lib/utils"
+import { cn, formatCount } from "@/lib/utils"
 
 type Props = {
   outline: TrailOutline
@@ -160,7 +162,7 @@ function Grip({
       aria-label={label}
       disabled={readOnly}
       className={cn(
-        "relative z-10 cursor-grab touch-none disabled:cursor-default disabled:opacity-40",
+        "relative z-10 flex h-6 w-5 cursor-grab touch-none items-center justify-center disabled:cursor-default disabled:opacity-40",
         selected ? "text-gc-primary-ink" : "text-gc-ink3",
       )}
       {...sortable.attributes}
@@ -196,6 +198,18 @@ function IconButton({
       {children}
     </button>
   )
+}
+
+const UNDO_MS = 8_000
+
+/** Removal is autosaved at once, so it stays undoable (the toast's button) for a few seconds. */
+function removeWithUndo(row: Row, message: string, next: TrailOutline) {
+  const previous = row.outline
+  row.onChange(next)
+  toast(message, {
+    duration: UNDO_MS,
+    action: { label: "Undo", onClick: () => row.onChange(previous) },
+  })
 }
 
 function GroupBlock({
@@ -243,7 +257,7 @@ function GroupBlock({
           aria-expanded={open}
           aria-label={`${open ? "Collapse" : "Expand"} ${group.title}`}
           onClick={() => row.onCollapse(group.key)}
-          className="text-gc-ink3 hover:text-gc-text"
+          className="flex size-6 items-center justify-center text-gc-ink3 hover:text-gc-text"
         >
           {open ? (
             <ChevronDownIcon className="size-3.5" />
@@ -253,7 +267,7 @@ function GroupBlock({
         </button>
         <span
           className={cn(
-            "rounded-[3px] px-[5px] py-0.5 font-mono text-[7.5px] tracking-[0.6px] uppercase",
+            "rounded-[3px] px-[5px] py-0.5 font-mono text-label tracking-[0.6px] uppercase",
             group.kind === "unit" ? "bg-gc-nav-bg text-gc-nav-ink" : "bg-gc-row-bg text-gc-ink2",
           )}
         >
@@ -267,10 +281,10 @@ function GroupBlock({
           onChange={(event) => setTitle(event.target.value)}
           onBlur={save}
           onKeyDown={(event) => event.key === "Enter" && event.currentTarget.blur()}
-          className="h-6 min-w-0 flex-1 rounded-[5px] border border-transparent bg-transparent px-1.5 text-[11.5px] font-semibold text-gc-text outline-none hover:border-gc-border focus:border-gc-primary read-only:hover:border-transparent"
+          className="h-6 min-w-0 flex-1 rounded-[5px] border border-transparent bg-transparent px-1.5 text-ui font-semibold text-gc-text outline-none hover:border-gc-border focus:border-gc-primary read-only:hover:border-transparent"
         />
-        <span className="font-mono text-[8.5px] text-gc-ink3">
-          {steps.length} STEPS · {formatClock(totalSeconds(steps))}
+        <span className="font-mono text-label text-gc-ink3">
+          {formatCount(steps.length, "step")} · {formatClock(totalSeconds(steps))}
         </span>
         <IconButton label={`${group.title} rationale`} onClick={() => row.onRationale(group.key)}>
           <ListChecksIcon />
@@ -282,7 +296,7 @@ function GroupBlock({
                 label={`Add a pill to ${group.title}`}
                 onClick={() => row.onChange(addPill(row.outline, group.key, "New pill")[0])}
               >
-                <span className="font-mono text-[8px] font-bold">P+</span>
+                <ListPlusIcon />
               </IconButton>
             )}
             <IconButton
@@ -294,7 +308,13 @@ function GroupBlock({
             <IconButton
               danger
               label={`Remove ${kind.toLowerCase()} ${group.title} (keeps its steps)`}
-              onClick={() => row.onChange(removeGroup(row.outline, group.key))}
+              onClick={() =>
+                removeWithUndo(
+                  row,
+                  `Removed ${kind.toLowerCase()} “${group.title}”`,
+                  removeGroup(row.outline, group.key),
+                )
+              }
             >
               <XIcon />
             </IconButton>
@@ -312,7 +332,7 @@ function GroupBlock({
             />
           </div>
         ) : (
-          <p className="px-8 pb-1 text-[10.5px] text-gc-ink3">
+          <p className="px-8 pb-1 text-label text-gc-ink3">
             Empty {kind.toLowerCase()}.{" "}
             {!row.readOnly && "Add a step here, or move one in from its Placement setting."}
           </p>
@@ -332,7 +352,7 @@ function StepRow({ step, container, row }: { step: TrailStep; container: Contain
       ref={sortable.setNodeRef}
       style={style}
       className={cn(
-        "relative flex h-12 items-center gap-2.5 rounded-lg border bg-gc-raised px-[11px]",
+        "relative flex h-14 items-center gap-2.5 rounded-lg border bg-gc-raised px-[11px]",
         selected ? "border-gc-primary ring-1 ring-gc-primary" : "border-gc-border",
         sortable.isDragging && "z-10 opacity-90 shadow-lg",
       )}
@@ -345,7 +365,7 @@ function StepRow({ step, container, row }: { step: TrailStep; container: Contain
       />
       <span
         className={cn(
-          "flex size-5 shrink-0 items-center justify-center rounded-md font-mono text-[9px] font-bold",
+          "flex size-5 shrink-0 items-center justify-center rounded-md font-mono text-label font-bold",
           selected ? "bg-gc-primary text-gc-on-solid" : "bg-gc-sunken text-gc-ink2",
         )}
       >
@@ -363,9 +383,9 @@ function StepRow({ step, container, row }: { step: TrailStep; container: Contain
         className="flex min-w-0 flex-1 flex-col gap-1 text-left after:absolute after:inset-0 after:content-['']"
       >
         <span className="flex items-center gap-[7px]">
-          <span className="truncate text-[11px] font-semibold text-gc-text">{title}</span>
+          <span className="truncate text-ui font-semibold text-gc-text">{title}</span>
           {step.themeOverride && (
-            <span className="flex items-center gap-1 rounded-[3px] bg-gc-risk-tint px-[5px] py-0.5 font-mono text-[7.5px] tracking-[0.4px] text-gc-risk-ink">
+            <span className="flex items-center gap-1 rounded-[3px] bg-gc-risk-tint px-[5px] py-0.5 font-mono text-label tracking-[0.4px] text-gc-risk-ink">
               <PaletteIcon className="size-[9px]" />
               OVERRIDE
             </span>
@@ -378,7 +398,7 @@ function StepRow({ step, container, row }: { step: TrailStep; container: Contain
             published={step.versionState === "published"}
           />
           {row.behind.has(step.key) && (
-            <span className="rounded-[3px] bg-gc-warn-tint px-[5px] py-0.5 font-mono text-[7.5px] tracking-[0.4px] text-gc-warn-ink">
+            <span className="rounded-[3px] bg-gc-warn-tint px-[5px] py-0.5 font-mono text-label tracking-[0.4px] text-gc-warn-ink">
               BEHIND
             </span>
           )}
@@ -387,13 +407,15 @@ function StepRow({ step, container, row }: { step: TrailStep; container: Contain
           )}
         </span>
       </button>
-      <span className="font-mono text-[9px] text-gc-ink3">{formatClock(stepSeconds(step))}</span>
+      <span className="font-mono text-label text-gc-ink3">{formatClock(stepSeconds(step))}</span>
       {!row.readOnly && (
         <button
           type="button"
           aria-label={`Remove step ${position}`}
-          onClick={() => row.onChange(removeStep(row.outline, step.key))}
-          className="relative z-10 text-gc-ink3 hover:text-gc-fail-ink"
+          onClick={() =>
+            removeWithUndo(row, `Removed step “${title}”`, removeStep(row.outline, step.key))
+          }
+          className="relative z-10 flex size-6 items-center justify-center text-gc-ink3 hover:text-gc-fail-ink"
         >
           <XIcon className="size-3.5" />
         </button>

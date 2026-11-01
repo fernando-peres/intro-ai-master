@@ -110,6 +110,12 @@ class Api:
     def patch(self, user: str, url: str, json=None, expect: int = 200, **kwargs):
         return self.call("PATCH", user, url, expect, json=json, **kwargs)
 
+    def put(self, user: str, url: str, expect: int = 200, **kwargs):
+        return self.call("PUT", user, url, expect, **kwargs)
+
+    def delete(self, user: str, url: str, expect: int = 200, **kwargs):
+        return self.call("DELETE", user, url, expect, **kwargs)
+
     def box(self, title: str = "Intro to AI") -> str:
         body = {"kind": "box", "title": title}
         return self.post("usr_author", "/api/v1/locations", body, expect=201).json()["id"]

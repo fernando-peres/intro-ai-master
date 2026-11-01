@@ -13,7 +13,9 @@ import {
 import { THEME_GROUPS, type ThemeSlot, type ThemeTokens } from "@/artifacts/plugins/slide/themes"
 import { Caption } from "@/components/labels"
 import { ActionButton, Field, Select, TextInput } from "@/components/shell/form-controls"
+import { ErrorState, ListSkeleton } from "@/components/shell/page-states"
 import { contrastRatio } from "@/lib/contrast"
+import { friendlyError } from "@/lib/errors"
 import { cn } from "@/lib/utils"
 
 const HEX = /^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/
@@ -36,18 +38,21 @@ export function ArtifactThemes({ selectedId, onSelect, editingId, onEditing }: P
   const query = useArtifactThemes()
   const themes = query.data ?? []
   const selected = themes.find((theme) => theme.id === selectedId) ?? themes[0]
-  if (query.isError) {
+  if (query.isError && !query.data) {
     return (
-      <p role="alert" className="p-5 text-[11.5px] text-gc-fail-ink">
-        {query.error.message}
-      </p>
+      <ErrorState
+        title="Could not load artifact themes"
+        error={query.error}
+        onRetry={() => query.refetch()}
+      />
     )
   }
+  if (query.isPending) return <ListSkeleton label="Loading artifact themes" rows={6} />
   return (
     <div className="flex min-h-0 flex-1">
       <div className="flex w-[240px] shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-gc-border p-3">
         <div className="flex h-[22px] items-center justify-between px-1">
-          <Caption className="tracking-[1px]">ARTIFACT THEMES</Caption>
+          <Caption className="tracking-[0.5px]">ARTIFACT THEMES</Caption>
           <Caption>{themes.length}</Caption>
         </div>
         {themes.map((theme) => {
@@ -67,13 +72,13 @@ export function ArtifactThemes({ selectedId, onSelect, editingId, onEditing }: P
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span
                   className={cn(
-                    "truncate text-[11.5px]",
+                    "truncate text-ui",
                     active ? "font-semibold text-gc-nav-ink" : "text-gc-ink2",
                   )}
                 >
                   {theme.name}
                 </span>
-                <span className="font-mono text-[8px] tracking-[0.4px] text-gc-ink3">
+                <span className="font-mono text-label tracking-[0.4px] text-gc-ink3">
                   {usage(theme.usedBy)}
                 </span>
               </span>
@@ -145,14 +150,14 @@ function ThemeDetail({
   const onDuplicate = () =>
     duplicate.mutate(theme.id, {
       onSuccess: (copy) => onDuplicated(copy.id),
-      onError: (error) => toast.error(error.message),
+      onError: (error) => toast.error(friendlyError(error)),
     })
   const onSave = () =>
     update.mutate(
       { name: name.trim(), tokens },
       {
         onSuccess: () => onEditing(false),
-        onError: (error) => toast.error(error.message),
+        onError: (error) => toast.error(friendlyError(error)),
       },
     )
 
@@ -167,7 +172,7 @@ function ThemeDetail({
               onChange={(event) => setName(event.target.value)}
             />
           ) : (
-            <h2 className="truncate text-[13px] font-bold text-gc-text">{theme.name}</h2>
+            <h2 className="truncate text-body font-bold text-gc-text">{theme.name}</h2>
           )}
           <Caption className="shrink-0 tracking-[0.4px]">
             {slots.length} COLOR SLOTS · USED BY {usage(theme.usedBy)}
@@ -205,7 +210,7 @@ function ThemeDetail({
       </div>
       {editing && <EditNotes tokens={tokens} usedBy={theme.usedBy ?? 0} />}
       {editing && (
-        <label className="flex items-center gap-2 text-[11px] text-gc-ink2">
+        <label className="flex items-center gap-2 text-ui text-gc-ink2">
           <input
             type="checkbox"
             checked={tokens.backgroundGradient ?? false}
@@ -217,13 +222,11 @@ function ThemeDetail({
         </label>
       )}
       {theme.builtin && (
-        <p className="text-[11px] text-gc-ink3">
-          Built-in themes are read-only. Duplicate to edit.
-        </p>
+        <p className="text-ui text-gc-ink3">Built-in themes are read-only. Duplicate to edit.</p>
       )}
       {THEME_GROUPS.map((group) => (
         <section key={group.label} className="flex flex-col gap-2 pt-1.5">
-          <Caption className="tracking-[1px] uppercase">{group.label}</Caption>
+          <Caption className="tracking-[0.5px] uppercase">{group.label}</Caption>
           <div className="grid grid-cols-4 gap-2.5">
             {group.slots.map(([slot, label]) => (
               <Slot
@@ -252,7 +255,7 @@ function EditNotes({ tokens, usedBy }: { tokens: ThemeTokens; usedBy: number }) 
       contrastRatio(tokens[slot], tokens.background) < MIN_TEXT_CONTRAST,
   )
   return (
-    <div className="flex flex-col gap-1 text-[11px]">
+    <div className="flex flex-col gap-1 text-ui">
       {usedBy > 0 && (
         <p className="text-gc-warn-ink">
           Saving changes how {usedBy} artifact{usedBy === 1 ? "" : "s"} using this theme look,
@@ -296,7 +299,7 @@ function Slot({
           style={{ background: value }}
         />
       )}
-      <span className="truncate text-[10.5px] text-gc-ink2">{label}</span>
+      <span className="truncate text-label text-gc-ink2">{label}</span>
       {onChange ? (
         <input
           aria-label={`${label} hex`}
@@ -304,12 +307,12 @@ function Slot({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           className={cn(
-            "h-5 w-full rounded border bg-gc-sunken px-1 font-mono text-[9px] text-gc-text outline-none",
+            "h-5 w-full rounded border bg-gc-sunken px-1 font-mono text-label text-gc-text outline-none",
             invalid ? "border-gc-fail-base" : "border-gc-border",
           )}
         />
       ) : (
-        <span className="font-mono text-[8.5px] text-gc-ink3 uppercase">{value.slice(1)}</span>
+        <span className="font-mono text-label text-gc-ink3 uppercase">{value.slice(1)}</span>
       )}
     </div>
   )
@@ -336,7 +339,7 @@ export function NewThemeDialog({
       onCreated(theme.id)
       onClose()
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create the theme")
+      toast.error(friendlyError(error))
     }
   }
   return (
@@ -393,10 +396,10 @@ export function FormDialog({
         <DialogPrimitive.Popup className="fixed top-1/2 left-1/2 z-50 w-[420px] max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[10px] border border-gc-border bg-gc-raised outline-none">
           <form onSubmit={onSubmit}>
             <div className="border-b border-gc-border px-[18px] py-4">
-              <DialogPrimitive.Title className="text-[15px] font-bold text-gc-text">
+              <DialogPrimitive.Title className="text-title font-bold text-gc-text">
                 {title}
               </DialogPrimitive.Title>
-              <DialogPrimitive.Description className="mt-[3px] text-[11.5px] text-gc-ink3">
+              <DialogPrimitive.Description className="mt-[3px] text-ui text-gc-ink3">
                 {description}
               </DialogPrimitive.Description>
             </div>

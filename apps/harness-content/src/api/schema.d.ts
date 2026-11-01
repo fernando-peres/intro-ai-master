@@ -52,6 +52,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/locations/artifact-counts": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Artifact Counts */
+    get: operations["artifact_counts_api_v1_locations_artifact_counts_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/locations/{location_id}": {
     parameters: {
       query?: never
@@ -173,6 +190,41 @@ export interface paths {
     put?: never
     post?: never
     delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/artifacts/{artifact_id}/trails": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Artifact Trails */
+    get: operations["artifact_trails_api_v1_artifacts__artifact_id__trails_get"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/artifacts/{artifact_id}/trails/{flow_id}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Add To Trail */
+    put: operations["add_to_trail_api_v1_artifacts__artifact_id__trails__flow_id__put"]
+    post?: never
+    /** Remove From Trail */
+    delete: operations["remove_from_trail_api_v1_artifacts__artifact_id__trails__flow_id__delete"]
     options?: never
     head?: never
     patch?: never
@@ -378,6 +430,26 @@ export interface paths {
     put?: never
     /** Request Changes */
     post: operations["request_changes_api_v1_reviews__review_id__request_changes_post"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/reviews/{review_id}/approve-and-publish": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Approve And Publish
+     * @description One transaction: if publishing fails, the review stays pending.
+     */
+    post: operations["approve_and_publish_api_v1_reviews__review_id__approve_and_publish_post"]
     delete?: never
     options?: never
     head?: never
@@ -741,6 +813,21 @@ export interface components {
       /** Isdefault */
       isDefault?: boolean | null
     }
+    /** ApproveAndPublish */
+    ApproveAndPublish: {
+      /** Changecomment */
+      changeComment: string
+      /**
+       * Makedefault
+       * @default false
+       */
+      makeDefault?: boolean
+      /**
+       * Comment
+       * @default
+       */
+      comment?: string
+    }
     /** ArtifactCreate */
     ArtifactCreate: {
       type: components["schemas"]["ArtifactType"]
@@ -913,11 +1000,22 @@ export interface components {
       /** Total */
       total: number
     }
+    /** ArtifactTrail */
+    ArtifactTrail: {
+      /** Flowid */
+      flowId: string
+      /** Flowtitle */
+      flowTitle: string
+      /** Indraft */
+      inDraft: boolean
+      /** Publishedrevisions */
+      publishedRevisions: number[]
+    }
     /**
      * ArtifactType
      * @enum {string}
      */
-    ArtifactType: "doc" | "slide" | "animation"
+    ArtifactType: "doc" | "slide" | "animation" | "diagram"
     /** ArtifactUpdate */
     ArtifactUpdate: {
       /** Title */
@@ -1587,6 +1685,19 @@ export interface components {
        */
       fromThemeId?: string
     }
+    /** ThemeFonts */
+    ThemeFonts: {
+      /** Title */
+      title: string
+      /** Body */
+      body: string
+      /** Eyebrow */
+      eyebrow: string
+      /** Eyebrowweight */
+      eyebrowWeight?: number | null
+      /** Code */
+      code: string
+    }
     /** ThemeOut */
     ThemeOut: {
       /** Id */
@@ -1645,6 +1756,7 @@ export interface components {
        * @default false
        */
       backgroundGradient?: boolean
+      fonts?: components["schemas"]["ThemeFonts"] | null
     }
     /** ThemeUpdate */
     ThemeUpdate: {
@@ -1928,6 +2040,39 @@ export interface operations {
       }
     }
   }
+  artifact_counts_api_v1_locations_artifact_counts_get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": {
+            [key: string]: number
+          }
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
   update_location_api_v1_locations__location_id__patch: {
     parameters: {
       query?: never
@@ -2193,6 +2338,103 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["Usage"][]
         }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  artifact_trails_api_v1_artifacts__artifact_id__trails_get: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        artifact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ArtifactTrail"][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  add_to_trail_api_v1_artifacts__artifact_id__trails__flow_id__put: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        artifact_id: string
+        flow_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  remove_from_trail_api_v1_artifacts__artifact_id__trails__flow_id__delete: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        artifact_id: string
+        flow_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
       /** @description Validation Error */
       422: {
@@ -2694,6 +2936,43 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["ReviewOut"]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"]
+        }
+      }
+    }
+  }
+  approve_and_publish_api_v1_reviews__review_id__approve_and_publish_post: {
+    parameters: {
+      query?: never
+      header?: {
+        "x-user-id"?: string | null
+      }
+      path: {
+        review_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ApproveAndPublish"]
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["VersionOut"]
         }
       }
       /** @description Validation Error */

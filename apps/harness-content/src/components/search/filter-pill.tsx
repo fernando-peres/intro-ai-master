@@ -17,7 +17,7 @@ export function FilterPill({ label, value, options, onChange }: Props) {
   return (
     <span
       className={cn(
-        "relative inline-flex h-[30px] shrink-0 items-center gap-1.5 rounded-md border border-gc-border px-2.5 text-[11px]",
+        "relative inline-flex h-[30px] shrink-0 items-center gap-1.5 rounded-md border border-gc-border px-2.5 text-ui",
         active ? "bg-gc-nav-bg font-semibold text-gc-nav-ink" : "bg-gc-sunken text-gc-ink2",
       )}
     >

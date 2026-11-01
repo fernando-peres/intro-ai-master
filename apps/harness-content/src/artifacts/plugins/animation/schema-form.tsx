@@ -52,7 +52,7 @@ function FieldControl({ spec, value, name, readOnly, onChange }: ControlProps) {
               maxLength={spec.maxLength}
               value={String(value ?? "")}
               onChange={(event) => onChange(event.target.value)}
-              className="min-h-16 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-[11.5px] text-gc-text outline-none focus-visible:border-gc-primary"
+              className="min-h-16 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-ui text-gc-text outline-none focus-visible:border-gc-primary"
             />
           ) : (
             <TextInput
@@ -77,7 +77,7 @@ function FieldControl({ spec, value, name, readOnly, onChange }: ControlProps) {
               onChange={(event) => onChange(event.target.value.toUpperCase())}
               className="size-[30px] shrink-0 cursor-pointer rounded-md border border-gc-border bg-gc-sunken p-0.5"
             />
-            <span className="font-mono text-[11px] text-gc-ink2">{String(value)}</span>
+            <span className="font-mono text-ui text-gc-ink2">{String(value)}</span>
           </span>
         </Field>
       )
@@ -96,7 +96,7 @@ function FieldControl({ spec, value, name, readOnly, onChange }: ControlProps) {
               onChange={(event) => onChange(Number(event.target.value))}
               className="min-w-0 flex-1 accent-gc-primary"
             />
-            <span className="w-12 text-right font-mono text-[11px] text-gc-ink2">
+            <span className="w-12 text-right font-mono text-ui text-gc-ink2">
               {Number(value)}
               {spec.unit}
             </span>
@@ -139,7 +139,7 @@ function FieldControl({ spec, value, name, readOnly, onChange }: ControlProps) {
       )
     case "toggle":
       return (
-        <label className="flex items-center gap-2 text-[11.5px] text-gc-ink2">
+        <label className="flex items-center gap-2 text-ui text-gc-ink2">
           <input
             type="checkbox"
             aria-label={name}
@@ -165,9 +165,9 @@ function ListControl({
   const items = (Array.isArray(value) ? value : []) as Values[]
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="mb-1.5 flex w-full items-center justify-between font-mono text-[9px] tracking-[1px] text-gc-ink3 uppercase">
+      <legend className="mb-1.5 flex w-full items-center justify-between font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">
         {spec.label}
-        <span className="text-[8.5px]">
+        <span className="text-label">
           {items.length} / {spec.maxItems}
         </span>
       </legend>
@@ -197,7 +197,7 @@ function ListControl({
         <button
           type="button"
           onClick={() => onChange([...items, { ...spec.itemDefault }])}
-          className="flex h-6 items-center justify-center gap-1 rounded-[5px] border border-dashed border-gc-border text-[10.5px] text-gc-ink2 hover:text-gc-text"
+          className="flex h-6 items-center justify-center gap-1 rounded-[5px] border border-dashed border-gc-border text-label text-gc-ink2 hover:text-gc-text"
         >
           <PlusIcon className="size-3" />
           Add {spec.label.toLowerCase().replace(/s$/, "")}

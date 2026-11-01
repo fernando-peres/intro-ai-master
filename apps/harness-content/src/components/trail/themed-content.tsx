@@ -33,6 +33,7 @@ export function StepRenderer({
   trailTheme,
   showControls,
   presenting,
+  still,
 }: {
   type: ArtifactType
   content: unknown
@@ -40,12 +41,13 @@ export function StepRenderer({
   trailTheme: string | null | undefined
   showControls?: boolean
   presenting?: boolean
+  still?: boolean
 }) {
   const plugin = getPlugin(type)
   const themed = themedContent(type, content, override, trailTheme)
   if ("error" in themed) {
     return (
-      <p role="alert" className="p-4 text-[11px] text-gc-fail-ink">
+      <p role="alert" className="p-4 text-ui text-gc-fail-ink">
         {themed.error}
       </p>
     )
@@ -56,6 +58,7 @@ export function StepRenderer({
         content={themed.content}
         showControls={showControls}
         presenting={presenting}
+        still={still}
       />
     </Suspense>
   )

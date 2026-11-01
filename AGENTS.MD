@@ -8,6 +8,8 @@ Introduction to AI: a polyglot monorepo. Apps live in `apps/`, reusable packages
 |---|---|
 | `docs/` | Canonical, durable design documentation — kept up to date as the system evolves. |
 | `docs/adr/` | The decision log for major, irreversible, system-wide architectural decisions **only** — see rule 3 for the bar. |
+| `docs/templates/` | Templates for new docs; create a new spec from `spec.md` with `/create-spec`. |
+| `apps/*/docs/`, `packages/*/docs/` | Required in every project: its directions and specifications. Updated with the code, which is the source of truth when they disagree. |
 | `README.md` (root and per project) | How to install, run and test each app and package. |
 
 ## Non-negotiable rules
@@ -48,7 +50,7 @@ Introduction to AI: a polyglot monorepo. Apps live in `apps/`, reusable packages
 
    - JS/TS: when the first package under `packages/` exists, forbid `apps/*` imports there with Biome `noRestrictedImports`.
 
-8. **Each app and package is self-contained**: its own `pyproject.toml` or `package.json`, `README.md` and tests. Shared tooling lives at the root: the uv workspace (`pyproject.toml`, `uv.lock`) and the pnpm workspace (`package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`). Apps may add integration tests against the packages they use.
+8. **Each app and package is self-contained**: its own `pyproject.toml` or `package.json`, `README.md`, `docs/` (its specifications) and tests. Shared tooling lives at the root: the uv workspace (`pyproject.toml`, `uv.lock`) and the pnpm workspace (`package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`). Apps may add integration tests against the packages they use.
 
 ## Translation (pt-BR)
 
@@ -78,9 +80,9 @@ Use skills for specialized workflows or conventions rather than duplicating thos
 ## Repo layout
 
 ```
-docs/           — design docs (architecture, system design, ADRs)
-apps/           — algo-server (FastAPI, Python 3.14), ai-intro (React, Vite, pnpm)
-packages/       — algo, genai (Python 3.14)
+docs/           — design docs (architecture, system design, ADRs, templates)
+apps/           — algo-server (FastAPI, Python 3.14), ai-intro (React, Vite, pnpm); each has its own docs/
+packages/       — algo, genai (Python 3.14); each has its own docs/
 .agents/skills/ — reusable task-specific agent instructions
 .scratchpad/    — personal notes; never read, modify or delete
 ```

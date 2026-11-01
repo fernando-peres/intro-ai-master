@@ -164,6 +164,10 @@ class PublishRequest(ApiModel):
     make_default: bool = False
 
 
+class ApproveAndPublish(PublishRequest):
+    comment: str = ""
+
+
 class ActivationUpdate(ApiModel):
     is_active: bool | None = None
     is_default: bool | None = None
@@ -227,6 +231,14 @@ class Usage(ApiModel):
     state: RevisionState
     positions: list[int]
     version_ids: list[str | None]
+
+
+class ArtifactTrail(ApiModel):
+    flow_id: str
+    flow_title: str
+    #: In the draft, or in the latest revision that a new draft would copy.
+    in_draft: bool
+    published_revisions: list[int]
 
 
 class FlowCreate(ApiModel):
@@ -431,6 +443,14 @@ class AssetText(ApiModel):
 Hex = Annotated[str, Field(pattern=r"^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$")]
 
 
+class ThemeFonts(ApiModel):
+    title: str
+    body: str
+    eyebrow: str
+    eyebrow_weight: int | None = None
+    code: str
+
+
 class ThemeTokens(ApiModel):
     background: Hex
     surface: Hex
@@ -449,6 +469,7 @@ class ThemeTokens(ApiModel):
     connector: Hex
     node_label: Hex
     background_gradient: bool = False
+    fonts: ThemeFonts | None = Field(default=None, exclude_if=lambda fonts: fonts is None)
 
 
 class ThemeCreate(ApiModel):

@@ -2,17 +2,21 @@ import { useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import {
   EyeIcon,
+  FileDownIcon,
   FileTextIcon,
   FolderPlusIcon,
   PaletteIcon,
   PlayIcon,
   PlusIcon,
   SendIcon,
+  SlidersHorizontalIcon,
 } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import type { Schemas } from "@/api/client"
 import {
+  fetchFlowDraft,
+  flowDraftKey,
   type RevisionWithEtag,
   saveFlowSteps,
   useBehind,
@@ -21,9 +25,13 @@ import {
   useRevision,
 } from "@/api/flows"
 import { useFlow, useMe } from "@/api/queries"
-import { Caption } from "@/components/labels"
+import { AreaTabs } from "@/components/shell/area-tabs"
+import { DesktopOnly } from "@/components/shell/desktop-only"
 import { ActionButton } from "@/components/shell/form-controls"
+import { ErrorState, WorkspaceSkeleton } from "@/components/shell/page-states"
+import { SaveIndicator } from "@/components/shell/save-indicator"
 import { TopBarSlot } from "@/components/shell/top-bar-slots"
+import { ExportDialog } from "@/components/trail/export-dialog"
 import { LibraryPicker } from "@/components/trail/library-picker"
 import { OutlineList } from "@/components/trail/outline-list"
 import { RationaleView } from "@/components/trail/rationale"
@@ -35,6 +43,9 @@ import {
 } from "@/components/trail/trail-panels"
 import { Inspector, type InspectorTabDef } from "@/components/workspace/inspector"
 import { useAutosave } from "@/hooks/use-autosave"
+import { COMPACT, matchesMedia } from "@/hooks/use-media-query"
+import { usePageTitle } from "@/hooks/use-page-title"
+import { friendlyError } from "@/lib/errors"
 import {
   addStep,
   addUnit,
@@ -48,17 +59,23 @@ import {
   type TrailOutline,
   toDraftIn,
 } from "@/lib/outline"
-import { relativeTime } from "@/lib/stamps"
 import { formatClock, type TrailStep, totalSeconds } from "@/lib/trail"
-import { cn } from "@/lib/utils"
+import { formatCount } from "@/lib/utils"
 
-export const Route = createFileRoute("/trails/$flowId")({ component: TrailRoute })
+export const Route = createFileRoute("/trails/$flowId")({
+  component: () => (
+    <DesktopOnly>
+      <TrailRoute />
+    </DesktopOnly>
+  ),
+})
 
-type TrailTab = "metadata" | "theme" | "preview" | "publish"
+type TrailTab = "metadata" | "theme" | "preview" | "step" | "publish"
 const TRAIL_TABS: InspectorTabDef<TrailTab>[] = [
   { id: "metadata", label: "Metadata", icon: FileTextIcon },
   { id: "theme", label: "Theme", icon: PaletteIcon },
   { id: "preview", label: "Preview", icon: EyeIcon },
+  { id: "step", label: "Step", icon: SlidersHorizontalIcon },
   { id: "publish", label: "Publish", icon: SendIcon },
 ]
 type View = "flow" | "rationale"
@@ -78,12 +95,29 @@ function TrailRoute() {
   const published = useRevision(flowId, me && !editor ? flow.data?.latestRevisionId : null)
   const loaded = editor ? draft.data : published.data
 
-  if (flow.error) return <Caption className="p-10">{flow.error.message}</Caption>
-  if (!flow.data || !me) return <Caption className="p-10">Loading trail…</Caption>
-  if (!editor && !flow.data.latestRevisionId) {
-    return <Caption className="p-10">This trail has not been published yet.</Caption>
+  const contentQuery = editor ? draft : published
+  const failure = flow.error ?? contentQuery.error
+  if (failure && !loaded) {
+    return (
+      <ErrorState
+        title="Could not open this trail"
+        error={failure}
+        onRetry={() => {
+          flow.refetch()
+          if (flow.data) contentQuery.refetch()
+        }}
+      />
+    )
   }
-  if (!loaded) return <Caption className="p-10">Loading trail…</Caption>
+  if (flow.data && me && !editor && !flow.data.latestRevisionId) {
+    return (
+      <ErrorState
+        title="Nothing to show yet"
+        message="This trail has not been published. It will appear here once it is."
+      />
+    )
+  }
+  if (!flow.data || !me || !loaded) return <WorkspaceSkeleton label="Loading trail" />
   return (
     <TrailBuilder
       key={loaded.revision.id}
@@ -103,6 +137,7 @@ type BuilderProps = {
 }
 
 function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
+  usePageTitle(flow.title)
   const navigate = useNavigate()
   const client = useQueryClient()
   const [outline, setOutline] = useState<TrailOutline>(() => fromRevision(loaded.revision))
@@ -111,15 +146,21 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
   const [selected, setSelected] = useState<string | null>(steps[0]?.key ?? null)
   const [tab, setTab] = useState<TrailTab>("preview")
   const [view, setView] = useState<View>("flow")
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => matchesMedia(COMPACT))
   /** Where the library picker adds a step; `undefined` while it is closed. */
   const [picking, setPicking] = useState<ContainerKey | undefined>(undefined)
   const defaults = useCurrentDefaults(flow.id)
+  const [exporting, setExporting] = useState(false)
 
   const payload = useMemo(() => toDraftIn(outline), [outline])
   const save = useCallback(
-    (value: Schemas["DraftSteps"], tag: string) => saveFlowSteps(flow.id, tag, value),
-    [flow.id],
+    async (value: Schemas["DraftSteps"], tag: string) => {
+      const saved = await saveFlowSteps(flow.id, tag, value)
+      // The draft query never refetches on its own: coming back must not restore an old copy.
+      client.setQueryData(flowDraftKey(flow.id), saved)
+      return saved.etag
+    },
+    [flow.id, client],
   )
   const autosave = useAutosave({ value: payload, etag, enabled: editable, save })
   const behind = useBehind(flow.id, loaded.revision.id)
@@ -149,23 +190,64 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
       const tag = autosave.currentEtag()
       if (!tag) return
       const result = await defaults.mutateAsync(tag)
+      client.setQueryData(flowDraftKey(flow.id), result)
       setOutline(fromRevision(result.revision))
       setEtag(result.etag)
       setSelected(null)
       behind.refetch()
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not update the pins")
+      toast.error(friendlyError(error))
+    }
+  }
+
+  const exportPdf = async (positions: number[]) => {
+    // Opened before awaiting: browsers block a pop-up that follows the click asynchronously.
+    const tab = window.open("", "_blank")
+    try {
+      if (editable) await autosave.flush()
+      if (tab) {
+        tab.location.href = `/print/${flow.id}/${loaded.revision.id}?steps=${positions.join(",")}`
+      }
+      setExporting(false)
+    } catch (error) {
+      tab?.close()
+      toast.error(friendlyError(error))
     }
   }
 
   const beforePublish = async () => {
-    await autosave.flush()
-    if (autosave.status === "error" || autosave.status === "conflict") {
-      throw new Error(autosave.error ?? "Save the draft before publishing")
-    }
+    if (!(await autosave.flush())) throw new Error("Save the draft before publishing")
   }
 
-  const present = flow.latestRevisionId
+  const reload = async () => {
+    const fresh = await client.fetchQuery({
+      queryKey: flowDraftKey(flow.id),
+      staleTime: 0,
+      queryFn: () => fetchFlowDraft(flow.id),
+    })
+    setOutline(fromRevision(fresh.revision))
+    setEtag(fresh.etag)
+    setSelected(null)
+  }
+
+  const pinned = steps.filter((step) => step.artifactVersionId)
+  /** Saves first, then plays what is on screen; the player leaves out unpinned steps. */
+  const play = async (position: number) => {
+    if (editable && !(await autosave.flush())) {
+      toast.error("Save the trail before presenting it")
+      return
+    }
+    const target = steps[position - 1]
+    navigate({
+      to: "/play/$flowId/$revisionId/$step",
+      params: {
+        flowId: flow.id,
+        revisionId: loaded.revision.id,
+        step: String(Math.max(pinned.indexOf(target) + 1, 1)),
+      },
+    })
+  }
+  const playPublished = flow.latestRevisionId
     ? () =>
         navigate({
           to: "/play/$flowId/$revisionId/$step",
@@ -176,95 +258,57 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <TopBarSlot side="start">
-        <Link to="/" className="text-xs text-gc-ink3 hover:text-gc-ink2">
+        <Link to="/trails" className="shrink-0 text-ui text-gc-ink3 hover:text-gc-ink2">
           Trails
         </Link>
-        <span className="text-xs text-gc-ink3">/</span>
-        <h1 className="truncate text-[12.5px] font-semibold text-gc-text">{flow.title}</h1>
-        <span className="rounded bg-gc-nav-bg px-[7px] py-[3px] font-mono text-[9px] tracking-[0.8px] text-gc-nav-ink uppercase">
+        <span className="text-ui text-gc-ink3">/</span>
+        <h1 className="truncate text-body font-semibold text-gc-text">{flow.title}</h1>
+        <span className="rounded bg-gc-nav-bg px-[7px] max-xl:hidden py-[3px] font-mono text-label tracking-[0.5px] text-gc-nav-ink uppercase">
           Trail
         </span>
-        <span className="rounded border border-gc-border bg-gc-sunken px-[7px] py-[3px] font-mono text-[9px] tracking-[0.8px] text-gc-ink2">
+        <span className="rounded border border-gc-border bg-gc-sunken px-[7px] py-[3px] font-mono text-label tracking-[0.5px] text-gc-ink2">
           {editable
             ? `REV ${(flow.latestRevision ?? 0) + 1} · DRAFT`
             : `REV ${loaded.revision.revision}`}
         </span>
       </TopBarSlot>
       <TopBarSlot side="end">
-        <ActionButton
-          disabled={!present}
-          onClick={present}
-          title="Plays the latest published revision"
-        >
-          Preview
+        <ActionButton disabled={steps.length === 0} onClick={() => setExporting(true)}>
+          <FileDownIcon />
+          Export PDF
         </ActionButton>
-        {editable && (
-          <ActionButton variant="primary" onClick={() => autosave.flush()}>
-            Save flow
+        {editable && playPublished && (
+          <ActionButton
+            onClick={playPublished}
+            title={`Plays revision ${flow.latestRevision}, without draft changes`}
+          >
+            Published r{flow.latestRevision}
           </ActionButton>
         )}
-        <span className="flex items-center gap-[7px] pl-2 font-mono text-[9.5px] tracking-[0.6px] text-gc-ink3">
-          <span
-            aria-hidden
-            className={cn(
-              "size-1.5 rounded-full",
-              autosave.status === "error" || autosave.status === "conflict"
-                ? "bg-gc-fail-base"
-                : autosave.status === "dirty" || autosave.status === "saving"
-                  ? "bg-gc-warn-base"
-                  : "bg-gc-pass-base",
-            )}
-          />
-          <span role="status">
-            {!editable
-              ? "READ ONLY"
-              : autosave.status === "conflict"
-                ? "CHANGED ELSEWHERE — RELOAD"
-                : autosave.status === "error"
-                  ? "SAVE FAILED"
-                  : autosave.status === "dirty" || autosave.status === "saving"
-                    ? "SAVING…"
-                    : autosave.savedAt
-                      ? "SAVED"
-                      : `SAVED ${relativeTime(loaded.revision.updatedAt).toUpperCase()}`}
-          </span>
-        </span>
+        <ActionButton
+          variant="primary"
+          disabled={pinned.length === 0}
+          onClick={() => play(1)}
+          title={pinned.length ? "Plays the trail as it is now" : "Add a step to present the trail"}
+        >
+          <PlayIcon />
+          Present
+        </ActionButton>
+        <SaveIndicator
+          autosave={autosave}
+          editable={editable}
+          updatedAt={loaded.revision.updatedAt}
+          onReload={reload}
+        />
       </TopBarSlot>
 
       <div className="flex min-h-0 flex-1">
         <section className="flex min-w-0 flex-1 flex-col">
           <div className="flex h-10 shrink-0 items-center justify-between gap-4 border-b border-gc-border px-4">
-            <div role="tablist" aria-label="Trail areas" className="flex h-full items-center gap-1">
-              {VIEWS.map((entry) => (
-                <button
-                  key={entry.id}
-                  type="button"
-                  role="tab"
-                  id={`trail-tab-${entry.id}`}
-                  aria-selected={view === entry.id}
-                  aria-controls={`trail-panel-${entry.id}`}
-                  tabIndex={view === entry.id ? 0 : -1}
-                  onClick={() => setView(entry.id)}
-                  onKeyDown={(event) => {
-                    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
-                    const next = view === "flow" ? "rationale" : "flow"
-                    setView(next)
-                    document.getElementById(`trail-tab-${next}`)?.focus()
-                  }}
-                  className={cn(
-                    "flex h-full items-center border-b-2 px-3 text-xs",
-                    view === entry.id
-                      ? "border-gc-primary font-semibold text-gc-text"
-                      : "border-transparent text-gc-ink3 hover:text-gc-ink2",
-                  )}
-                >
-                  {entry.label}
-                </button>
-              ))}
-            </div>
+            <AreaTabs label="Trail areas" tabs={VIEWS} value={view} onChange={setView} />
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[8.5px] tracking-[0.5px] text-gc-ink3">
-                {steps.length} STEPS · {formatClock(totalSeconds(steps))}
+              <span className="font-mono text-label text-gc-ink3">
+                {formatCount(steps.length, "step")} · {formatClock(totalSeconds(steps))}
               </span>
               {editable && (
                 <>
@@ -285,23 +329,13 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
                   </ActionButton>
                 </>
               )}
-              <ActionButton
-                variant="primary"
-                className="h-6"
-                disabled={!present}
-                onClick={present}
-                title={present ? "Play the published trail" : "Publish the trail to present it"}
-              >
-                <PlayIcon />
-                Present
-              </ActionButton>
             </div>
           </div>
           {view === "rationale" ? (
             <div
               role="tabpanel"
-              id="trail-panel-rationale"
-              aria-labelledby="trail-tab-rationale"
+              id="area-rationale"
+              aria-labelledby="tab-rationale"
               className="flex min-h-0 flex-1"
             >
               <RationaleView
@@ -316,12 +350,12 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
           ) : (
             <div
               role="tabpanel"
-              id="trail-panel-flow"
-              aria-labelledby="trail-tab-flow"
+              id="area-flow"
+              aria-labelledby="tab-flow"
               className="min-h-0 flex-1 overflow-y-auto bg-gc-sunken p-4"
             >
               {outline.nodes.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center gap-3 text-[11.5px] text-gc-ink3">
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-ui text-gc-ink3">
                   <p>This trail has no steps yet.</p>
                   {editable && (
                     <ActionButton onClick={() => setPicking(null)}>
@@ -338,7 +372,7 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
                   readOnly={!editable}
                   onSelect={(key) => {
                     setSelected(key)
-                    if (steps.some((step) => step.key === key)) setTab("preview")
+                    if (steps.some((step) => step.key === key) && tab !== "step") setTab("preview")
                   }}
                   onRationale={(key) => {
                     setSelected(key)
@@ -365,11 +399,24 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
             ),
             preview: (
               <TrailPreviewPanel
+                section="preview"
                 flow={flow}
                 step={selectedStep}
                 position={position}
                 readOnly={!editable}
                 onStep={onStep}
+                onPlay={play}
+              />
+            ),
+            step: (
+              <TrailPreviewPanel
+                section="settings"
+                flow={flow}
+                step={selectedStep}
+                position={position}
+                readOnly={!editable}
+                onStep={onStep}
+                onPlay={play}
                 placement={
                   selectedStep && {
                     value: containerOf(outline, selectedStep.key),
@@ -402,6 +449,9 @@ function TrailBuilder({ flow, loaded, editable, canPublish }: BuilderProps) {
         />
       </div>
 
+      {exporting && (
+        <ExportDialog steps={steps} onExport={exportPdf} onClose={() => setExporting(false)} />
+      )}
       {picking !== undefined && (
         <LibraryPicker
           locale={flow.locale}

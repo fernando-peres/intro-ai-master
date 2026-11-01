@@ -10,8 +10,8 @@ export default defineConfig({
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
   server: {
-    // harness-content-api (uv run fastapi dev …) on its default port.
-    proxy: { "/api": "http://localhost:8000" },
+    // harness-content-api (uv run fastapi dev …), on its default port unless overridden.
+    proxy: { "/api": process.env.API_PROXY_TARGET ?? "http://localhost:8000" },
   },
   test: {
     environment: "jsdom",

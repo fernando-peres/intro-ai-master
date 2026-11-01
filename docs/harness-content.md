@@ -1,6 +1,6 @@
 # Reusable Artifacts Studio (harness)
 
-The studio lets authors build **reusable artifacts**: documents, slides and animations. Each artifact is versioned per locale, reviewed before it is published, and filed in a Box → Unit → Section library. Authors then compose published artifacts into **trails**, which pin exact versions. In the API and the database a trail is called a *flow*. The product requirements are in [`apps/harness-content/docs/reusable-artifacts-prd-v0.1.md`](../apps/harness-content/docs/reusable-artifacts-prd-v0.1.md), and the phased build in [`implementation-plan.md`](../apps/harness-content/docs/implementation-plan.md).
+The studio lets authors build **reusable artifacts**: documents, slides, animations and diagrams. Each artifact is versioned per locale, reviewed before it is published, and filed in a Box → Unit → Section library. Authors then compose published artifacts into **trails**, which pin exact versions. In the API and the database a trail is called a *flow*. The product requirements are in [`apps/harness-content/docs/reusable-artifacts-prd-v0.1.md`](../apps/harness-content/docs/reusable-artifacts-prd-v0.1.md), and the phased build in [`implementation-plan.md`](../apps/harness-content/docs/implementation-plan.md).
 
 ## Shape
 
@@ -57,8 +57,9 @@ Each type is an `ArtifactPlugin` in the studio (`src/artifacts/`). A plugin has:
 | Type | Content | Editor |
 |---|---|---|
 | doc | allowlisted BlockNote blocks, plus `callout` and `raEmbed`, which pins another artifact's version | BlockNote |
-| slide | 1920×1080 elements (text, shapes, line/arrow, image, diagram, chart), groups, a theme | react-konva |
+| slide | 1920×1080 elements (text, shapes, line/arrow, image, chart, embedded diagram or animation), groups, a theme | react-konva |
 | animation | `{template, props}` for a registered template (`animation.reveal`, `animation.stepsDiagram`) | form generated from the props schema; Motion player |
+| diagram | `{engine, theme}` plus a node graph (`flow`) or Mermaid `source` (`mermaid`) | React Flow editor and renderer; Mermaid source editor with live preview, rendered in strict mode |
 
 `pnpm export:schemas` turns those Zod schemas into `registry.json` (the allowed components per type, plus empty content) and one JSON Schema file per type. The API checks content against them on create, import, draft save and publish:
 
@@ -99,5 +100,5 @@ There are two theme systems. **System themes** style the studio chrome (`data-th
 - Real authentication.
 - S3 storage: implement `AssetStorage` and return it from `get_storage`.
 - Asset references inside content: slide and doc images still take a URL, and an `<img>` cannot send `X-User-Id`.
-- Diagram, dataset and audio artifact types.
+- Dataset and audio artifact types.
 - AI generation behind the import endpoint.

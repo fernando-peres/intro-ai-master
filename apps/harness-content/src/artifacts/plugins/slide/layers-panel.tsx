@@ -41,7 +41,7 @@ import {
   ungroupElements,
   updateElement,
 } from "@/artifacts/plugins/slide/ops"
-import { PanelHeading } from "@/components/workspace/inspector"
+import { PanelHeading, Placeholder } from "@/components/workspace/inspector"
 import { cn } from "@/lib/utils"
 
 const TYPE_ICON: Record<SlideElement["type"], LucideIcon> = {
@@ -51,7 +51,7 @@ const TYPE_ICON: Record<SlideElement["type"], LucideIcon> = {
   line: MinusIcon,
   arrow: MinusIcon,
   image: ImageIcon,
-  diagram: WorkflowIcon,
+  embed: WorkflowIcon,
   chart: BarChart3Icon,
 }
 
@@ -60,6 +60,7 @@ export function layerLabel(element: SlideElement): string {
   if (element.type === "text") return element.text.split("\n")[0].slice(0, 40) || element.variant
   if (element.type === "chart") return element.options.title || `${element.chartType} chart`
   if (element.type === "image") return element.alt || "Image"
+  if (element.type === "embed") return element.ref.title || "Embed"
   return element.type.replace(/^./, (c) => c.toUpperCase())
 }
 
@@ -96,6 +97,9 @@ export function LayersPanel({ content, onChange, readOnly }: Props) {
   return (
     <>
       <PanelHeading label="Layers" right={`${content.elements.length} elements`} />
+      {content.elements.some((el) => el.type === "embed") && (
+        <Placeholder>Embeds always paint above canvas shapes, whatever their layer.</Placeholder>
+      )}
       <div className="flex flex-wrap items-center gap-1">
         <IconButton
           label="Group (⌘G)"
@@ -172,7 +176,7 @@ export function LayersPanel({ content, onChange, readOnly }: Props) {
                 type="button"
                 onClick={() => setSelected(expandToGroups(content, [row.members[0].id]))}
                 className={cn(
-                  "flex h-[26px] w-full items-center gap-2 rounded-[5px] px-2 text-left text-[10.5px]",
+                  "flex h-[26px] w-full items-center gap-2 rounded-[5px] px-2 text-left text-label",
                   row.members.every((m) => selected.includes(m.id))
                     ? "bg-gc-row-bg font-semibold text-gc-nav-ink"
                     : "text-gc-ink2 hover:bg-gc-raised",
@@ -232,7 +236,7 @@ function LayerRow({
         type="button"
         onClick={(event) => onSelect(event.shiftKey || event.metaKey)}
         className={cn(
-          "flex min-w-0 flex-1 items-center gap-2 text-left text-[10.5px]",
+          "flex min-w-0 flex-1 items-center gap-2 text-left text-label",
           selected ? "font-semibold text-gc-nav-ink" : "text-gc-ink2",
           !element.visible && "opacity-50",
         )}

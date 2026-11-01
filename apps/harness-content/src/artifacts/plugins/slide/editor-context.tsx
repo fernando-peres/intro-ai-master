@@ -6,6 +6,9 @@ type Value = {
   selected: string[]
   setSelected: (ids: string[]) => void
   history: React.RefObject<History<SlideContent>>
+  /** The embed picker dialog, opened by the `d` key. */
+  embedPickerOpen: boolean
+  setEmbedPickerOpen: (open: boolean) => void
   /** Re-renders consumers after undo/redo availability changes. */
   bump: () => void
 }
@@ -16,9 +19,14 @@ const Context = createContext<Value | null>(null)
 export function SlideEditorProvider({ children }: { children: ReactNode }) {
   const [selected, setSelected] = useState<string[]>([])
   const history = useRef(emptyHistory<SlideContent>())
+  const [embedPickerOpen, setEmbedPickerOpen] = useState(false)
   const [, setTick] = useState(0)
   const bump = useCallback(() => setTick((tick) => tick + 1), [])
-  return <Context value={{ selected, setSelected, history, bump }}>{children}</Context>
+  return (
+    <Context value={{ selected, setSelected, history, bump, embedPickerOpen, setEmbedPickerOpen }}>
+      {children}
+    </Context>
+  )
 }
 
 export function useSlideEditor(): Value {

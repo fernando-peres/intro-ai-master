@@ -43,6 +43,19 @@ ANIMATION = {
     "template": "animation.stepsDiagram",
     "props": {"title": "Run loop", "steps": [{"label": "A"}, {"label": "B"}]},
 }
+DIAGRAM_FLOW = {
+    "schemaVersion": 1,
+    "type": "diagram",
+    "engine": "flow",
+    "nodes": [{"id": "a", "label": "Start"}, {"id": "b", "label": "End"}],
+    "edges": [{"id": "e", "source": "a", "target": "b"}],
+}
+DIAGRAM_MERMAID = {
+    "schemaVersion": 1,
+    "type": "diagram",
+    "engine": "mermaid",
+    "source": "flowchart LR\n  a --> b",
+}
 
 
 def _import(api, content, expect=201, **fields):
@@ -50,7 +63,11 @@ def _import(api, content, expect=201, **fields):
     return api.post("usr_author", "/api/v1/artifacts/import", body | fields, expect=expect).json()
 
 
-@pytest.mark.parametrize("content", [SLIDE, DOC, ANIMATION], ids=["slide", "doc", "animation"])
+@pytest.mark.parametrize(
+    "content",
+    [SLIDE, DOC, ANIMATION, DIAGRAM_FLOW, DIAGRAM_MERMAID],
+    ids=["slide", "doc", "animation", "diagram-flow", "diagram-mermaid"],
+)
 def test_valid_json_imports_as_an_editable_draft(api, content):
     created = _import(api, content)
     assert created["artifact"]["type"] == content["type"]
@@ -69,8 +86,9 @@ def test_valid_json_imports_as_an_editable_draft(api, content):
             "'doc.iframe'",
         ),
         ({**ANIMATION, "template": "animation.networkGraph"}, "'animation.networkGraph'"),
+        ({**DIAGRAM_MERMAID, "engine": "plantuml"}, "'diagram.plantuml'"),
     ],
-    ids=["slide", "doc-nested", "animation"],
+    ids=["slide", "doc-nested", "animation", "diagram"],
 )
 def test_unknown_components_are_rejected_by_name(api, content, name):
     error = _import(api, content, expect=422)
@@ -119,7 +137,7 @@ def test_saves_and_publish_check_content_too(api, session):
 
 def test_registry_lists_allowlisted_components(api):
     registry = api.get("usr_viewer", "/api/v1/registry").json()
-    assert set(registry["types"]) == {"slide", "doc", "animation"}
+    assert set(registry["types"]) == {"slide", "doc", "animation", "diagram"}
     slide = {c["componentType"] for c in registry["types"]["slide"]["components"]}
     assert {"slide.text", "slide.chart", "slide.image"} <= slide
     reveal = registry["types"]["animation"]["components"][0]

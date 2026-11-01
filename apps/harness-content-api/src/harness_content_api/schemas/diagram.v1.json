@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "type": {
+          "type": "string",
+          "const": "diagram"
+        },
+        "theme": {
+          "default": "dark",
+          "type": "string",
+          "minLength": 1
+        },
+        "engine": {
+          "type": "string",
+          "const": "flow"
+        },
+        "direction": {
+          "default": "LR",
+          "type": "string",
+          "enum": [
+            "LR",
+            "TB"
+          ]
+        },
+        "nodes": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "default": "",
+                "type": "string",
+                "maxLength": 80
+              },
+              "x": {
+                "default": 0,
+                "type": "number"
+              },
+              "y": {
+                "default": 0,
+                "type": "number"
+              },
+              "shape": {
+                "default": "rect",
+                "type": "string",
+                "enum": [
+                  "rect",
+                  "pill",
+                  "diamond"
+                ]
+              },
+              "tone": {
+                "default": "neutral",
+                "type": "string",
+                "enum": [
+                  "neutral",
+                  "accent",
+                  "accent2",
+                  "accent3",
+                  "accent4"
+                ]
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        "edges": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "default": "",
+                "type": "string",
+                "maxLength": 60
+              },
+              "animated": {
+                "default": false,
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "source",
+              "target"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "type",
+        "engine"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "type": {
+          "type": "string",
+          "const": "diagram"
+        },
+        "theme": {
+          "default": "dark",
+          "type": "string",
+          "minLength": 1
+        },
+        "engine": {
+          "type": "string",
+          "const": "mermaid"
+        },
+        "source": {
+          "default": "",
+          "type": "string",
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "type",
+        "engine"
+      ]
+    }
+  ]
+}

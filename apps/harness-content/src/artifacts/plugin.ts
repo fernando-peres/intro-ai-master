@@ -18,6 +18,8 @@ export type RendererProps<C> = {
   showControls?: boolean
   /** Full-screen stage: the renderer's background reaches every edge. */
   presenting?: boolean
+  /** For print: the finished state, with no playback. */
+  still?: boolean
 }
 
 export type ValidationResult<C> = { ok: true; content: C } | { ok: false; issues: string[] }

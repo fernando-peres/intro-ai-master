@@ -176,7 +176,7 @@ Status: done
 Log: 2026-10-30-14-30-00 — Migration 0008 (`artifact_templates`), `/artifact-templates` CRUD, `templateId` on artifact create. `slide/starter-layouts.ts`, `/design-templates/$templateId` (explicit Save, two-step Delete), lazily mounted previews. Browser: full flow, count ×1. Data table is built from rects and text because slides have no table element.
 
 ### P16 — Diagram artifact type
-Status: in-progress
+Status: done
 
 - API: `ArtifactType.DIAGRAM`; migration 0009 recreates the `artifact_type` check constraint; `services/content.py` treats `engine` as the component field, like `template`; seed one published diagram per engine.
 - Studio plugin `src/artifacts/plugins/diagram/`: content `{schemaVersion, type: "diagram", theme, engine}`, either `flow` (nodes `{id, label, x, y, shape, tone}`, edges `{id, source, target, label?, animated}`, direction) or `mermaid` (`source`).
@@ -185,30 +185,34 @@ Status: in-progress
   - `contentTheme`/`withTheme`; Format and Insert panels; the New artifact dialog enables Diagram and asks for the engine.
 - `pnpm export:schemas` and `pnpm gen:api`.
 - Done when: a flow diagram and a Mermaid diagram are created, edited, reviewed and published in the browser; importing an unknown engine is rejected by name; Vitest and pytest cover schema, search text and renderers (Mermaid mocked).
+Log: 2026-10-30-20-21-24 — Plugin `plugins/diagram/` (React Flow editor and read-only renderer; lazily imported Mermaid in strict mode, run one render at a time, with a source editor, live preview and inline parse errors that keep the last drawing), Format and Insert panels, Diagram in the New artifact dialog with an engine choice, search filter and import. API: `diagram.flow|mermaid` in the registry with `engine` as the component field, two published demo diagrams. Browser, against a throwaway database: both engines created, edited (drag, rename, connect, delete, reload), reviewed, published and previewed; `plantuml` rejected by name. The API's search index still covers title, description and tags only, so `getSearchText` isn't searchable server-side. Deferred: embeds (P17–P19).
 
 ### P17 — Shared embed infrastructure
-Status: todo
+Status: done
 
 - `src/components/embed/`: an `EmbedPicker` (moved from `doc/panels.tsx`, with a type filter) and an `<EmbeddedArtifact>` that loads the pinned version, validates it, applies the host theme and renders the plugin's Renderer to fill its box, with `playback: "static" | "auto"`. Only diagram and animation render live; other types keep the chip.
 - `src/lib/embeds.ts`: a shared `EmbedRef` and `embedsOf(content)` for docs and slides.
 - API: on import, submit and publish, every embed must name an existing published version of its artifact, not archived when newly pinned; errors are `{path, message}`.
 - "Update to current default" re-pins an embed.
 - Done when: Vitest covers the loading, invalid and missing states and the re-pin; pytest rejects a draft or foreign version id.
+Log: 2026-10-31-10-23-57 — `src/components/embed/`: `EmbedPicker` (moved from doc panels, optional type filter), `EmbeddedArtifact` (loading, missing and invalid states; renders through `StepRenderer` with the host theme; `static` plays nothing via `still`), `EmbedChip`, `EmbedRepin`. `src/lib/embeds.ts`: `EmbedRef`, `embedsOf`, `embedTarget`, `repinned`. API `services/embeds.py`: `invalid_embed` with `{path, message}` issues on import, submit and publish; an archived pin is allowed only when inherited from the parent version. Doc chips offer Update to vN. The doc picker excludes diagrams until P18, which also stops picking one from producing an invalid doc. Browser, on a throwaway database: re-pin saved and the button cleared, picker filtered and inserted. `EmbeddedArtifact` is covered by Vitest only; nothing mounts it live until P18.
 
 ### P18 — Doc embeds, live and resizable
-Status: todo
+Status: done
 
 - `raEmbed` accepts `diagram` and gains `width` (20–100 %), `aspect` (`16:9|4:3|1:1|3:4|auto`) and `align`. The block renders `EmbeddedArtifact` with a caption bar and a right-edge resize handle.
 - Insert panel and slash menu: Diagram and Animation open the picker; the Format panel edits width, aspect, align and re-pin for the selected embed.
 - Done when: a published diagram and animation are embedded, resized and read back in the reader view; the round-trip test covers the new props.
+Log: 2026-10-31-10-31-00 — `raEmbed` accepts `diagram` and gains `width`, `aspect` and `align`; `doc/embed-block.tsx` renders `EmbeddedArtifact` with a caption bar and a right-edge handle (drag, or arrow keys in 5% steps; saved on release). Slash menu and Insert panel open a picker dialog for Diagram and Animation; the Format panel edits width, aspect, align and re-pin for the selected embed. Editor plays nothing, the reader autoplays, print stays still. Doc panels are now lazy, which breaks an import cycle through `@/artifacts`. `auto` has no intrinsic ratio because renderers fill their box, so it means a fixed 320px height. Slide and doc embeds stay chips, full width. Browser, on a throwaway database: flow and Mermaid pickers, resize, aspect and align saved and read back in preview; no console errors. Known cosmetic: a Mermaid drawing sits at the top of a taller box.
 
 ### P19 — Slide embeds; `slide.diagram` removed
-Status: todo
+Status: done
 
 - `slide.embed` element `{box, ref, lockAspect, playback}`: a transparent Konva hit box keeps selection, snapping, transform, rotation and lock; an HTML overlay over the Stage renders `EmbeddedArtifact` at the scaled box. Embeds paint above canvas shapes, and the layers panel says so. Editor plays nothing; preview and present follow `playback`.
 - Insert panel gets an Embed section built on the picker; the `d` key opens it; the Format panel edits lock aspect, playback, fit to content and re-pin.
-- `slide.diagram` is deleted. Migration 0010 rewrites every stored slide version that uses it into native rect, text and arrow elements at the same paint position, recomputes `content_hash` and writes an audit row per version. This is a one-time exception to immutability: rendering is unchanged.
+- `slide.diagram` is deleted. Migration 0011 rewrites every stored slide version that uses it into native rect, text and arrow elements at the same paint position, recomputes `content_hash` and writes an audit row per version. This is a one-time exception to immutability: rendering is unchanged.
 - Done when: a diagram and an animation are embedded, moved, resized, rotated and locked, then previewed and presented with the theme applied; an old diagram slide renders as shapes after `alembic upgrade head`; fixtures and tests are updated.
+Log: 2026-10-31-10-38-50 — `slide.embed` (`ref`, `lockAspect`, `playback`; diagram and animation only): a transparent Konva hit box keeps selection, snapping, transform, rotation and lock, and `slide/embed-overlay.tsx` draws `EmbeddedArtifact` over the Stage, following live during a drag. The Transformer and guides moved to a top layer above the overlays so handles stay usable. Insert panel Embed section, `d` opens the picker dialog (now shared with docs), Format panel edits lock aspect, playback, fit to content and re-pin; the layers panel says embeds paint above shapes. `slide.diagram` removed. Migration 0011 rewrites stored versions and templates into native rect, text and arrow elements, recomputes matching review hashes and writes one audit row per version; no downgrade. Flow diagrams now refit when their box resizes (found here: a first node was clipped). Browser, on a throwaway database taken from 0010 with a published rotated diagram slide: `alembic upgrade head` drew it as shapes; a diagram and an animation embedded, moved, resized, rotated, locked and previewed in the host theme. Rendering is not pixel-identical after 0011: arrowheads are 16 canvas units, not 14, and a label that wraps sits slightly lower. Not run in the browser: the trail player (same `SlideRenderer` as preview).
 
 ## Critical files
 - New: `apps/harness-content-api/**`, `apps/harness-content/docs/implementation-plan.md`, `apps/harness-content/scripts/pen-nodes.py`, `.agents/skills/harness-next-phase/SKILL.md` (+ `.claude/skills` symlink).

@@ -122,3 +122,12 @@ def test_search_vector_follows_edits(api, library):
     api.patch("usr_author", f"/api/v1/artifacts/{library['budgets']}", {"title": "Context limits"})
     assert _ids(api, query="context") == [library["budgets"]]
     assert _ids(api, query="token") == []
+
+
+def test_titles_with_versions_and_odd_input(api):
+    box = api.box("Versions")
+    made = api.artifact(title="Harness v2.0 model 2.5", locationId=box)["artifact"]["id"]
+    for query in ("v2.0", "v2", "2.5", "harness v2.0"):
+        assert made in _ids(api, query=query), query
+    for query in ("it's", "back\\slash", "a & b", "(x:*", "!"):
+        api.get("usr_viewer", "/api/v1/artifacts", params={"query": query})

@@ -16,6 +16,7 @@ from harness_content_api.schemas import (
     ArtifactImport,
     ArtifactOut,
     ArtifactSearch,
+    ArtifactTrail,
     ArtifactUpdate,
     DraftCreate,
     PublishRequest,
@@ -27,7 +28,7 @@ from harness_content_api.schemas import (
     VersionSummary,
     VersionUpdate,
 )
-from harness_content_api.services import artifacts, content, flows, reviews, search
+from harness_content_api.services import artifacts, content, embeds, flows, reviews, search
 
 router = APIRouter(prefix="/api/v1", tags=["artifacts"])
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -57,6 +58,7 @@ def import_artifact(session: SessionDep, user: CurrentUser, body: ArtifactImport
             issues=[{"path": "type", "message": f"Expected one of: {supported}"}],
         )
     data = ArtifactCreate.model_validate(body.model_dump(by_alias=False) | {"type": kind})
+    embeds.check(session, body.content)
     artifact, draft = artifacts.create_artifact(session, user, data)
     session.commit()
     return {"artifact": artifacts.describe(session, artifact), "draft": draft}
@@ -103,6 +105,26 @@ def tags(session: SessionDep, _: CurrentUser) -> Any:
 def usages(session: SessionDep, _: CurrentUser, artifact_id: str) -> Any:
     artifacts.get_artifact(session, artifact_id)
     return flows.usages(session, artifact_id)
+
+
+@router.get("/artifacts/{artifact_id}/trails", response_model=list[ArtifactTrail])
+def artifact_trails(session: SessionDep, _: CurrentUser, artifact_id: str) -> Any:
+    artifacts.get_artifact(session, artifact_id)
+    return flows.artifact_trails(session, artifact_id)
+
+
+@router.put("/artifacts/{artifact_id}/trails/{flow_id}", status_code=204)
+def add_to_trail(session: SessionDep, user: CurrentUser, artifact_id: str, flow_id: str) -> None:
+    flows.add_artifact(session, user, flow_id, artifact_id)
+    session.commit()
+
+
+@router.delete("/artifacts/{artifact_id}/trails/{flow_id}", status_code=204)
+def remove_from_trail(
+    session: SessionDep, user: CurrentUser, artifact_id: str, flow_id: str
+) -> None:
+    flows.remove_artifact(session, user, flow_id, artifact_id)
+    session.commit()
 
 
 @router.get("/artifacts/{artifact_id}", response_model=ArtifactOut)

@@ -13,6 +13,7 @@ import {
 import { type ReactNode, useEffect, useId, useRef, useState } from "react"
 import Markdown from "react-markdown"
 import { toast } from "sonner"
+import "@fontsource/cormorant-garamond/600.css"
 import { downloadAsset, useAssetMutations, useAssetText, useAssetUrl } from "@/api/assets"
 import { Caption } from "@/components/labels"
 import { ActionButton } from "@/components/shell/form-controls"
@@ -100,7 +101,7 @@ export function ResourcesInspector({
       className="flex w-[300px] shrink-0 flex-col border-l border-gc-border bg-gc-raised"
     >
       <div className="flex h-10 shrink-0 items-center justify-between border-b border-gc-border px-3">
-        <span className="font-mono text-[9px] tracking-[1px] text-gc-ink3">RESOURCES</span>
+        <span className="font-mono text-label tracking-[0.5px] text-gc-ink3">RESOURCES</span>
         <IconButton label="Collapse resources" onClick={() => onCollapse(true)}>
           <PanelRightCloseIcon />
         </IconButton>
@@ -114,7 +115,7 @@ export function ResourcesInspector({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search notes and files"
-            className="min-w-0 flex-1 bg-transparent text-[11px] text-gc-text outline-none placeholder:text-gc-ink3"
+            className="min-w-0 flex-1 bg-transparent text-ui text-gc-text outline-none placeholder:text-gc-ink3"
           />
         </label>
       </div>
@@ -173,10 +174,10 @@ function ResourceGroup({
     <section aria-labelledby={id} className="flex flex-col gap-1">
       <div className="flex items-center justify-between pb-1">
         <span className="flex items-center gap-[7px]">
-          <h2 id={id} className="font-mono text-[9px] tracking-[1px] text-gc-ink3 uppercase">
+          <h2 id={id} className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">
             {title}
           </h2>
-          <span className="rounded-[3px] bg-gc-sunken px-[5px] font-mono text-[8.5px] text-gc-ink2">
+          <span className="rounded-[3px] bg-gc-sunken px-[5px] font-mono text-label text-gc-ink2">
             {count}
           </span>
         </span>
@@ -223,13 +224,13 @@ function ResourceRow({
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span
             className={cn(
-              "truncate text-[11px]",
+              "truncate text-ui",
               selected ? "font-semibold text-gc-text" : "text-gc-ink2",
             )}
           >
             {asset.name}
           </span>
-          <span className="truncate font-mono text-[8.5px] tracking-[0.4px] text-gc-ink3">
+          <span className="truncate font-mono text-label tracking-[0.4px] text-gc-ink3">
             {typeChip(asset)} · {formatBytes(asset.sizeBytes)} · {relativeTime(asset.updatedAt)}
           </span>
         </span>
@@ -261,11 +262,11 @@ function DropZone({ busy, onFiles }: { busy: boolean; onFiles: (files: FileList)
         over ? "border-gc-primary" : "border-gc-border",
       )}
     >
-      <span className="flex items-center gap-1.5 text-[11px] text-gc-ink2">
+      <span className="flex items-center gap-1.5 text-ui text-gc-ink2">
         <UploadIcon aria-hidden className="size-[11px]" />
         {busy ? "Uploading…" : "Drop a file to attach"}
       </span>
-      <span className="font-mono text-[8px] tracking-[0.4px] text-gc-ink3">
+      <span className="font-mono text-label tracking-[0.4px] text-gc-ink3">
         MD · PDF · PNG — MAX 20 MB
       </span>
       <input
@@ -298,7 +299,7 @@ export function ResourceStage({ artifactId, asset, readOnly, onDeleted }: StageP
   if (!asset) {
     return (
       <StageFrame>
-        <p className="m-auto max-w-sm text-center text-[11.5px] leading-relaxed text-gc-ink3">
+        <p className="m-auto max-w-sm text-center text-ui leading-relaxed text-gc-ink3">
           Notes and files here belong to the artifact, in every locale and version. Pick one on the
           right{readOnly ? "." : ", or add a note or drop a file."}
         </p>
@@ -365,7 +366,7 @@ function NoteStage({ artifactId, asset, readOnly, onDeleted }: OpenProps) {
               disabled={readOnly && entry === "write"}
               onClick={() => setMode(entry)}
               className={cn(
-                "h-full rounded px-[9px] text-[10.5px] capitalize disabled:opacity-40",
+                "h-full rounded px-[9px] text-label capitalize disabled:opacity-40",
                 mode === entry ? "bg-gc-raised font-semibold text-gc-text" : "text-gc-ink3",
               )}
             >
@@ -394,7 +395,7 @@ function NoteStage({ artifactId, asset, readOnly, onDeleted }: OpenProps) {
         {text.isPending ? (
           <Caption className="p-5">Loading…</Caption>
         ) : text.error ? (
-          <p role="alert" className="p-5 text-[11.5px] text-gc-fail-ink">
+          <p role="alert" className="p-5 text-ui text-gc-fail-ink">
             {errorText(text.error)}
           </p>
         ) : mode === "preview" && isNote ? (
@@ -413,7 +414,7 @@ function NoteStage({ artifactId, asset, readOnly, onDeleted }: OpenProps) {
               }
             }}
             placeholder={isNote ? "## Heading\n\nWrite markdown…" : ""}
-            className="min-h-0 flex-1 resize-none bg-transparent p-5 font-mono text-[12px] leading-[1.6] text-gc-text outline-none placeholder:text-gc-ink3"
+            className="min-h-0 flex-1 resize-none bg-transparent p-5 font-mono text-body leading-[1.6] text-gc-text outline-none placeholder:text-gc-ink3"
           />
         )}
       </div>
@@ -442,9 +443,7 @@ function FileStage({ artifactId, asset, readOnly, onDeleted }: OpenProps) {
         ) : (
           <div className="flex flex-col items-center gap-3 text-center">
             <FileIcon aria-hidden className="size-8 text-gc-ink3" />
-            <p className="text-[11.5px] text-gc-ink2">
-              {typeChip(asset)} files open in your own viewer.
-            </p>
+            <p className="text-ui text-gc-ink2">{typeChip(asset)} files open in your own viewer.</p>
             <ActionButton onClick={() => downloadAsset(asset.id, asset.name)}>
               <DownloadIcon aria-hidden />
               Download {asset.name}
@@ -496,7 +495,7 @@ function StageHeader({
   return (
     <div className="flex shrink-0 items-center gap-[9px]">
       {readOnly ? (
-        <span className="text-[12.5px] font-semibold text-gc-text">{asset.name}</span>
+        <span className="text-body font-semibold text-gc-text">{asset.name}</span>
       ) : (
         <input
           aria-label="Resource name"
@@ -507,10 +506,10 @@ function StageHeader({
             if (event.key === "Enter") event.currentTarget.blur()
             if (event.key === "Escape") setName(asset.name)
           }}
-          className="min-w-0 rounded border border-transparent bg-transparent px-1 text-[12.5px] font-semibold text-gc-text outline-none [field-sizing:content] hover:border-gc-border focus:border-gc-primary"
+          className="min-w-0 rounded border border-transparent bg-transparent px-1 text-body font-semibold text-gc-text outline-none [field-sizing:content] hover:border-gc-border focus:border-gc-primary"
         />
       )}
-      <span className="rounded-[3px] bg-gc-done-tint px-1.5 py-0.5 font-mono text-[8px] tracking-[0.5px] text-gc-done-ink">
+      <span className="rounded-[3px] bg-gc-done-tint px-1.5 py-0.5 font-mono text-label tracking-[0.5px] text-gc-done-ink">
         {kindLabel}
       </span>
       <Caption className="tracking-[0.4px]">
@@ -521,7 +520,7 @@ function StageHeader({
         <span className="ml-auto flex items-center gap-1.5">
           {confirming ? (
             <>
-              <span className="text-[11px] text-gc-ink2">Delete {asset.name}?</span>
+              <span className="text-ui text-gc-ink2">Delete {asset.name}?</span>
               <ActionButton onClick={destroy} disabled={remove.isPending}>
                 Delete
               </ActionButton>
@@ -542,8 +541,8 @@ const md = {
   h1: "font-display text-[26px] font-semibold text-gc-text",
   h2: "font-display text-[22px] font-semibold text-gc-text",
   h3: "text-[14px] font-semibold text-gc-text",
-  p: "text-[12.5px] leading-[1.6] text-gc-ink2",
-  li: "text-[12.5px] leading-[1.6] text-gc-ink2",
+  p: "text-body leading-[1.6] text-gc-ink2",
+  li: "text-body leading-[1.6] text-gc-ink2",
 }
 
 /** Markdown without raw HTML (react-markdown's default), so notes cannot inject markup. */
@@ -575,13 +574,13 @@ export function MarkdownPreview({ text }: { text: string }) {
               </a>
             ),
             pre: (props) => (
-              <pre className="overflow-x-auto rounded-md border border-gc-border bg-gc-sunken p-3 font-mono text-[10.5px] leading-[1.5] text-gc-ink2">
+              <pre className="overflow-x-auto rounded-md border border-gc-border bg-gc-sunken p-3 font-mono text-label leading-[1.5] text-gc-ink2">
                 {props.children}
               </pre>
             ),
             code: (props) => <code className="font-mono text-[0.92em]">{props.children}</code>,
             blockquote: (props) => (
-              <blockquote className="border-l-2 border-gc-primary pl-[11px] font-display text-[15px] text-gc-ink2 italic">
+              <blockquote className="border-l-2 border-gc-primary pl-[11px] font-display text-title text-gc-ink2 italic">
                 {props.children}
               </blockquote>
             ),
@@ -597,7 +596,7 @@ export function MarkdownPreview({ text }: { text: string }) {
 }
 
 function Empty({ children }: { children: ReactNode }) {
-  return <li className="px-2 py-1 text-[10.5px] text-gc-ink3">{children}</li>
+  return <li className="px-2 py-1 text-label text-gc-ink3">{children}</li>
 }
 
 function IconButton({

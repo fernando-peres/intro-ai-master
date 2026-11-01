@@ -11,6 +11,7 @@ import { LocaleLabel } from "@/components/labels"
 import { ActionButton, Field, Select, TextInput } from "@/components/shell/form-controls"
 import { StepRenderer } from "@/components/trail/themed-content"
 import { PanelHeading, Placeholder } from "@/components/workspace/inspector"
+import { friendlyError } from "@/lib/errors"
 import { LOCALES } from "@/lib/locales"
 import type { ContainerKey } from "@/lib/outline"
 import {
@@ -41,7 +42,7 @@ export function TrailMetadataPanel({ flow, readOnly }: { flow: Flow; readOnly: b
   const [description, setDescription] = useState(flow.description)
   useEffect(() => setTitle(flow.title), [flow.title])
   const save = (body: Schemas["FlowUpdate"]) =>
-    update.mutate(body, { onError: (error) => toast.error(error.message) })
+    update.mutate(body, { onError: (error) => toast.error(friendlyError(error)) })
 
   return (
     <>
@@ -60,7 +61,7 @@ export function TrailMetadataPanel({ flow, readOnly }: { flow: Flow; readOnly: b
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           onBlur={() => description !== flow.description && save({ description })}
-          className="min-h-16 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-[11.5px] text-gc-text outline-none focus-visible:border-gc-primary"
+          className="min-h-16 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-ui text-gc-text outline-none focus-visible:border-gc-primary"
         />
       </Field>
       <Field label="Locale">
@@ -83,12 +84,12 @@ export function TrailMetadataPanel({ flow, readOnly }: { flow: Flow; readOnly: b
             key={revision.id}
             className="flex flex-col gap-0.5 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2"
           >
-            <span className="flex items-center justify-between font-mono text-[9px] text-gc-ink2">
+            <span className="flex items-center justify-between font-mono text-label text-gc-ink2">
               <span>{revision.revision ? `REV ${revision.revision}` : "DRAFT"}</span>
               <span className="text-gc-ink3">{revision.publishedAt ?? revision.updatedAt}</span>
             </span>
             {revision.changeComment && (
-              <span className="text-[10.5px] text-gc-ink2">{revision.changeComment}</span>
+              <span className="text-label text-gc-ink2">{revision.changeComment}</span>
             )}
           </li>
         ))}
@@ -136,7 +137,7 @@ export function TrailThemePanel({ flow, steps, readOnly, onStep }: StepsProps) {
           onChange={(event) =>
             update.mutate(
               { theme: event.target.value || null },
-              { onError: (error) => toast.error(error.message) },
+              { onError: (error) => toast.error(friendlyError(error)) },
             )
           }
           className="min-w-0 flex-1"
@@ -191,10 +192,10 @@ function ThemeOverrideRow({
   return (
     <div className="flex flex-col gap-2 rounded-[7px] border border-gc-border bg-gc-sunken p-2.5">
       <span className="flex items-center justify-between">
-        <span className="truncate text-[11px] font-semibold text-gc-text">
+        <span className="truncate text-ui font-semibold text-gc-text">
           {position}. {step.label || step.artifactTitle}
         </span>
-        <span className="font-mono text-[8px] tracking-[0.4px] text-gc-ink3 uppercase">
+        <span className="font-mono text-label tracking-[0.4px] text-gc-ink3 uppercase">
           Artifact theme · {themeLabel(own)}
         </span>
       </span>
@@ -215,7 +216,7 @@ function ThemeOverrideRow({
               disabled={readOnly}
               onClick={() => onChange(value)}
               className={cn(
-                "h-6 rounded-[5px] text-[10.5px]",
+                "h-6 rounded-[5px] text-label",
                 active ? "bg-gc-row-bg font-semibold text-gc-nav-ink" : "text-gc-ink3",
               )}
             >
@@ -229,47 +230,59 @@ function ThemeOverrideRow({
 }
 
 export function TrailPreviewPanel({
+  section,
   flow,
   step,
   position,
   readOnly,
   onStep,
+  onPlay,
   placement,
 }: {
+  section: StepSection
   flow: Flow
   step: TrailStep | undefined
   position: number
   readOnly: boolean
   onStep: (key: string, patch: Partial<TrailStep>) => void
+  onPlay: (position: number) => void
   placement?: Placement
 }) {
-  if (!step) return <Placeholder>Select a step to preview it and change its settings.</Placeholder>
+  if (!step) return <Placeholder>Select a step in the outline to see it here.</Placeholder>
   return (
     <StepSettings
       key={step.key}
+      section={section}
       flow={flow}
       step={step}
       position={position}
       readOnly={readOnly}
       onStep={onStep}
+      onPlay={onPlay}
       placement={placement}
     />
   )
 }
 
+type StepSection = "preview" | "settings"
+
 function StepSettings({
+  section,
   flow,
   step,
   position,
   readOnly,
   onStep,
+  onPlay,
   placement,
 }: {
+  section: StepSection
   flow: Flow
   step: TrailStep
   position: number
   readOnly: boolean
   onStep: (key: string, patch: Partial<TrailStep>) => void
+  onPlay: (position: number) => void
   placement?: Placement
 }) {
   const trailThemes = useTrailThemes()
@@ -287,64 +300,65 @@ function StepSettings({
   const resolved = resolveTheme(step.themeOverride, flow.theme, own)
   const set = (patch: Partial<TrailStep>) => onStep(step.key, patch)
 
-  return (
-    <>
-      <PanelHeading label="Preview" right={`Step ${position} · ${info.label}`} />
-      <div className="aspect-video w-full overflow-hidden rounded-md border border-gc-border bg-[#08080B]">
-        {version ? (
-          <StepRenderer
-            type={step.artifactType}
-            content={version.content}
-            override={step.themeOverride}
-            trailTheme={flow.theme}
+  if (section === "preview") {
+    return (
+      <>
+        <PanelHeading label="Preview" right={`Step ${position} · ${info.label}`} />
+        <div className="aspect-video w-full overflow-hidden rounded-md border border-gc-border bg-ov-stage">
+          {version ? (
+            <StepRenderer
+              type={step.artifactType}
+              content={version.content}
+              override={step.themeOverride}
+              trailTheme={flow.theme}
+            />
+          ) : (
+            <Placeholder>Loading the pinned version…</Placeholder>
+          )}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="flex min-w-0 flex-col gap-1">
+            <span className="truncate text-ui font-semibold text-gc-text">
+              {step.label || step.artifactTitle}
+            </span>
+            <span className="font-mono text-label tracking-[0.4px] text-gc-ink3 uppercase">
+              {info.label} · {formatClock(stepSeconds(step))}
+            </span>
+          </span>
+          <LocaleLabel
+            locale={step.locale}
+            version={step.versionNumber ?? null}
+            published={step.versionState === "published"}
           />
-        ) : (
-          <Placeholder>Loading the pinned version…</Placeholder>
-        )}
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="flex min-w-0 flex-col gap-1">
-          <span className="truncate text-[11.5px] font-semibold text-gc-text">
-            {step.label || step.artifactTitle}
-          </span>
-          <span className="font-mono text-[8px] tracking-[0.4px] text-gc-ink3 uppercase">
-            {info.label} · {formatClock(stepSeconds(step))}
-          </span>
-        </span>
-        <LocaleLabel
-          locale={step.locale}
-          version={step.versionNumber ?? null}
-          published={step.versionState === "published"}
-        />
-      </div>
-      <div className="flex gap-[7px]">
-        <Link
-          to="/artifacts/$artifactId"
-          params={{ artifactId: step.artifactId }}
-          search={{ v: step.artifactVersionId ?? undefined, trail: flow.id, step: position }}
-          className="flex h-[30px] flex-1 items-center justify-center gap-1.5 rounded-md border border-gc-border bg-gc-sunken text-[11px] text-gc-ink2 hover:text-gc-text"
-        >
-          <ExternalLinkIcon className="size-[11px]" />
-          Edit artifact
-        </Link>
-        {flow.latestRevisionId ? (
+        </div>
+        <div className="flex gap-[7px]">
           <Link
-            to="/play/$flowId/$revisionId/$step"
-            params={{
-              flowId: flow.id,
-              revisionId: flow.latestRevisionId,
-              step: String(position),
-            }}
+            to="/artifacts/$artifactId"
+            params={{ artifactId: step.artifactId }}
+            search={{ v: step.artifactVersionId ?? undefined, trail: flow.id, step: position }}
+            className="flex h-[30px] flex-1 items-center justify-center gap-1.5 rounded-md border border-gc-border bg-gc-sunken text-ui text-gc-ink2 hover:text-gc-text"
+          >
+            <ExternalLinkIcon className="size-[11px]" />
+            Edit artifact
+          </Link>
+          <button
+            type="button"
+            disabled={!step.artifactVersionId}
+            onClick={() => onPlay(position)}
             aria-label="Play from this step"
-            title="Play the published trail from this step"
-            className="flex size-[30px] items-center justify-center rounded-md border border-gc-border bg-gc-sunken text-gc-ink2 hover:text-gc-text"
+            title="Play the trail from this step"
+            className="flex size-[30px] items-center justify-center rounded-md border border-gc-border bg-gc-sunken text-gc-ink2 hover:text-gc-text disabled:opacity-50"
           >
             <MaximizeIcon className="size-3" />
-          </Link>
-        ) : null}
-      </div>
-      <div className="h-px bg-gc-divider" />
-      <PanelHeading label="Step settings" />
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <PanelHeading label="Step settings" right={`Step ${position} · ${info.label}`} />
       {placement && (
         <Field label="Placement">
           <Select
@@ -426,7 +440,7 @@ function StepSettings({
           disabled={readOnly}
           value={step.presenterNote ?? ""}
           onChange={(event) => set({ presenterNote: event.target.value || null })}
-          className="min-h-14 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-[11.5px] text-gc-text outline-none focus-visible:border-gc-primary"
+          className="min-h-14 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-ui text-gc-text outline-none focus-visible:border-gc-primary"
         />
       </Field>
       <Field label="Theme">
@@ -447,14 +461,14 @@ function StepSettings({
       <div className="flex h-14 items-center gap-2.5 rounded-[7px] border border-gc-border bg-gc-sunken px-[11px]">
         <Swatches theme={resolved.theme} />
         <span className="flex flex-col gap-1">
-          <span className="text-[11px] font-semibold text-gc-text">
+          <span className="text-ui font-semibold text-gc-text">
             {resolved.source === "trail"
               ? "Follows trail theme"
               : resolved.source === "step"
                 ? "Theme set on this step"
                 : "Keeps the artifact's theme"}
           </span>
-          <span className="font-mono text-[8px] tracking-[0.4px] text-gc-ink3 uppercase">
+          <span className="font-mono text-label tracking-[0.4px] text-gc-ink3 uppercase">
             {themeLabel(resolved.theme)} ·{" "}
             {resolved.source === "trail" ? "inherited" : resolved.source}
           </span>
@@ -489,7 +503,7 @@ export function TrailPublishPanel({
       setComment("")
       toast.success(`Published revision ${published.revision}`)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not publish the trail")
+      toast.error(friendlyError(error))
     }
   }
 
@@ -500,12 +514,12 @@ export function TrailPublishPanel({
         right={flow.latestRevision ? `live: rev ${flow.latestRevision}` : "never published"}
       />
       <div className="flex items-center gap-2.5 rounded-[7px] border border-gc-border bg-gc-sunken px-[11px] py-2.5">
-        <span className="flex size-8 items-center justify-center rounded-md bg-gc-nav-bg font-mono text-[13px] font-bold text-gc-nav-ink">
+        <span className="flex size-8 items-center justify-center rounded-md bg-gc-nav-bg font-mono text-body font-bold text-gc-nav-ink">
           {next}
         </span>
         <span className="flex flex-col gap-1">
-          <span className="text-[11.5px] font-semibold text-gc-text">Revision {next} · draft</span>
-          <span className="font-mono text-[8px] tracking-[0.4px] text-gc-ink3 uppercase">
+          <span className="text-ui font-semibold text-gc-text">Revision {next} · draft</span>
+          <span className="font-mono text-label tracking-[0.4px] text-gc-ink3 uppercase">
             {steps.length} steps pinned
           </span>
         </span>
@@ -523,10 +537,10 @@ export function TrailPublishPanel({
               className="flex h-9 items-center justify-between gap-2 rounded-md border border-gc-border bg-gc-sunken px-2.5"
             >
               <span className="flex min-w-0 flex-col">
-                <span className="truncate text-[11px] text-gc-text">
+                <span className="truncate text-ui text-gc-text">
                   {entry.position}. {entry.artifactTitle}
                 </span>
-                <span className="font-mono text-[8px] text-gc-ink3">
+                <span className="font-mono text-label text-gc-ink3">
                   {entry.locale} · pinned v{entry.pinnedNumber ?? "?"}
                   {entry.behind ? ` → v${entry.defaultNumber} available` : ""}
                 </span>
@@ -546,7 +560,7 @@ export function TrailPublishPanel({
                   Update
                 </ActionButton>
               ) : (
-                <span className="font-mono text-[8px] tracking-[0.5px] text-gc-pass-ink">
+                <span className="font-mono text-label tracking-[0.5px] text-gc-pass-ink">
                   LATEST
                 </span>
               )}
@@ -561,7 +575,7 @@ export function TrailPublishPanel({
           value={comment}
           onChange={(event) => setComment(event.target.value)}
           placeholder="What changed in this revision?"
-          className="min-h-14 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-[11.5px] text-gc-text outline-none focus-visible:border-gc-primary"
+          className="min-h-14 rounded-md border border-gc-border bg-gc-sunken px-2.5 py-2 text-ui text-gc-text outline-none focus-visible:border-gc-primary"
         />
       </Field>
       <ActionButton

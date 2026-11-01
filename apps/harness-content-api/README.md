@@ -19,6 +19,15 @@ uv run fastapi dev apps/harness-content-api/src/harness_content_api/main.py   # 
 curl localhost:8000/health        # → {"status":"ok","database":"ok"}
 ```
 
+For a clean sample library (three boxes, every artifact type, a pending review and a published trail), use a separate database so your working data stays untouched:
+
+```bash
+docker compose -f apps/harness-content-api/docker-compose.yml exec postgres createdb -U harness harness_demo
+export HARNESS_DATABASE_URL=postgresql+psycopg://harness:harness@localhost:5433/harness_demo
+uv run alembic -c apps/harness-content-api/alembic.ini upgrade head
+uv run python -m harness_content_api.seed --demo
+```
+
 Interactive API docs: http://localhost:8000/docs
 
 ## Dev auth
@@ -38,10 +47,12 @@ Every `/api/v1` request names a user in `X-User-Id`; unknown or missing → `401
 |---|---|
 | `GET /me`, `GET /users` | |
 | `GET/POST /locations`, `PATCH /locations/{id}`, `POST /locations/{id}/archive` | box → unit → section; a unit's parent is a box, a section's a unit |
+| `GET /locations/artifact-counts` | location id → artifacts directly in it; locations holding none are absent |
 | `GET /artifacts?query=&tag=&type=&locale=&status=&locationId=&limit=&offset=` | prefix full-text over title, tags and description; `tag` repeats (any of); `locationId` includes its subtree; items add `locationPath`, `localeVersions`, `reuseCount` |
 | `GET /tags` | tag → artifact count |
 | `POST /artifacts` | creates the artifact and its first draft (empty content comes from the registry) |
 | `POST /artifacts/import` | `{title, locationId, locale, content}`; type is `content.type`; `422` `unknown_type` / `unknown_component` / `invalid_content` with `issues: [{path, message}]` |
+| Embeds | `POST /artifacts/import`, submit and publish return 422 `invalid_embed` unless every embed pins a published version of its artifact (an archived pin is kept only if inherited from the parent version) |
 | `GET /registry` | allowlisted components per type (animation templates include their props JSON Schema) and empty content |
 | `GET/PATCH /artifacts/{id}` | `status` is derived; `defaults` maps locale → default version id; `locationId` moves it |
 | `GET /artifacts/{id}/versions?locale=` | |

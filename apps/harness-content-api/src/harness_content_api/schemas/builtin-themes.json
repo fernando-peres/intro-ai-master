@@ -112,5 +112,31 @@
     "connector": "#FFFFFF2E",
     "nodeLabel": "#F5ECE0",
     "backgroundGradient": false
+  },
+  "nova-ims-green": {
+    "background": "#0D0A06",
+    "surface": "#FFFFFF14",
+    "elevated": "#201E1A",
+    "overlay": "#080604",
+    "title": "#FFFFFF",
+    "body": "#D9D9D6",
+    "muted": "#A3A39E",
+    "inverse": "#0D0A06",
+    "accent1": "#86EFB8",
+    "accent2": "#0096FF",
+    "accent3": "#5FBF8C",
+    "accent4": "#0069B3",
+    "nodeFill": "#1F2C21",
+    "nodeStroke": "#3D664D",
+    "connector": "#FFFFFF2E",
+    "nodeLabel": "#FFFFFF",
+    "backgroundGradient": false,
+    "fonts": {
+      "title": "Borna",
+      "body": "Prompt",
+      "eyebrow": "Prompt",
+      "eyebrowWeight": 300,
+      "code": "Fira Code"
+    }
   }
 }

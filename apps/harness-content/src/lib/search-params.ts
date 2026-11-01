@@ -2,7 +2,7 @@ import type { ArtifactType } from "@/api/client"
 import type { ArtifactSearchParams } from "@/api/queries"
 
 export const PAGE_SIZE = 25
-const TYPES = ["slide", "doc", "animation"] as const
+const TYPES = ["slide", "doc", "animation", "diagram"] as const
 const STATUSES = ["has-published", "draft-only", "archived-only"] as const
 export type StatusFilter = (typeof STATUSES)[number]
 

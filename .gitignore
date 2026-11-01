@@ -224,3 +224,7 @@ __marimo__/
 node_modules/
 .import_linter_cache/
 .vite/
+
+# Licensed font: its webfont licence does not allow publishing the files.
+apps/harness-content/src/assets/fonts/borna/*.woff2
+apps/harness-content/src/assets/fonts/borna/*.pdf

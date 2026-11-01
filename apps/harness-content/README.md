@@ -10,6 +10,7 @@ pnpm install
 
 # start harness-content-api first (see its README); /api is proxied to localhost:8000
 pnpm --filter harness-content dev        # http://localhost:5173
+# API_PROXY_TARGET overrides the /api proxy target, e.g. http://localhost:8001 (set by all-apps)
 # or, inside apps/harness-content:
 pnpm dev
 ```
@@ -36,6 +37,7 @@ src/
   routes/             file-based routes; the plugin regenerates routeTree.gen.ts (committed)
   artifacts/          ArtifactPlugin contract, registry (Zod validation + migration), per-type plugins
   components/shell/   top bar (with page slots), library sidebar, create dialogs
+  components/library/ location view, inline create and rename controls, artifact thumbnails
   components/workspace/ artifact workspace: inspector panels, Resources tab, review/publish dialogs
   components/search/  artifact search table and filters
   components/trail/   trail builder: unit/pill outline, Rationale tab, library picker, inspector panels, themed step renderer
@@ -61,16 +63,22 @@ Design and settings: `/configuration` holds system themes and mode; `/artifacts-
 
 ## Artifact plugins
 
-Each artifact type registers an `ArtifactPlugin` (`src/artifacts/plugin.ts`): a Zod schema, `createEmpty`, `migrate`, an `Editor` and a `Renderer` over the same content, and optional `FormatPanel` / `InsertPanel` for the inspector. `src/artifacts/index.ts` registers them. Animation content is a registered template id plus its props (`src/artifacts/plugins/animation/templates/`); the inspector form is generated from each template's props schema, so a new template only needs props built from `field.*`, a `Scene` and a `sequence`.
+Each artifact type registers an `ArtifactPlugin` (`src/artifacts/plugin.ts`): a Zod schema, `createEmpty`, `migrate`, an `Editor` and a `Renderer` over the same content, and optional `FormatPanel` / `InsertPanel` for the inspector. `src/artifacts/index.ts` registers them. Animation content is a registered template id plus its props (`src/artifacts/plugins/animation/templates/`); the inspector form is generated from each template's props schema, so a new template only needs props built from `field.*`, a `Scene` and a `sequence`. Diagram content is a theme plus either a node graph or Mermaid source (`src/artifacts/plugins/diagram/`). Documents embed published artifacts: diagrams and animations render live at a set width, aspect and alignment; slides and documents show as chips. Slides embed diagrams and animations as an HTML overlay above the canvas (`src/components/embed/`).
 
 `pnpm export:schemas` writes the component registry and per-type JSON Schemas (built by `src/artifacts/registry/export.ts`) into harness-content-api, which validates every save, import and publish against them. The New artifact dialog's **Import JSON** mode takes bare content or a `{title, content}` envelope and lists the API's issues by path.
 
 ## Accessibility
 
 - `src/lib/contrast.test.ts` checks WCAG AA contrast from `index.css` and the slide themes: 4.5:1 for text and 3:1 for focus rings, accents and chart colours. It covers all six studio themes, the six content-theme token sets and the rendered slide themes.
+- Type scale (`@theme` in `src/index.css`, mirrored as `type-*` in the `.pen`): `text-label` 11px, `text-ui` 12px, `text-body` 13px, `text-title` 15px. Nothing in the chrome goes below 11px; artifact content sets its own sizes. Add new size tokens to `cn`'s tailwind-merge config in `src/lib/utils.ts`, or it reads them as colors.
+- Screens: authoring needs 1024px (narrower windows get a message); below 1280px the sidebar is a drawer and the inspector starts collapsed; the trail player works at any size.
 - Tokens that differ from `harness-sigmma.pen` because of this: `gc-ink3` (dark `#8a8a94`, light `#6b6b74`), light `gc-warn-chip-ink` `#3d330a`, and the dark slide accent `#8B7BE0`.
 - Primary-coloured text uses `gc-primary-ink`; `gc-primary` stays the solid button fill.
 - The workspace area tabs follow the WAI-ARIA tab pattern (←/→ to move). Every page has one `h1` and its content sits in landmarks.
+
+## Fonts
+
+Slide fonts live in `src/assets/fonts/`, declared in `fonts.css`. Borna's licence forbids publishing its files, so they are git-ignored: copy its webfont `.woff2` files into `src/assets/fonts/borna/` locally. Without them, Borna text renders in Prompt.
 
 ## Adding a route
 

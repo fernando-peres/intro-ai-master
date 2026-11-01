@@ -389,18 +389,21 @@ def behind(session: Session, user: User, flow_id: str, revision_id: str | None) 
 
 
 def playback(session: Session, user: User, flow_id: str, revision_id: str) -> dict:
-    """A published revision with each step's pinned version content."""
+    """A revision's pinned steps with content; a draft's unpinned steps are left out."""
     flow = get_flow(session, flow_id)
     revision = get_revision(session, user, flow_id, revision_id)
-    if revision.state != RevisionState.PUBLISHED:
-        raise Conflict("not_published", "Only published revisions can be played")
+    saved = steps_of(session, revision.id)
+    pinned = [step for step in saved if step.artifact_version_id is not None]
+    if not pinned:
+        raise Conflict("empty_flow", "This trail has no steps with a pinned version to play")
+    positions = {step.position: index for index, step in enumerate(pinned, start=1)}
     steps = []
-    for step in steps_of(session, revision.id):
+    for step in pinned:
         artifact = session.get(Artifact, step.artifact_id)
         steps.append(
             {
                 "id": step.id,
-                "position": step.position,
+                "position": positions[step.position],
                 "label": step.label,
                 "presenter_note": step.presenter_note,
                 "advance_seconds": step.advance_seconds,
@@ -410,11 +413,12 @@ def playback(session: Session, user: User, flow_id: str, revision_id: str) -> di
                 "version": session.get(ArtifactVersion, step.artifact_version_id),
             }
         )
+    outline = outline_of(revision, len(saved))
     return {
         "flow": flow,
         "revision": revision,
         "steps": steps,
-        "outline": outline_of(revision, len(steps)),
+        "outline": {**outline, "nodes": _renumbered(outline["nodes"], positions)},
     }
 
 
@@ -443,6 +447,98 @@ def usages(session: Session, artifact_id: str) -> list[dict]:
         entry["positions"].append(step.position)
         entry["version_ids"].append(step.artifact_version_id)
     return list(grouped.values())
+
+
+def artifact_trails(session: Session, artifact_id: str) -> list[dict]:
+    """Every flow, marked with whether the artifact is in its working copy and its revisions."""
+    found = usages(session, artifact_id)
+    trails = []
+    for flow in list_flows(session):
+        mine = [usage for usage in found if usage["flow_id"] == flow.id]
+        working = _draft(session, flow.id) or _latest_published(session, flow.id)
+        trails.append(
+            {
+                "flow_id": flow.id,
+                "flow_title": flow.title,
+                "in_draft": working is not None
+                and any(usage["revision_id"] == working.id for usage in mine),
+                "published_revisions": sorted(
+                    usage["revision"] for usage in mine if usage["revision"] is not None
+                ),
+            }
+        )
+    return trails
+
+
+def _default_version(session: Session, artifact_id: str, locale: str) -> ArtifactVersion:
+    """The default published version in `locale`, else in the first locale that has one."""
+    versions = session.scalars(
+        select(ArtifactVersion)
+        .where(ArtifactVersion.artifact_id == artifact_id, ArtifactVersion.is_default)
+        .order_by(ArtifactVersion.locale)
+    ).all()
+    if not versions:
+        raise Conflict("artifact_not_published", "Only published artifacts can join a trail")
+    return next((version for version in versions if version.locale == locale), versions[0])
+
+
+def add_artifact(session: Session, user: User, flow_id: str, artifact_id: str) -> None:
+    """Appends a step pinned to the default version; no-op when the draft already has one."""
+    draft = ensure_draft(session, user, flow_id)
+    steps = steps_of(session, draft.id)
+    if any(step.artifact_id == artifact_id for step in steps):
+        return
+    if session.get(Artifact, artifact_id) is None:
+        raise NotFound("artifact_not_found", f"Artifact {artifact_id} does not exist")
+    version = _default_version(session, artifact_id, get_flow(session, flow_id).locale)
+    position = len(steps) + 1
+    outline = outline_of(draft, len(steps))
+    draft.outline = {**outline, "nodes": [*outline["nodes"], {"kind": "step", "step": position}]}
+    session.add(
+        FlowStep(
+            id=new_id("fst"),
+            revision_id=draft.id,
+            position=position,
+            artifact_id=artifact_id,
+            locale=version.locale,
+            artifact_version_id=version.id,
+        )
+    )
+    draft.edit_revision += 1
+    audit.record(session, user, "flow.step_add", "flow", flow_id, artifactId=artifact_id)
+    session.flush()
+
+
+def _renumbered(nodes: list[dict], positions: dict[int, int]) -> list[dict]:
+    """Drops refs missing from `positions` and renumbers the rest; empty units and pills stay."""
+    kept = []
+    for node in nodes:
+        if node["kind"] != "step":
+            kept.append({**node, "children": _renumbered(node["children"], positions)})
+        elif node["step"] in positions:
+            kept.append({**node, "step": positions[node["step"]]})
+    return kept
+
+
+def remove_artifact(session: Session, user: User, flow_id: str, artifact_id: str) -> None:
+    """Removes the artifact's steps from the draft; published revisions keep theirs."""
+    draft = ensure_draft(session, user, flow_id)
+    steps = steps_of(session, draft.id)
+    kept = [step for step in steps if step.artifact_id != artifact_id]
+    if len(kept) == len(steps):
+        return
+    outline = outline_of(draft, len(steps))
+    positions = {step.position: index for index, step in enumerate(kept, start=1)}
+    draft.outline = {**outline, "nodes": _renumbered(outline["nodes"], positions)}
+    for step in steps:
+        if step.artifact_id == artifact_id:
+            session.delete(step)
+    session.flush()
+    for step in kept:
+        step.position = positions[step.position]
+    draft.edit_revision += 1
+    audit.record(session, user, "flow.step_remove", "flow", flow_id, artifactId=artifact_id)
+    session.flush()
 
 
 def reuse_count(session: Session, artifact_id: str) -> int:

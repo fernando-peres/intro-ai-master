@@ -5,14 +5,14 @@ export function Field({ label, children }: { label: string; children: ReactNode 
   return (
     // biome-ignore lint/a11y/noLabelWithoutControl: the control is passed in as children
     <label className="flex flex-col gap-1.5">
-      <span className="font-mono text-[9px] tracking-[1px] text-gc-ink3 uppercase">{label}</span>
+      <span className="font-mono text-label tracking-[0.5px] text-gc-ink3 uppercase">{label}</span>
       {children}
     </label>
   )
 }
 
 const control =
-  "h-[30px] rounded-md border border-gc-border bg-gc-sunken px-2.5 text-[11.5px] text-gc-text outline-none focus-visible:border-gc-primary"
+  "h-[30px] rounded-md border border-gc-border bg-gc-sunken px-2.5 text-ui text-gc-text outline-none focus-visible:border-gc-primary"
 
 export function TextInput({ className, ...props }: ComponentProps<"input">) {
   return <input className={cn(control, "placeholder:text-gc-ink3", className)} {...props} />
@@ -30,7 +30,7 @@ export function ActionButton({ variant = "quiet", className, ...props }: ActionP
     <button
       type="button"
       className={cn(
-        "inline-flex h-7 items-center gap-1.5 rounded-md px-[11px] text-[11px] disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:size-[11px]",
+        "inline-flex h-7 items-center gap-1.5 rounded-md px-[11px] text-ui disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:size-[11px]",
         variant === "primary"
           ? "bg-gc-primary font-semibold text-gc-on-solid hover:brightness-110"
           : "border border-gc-border bg-gc-sunken text-gc-ink2 hover:text-gc-text",

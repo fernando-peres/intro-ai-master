@@ -6,9 +6,16 @@ import { toast } from "sonner"
 import type { ArtifactType } from "@/api/client"
 import { useCreateArtifact, useImportArtifact, useLocations, useTemplates } from "@/api/queries"
 import { getPlugin } from "@/artifacts"
+import {
+  createEmptyDiagram,
+  ENGINE_LABELS,
+  ENGINES,
+  type Engine,
+} from "@/artifacts/plugins/diagram/model"
 import { ARTIFACT_TYPES } from "@/components/artifact-types"
 import { Caption } from "@/components/labels"
 import { ActionButton, Field, Select, TextInput } from "@/components/shell/form-controls"
+import { friendlyError } from "@/lib/errors"
 import { type ImportIssue, issuesOf, readImport } from "@/lib/import"
 import { locationTrail } from "@/lib/library-tree"
 import { LOCALES } from "@/lib/locales"
@@ -27,6 +34,7 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
   const [json, setJson] = useState("")
   const [issues, setIssues] = useState<ImportIssue[]>([])
   const [type, setType] = useState<ArtifactType>("slide")
+  const [engine, setEngine] = useState<Engine>("flow")
   const [title, setTitle] = useState("")
   const [locale, setLocale] = useState("en")
   const [locationId, setLocationId] = useState(initialLocationId ?? "")
@@ -58,10 +66,14 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
       const start =
         type === "slide" && templateId
           ? { templateId }
-          : { content: getPlugin(type).createEmpty() as Record<string, unknown> }
+          : {
+              content: (type === "diagram"
+                ? createEmptyDiagram(engine)
+                : getPlugin(type).createEmpty()) as Record<string, unknown>,
+            }
       open((await create.mutateAsync({ type, title, locale, locationId, ...start })).artifact.id)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create the artifact")
+      toast.error(friendlyError(error))
     }
   }
 
@@ -79,10 +91,10 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
           <form onSubmit={submit}>
             <div className="flex items-center justify-between border-b border-gc-border px-[18px] py-4">
               <div className="flex flex-col gap-[3px]">
-                <DialogPrimitive.Title className="text-[15px] font-bold text-gc-text">
+                <DialogPrimitive.Title className="text-title font-bold text-gc-text">
                   New reusable artifact
                 </DialogPrimitive.Title>
-                <DialogPrimitive.Description className="text-[11.5px] text-gc-ink3">
+                <DialogPrimitive.Description className="text-ui text-gc-ink3">
                   {trail.length
                     ? `Choose what to create in ${trail.join(" › ")}.`
                     : "Choose what to create and where it lives."}
@@ -118,7 +130,7 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
                       setIssues([])
                     }}
                     className={cn(
-                      "h-6 rounded-[5px] text-[11px]",
+                      "h-6 rounded-[5px] text-ui",
                       mode === value
                         ? "bg-gc-row-bg font-semibold text-gc-nav-ink"
                         : "text-gc-ink3 hover:text-gc-ink2",
@@ -141,49 +153,53 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
                 />
               ) : (
                 <>
-                  <Caption aria-hidden className="text-[9px]">
+                  <Caption aria-hidden className="text-label">
                     Artifact type
                   </Caption>
-                  <fieldset className="grid grid-cols-3 gap-2.5">
+                  <fieldset className="grid grid-cols-4 gap-2.5">
                     <legend className="sr-only">Artifact type</legend>
-                    {ARTIFACT_TYPES.map((entry) => {
-                      const available = entry.type !== null
-                      return (
-                        <label
-                          key={entry.label}
-                          title={available ? undefined : "Coming later"}
+                    {ARTIFACT_TYPES.map((entry) => (
+                      <label
+                        key={entry.label}
+                        className="flex cursor-pointer flex-col items-start gap-[9px] rounded-lg border border-gc-border bg-gc-sunken p-[13px] has-checked:border-gc-primary has-checked:bg-gc-row-bg has-focus-visible:ring-2 has-focus-visible:ring-gc-primary/50"
+                      >
+                        <input
+                          type="radio"
+                          name="artifact-type"
+                          value={entry.type}
+                          checked={entry.type === type}
+                          onChange={() => setType(entry.type)}
+                          className="sr-only"
+                        />
+                        <span
                           className={cn(
-                            "flex flex-col items-start gap-[9px] rounded-lg border border-gc-border bg-gc-sunken p-[13px] has-checked:border-gc-primary has-checked:bg-gc-row-bg has-focus-visible:ring-2 has-focus-visible:ring-gc-primary/50",
-                            available ? "cursor-pointer" : "cursor-not-allowed opacity-45",
+                            "flex size-7 items-center justify-center rounded-[7px]",
+                            entry.chip,
                           )}
                         >
-                          <input
-                            type="radio"
-                            name="artifact-type"
-                            value={entry.type ?? ""}
-                            checked={entry.type === type}
-                            disabled={!available}
-                            onChange={() => entry.type && setType(entry.type)}
-                            className="sr-only"
-                          />
-                          <span
-                            className={cn(
-                              "flex size-7 items-center justify-center rounded-[7px]",
-                              entry.chip,
-                            )}
-                          >
-                            <entry.icon aria-hidden className="size-3.5" />
-                          </span>
-                          <span className="text-[12.5px] font-semibold text-gc-text">
-                            {entry.label}
-                          </span>
-                          <span className="text-[10.5px] leading-[1.45] text-gc-ink3">
-                            {available ? entry.description : `${entry.description} Coming later.`}
-                          </span>
-                        </label>
-                      )
-                    })}
+                          <entry.icon aria-hidden className="size-3.5" />
+                        </span>
+                        <span className="text-body font-semibold text-gc-text">{entry.label}</span>
+                        <span className="text-label leading-[1.45] text-gc-ink3">
+                          {entry.description}
+                        </span>
+                      </label>
+                    ))}
                   </fieldset>
+                  {type === "diagram" && (
+                    <Field label="Engine">
+                      <Select
+                        value={engine}
+                        onChange={(event) => setEngine(event.target.value as Engine)}
+                      >
+                        {ENGINES.map((option) => (
+                          <option key={option} value={option}>
+                            {ENGINE_LABELS[option].label}: {ENGINE_LABELS[option].description}
+                          </option>
+                        ))}
+                      </Select>
+                    </Field>
+                  )}
                   {type === "slide" && templates.length > 0 && (
                     <Field label="Start from template">
                       <Select
@@ -241,7 +257,7 @@ export function NewArtifactDialog({ initialLocationId, onClose }: Props) {
             </div>
 
             <div className="flex items-center justify-between border-t border-gc-border bg-gc-sunken px-[18px] py-[13px]">
-              <span className="font-mono text-[9px] tracking-[0.8px] text-gc-ink3">
+              <span className="font-mono text-label tracking-[0.5px] text-gc-ink3">
                 ESC TO CANCEL
               </span>
               <div className="flex items-center gap-2">
@@ -290,8 +306,8 @@ function ImportField({ json, detected, issues, onJson, onFile }: ImportFieldProp
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <Caption className="text-[9px]">Structured JSON (content or version envelope)</Caption>
-        <label className="cursor-pointer text-[10.5px] text-gc-primary-ink hover:underline">
+        <Caption className="text-label">Structured JSON (content or version envelope)</Caption>
+        <label className="cursor-pointer text-label text-gc-primary-ink hover:underline">
           Load .json file
           <input
             type="file"
@@ -308,13 +324,13 @@ function ImportField({ json, detected, issues, onJson, onFile }: ImportFieldProp
         value={json}
         onChange={(event) => onJson(event.target.value)}
         placeholder={'{ "schemaVersion": 1, "type": "slide", "elements": [ … ] }'}
-        className="h-44 resize-none rounded-md border border-gc-border bg-gc-sunken p-2.5 font-mono text-[10.5px] leading-relaxed text-gc-text outline-none focus:border-gc-primary"
+        className="h-44 resize-none rounded-md border border-gc-border bg-gc-sunken p-2.5 font-mono text-label leading-relaxed text-gc-text outline-none focus:border-gc-primary"
       />
       {issues.length > 0 ? (
         <ul
           role="alert"
           aria-label="Import problems"
-          className="flex max-h-28 flex-col gap-1 overflow-y-auto rounded-md border border-gc-fail-base/40 bg-gc-fail-tint p-2 text-[10.5px] text-gc-fail-ink"
+          className="flex max-h-28 flex-col gap-1 overflow-y-auto rounded-md border border-gc-fail-base/40 bg-gc-fail-tint p-2 text-label text-gc-fail-ink"
         >
           {issues.map((issue) => (
             <li key={`${issue.path}:${issue.message}`}>
@@ -324,7 +340,7 @@ function ImportField({ json, detected, issues, onJson, onFile }: ImportFieldProp
           ))}
         </ul>
       ) : (
-        <p className="text-[10.5px] text-gc-ink3">
+        <p className="text-label text-gc-ink3">
           {detected
             ? `Detected a ${detected}. Components and fields are checked against the registry on import.`
             : "Paste JSON generated from the component registry (GET /api/v1/registry)."}

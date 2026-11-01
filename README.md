@@ -1,71 +1,57 @@
 # intro-ai-master
 
-Introduction to AI: a polyglot monorepo (Python, Node, React).
-
-```
-apps/                    deployable apps; may depend on packages/*
-  algo-server/           FastAPI service (Python 3.14)
-  ai-intro/              React app (Vite, pnpm)
-  harness-content/       React app: the Reusable Artifacts Studio (Vite, pnpm)
-  harness-content-api/   FastAPI + PostgreSQL service behind harness-content
-packages/                reusable libraries; never depend on apps/*
-  algo/                  Python 3.14 package
-  genai/                 Python 3.14: GPT-2 base model, prompts, OpenAI assistant
-pyproject.toml           uv workspace root (Python)
-package.json             pnpm workspace root (JS/TS) + pnpm-workspace.yaml
-```
-
-## Rules
-
-- **Dependencies point one way: `apps/*` → `packages/*`.** A package never imports or depends on an app. For Python this is enforced by the import-linter contract in `pyproject.toml` (`uv run lint-imports`).
-- Every app and package has its own `pyproject.toml` or `package.json`, its own `README.md` and its own tests. Apps may add integration tests against the packages they use.
+Introduction to AI: a polyglot monorepo (Python, React).
 
 ## Setup
 
-Requires [uv](https://docs.astral.sh/uv/), Python 3.14, Node 24+ and pnpm 11.
+Requires [uv](https://docs.astral.sh/uv/), Python 3.14, Node 24+, pnpm 11, and Docker for the databases.
 
 ```bash
-uv sync --all-packages   # Python: all workspace members into .venv
-pnpm install             # JS/TS: all workspace projects
+uv sync --all-packages
+pnpm install
 ```
 
-## Common commands
+For the AI labs and assistant in `ai-intro`, put `OPENAI_API_KEY` in the repo-root `.env`.
+
+## Run
 
 ```bash
-uv run pytest            # all Python tests
-uv run ruff check .      # Python lint
-uv run lint-imports      # packages/* never import apps/*
+uv run all-apps
+```
 
-pnpm test                # all JS/TS tests
+This opens a terminal dashboard. Press `space` to run or stop the selected service, `a` to start all and `q` to quit. Starting a service also starts what it needs.
+
+| Project | What it is | Port | Docs |
+|---|---|---|---|
+| `apps/ai-intro` | React course app | 5173 | [README](apps/ai-intro/README.md) |
+| `apps/harness-content` | React app: Reusable Artifacts Studio | 5174 | [README](apps/harness-content/README.md) |
+| `apps/algo-server` | FastAPI service behind `ai-intro` | 8000 | [README](apps/algo-server/README.md) |
+| `apps/harness-content-api` | FastAPI service behind `harness-content` | 8001 | [README](apps/harness-content-api/README.md) |
+| PostgreSQL | `harness-content-api` database | 5433 | |
+| `apps/all-apps` | The terminal dashboard | | [README](apps/all-apps/README.md) |
+| `packages/algo` | Python package | | [README](packages/algo/README.md) |
+| `packages/genai` | Python package: GPT-2, prompts, OpenAI assistant | | [README](packages/genai/README.md) |
+
+Each README covers running that project on its own. The first GPT-2 and embeddings requests download the models (about 1.1 GB in total).
+
+## Test and lint
+
+```bash
+uv run pytest -m "not slow"   # Python tests; drop the filter to include real-model tests
+uv run ruff check .
+uv run lint-imports           # packages/* never import apps/*
+
+pnpm test
 pnpm lint
+pnpm typecheck
 pnpm build
 ```
 
-## Adding a project
+## Add a project
 
-- **Python:** create `apps/<name>/` or `packages/<name>/` with a `pyproject.toml` (src layout), and add it to `[tool.uv.workspace].members` in the root `pyproject.toml`. For a new package, also add it to `root_packages` and the import-linter contract. An app depends on a package with `[tool.uv.sources] <pkg> = { workspace = true }`.
-- **JS/TS:** create the folder with a `package.json`; `pnpm-workspace.yaml` already picks up `apps/*` and `packages/*`. An app depends on a package with `"<pkg>": "workspace:*"`.
+Every project lives in `apps/<name>/` or `packages/<name>/` with its own manifest, `README.md`, `docs/` and tests. Apps may depend on packages, but packages never depend on apps.
 
-## Generative AI labs
+- **Python:** use a src layout and add the project to `[tool.uv.workspace].members` in the root `pyproject.toml`, along with the pytest, ruff and import-linter settings there. An app depends on a package with `[tool.uv.sources] <pkg> = { workspace = true }`.
+- **JS/TS:** `pnpm-workspace.yaml` already picks up the folder. An app depends on a package with `"<pkg>": "workspace:*"`.
 
-The Generative AI chapter of `ai-intro` calls real models through `algo-server`: GPT-2, run locally, and an OpenAI chat model. Put `OPENAI_API_KEY` in the repo-root `.env`, then run both:
-
-```bash
-uv run fastapi dev apps/algo-server/src/algo_server/main.py   # :8000 (first run downloads GPT-2, ~550 MB)
-pnpm --filter ai-intro dev                                    # :5173, proxies /api to :8000
-```
-
-The Embeddings lab (chapter 05) runs two more real models: GloVe 6B 300d (~480 MB) and all-MiniLM-L6-v2 (~90 MB), downloaded on first use. With GPT-2 the server holds about 1.1 GB in memory. Set `HF_HOME` to move the Hugging Face cache.
-
-## Reusable Artifacts Studio
-
-`harness-content` and `harness-content-api` together build versioned, localized docs, slides and animations, and the trails that pin them. The architecture is described in [docs/harness-content.md](docs/harness-content.md). To run them:
-
-```bash
-docker compose -f apps/harness-content-api/docker-compose.yml up -d
-uv run alembic -c apps/harness-content-api/alembic.ini upgrade head && uv run python -m harness_content_api.seed
-uv run fastapi dev apps/harness-content-api/src/harness_content_api/main.py   # :8000
-pnpm --filter harness-content dev                                             # :5173, proxies /api to :8000
-```
-
-Per-project docs: [algo-server](apps/algo-server/README.md) · [ai-intro](apps/ai-intro/README.md) · [harness-content](apps/harness-content/README.md) · [harness-content-api](apps/harness-content-api/README.md) · [algo](packages/algo/README.md) · [genai](packages/genai/README.md)
+Agent and contributor rules are in [AGENTS.MD](AGENTS.MD); design docs are in [docs/](docs/).

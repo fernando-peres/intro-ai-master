@@ -3,7 +3,7 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource/ibm-plex-mono/700.css";
-@import "@fontsource/cormorant-garamond/600.css";
+@import "./assets/fonts/fonts.css";
 
 /* BlockNote's shadcn UI ships Tailwind classes that must be generated too. */
 @source "../node_modules/@blocknote/shadcn";
@@ -290,6 +290,20 @@
 }
 
 :root {
+  /* Presentation overlays sit on a stage that is dark in every studio theme. */
+  --ov-stage: #07070a;
+  --ov-surface: #15141ddd;
+  --ov-panel: #15141df2;
+  --ov-line: #ffffff24;
+  --ov-track: #ffffff1a;
+  --ov-bar: #ffffffc4;
+  --ov-hover: #ffffff0f;
+  --ov-current: #6d5bd033;
+  --ov-text: #f0eef8;
+  --ov-ink: #d8d4ea;
+  --ov-soft: #b9b1dc;
+  --ov-muted: #9d93c9;
+  --ov-dim: #ffffffa6;
   --radius: 0.375rem;
   --background: var(--gc-page);
   --foreground: var(--gc-text);
@@ -312,6 +326,11 @@
 }
 
 @theme inline {
+  /* Type floor: nothing in the chrome renders below text-label. Artifact content sets its own. */
+  --text-label: 11px;
+  --text-ui: 12px;
+  --text-body: 13px;
+  --text-title: 15px;
   --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --font-display: "Cormorant Garamond", ui-serif, serif;
@@ -333,6 +352,19 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-ov-stage: var(--ov-stage);
+  --color-ov-surface: var(--ov-surface);
+  --color-ov-panel: var(--ov-panel);
+  --color-ov-line: var(--ov-line);
+  --color-ov-track: var(--ov-track);
+  --color-ov-bar: var(--ov-bar);
+  --color-ov-hover: var(--ov-hover);
+  --color-ov-current: var(--ov-current);
+  --color-ov-text: var(--ov-text);
+  --color-ov-ink: var(--ov-ink);
+  --color-ov-soft: var(--ov-soft);
+  --color-ov-muted: var(--ov-muted);
+  --color-ov-dim: var(--ov-dim);
   --color-gc-page: var(--gc-page);
   --color-gc-raised: var(--gc-raised);
   --color-gc-sunken: var(--gc-sunken);
@@ -393,7 +425,46 @@
   }
 }
 
+/* Unlayered on purpose: it must beat the `outline-none` utilities on form controls. */
+:where(a, button, input, select, textarea, summary, [role="tab"]):focus-visible {
+  outline: 2px solid var(--gc-primary);
+  outline-offset: 1px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--gc-ink3);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}
+
 /* Documents sit on the workspace's page card; BlockNote should not paint its own surface. */
 .bn-container .bn-editor {
   background: transparent;
+}
+
+/* Trail PDF export: one 16:9 sheet per step; docs may run onto further sheets. */
+@page {
+  size: 13.333in 7.5in;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    height: auto;
+    overflow: visible;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
 }

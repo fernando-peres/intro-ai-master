@@ -7,9 +7,11 @@ import {
   backgroundToCss,
   CANVAS,
   createElement,
+  createEmbed,
   type InsertKind,
   resolveBackground,
   resolveText,
+  SLIDE_EMBED_TYPES,
   type SlideContent,
   type TextElement,
 } from "@/artifacts/plugins/slide/model"
@@ -28,6 +30,7 @@ import {
 } from "@/artifacts/plugins/slide/ops"
 import { SlideScene } from "@/artifacts/plugins/slide/scene"
 import { useSlideTheme } from "@/artifacts/plugins/slide/themes"
+import { EmbedPickerDialog } from "@/components/embed/embed-picker"
 import { cn } from "@/lib/utils"
 
 /** MIME type for dragging palette entries onto the canvas. */
@@ -39,7 +42,6 @@ const INSERT_KEYS: Record<string, InsertKind> = {
   t: "title",
   b: "body",
   l: "bullets",
-  d: "diagram",
   i: "image",
   c: "chart",
 }
@@ -52,19 +54,29 @@ function useFitScale(margin: number) {
   useEffect(() => {
     const node = box.current
     if (!node) return
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect
+    const measure = (width: number, height: number) => {
       const next = Math.min((width - margin) / CANVAS.width, (height - margin) / CANVAS.height)
       if (next > 0) setFit(next)
-    })
+    }
+    // Measured now as well: a page that is not rendering frames may never call the observer.
+    measure(node.clientWidth, node.clientHeight)
+    const observer = new ResizeObserver(([entry]) =>
+      measure(entry.contentRect.width, entry.contentRect.height),
+    )
     observer.observe(node)
     return () => observer.disconnect()
   }, [margin])
   return { box, fit }
 }
 
-export function SlideEditorView({ content, onChange, readOnly }: EditorProps<SlideContent>) {
-  const { selected, setSelected } = useSlideEditor()
+export function SlideEditorView({
+  content,
+  onChange,
+  readOnly,
+  artifactId,
+  locale,
+}: EditorProps<SlideContent>) {
+  const { selected, setSelected, embedPickerOpen, setEmbedPickerOpen } = useSlideEditor()
   const actions = useSlideActions(content, onChange)
   const { box, fit } = useFitScale(56)
   const [zoom, setZoom] = useState<number | null>(null)
@@ -122,6 +134,11 @@ export function SlideEditorView({ content, onChange, readOnly }: EditorProps<Sli
       setSelected([])
       return
     }
+    if (!mod && !event.altKey && event.key.toLowerCase() === "d") {
+      event.preventDefault()
+      setEmbedPickerOpen(true)
+      return
+    }
     const insertKind = !mod && !event.altKey ? INSERT_KEYS[event.key.toLowerCase()] : undefined
     if (insertKind) {
       event.preventDefault()
@@ -172,7 +189,7 @@ export function SlideEditorView({ content, onChange, readOnly }: EditorProps<Sli
         <ToolButton label="Redo" onClick={actions.redo} disabled={!actions.canRedo}>
           <Redo2Icon />
         </ToolButton>
-        <span className="w-10 text-right font-mono text-[9.5px] text-gc-ink3" aria-live="polite">
+        <span className="w-10 text-right font-mono text-label text-gc-ink3" aria-live="polite">
           {Math.round(scale * 100)}%
         </span>
         <ToolButton label="Zoom out" onClick={() => zoomBy(-1)}>
@@ -239,6 +256,22 @@ export function SlideEditorView({ content, onChange, readOnly }: EditorProps<Sli
           )}
         </div>
       </div>
+      {embedPickerOpen && (
+        <EmbedPickerDialog
+          title="Embed an artifact"
+          excludeId={artifactId}
+          locale={locale}
+          types={SLIDE_EMBED_TYPES}
+          onClose={() => setEmbedPickerOpen(false)}
+          onPick={(ref) => {
+            const element = createEmbed(ref)
+            setEmbedPickerOpen(false)
+            actions.apply(addElement(content, element))
+            setSelected([element.id])
+            box.current?.focus()
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -320,7 +353,7 @@ function ToolButton({
 }
 
 /** Read-only slide scaled to its container's width (preview, flow player). */
-export function SlideRenderer({ content, presenting }: RendererProps<SlideContent>) {
+export function SlideRenderer({ content, presenting, still }: RendererProps<SlideContent>) {
   const { box, fit } = useFitScale(0)
   return (
     <div
@@ -329,7 +362,7 @@ export function SlideRenderer({ content, presenting }: RendererProps<SlideConten
       className="flex h-full w-full items-center justify-center"
       style={presenting ? { background: backgroundToCss(resolveBackground(content)) } : undefined}
     >
-      <SlideScene content={content} scale={fit} bare={presenting} />
+      <SlideScene content={content} scale={fit} bare={presenting} still={still} />
     </div>
   )
 }

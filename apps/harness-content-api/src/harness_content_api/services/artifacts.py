@@ -33,7 +33,7 @@ from harness_content_api.models import (
     VersionState,
 )
 from harness_content_api.schemas import ArtifactCreate, ArtifactUpdate, VersionUpdate
-from harness_content_api.services import audit, content, locations, templates, themes
+from harness_content_api.services import audit, content, embeds, locations, templates, themes
 from harness_content_api.timestamps import utc_now
 
 
@@ -338,6 +338,7 @@ def publish(
     if review.content_hash != content_hash(version):
         raise Conflict("approval_stale", "The draft changed after approval; submit it again")
     _check_content(session, session.get(Artifact, version.artifact_id).type.value, version.content)
+    embeds.check_version(session, version)
 
     highest = session.scalar(
         select(func.max(ArtifactVersion.version_number)).where(

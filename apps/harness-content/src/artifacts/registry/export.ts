@@ -4,6 +4,12 @@ import {
   createEmptyAnimation,
   TEMPLATES,
 } from "@/artifacts/plugins/animation/model"
+import {
+  createEmptyDiagram,
+  diagramSchema,
+  ENGINE_LABELS,
+  ENGINES,
+} from "@/artifacts/plugins/diagram/model"
 import { DOC_BLOCK_TYPES, docSchema } from "@/artifacts/plugins/doc/content"
 import { slideSchema } from "@/artifacts/plugins/slide/model"
 import { BUILTIN_TOKENS } from "@/artifacts/plugins/slide/themes"
@@ -18,7 +24,7 @@ const SLIDE_COMPONENTS = [
   ["line", "Line"],
   ["arrow", "Arrow"],
   ["image", "Image"],
-  ["diagram", "Diagram"],
+  ["embed", "Embedded diagram or animation, pinned to a published version"],
   ["chart", "Chart (line, bar, pie) with editable data"],
 ] as const
 
@@ -35,7 +41,7 @@ export type TypeEntry = {
   schemaVersion: number
   schema: string
   /** Where content names its components; the API checks these against `components`. */
-  componentField: "elements[].type" | "blocks[].type" | "template"
+  componentField: "elements[].type" | "blocks[].type" | "template" | "engine"
   emptyContent: unknown
   components: ComponentEntry[]
 }
@@ -86,6 +92,18 @@ export function buildRegistry(): { registry: Registry; schemas: Record<string, u
         props: toJson(template.props),
       })),
     },
+    diagram: {
+      schemaVersion: 1,
+      schema: "diagram.v1.json",
+      componentField: "engine",
+      emptyContent: createEmptyDiagram(),
+      components: ENGINES.map((engine) => ({
+        componentType: `diagram.${engine}`,
+        componentVersion: 1,
+        label: ENGINE_LABELS[engine].label,
+        description: ENGINE_LABELS[engine].description,
+      })),
+    },
   }
   return {
     registry: { registryVersion: REGISTRY_VERSION, types },
@@ -94,6 +112,7 @@ export function buildRegistry(): { registry: Registry; schemas: Record<string, u
       "slide.v1.json": toJson(slideSchema),
       "doc.v1.json": toJson(docSchema),
       "animation.v1.json": toJson(animationContentSchema),
+      "diagram.v1.json": toJson(diagramSchema),
     },
   }
 }

@@ -8,7 +8,7 @@
 
 **Measured (drives the copy):** BERT small, layer 0 head 4: bank → river 0.88, bank → money 0.76; the tiny 2-layer BERTs show nothing useful (≤ 0.09), which is why the spec's `bert-tiny` idea is replaced.
 
-**Spec:** `docs/specs/26-10-25-transformers.md`, section 1 and "Decisions and limits".
+**Spec:** `apps/ai-intro/docs/26-10-25-transformers.md`, section 1 and "Decisions and limits".
 
 ## Tasks
 

@@ -21,8 +21,10 @@ from harness_content_api.services import artifacts, flows
 
 
 def _prefix_query(text: str) -> str | None:
-    words = re.findall(r"\w+", text.lower())
-    return " & ".join(f"{word}:*" for word in words) or None
+    """Quoted per word, so Postgres splits it as it did the index: `v2.0` stays one token."""
+    words = [word for word in text.lower().split() if re.search(r"\w", word)]
+    quoted = (word.replace("\\", "\\\\").replace("'", "''") for word in words)
+    return " & ".join(f"'{word}':*" for word in quoted) or None
 
 
 def _subtree(session: Session, location_id: str) -> set[str]:
