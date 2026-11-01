@@ -354,3 +354,74 @@ body.toc-open #toc {
 .doc-dark-1 p { font-family: var(--font-serif); color: #d6ddd8; }
 .doc-dark-1 .dark-table { margin: 2.2em 0 0; }
 .doc-dark-1 .dark-table td { padding: 0.8em 1em 0.8em 0; }
+
+/* ---------- Unit 2 · continuous improvement ---------- */
+
+/* Slide 14: four-part framework. Quadrants around a central improvement cycle (inline SVG). */
+.framework { position: absolute; left: 94px; right: 94px; top: 262px; bottom: 56px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.framework::before, .framework::after { content: ""; position: absolute; background: #34342e; }
+.framework::before { left: 50%; top: 0; bottom: 0; width: 1px; }
+.framework::after { top: 50%; left: 0; right: 0; height: 1px; }
+.framework .quad { padding: 6px 0 0; }
+.layout-dark-1 .subtitle.is-wide { max-width: 1380px; }
+.framework .is-tr, .framework .is-br { padding-left: 230px; }
+.framework .is-bl, .framework .is-br { padding-top: 30px; }
+.framework .is-tl, .framework .is-bl { padding-right: 230px; }
+.framework h3 { margin: 0; font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; color: #fff; }
+.framework h3 span { margin-right: 12px; color: var(--mint); }
+.framework h3 small { font-family: var(--font-text); font-size: 20px; font-weight: 400; color: #9a9a9a; }
+.framework ul { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.framework li { position: relative; padding-left: 22px; font-size: 22px; line-height: 1.3; color: #e4e9e6; }
+.framework li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 8px; height: 8px; background: var(--mint); }
+.framework .tag { display: inline-block; margin: 14px 0 0; padding: 4px 14px; border: 1.5px solid var(--hand); border-radius: 999px; font-family: var(--font-hand); color: var(--hand); font-size: 20px; }
+.framework .cycle { position: absolute; left: 50%; top: 50%; width: 340px; height: 340px; transform: translate(-50%, -50%); }
+.framework .cycle svg { display: block; width: 100%; height: 100%; }
+.framework .cycle .disc { fill: #13201a; stroke: #2b4a3b; stroke-width: 2; }
+.framework .cycle .arcs path { fill: none; stroke: var(--mint); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 10 9; marker-end: url(#cyc-arrow); animation: cycle-flow 1.6s linear infinite; }
+.framework .cycle .nodes circle { fill: var(--mint); }
+.framework .cycle .nodes text { font-family: var(--font-title); font-weight: 700; font-size: 28px; fill: #0d1a12; text-anchor: middle; dominant-baseline: central; }
+.framework .cycle p { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; text-align: center; font-family: var(--font-text); font-weight: 600; font-size: 24px; line-height: 1.2; color: #fff; }
+@keyframes cycle-flow { to { stroke-dashoffset: -19; } }
+@media (prefers-reduced-motion: reduce) { .framework .cycle .arcs path { animation: none; } }
+
+/* Slide 15: four dimensions, 2×2 in the framework's quadrant order. */
+.dimensions { position: absolute; left: 94px; right: 94px; top: 214px; bottom: 70px; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; column-gap: 80px; counter-reset: dim; }
+.dimensions li { counter-increment: dim; display: grid; grid-template-columns: 72px 1fr; align-content: start; padding-top: 30px; border-top: 1px solid #34342e; }
+.dimensions li::before { content: counter(dim); grid-row: span 2; font-family: var(--font-title); font-weight: 700; font-size: 64px; line-height: 0.9; color: var(--mint); }
+.dimensions b { font-family: var(--font-title); font-weight: 700; font-size: 34px; line-height: 1.12; letter-spacing: -0.01em; }
+.dimensions p { margin: 14px 0 0; font-family: var(--font-serif); font-size: 27px; line-height: 1.4; color: #d6ddd8; }
+
+/* Slides 16–17: labelled points (label | text) and a closing key takeaway. */
+.point-list { position: absolute; left: 94px; right: 94px; top: 214px; margin: 0; padding: 0; list-style: none; }
+.point-list li { display: grid; grid-template-columns: 460px 1fr; gap: 48px; align-items: baseline; padding: 30px 0; border-top: 1px solid #34342e; }
+.point-list b { font-family: var(--font-title); font-weight: 700; font-size: 36px; line-height: 1.12; letter-spacing: -0.01em; color: var(--mint); }
+.point-list p { margin: 0; font-family: var(--font-serif); font-size: 30px; line-height: 1.38; color: #e4e9e6; }
+.point-list.is-compact { top: 214px; }
+.point-list.is-compact li { grid-template-columns: 360px 1fr; gap: 40px; padding: 13px 0; }
+.point-list.is-compact b { font-size: 28px; }
+.point-list.is-compact p { font-size: 24px; line-height: 1.35; }
+.takeaway { position: absolute; left: 94px; right: 94px; bottom: 76px; margin: 0; padding-top: 24px; border-top: 2px solid var(--mint); font-family: var(--font-title); font-weight: 700; font-size: 34px; line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; }
+.takeaway span { display: block; margin-bottom: 10px; font-family: var(--font-text); font-weight: 500; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mint); }
+.takeaway em { font-style: normal; color: var(--mint); }
+
+/* Slide 18: cost table + rationale strip. */
+.layout-dark-1 .dark-table.cost-table { top: 176px; font-size: 23px; }
+.rationale { position: absolute; left: 94px; right: 94px; bottom: 112px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
+.rationale div { padding-top: 18px; border-top: 2px solid var(--mint); }
+.rationale b { display: block; font-family: var(--font-title); font-weight: 700; font-size: 27px; line-height: 1.15; }
+.rationale p { margin: 10px 0 0; font-family: var(--font-serif); font-size: 23px; line-height: 1.38; color: #d6ddd8; }
+
+/* Slide 19: horizontal bar chart. Bar width = --v / 500 of the track. */
+.cost-chart { position: absolute; left: 94px; right: 94px; top: 250px; display: grid; gap: 14px; --label: 330px; }
+.cost-chart .row { display: grid; grid-template-columns: var(--label) 1fr; align-items: center; height: 62px; }
+.cost-chart .name { font-family: var(--font-title); font-weight: 700; font-size: 27px; line-height: 1.05; }
+.cost-chart .name small { display: block; margin-top: 4px; font-family: var(--font-text); font-weight: 400; font-size: 17px; color: #9a9a9a; }
+.cost-chart .track { position: relative; display: flex; align-items: center; gap: 14px; height: 100%; margin-right: 120px; }
+.cost-chart .track i { display: block; flex: none; height: 38px; width: calc(var(--v) / 500 * 100%); min-width: 4px; border-radius: 0 6px 6px 0; background: #3f8f68; }
+.cost-chart .track b { font-family: var(--font-text); font-weight: 600; font-size: 24px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cost-chart .is-latest .track i { background: var(--mint); }
+.cost-chart .is-latest .track b, .cost-chart .is-latest .name { color: var(--mint); }
+.cost-chart .axis { position: absolute; left: var(--label); right: 120px; top: -10px; bottom: -42px; pointer-events: none; }
+.cost-chart .axis span { position: absolute; top: 0; bottom: 0; left: calc(var(--t) / 500 * 100%); display: flex; align-items: flex-end; padding-left: 6px; border-left: 1px dashed #34342e; font-size: 16px; line-height: 1; color: #8a8a84; font-variant-numeric: tabular-nums; }
+.layout-dark-1 .source { position: absolute; left: 94px; right: 94px; bottom: 34px; margin: 0; max-width: 1240px; font-size: 16px; line-height: 1.45; color: #9a9a9a; }
+.layout-dark-1 .source i { font-style: italic; }
