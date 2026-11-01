@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Class 06 · Build &amp; Improving GenAI systems</title>
+  <link rel="stylesheet" href="../presentation/fonts/fonts.css" />
+  <link rel="stylesheet" href="deck.css" />
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+
+<!--
+  Authoring
+  - Each <section class="page"> is one step, in order.
+  - data-type="slide": 16:9 stage (1600×900) scaled to fit. Put content in <div class="stage">.
+  - data-type="doc":   a document step with vertical scroll. Put content in <article class="doc">.
+  - Wrap pages in <div class="unit" data-title="…"> to group them under a unit.
+  - Three.js diagram: <div class="diagram" data-module="diagrams/name.js"></div>.
+-->
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="pixels" viewBox="0 0 220 540">
+    <rect x="0" y="56" width="27.4" height="21.8"/>
+    <rect x="27" y="77.3" width="85.8" height="43.2"/>
+    <rect x="112.4" y="120.1" width="43.1" height="43.1"/>
+    <rect x="0" y="141.4" width="70.1" height="43.2"/>
+    <rect x="155.1" y="162.8" width="43.1" height="64.5"/>
+    <rect x="69.7" y="184.1" width="43.1" height="43.2"/>
+    <rect x="112.4" y="226.8" width="85.8" height="21.8"/>
+    <rect x="112.4" y="248.2" width="43.1" height="43.1"/>
+    <rect x="197.8" y="248.2" width="21.8" height="43.1"/>
+    <rect x="112.4" y="290.9" width="85.8" height="21.8"/>
+    <rect x="69.7" y="312.2" width="43.1" height="43.2"/>
+    <rect x="155.1" y="312.2" width="43.1" height="64.4"/>
+    <rect x="0" y="354.9" width="70.1" height="43.1"/>
+    <rect x="112.4" y="376.2" width="43.1" height="43.2"/>
+    <rect x="27" y="419" width="85.8" height="43.1"/>
+    <rect x="0" y="461.7" width="27.4" height="21.8"/>
+  </symbol>
+</svg>
+
+<main id="deck">
+
+  <!-- ============ COVER ============ -->
+  <section class="page" data-type="slide" data-title="Cover">
+    <div class="stage is-green cover">
+      <svg class="pixels" viewBox="0 0 960 540" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+        <rect x="0" y="56" width="27.4" height="21.8"/>
+        <rect x="27" y="77.3" width="85.8" height="43.2"/>
+        <rect x="112.4" y="120.1" width="43.1" height="43.1"/>
+        <rect x="0" y="141.4" width="70.1" height="43.2"/>
+        <rect x="155.1" y="162.8" width="43.1" height="64.5"/>
+        <rect x="69.7" y="184.1" width="43.1" height="43.2"/>
+        <rect x="112.4" y="226.8" width="85.8" height="21.8"/>
+        <rect x="112.4" y="248.2" width="43.1" height="43.1"/>
+        <rect x="197.8" y="248.2" width="21.8" height="43.1"/>
+        <rect x="112.4" y="290.9" width="85.8" height="21.8"/>
+        <rect x="69.7" y="312.2" width="43.1" height="43.2"/>
+        <rect x="155.1" y="312.2" width="43.1" height="64.4"/>
+        <rect x="0" y="354.9" width="70.1" height="43.1"/>
+        <rect x="112.4" y="376.2" width="43.1" height="43.2"/>
+        <rect x="27" y="419" width="85.8" height="43.1"/>
+        <rect x="0" y="461.7" width="27.4" height="21.8"/>
+      </svg>
+
+      <div class="content">
+        <span class="badge">Class 6 - <b>02 November 2026</b></span>
+        <h1>Build &amp; Improving<br />GenAI systems</h1>
+        <p class="course">Introduction to AI and Machine Learning</p>
+        <p class="program">Executive Master in Artificial Intelligence for Business</p>
+        <p class="authors">Roberto Henriques · Fernando Peres</p>
+      </div>
+
+      <img class="logo" src="../presentation/nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+    </div>
+  </section>
+
+  <!-- ============ INTRO ============ -->
+  <section class="page" data-type="slide" data-title="Today: from a model to a system">
+    <div class="stage">
+      <div class="layout-content">
+        <header>
+          <span class="unit-label">Class 6 · Today</span>
+          <h1>From a model to a system</h1>
+          <p class="lede">A model turns text into text. A system can find what it needs, act on real data, follow your rules, and show that it works.</p>
+        </header>
+        <div class="body">
+          <div class="grid grid-3">
+            <div class="card compact"><span class="tag">Build · 01</span><h3>Embeddings</h3><p>Meaning as numbers, so a system can find what you mean.</p></div>
+            <div class="card compact"><span class="tag">Build · 02</span><h3>Tools</h3><p>From answers to actions: fresh data, exact maths, your systems.</p></div>
+            <div class="card compact"><span class="tag">Build · 03</span><h3>MCP</h3><p>One standard to plug models into many systems.</p></div>
+            <div class="card compact"><span class="tag">Build · 04</span><h3>Skills</h3><p>Your team's procedures, loaded only when needed.</p></div>
+            <div class="card compact is-ink"><span class="tag">Improve · 05</span><h3>Evals</h3><p>Measure quality, so "better" is a number, not an impression.</p></div>
+            <div class="card compact is-ink"><span class="tag">Improve · 06</span><h3>Guardrails</h3><p>Code that enforces what must never happen.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-type="slide" data-title="Six parts around one model">
+    <div class="stage">
+      <div class="layout-content">
+        <div class="split split-wide" style="height:100%">
+          <div class="diagram" data-module="diagrams/system-map.js" style="height:740px"></div>
+          <div>
+            <span class="unit-label">The map for today</span>
+            <h1 style="font-size:58px">Six parts around one model</h1>
+            <p class="lede" style="font-size:28px">The <b style="color:var(--green-deep)">green</b> parts build what the system can know and do. The <b>white</b> parts improve it: how you know it works, and what it must never do.</p>
+            <p class="note">The model in the centre stays the same all day. Everything we add sits around it, in your code.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-type="slide" data-title="Reach, not intelligence">
+    <div class="stage is-dark">
+      <div class="layout-statement">
+        <span class="unit-label">One idea to keep</span>
+        <p class="statement" style="margin-top:28px">Connecting a model to tools does not make it smarter. It <em>changes its reach</em>, and with it, what can go wrong.</p>
+        <p class="statement-source">Same weights, new abilities, new risks. That is why the second half of today is about improving and protecting the system.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-type="slide" data-title="Materials for today">
+    <div class="stage">
+      <div class="layout-content">
+        <header>
+          <span class="unit-label">Hands-on</span>
+          <h1>Every unit has a notebook</h1>
+          <p class="lede">The slides give the idea. The notebooks run it on a real model, without and then with each technique.</p>
+        </header>
+        <div class="body">
+          <table class="table is-compact">
+            <thead><tr><th>Unit</th><th>Notebooks in <code>notebooks/</code></th><th>What you'll see</th></tr></thead>
+            <tbody>
+              <tr><td>01 Embeddings</td><td class="mono">embeddings_01</td><td>Sentences become vectors; similar ones cluster</td></tr>
+              <tr><td>02 Tools</td><td class="mono">llm_tools_01</td><td>Five questions, asked without and with tools</td></tr>
+              <tr><td>03 MCP</td><td class="mono">mcp_01</td><td>A real model connected to real MCP servers</td></tr>
+              <tr><td>04 Skills</td><td class="mono">llm_skills_01</td><td>The same tools, with and without company procedures</td></tr>
+              <tr><td>05 Evals</td><td class="mono">evals_01 … evals_04</td><td>LLM judges, their biases, retry loops, a full experiment</td></tr>
+              <tr><td>06 Guardrails</td><td class="mono">guardrails_01 … guardrails_04</td><td>Input, execution and output checks, with scorecards</td></tr>
+            </tbody>
+          </table>
+          <p class="note">Evals and guardrails use <b>Harbor Cycles</b>, a bike shop support assistant. Its customers, orders and policies are fake data.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ UNIT 1 · EMBEDDINGS ============ -->
+  <div class="unit" data-title="01 · Embeddings">
+    <section class="page" data-type="slide" data-title="Unit 1 · Meaning as numbers">
+      <div class="stage is-green">
+        <svg class="pixels-right" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="layout-unit">
+          <span class="unit-number">01</span>
+          <h1>Meaning as numbers</h1>
+          <p class="subtitle">Embeddings let a system find what you mean, not only the words you typed.</p>
+          <div class="covers"><span>Embeddings</span><span>Similarity</span><span>Semantic search &amp; RAG</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="What an embedding is">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 1 · Embeddings</span>
+            <h1>An embedding is a list of numbers that captures meaning</h1>
+          </header>
+          <div class="body">
+            <div class="flow">
+              <div class="node"><b>Text</b><span>“The cat is sleeping on the couch.”</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-model"><b>Embedding model</b><span>e.g. all-MiniLM-L6-v2</span></div>
+              <div class="arrow">→</div>
+              <div class="node"><b>384 numbers</b><span class="mono">[0.02, −0.05, 0.06, …]</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>A point in space</b><span>its position encodes meaning</span></div>
+            </div>
+            <div class="key-idea"><span><b>Similar meaning, nearby points.</b> Distance between vectors becomes a measure of how related two texts are, even when they share no words.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Similar sentences sit close together">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 1 · Embeddings</span>
+            <h1>Similar sentences sit close together</h1>
+          </header>
+          <div class="body">
+            <div class="diagram" data-module="diagrams/embedding-space.js" style="height:600px"></div>
+            <p class="note">Positions are illustrative: real embeddings have hundreds of dimensions. The notebook computes them and projects them to 2D with PCA.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="What embeddings enable">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 1 · Embeddings</span>
+            <h1>Closeness is useful</h1>
+            <p class="lede">Similarity is usually measured with cosine similarity: near 1 means the same direction, near 0 means unrelated.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-4">
+              <div class="card compact"><h3>Semantic search</h3><p>“refund for a broken bike” finds “return policy for damaged items”.</p></div>
+              <div class="card compact"><h3>Retrieval for RAG</h3><p>Embed the question, fetch the closest passages, give them to the model as context.</p></div>
+              <div class="card compact"><h3>Clustering</h3><p>Group tickets, reviews or documents by topic without labels.</p></div>
+              <div class="card compact"><h3>Deduplication &amp; recommendations</h3><p>Find near-duplicates, or items similar to what a user liked.</p></div>
+            </div>
+            <div class="key-idea"><span><b>Similar is not the same as true.</b> Embeddings find related text. Whether that text answers the question is for the model, and your evals, to decide.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="doc" data-title="Hands-on · embeddings_01">
+      <article class="doc">
+        <span class="kicker">Unit 1 · Hands-on</span>
+        <h1>Embeddings in a few lines</h1>
+        <p class="lead">Notebook <code>notebooks/embeddings_01.ipynb</code> turns five sentences into vectors, compares them, and plots them.</p>
+        <div class="meta"><span>Python</span><span>sentence-transformers</span><span>runs locally, no API key</span></div>
+
+        <h2>1. Load a model and encode sentences</h2>
+        <p>The model <code>all-MiniLM-L6-v2</code> is small and runs on a laptop. Each sentence becomes a vector of 384 numbers.</p>
+<pre><code>from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+sentences = [
+    "The cat is sleeping on the couch.",
+    "A dog is lying on the couch.",
+    "The car is red.",
+    "I love programming with Python.",
+    "The sofa is comfortable.",
+]
+embeddings = model.encode(sentences)   # shape: (5, 384)</code></pre>
+
+        <h2>2. Compare every pair</h2>
+        <p>Cosine similarity compares the direction of two vectors. The notebook prints it for every pair of sentences.</p>
+<pre><code>from scipy.spatial.distance import cosine
+
+sim = 1 - cosine(embeddings[0], embeddings[1])   # cat/couch vs dog/couch</code></pre>
+        <div class="callout"><p><b>What to look for:</b> the two couch sentences score high with each other, and the sofa sentence is closer to them than to the car or to Python. No words need to match: “couch” and “sofa” are different words with close meanings.</p></div>
+
+        <h2>3. Plot the meaning space</h2>
+        <p>384 dimensions can't be drawn, so the notebook reduces them to 2 with PCA (and t-SNE as an alternative). Related sentences cluster; unrelated ones are far apart.</p>
+
+        <div class="try">
+          <ol>
+            <li>Add a sentence of your own, such as <code>"The kitten naps on the armchair."</code> Predict where it lands, then run the cells.</li>
+            <li>Add a sentence in Portuguese. Does this model place it near its English equivalent? (This model is trained mostly on English; multilingual models exist.)</li>
+            <li>Add two sentences with the same words in a different order and opposite meaning. How close are they?</li>
+          </ol>
+        </div>
+
+        <h2>For a business system</h2>
+        <table>
+          <tr><th>Decision</th><th>Why it matters</th></tr>
+          <tr><td>Which embedding model</td><td>Language, domain vocabulary, cost and whether it can run on your own servers.</td></tr>
+          <tr><td>How to split documents</td><td>Too large and a passage mixes topics; too small and it loses context.</td></tr>
+          <tr><td>Where the vectors live</td><td>A vector database or an index in your existing database. Documents may be sensitive.</td></tr>
+          <tr><td>How to know retrieval works</td><td>Measure it: for known questions, is the right passage among the top results? (Unit 5.)</td></tr>
+        </table>
+      </article>
+    </section>
+  </div>
+
+  <!-- ============ UNIT 2 · TOOLS ============ -->
+  <div class="unit" data-title="02 · Tools">
+    <section class="page" data-type="slide" data-title="Unit 2 · From answers to actions">
+      <div class="stage is-green">
+        <svg class="pixels-right" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="layout-unit">
+          <span class="unit-number">02</span>
+          <h1>Tools: from answers to actions</h1>
+          <p class="subtitle">The model decides what to call. Your code decides whether and how it runs.</p>
+          <div class="covers"><span>Why models need tools</span><span>The tool loop</span><span>Five examples</span><span>When not to use a tool</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Four gaps of a frozen model">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 2 · Tools</span>
+            <h1>A trained model has four gaps</h1>
+            <p class="lede">It is a frozen set of weights that predicts the next token. Tools fill what that design leaves out.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-4">
+              <div class="card"><span class="tag">Gap</span><h3>Fresh information</h3><p>Training stopped at a cutoff date.</p><p style="margin-top:14px"><span class="chip">Weather API, web search</span></p></div>
+              <div class="card"><span class="tag">Gap</span><h3>Reliable computation</h3><p>It predicts digits instead of calculating them.</p><p style="margin-top:14px"><span class="chip">Calculator, code</span></p></div>
+              <div class="card"><span class="tag">Gap</span><h3>Private data</h3><p>Your data was never in its training set.</p><p style="margin-top:14px"><span class="chip">Database, internal API</span></p></div>
+              <div class="card"><span class="tag">Gap</span><h3>The ability to act</h3><p>Text alone changes nothing in the world.</p><p style="margin-top:14px"><span class="chip">Create ticket, send email</span></p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="The tool loop">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 2 · Tools</span>
+            <h1>The tool loop</h1>
+            <p class="lede">A tool is a function in your program, described to the model by a name, a purpose and its arguments.</p>
+          </header>
+          <div class="body">
+            <div class="flow">
+              <div class="node"><b>1 · Your code</b><span>sends the question and the tool descriptions</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-model"><b>2 · Model</b><span>replies with a request:<br /><span class="mono">get_temperature(city="Lisbon")</span></span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>3 · Your code</b><span>runs the function and sends back the result: <span class="mono">19.4 °C</span></span></div>
+              <div class="arrow">→</div>
+              <div class="node is-model"><b>4 · Model</b><span>answers in text:<br />“It is 19.4 °C in Lisbon.”</span></div>
+            </div>
+            <p class="note" style="text-align:center">Steps 2–3 repeat until the model replies with text instead of a tool call. Agent frameworks add features around this loop; the core is these few lines.</p>
+            <div class="key-idea"><span><b>The model never runs anything.</b> A tool call is structured output. Your code executes it, so control lives in that gap.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Descriptions are prompts">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 2 · Tools</span>
+            <h1>The model only reads the description</h1>
+          </header>
+          <div class="body">
+            <div class="split">
+<pre class="code"><span class="c"># What the model sees: never the Python code</span>
+{
+  <span class="k">"name"</span>: <span class="s">"get_temperature"</span>,
+  <span class="k">"description"</span>: <span class="s">"Current air temperature
+     in °C for a city. Use for questions
+     about today's weather."</span>,
+  <span class="k">"parameters"</span>: {
+    <span class="k">"city"</span>: { <span class="k">"type"</span>: <span class="s">"string"</span> }
+  }
+}</pre>
+              <ol class="points">
+                <li><span><b>Choice comes from text.</b> The model picks a tool and fills its arguments from the name and description alone.</span></li>
+                <li><span><b>Nothing maps the question to the function.</b> The model extracted <span class="mono">city="Lisbon"</span> itself.</span></li>
+                <li><span><b>Write descriptions with care.</b> They guide the model; they don't guarantee what it does.</span></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Five examples, one loop">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 2 · Tools · notebook llm_tools_01</span>
+            <h1>Five examples, one loop</h1>
+          </header>
+          <div class="body">
+            <div class="grid grid-3">
+              <div class="card compact"><span class="tag">Fresh information</span><h3>1 · Temperature</h3><p>Without the tool it can only guess a typical figure. With it, it calls the weather API.</p></div>
+              <div class="card compact"><span class="tag">Chained</span><h3>2 · Temperature + activities</h3><p>The first result becomes the second tool's input. The model plans the order.</p></div>
+              <div class="card compact"><span class="tag">Open-ended</span><h3>3 · Search</h3><p>The model writes its own query. The answer is grounded, not remembered.</p></div>
+              <div class="card compact"><span class="tag">Computation</span><h3>4 · Calculator</h3><p>Exact arithmetic instead of predicted digits, checked against the formula.</p></div>
+              <div class="card compact"><span class="tag">Private data · action</span><h3>5 · Your systems</h3><p>Look up data no model was trained on, and change something in the world.</p></div>
+              <div class="card compact is-ink"><span class="tag">Restraint</span><h3>When not to use a tool</h3><p>General knowledge needs no call. Every call costs time and tokens.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="doc" data-title="Hands-on · llm_tools_01">
+      <article class="doc">
+        <span class="kicker">Unit 2 · Hands-on</span>
+        <h1>How LLMs use tools</h1>
+        <p class="lead">Notebook <code>notebooks/llm_tools_01.ipynb</code> asks the same question twice: once to a model on its own, once to a model with tools.</p>
+        <div class="meta"><span>OPENAI_API_KEY</span><span>TAVILY_API_KEY for example 2</span><span>~70 cells</span></div>
+
+        <h2>The whole mechanism</h2>
+        <p>The loop below is all there is. The model returns either text or a request to call a tool; your code runs the tool and sends the result back.</p>
+<pre><code>messages = [{"role": "user", "content": question}]
+while True:
+    reply = model(messages, tools=TOOL_DESCRIPTIONS)
+    if not reply.tool_calls:
+        return reply.text                      # done: an answer in text
+    for call in reply.tool_calls:
+        result = TOOLS[call.name](**call.arguments)   # your code runs it
+        messages.append(tool_result(call.id, result))</code></pre>
+
+        <h2>The five examples</h2>
+        <h3>1. Temperature: fresh information</h3>
+        <div class="result">
+          <div><b>Without tool</b><p>The model can't know today's value. It declines, or offers a typical figure for the season.</p></div>
+          <div class="is-good"><b>With tool</b><p>It calls <code>get_temperature</code> with <code>city="Lisbon"</code>. Our code calls Open-Meteo; the model only turns the JSON into a sentence.</p></div>
+        </div>
+        <h3>2. Temperature + activities: chained tools</h3>
+        <p>The second tool needs the first tool's result. Our code never connects them: the model passes <code>temperature_c</code> from one call to the next because the description says it needs it.</p>
+        <h3>3. Search: open-ended</h3>
+        <p>Asked about an event after its training cutoff, a model without tools may even insist it hasn't happened yet: its sense of “now” is frozen. With search it writes its own query and answers from the article. The answer is only as good as the source.</p>
+        <h3>4. Calculator: reliable computation</h3>
+        <p>The tool computes; the model only sets up the call. The notebook checks the result against the formula. Note that <code>calculate</code> does not use <code>eval</code>: arguments come from the model and are untrusted.</p>
+        <h3>5. Private data and actions</h3>
+        <p>The model looks up an order that exists only in our (fake) data, and can take an action. This is where permission checks matter most.</p>
+
+        <div class="try">
+          <ol>
+            <li>Run Example 1 for your own city. Read the trace: which arguments did the model choose?</li>
+            <li>Rewrite a tool description to be vague. Does the model still call it, or call it correctly?</li>
+            <li>Ask a question none of the tools covers. Does the model call a tool anyway?</li>
+          </ol>
+        </div>
+
+        <h2>Takeaways</h2>
+        <ol>
+          <li><b>The model requests, your code executes.</b> A tool call is structured output, not execution.</li>
+          <li><b>The loop is small.</b> Send the question and tools, run what is asked, send results back, repeat.</li>
+          <li><b>Descriptions are prompts.</b> The model chooses tools from their names and descriptions.</li>
+          <li><b>Tool arguments are untrusted input.</b> Validate them as you would any external request.</li>
+          <li><b>Tool results are untrusted too.</b> A web page could contain text that tries to instruct the model.</li>
+          <li><b>Separate reads from writes.</b> For tools that change state, add permission checks or human confirmation in code, not only in the description.</li>
+        </ol>
+      </article>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Tools · takeaways">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 2 · Takeaways</span>
+            <h1>Tools give reach. Code keeps control.</h1>
+          </header>
+          <div class="body">
+            <ol class="points cols-2">
+              <li><span><b>The model requests, your code executes.</b></span></li>
+              <li><span><b>The loop is small:</b> ask, run, return, repeat.</span></li>
+              <li><span><b>Descriptions are prompts.</b> Write them with care.</span></li>
+              <li><span><b>Arguments are untrusted input.</b> Validate them.</span></li>
+              <li><span><b>Results are untrusted too.</b> They can carry instructions.</span></li>
+              <li><span><b>Separate reads from writes.</b> Check permissions in code.</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ UNIT 3 · MCP ============ -->
+  <div class="unit" data-title="03 · MCP">
+    <section class="page" data-type="slide" data-title="Unit 3 · One plug, many systems">
+      <div class="stage is-green">
+        <svg class="pixels-right" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="layout-unit">
+          <span class="unit-number">03</span>
+          <h1>MCP: one plug, many systems</h1>
+          <p class="subtitle">The Model Context Protocol standardises where tools come from and who runs them.</p>
+          <div class="covers"><span>N × M → N + M</span><span>Host, client, server</span><span>Discovery</span><span>Least privilege</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="From N × M to N + M">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 3 · MCP</span>
+            <h1>From N × M integrations to N + M</h1>
+            <p class="lede">An open standard introduced by Anthropic in 2024, often called “USB-C for AI”.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-2" style="gap:56px">
+              <div><p class="muted" style="font-size:24px;margin:0 0 8px"><b style="color:var(--ink)">Without a standard</b> · every app builds every connector: 4 × 5 = <b style="color:var(--ink)">20</b></p><svg class="nm" viewBox="0 0 560 400" width="100%"><style>.nm text{font:500 17px Prompt,sans-serif;text-anchor:middle;fill:#222}.nm .a rect{fill:#fff;stroke:#c9d1c9;stroke-width:2}.nm .s rect{fill:#e3f3e7;stroke:#3ba755;stroke-width:2}.nm .h rect{fill:#222}.nm .h text{fill:#fff;font-family:Borna,Prompt;font-weight:700}.nm line{stroke:#8a948a;stroke-width:1.6}</style><line x1="132" y1="80.0" x2="428" y2="72.0"/><line x1="132" y1="80.0" x2="428" y2="136.0"/><line x1="132" y1="80.0" x2="428" y2="200.0"/><line x1="132" y1="80.0" x2="428" y2="264.0"/><line x1="132" y1="80.0" x2="428" y2="328.0"/><line x1="132" y1="160.0" x2="428" y2="72.0"/><line x1="132" y1="160.0" x2="428" y2="136.0"/><line x1="132" y1="160.0" x2="428" y2="200.0"/><line x1="132" y1="160.0" x2="428" y2="264.0"/><line x1="132" y1="160.0" x2="428" y2="328.0"/><line x1="132" y1="240.0" x2="428" y2="72.0"/><line x1="132" y1="240.0" x2="428" y2="136.0"/><line x1="132" y1="240.0" x2="428" y2="200.0"/><line x1="132" y1="240.0" x2="428" y2="264.0"/><line x1="132" y1="240.0" x2="428" y2="328.0"/><line x1="132" y1="320.0" x2="428" y2="72.0"/><line x1="132" y1="320.0" x2="428" y2="136.0"/><line x1="132" y1="320.0" x2="428" y2="200.0"/><line x1="132" y1="320.0" x2="428" y2="264.0"/><line x1="132" y1="320.0" x2="428" y2="328.0"/><g class="a"><rect x="8" y="58.0" width="124" height="44" rx="10"/><text x="70" y="87.0">App A</text></g><g class="a"><rect x="8" y="138.0" width="124" height="44" rx="10"/><text x="70" y="167.0">App B</text></g><g class="a"><rect x="8" y="218.0" width="124" height="44" rx="10"/><text x="70" y="247.0">App C</text></g><g class="a"><rect x="8" y="298.0" width="124" height="44" rx="10"/><text x="70" y="327.0">App D</text></g><g class="s"><rect x="428" y="50.0" width="124" height="44" rx="10"/><text x="490" y="79.0">CRM</text></g><g class="s"><rect x="428" y="114.0" width="124" height="44" rx="10"/><text x="490" y="143.0">Files</text></g><g class="s"><rect x="428" y="178.0" width="124" height="44" rx="10"/><text x="490" y="207.0">Email</text></g><g class="s"><rect x="428" y="242.0" width="124" height="44" rx="10"/><text x="490" y="271.0">Database</text></g><g class="s"><rect x="428" y="306.0" width="124" height="44" rx="10"/><text x="490" y="335.0">Web</text></g></svg></div>
+              <div><p class="muted" style="font-size:24px;margin:0 0 8px"><b style="color:var(--ink)">With MCP</b> · each app has one client, each system one server: 4 + 5 = <b style="color:var(--ink)">9</b></p><svg class="nm" viewBox="0 0 560 400" width="100%"><style>.nm text{font:500 17px Prompt,sans-serif;text-anchor:middle;fill:#222}.nm .a rect{fill:#fff;stroke:#c9d1c9;stroke-width:2}.nm .s rect{fill:#e3f3e7;stroke:#3ba755;stroke-width:2}.nm .h rect{fill:#222}.nm .h text{fill:#fff;font-family:Borna,Prompt;font-weight:700}.nm line{stroke:#8a948a;stroke-width:1.6}</style><line x1="132" y1="80.0" x2="280" y2="200"/><line x1="132" y1="160.0" x2="280" y2="200"/><line x1="132" y1="240.0" x2="280" y2="200"/><line x1="132" y1="320.0" x2="280" y2="200"/><line x1="280" y1="200" x2="428" y2="72.0"/><line x1="280" y1="200" x2="428" y2="136.0"/><line x1="280" y1="200" x2="428" y2="200.0"/><line x1="280" y1="200" x2="428" y2="264.0"/><line x1="280" y1="200" x2="428" y2="328.0"/><g class="a"><rect x="8" y="58.0" width="124" height="44" rx="10"/><text x="70" y="87.0">App A</text></g><g class="a"><rect x="8" y="138.0" width="124" height="44" rx="10"/><text x="70" y="167.0">App B</text></g><g class="a"><rect x="8" y="218.0" width="124" height="44" rx="10"/><text x="70" y="247.0">App C</text></g><g class="a"><rect x="8" y="298.0" width="124" height="44" rx="10"/><text x="70" y="327.0">App D</text></g><g class="s"><rect x="428" y="50.0" width="124" height="44" rx="10"/><text x="490" y="79.0">CRM</text></g><g class="s"><rect x="428" y="114.0" width="124" height="44" rx="10"/><text x="490" y="143.0">Files</text></g><g class="s"><rect x="428" y="178.0" width="124" height="44" rx="10"/><text x="490" y="207.0">Email</text></g><g class="s"><rect x="428" y="242.0" width="124" height="44" rx="10"/><text x="490" y="271.0">Database</text></g><g class="s"><rect x="428" y="306.0" width="124" height="44" rx="10"/><text x="490" y="335.0">Web</text></g><g class="h"><rect x="232" y="174" width="96" height="52" rx="12"/><text x="280" y="207">MCP</text></g></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="The moving parts">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 3 · MCP</span>
+            <h1>The moving parts</h1>
+          </header>
+          <div class="body">
+            <div class="split" style="align-items:start">
+              <table class="table is-compact">
+                <thead><tr><th>Role</th><th>What it is</th></tr></thead>
+                <tbody>
+                  <tr><td>Host</td><td>The application the user works in: a chat app, an IDE, a notebook</td></tr>
+                  <tr><td>Client</td><td>Holds one connection to one server, inside the host</td></tr>
+                  <tr><td>Server</td><td>A program exposing capabilities: fetch a URL, read files, query a CRM</td></tr>
+                </tbody>
+              </table>
+              <table class="table is-compact">
+                <thead><tr><th>A server offers</th><th>Who decides to use it</th></tr></thead>
+                <tbody>
+                  <tr><td>Tools</td><td>The model · <span class="mono">fetch(url)</span></td></tr>
+                  <tr><td>Resources</td><td>The application · a file or a schema to attach as context</td></tr>
+                  <tr><td>Prompts</td><td>The user · a reusable template, like a slash command</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="key-idea"><span><b>MCP does not replace function calling.</b> The model still uses ordinary tool calls. MCP standardises where the functions come from, and the host still runs them.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="When to use MCP">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 3 · MCP</span>
+            <h1>When to use it, and when not to</h1>
+          </header>
+          <div class="body">
+            <div class="grid grid-2">
+              <div class="card"><span class="tag">Use MCP when</span>
+                <ol class="points" style="margin-top:18px">
+                  <li><span>Several apps or agents need the same integration</span></li>
+                  <li><span>You want existing servers instead of writing connectors</span></li>
+                  <li><span>Tools should be discoverable at runtime</span></li>
+                </ol>
+              </div>
+              <div class="card is-muted"><span class="tag" style="color:#6b756b">Skip it when</span>
+                <ol class="points" style="margin-top:18px">
+                  <li><span>One script needs one function: plain function calling is simpler</span></li>
+                  <li><span>A fixed API call is enough and no model has to choose</span></li>
+                  <li><span>Each extra tool schema adds cost you can't justify</span></li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Before you connect a server">
+      <div class="stage is-dark">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 3 · Takeaways</span>
+            <h1>Before you connect a new server</h1>
+            <p class="lede">It runs with your permissions, and the model will read whatever it returns.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-4">
+              <div class="card is-ink"><span class="big-number">1</span><h3>Trust</h3><p>Do you trust who wrote it?</p></div>
+              <div class="card is-ink"><span class="big-number">2</span><h3>Discover</h3><p>List its tools, resources and prompts. Don't trust the README.</p></div>
+              <div class="card is-ink"><span class="big-number">3</span><h3>Restrict</h3><p>Offer the model only the tools it needs. Scope folders and accounts.</p></div>
+              <div class="card is-ink"><span class="big-number">4</span><h3>Test</h3><p>Try it with the MCP Inspector before a model uses it.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="doc" data-title="Hands-on · mcp_01">
+      <article class="doc">
+        <span class="kicker">Unit 3 · Hands-on</span>
+        <h1>Giving a model hands</h1>
+        <p class="lead">Notebook <code>notebooks/mcp_01.ipynb</code> connects a real model to two real MCP servers and watches its behaviour change.</p>
+        <div class="meta"><span>uv · Node.js (npx)</span><span>OPENAI_API_KEY</span><span>servers download on first run</span></div>
+
+        <h2>A small MCP client</h2>
+        <p>Everything MCP-specific fits in one cell, with three functions:</p>
+        <ol>
+          <li><code>connect</code> starts a server and performs the MCP handshake.</li>
+          <li><code>to_openai_tools</code> translates MCP tool definitions into the function-calling format the model understands.</li>
+          <li><code>ask_with_mcp</code> runs the same loop as Unit 2: the model requests a call, the client runs it on the server, the result goes back.</li>
+        </ol>
+        <p>Messages are JSON-RPC 2.0, over <b>stdio</b> for local servers (the host starts the server as a subprocess) or <b>Streamable HTTP</b> for remote ones.</p>
+
+        <h2>Example 1: the Fetch server</h2>
+        <p>The question: the latest release of a package on PyPI, something that changes often and can be checked independently.</p>
+        <div class="result">
+          <div><b>Without MCP</b><p>Even with the exact URL in the prompt, the model can't open it. At best it says so; at worst it offers a remembered version number that sounds current.</p></div>
+          <div class="is-good"><b>With MCP</b><p>Same model, question and system prompt. It calls <code>fetch</code>, which it learned from the server's own tool description, and answers from the page.</p></div>
+        </div>
+        <div class="callout"><p><b>Check the facts outside the model.</b> The notebook fetches the feed itself and scores both answers against it. A confident answer is not evidence.</p></div>
+        <p><b>What it cost:</b> the tool schema, the returned page and a second model call, all in tokens. And a new risk: the model now reads text strangers wrote, so the system prompt tells it to treat tool output as data. That reduces prompt injection; it doesn't eliminate it.</p>
+
+        <h2>Asking a server what it can do</h2>
+        <p>Discovery is part of the protocol, so you never have to guess.</p>
+        <table>
+          <tr><th>Question</th><th>MCP method</th></tr>
+          <tr><td>Who are you, and what do you support?</td><td><code>initialize</code></td></tr>
+          <tr><td>Which actions can the model take?</td><td><code>tools/list</code></td></tr>
+          <tr><td>Which data can the application attach?</td><td><code>resources/list</code></td></tr>
+          <tr><td>Which templates can the user pick?</td><td><code>prompts/list</code></td></tr>
+        </table>
+        <p><b>Declared does not mean available.</b> Run the list query and handle the error <code>-32601</code> (method not found). For a visual view, use the MCP Inspector.</p>
+
+        <h2>Example 2: the Filesystem server</h2>
+        <p>The same client, unchanged, now talks to a second server. This is the point of a standard. The notebook then limits what the model may touch: the server is scoped to one folder, and the client offers only the tools the task needs. Afterwards it checks the disk, not the model's claims.</p>
+
+        <div class="try">
+          <ol>
+            <li>Run the four discovery queries on the Fetch server. Which capabilities does it declare but not provide?</li>
+            <li>Remove the write tools from the filesystem client. Ask the model to create a file. What does it say?</li>
+          </ol>
+        </div>
+
+        <h2>Takeaways</h2>
+        <ol>
+          <li><b>MCP changes a model's reach, not its intelligence.</b></li>
+          <li><b>It is a standard, not a tool:</b> one client worked with both servers.</li>
+          <li><b>The model requests and the host executes.</b> Control lives in that gap.</li>
+          <li><b>Capabilities are discoverable</b>, and declared does not mean available.</li>
+          <li><b>Verify with a source outside the model:</b> facts and disk state, not claims.</li>
+          <li><b>Grant the least privilege.</b> Scope the server and filter tools in the client.</li>
+          <li><b>Every connection has a price</b> in tokens, time and prompt-injection exposure.</li>
+        </ol>
+        <p>Learn more: <a href="https://modelcontextprotocol.io">modelcontextprotocol.io</a>, including the specification and the reference servers.</p>
+      </article>
+    </section>
+  </div>
+
+  <!-- ============ UNIT 4 · SKILLS ============ -->
+  <div class="unit" data-title="04 · Skills">
+    <section class="page" data-type="slide" data-title="Unit 4 · How your team does it">
+      <div class="stage is-green">
+        <svg class="pixels-right" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="layout-unit">
+          <span class="unit-number">04</span>
+          <h1>Skills: how your team does it</h1>
+          <p class="subtitle">Tools let a model do things. Skills teach it how your team does them.</p>
+          <div class="covers"><span>Tool vs skill</span><span>Progressive disclosure</span><span>A late order</span><span>An expense review</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Tool vs skill">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 4 · Skills</span>
+            <h1>A skill is a folder of instructions</h1>
+            <p class="lede">It contains no new ability. It is text the model reads, using a tool, when a task calls for it.</p>
+          </header>
+          <div class="body">
+            <div class="split split-wide" style="align-items:start">
+              <table class="table is-compact">
+                <thead><tr><th></th><th>Tool</th><th>Skill</th></tr></thead>
+                <tbody>
+                  <tr><td>What it is</td><td>A function your code runs</td><td>Instructions the model reads</td></tr>
+                  <tr><td>What it gives</td><td>An ability: look up, calculate, write</td><td>Know-how: when, in what order, by what rules</td></tr>
+                  <tr><td>Example</td><td class="mono" style="font-weight:400">create_ticket(…)</td><td>“Orders 7+ days late get a high-priority ticket”</td></tr>
+                </tbody>
+              </table>
+<pre class="code">skills/
+└── expense-review/
+    ├── SKILL.md      <span class="c"># name, description,</span>
+    │                 <span class="c"># the procedure</span>
+    └── references/
+        └── limits.md <span class="c"># read only</span>
+                      <span class="c"># if needed</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Progressive disclosure">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 4 · Skills</span>
+            <h1>Progressive disclosure</h1>
+            <p class="lede">Why not put every procedure in the system prompt? With dozens of them, every request would pay for instructions it doesn't need.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-3" style="align-items:end">
+              <div class="card" style="min-height:250px"><span class="tag">Stage 1 · always</span><h3>Catalog</h3><p>Each skill's name and one-line description. A few lines for the whole library.</p></div>
+              <div class="card" style="min-height:310px"><span class="tag">Stage 2 · when it applies</span><h3>Procedure</h3><p>The full <span class="mono">SKILL.md</span>, loaded when the model decides the skill fits the task.</p></div>
+              <div class="card is-ink" style="min-height:370px"><span class="tag">Stage 3 · if needed</span><h3>References</h3><p>Extra files inside the skill: limits, templates, tables. Read only when the procedure calls for them.</p></div>
+            </div>
+            <div class="key-idea"><span><b>The description decides.</b> The model picks a skill from its description alone, so write it for that choice.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Same tools, different behaviour">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 4 · Skills · notebook llm_skills_01</span>
+            <h1>Same tools, different behaviour</h1>
+            <p class="lede">Both runs of each example get exactly the same tools. The only difference is the skills.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-2">
+              <div class="card">
+                <span class="tag">Example 1 · A late order</span>
+                <div class="grid grid-2" style="margin-top:18px;gap:20px">
+                  <div><span class="big-number" style="color:#b5473c">0 / 4</span><p><b>Tools only.</b> Looked up the order, then only <i>offered</i> to open a ticket.</p></div>
+                  <div><span class="big-number">4 / 4</span><p><b>Tools + skill.</b> Right priority, voucher and ticket format, character for character.</p></div>
+                </div>
+              </div>
+              <div class="card">
+                <span class="tag">Example 2 · An expense review</span>
+                <div class="grid grid-2" style="margin-top:18px;gap:20px">
+                  <div><span class="big-number" style="color:#b5473c">$773</span><p><b>Tools only.</b> Correct arithmetic, wrong answer: it never knew the limits.</p></div>
+                  <div><span class="big-number">$648</span><p><b>Tools + skill.</b> Read the procedure, then <span class="mono">limits.md</span>, then used the calculator.</p></div>
+                </div>
+              </div>
+            </div>
+            <p class="note">Check results are ordinary Python reading the (fake) tickets and vouchers, so they test what happened, not what the model says happened. One saved run: it shows the model <i>can</i> follow a procedure, not how often it does.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="doc" data-title="Hands-on · llm_skills_01">
+      <article class="doc">
+        <span class="kicker">Unit 4 · Hands-on</span>
+        <h1>Tools + skills</h1>
+        <p class="lead">Notebook <code>notebooks/llm_skills_01.ipynb</code> builds a skill system by hand: a folder of Markdown files and two small tools. It continues from <code>llm_tools_01</code>.</p>
+        <div class="meta"><span>OPENAI_API_KEY</span><span>fake orders, tickets and vouchers</span></div>
+
+        <h2>The whole skill system</h2>
+        <ol>
+          <li><code>build_catalog</code> reads each skill's name and description into the instructions (stage 1).</li>
+          <li><code>load_skill</code> returns a full <code>SKILL.md</code> (stage 2).</li>
+          <li><code>read_skill_file</code> returns a file inside a skill (stage 3).</li>
+        </ol>
+        <p>The tool loop is the one from Unit 2, with one change: the instructions are a parameter, because that is where the catalog goes.</p>
+
+        <h2>Example 1: a late order</h2>
+        <p>The tools can already do everything: look up the order, create a ticket, issue a voucher. What they can't supply is the company's rules: which priority, whether a voucher is allowed, how much, and how the ticket must be written.</p>
+        <div class="result">
+          <div><b>Tools only · 0 of 4 checks</b><p>Looked up the order, then stopped and offered to help. Nothing told it it was allowed to act. Another run might act, but priority, format and amount would be guesses.</p></div>
+          <div class="is-good"><b>Tools + skill · 4 of 4</b><p>Picked <code>late-order</code> from its description, loaded it and followed each step. The ticket summary matches the required format exactly.</p></div>
+        </div>
+        <p><b>A rule, not a script:</b> for order A1043, only 1 day late, the same skill led to no ticket and no voucher. The model read the data and took the right branch.</p>
+
+        <h2>Example 2: an expense review</h2>
+        <p>The company's limits live in a reference file, so the model must go through all three stages. No model could know these limits.</p>
+        <div class="result">
+          <div><b>Tools only</b><p>“You'll be reimbursed $773.” The arithmetic is right; the answer is wrong. It never said it was assuming there were no limits.</p></div>
+          <div class="is-good"><b>Tools + skill</b><p>Catalog → procedure → <code>references/limits.md</code> → <code>calculate</code> on the capped amounts: <b>$648.00</b>, matching the policy.</p></div>
+        </div>
+
+        <h2>When a skill should not load</h2>
+        <p>Given a question no skill covers, the model loaded no skill and called no tool. Stage 1 cost only a few catalog lines.</p>
+
+        <div class="try">
+          <ol>
+            <li>Change the late-order threshold in <code>SKILL.md</code> from 7 to 3 days. Rerun A1043.</li>
+            <li>Make a skill's description vague. Does the model still pick it?</li>
+            <li>Write a third skill for a procedure from your own work, in plain language.</li>
+          </ol>
+        </div>
+
+        <h2>Takeaways</h2>
+        <ol>
+          <li><b>Tools give ability, skills give know-how.</b> The model needed both.</li>
+          <li><b>A skill is just text plus a way to read it.</b></li>
+          <li><b>Progressive disclosure keeps context small</b>, so a large library stays cheap.</li>
+          <li><b>The description decides</b> which skill loads.</li>
+          <li><b>Skills guide, code enforces.</b> If a voucher must never exceed 10 USD, check it inside <code>issue_voucher</code> too.</li>
+          <li><b>Skills are instructions, so trust matters.</b> Only load skills from sources you trust.</li>
+        </ol>
+      </article>
+    </section>
+
+    <section class="page" data-type="slide" data-title="It works in the demo">
+      <div class="stage is-green">
+        <div class="layout-statement">
+          <span class="unit-label">Halfway</span>
+          <p class="statement" style="margin-top:28px">The system can now find, act, connect and follow procedures. It works in the demo. <em>Does it work?</em></p>
+          <p class="statement-source">Next: how to measure it, and how to stop what must never happen.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ UNIT 5 · EVALS ============ -->
+  <div class="unit" data-title="05 · Evals">
+    <section class="page" data-type="slide" data-title="Unit 5 · Measure before you improve">
+      <div class="stage is-green">
+        <svg class="pixels-right" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="layout-unit">
+          <span class="unit-number">05</span>
+          <h1>Evals: measure before you improve</h1>
+          <p class="subtitle">Without a repeatable test, “better” is an impression.</p>
+          <div class="covers"><span>LLM as a judge</span><span>Judge biases</span><span>Retry loops</span><span>Experiments</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Is it better?">
+      <div class="stage is-dark">
+        <div class="layout-statement">
+          <p class="statement">You changed a prompt. Is the assistant better now, or does it just <em>look better on the three questions you tried?</em></p>
+          <p class="statement-source">Eyeballing doesn't scale · fixing one thing can break another · some qualities can't be coded · models change under you</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Code checks and LLM judges">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 5 · Evals</span>
+            <h1>An eval is a repeatable check</h1>
+            <p class="lede">It takes an output, applies a check, and returns a result you can record.</p>
+          </header>
+          <div class="body">
+            <table class="table is-compact">
+              <thead><tr><th></th><th>Code check</th><th>LLM judge</th></tr></thead>
+              <tbody>
+                <tr><td>How it works</td><td>Regex, schema, exact match</td><td>A second model call grades the output against written criteria</td></tr>
+                <tr><td>Good for</td><td>Format, required strings, numbers</td><td>Meaning: correct? supported by the sources? polite?</td></tr>
+                <tr><td>Cost per check</td><td>Effectively free</td><td>One model call</td></tr>
+                <tr><td>Same input, same result?</td><td>Always</td><td>Not guaranteed</td></tr>
+              </tbody>
+            </table>
+            <div class="key-idea"><span><b>Use code when you can describe the problem exactly,</b> and a judge when only reading the answer would tell you. Ask the judge for a critique first, then a verdict from a fixed set.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="What a judge can check">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 5 · Evals · notebook evals_02</span>
+            <h1>What a judge can check</h1>
+            <p class="lede">The same pattern covers many checks. Only the rubric and the material change, and each check sees one thing.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-4" style="gap:20px">
+              <div class="card compact"><h3>Groundedness</h3><p>Is every claim supported by the source?</p></div>
+              <div class="card compact"><h3>Correctness</h3><p>Does it match a known good answer?</p></div>
+              <div class="card compact"><h3>Completeness</h3><p>Is everything required there?</p></div>
+              <div class="card compact"><h3>Policy</h3><p>Does it promise something it shouldn't?</p></div>
+              <div class="card compact"><h3>Tone</h3><p>Does it suit this customer and situation?</p></div>
+              <div class="card compact"><h3>Refusal</h3><p>Did it decline when it should, and only then?</p></div>
+              <div class="card compact"><h3>Trajectory</h3><p>Did the agent take the right steps?</p></div>
+              <div class="card compact"><h3>Pairwise</h3><p>Which of two answers is better?</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Judges can be wrong">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 5 · Evals · notebook evals_02</span>
+            <h1>A judge is a model too</h1>
+            <p class="lede">It can be fooled, it can be inconsistent, and it can be measured.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-4">
+              <div class="card is-muted compact"><span class="tag" style="color:#b5473c">Bias</span><h3>Position</h3><p>Prefers the answer shown first (or second). Pairwise comparisons need both orders.</p></div>
+              <div class="card is-muted compact"><span class="tag" style="color:#b5473c">Bias</span><h3>Verbosity</h3><p>Rewards longer answers that add nothing.</p></div>
+              <div class="card is-muted compact"><span class="tag" style="color:#b5473c">Attack</span><h3>Prompt injection</h3><p>The graded text tells the judge to pass it. Keep hard rules in code.</p></div>
+              <div class="card is-muted compact"><span class="tag" style="color:#b5473c">Noise</span><h3>Inconsistency</h3><p>The same input can get a different verdict on another run.</p></div>
+            </div>
+            <div class="key-idea"><span><b>Judge the judge.</b> A judge is only as trustworthy as you've measured it against human labels. Read the disagreements, improve the prompt, measure again.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="When an eval fails">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 5 · Evals · notebook evals_03</span>
+            <h1>When an eval fails at runtime</h1>
+            <p class="lede">The judge runs inside the system, on each request: the evaluator-optimizer pattern.</p>
+          </header>
+          <div class="body">
+            <div class="flow">
+              <div class="node"><b>Request</b></div>
+              <div class="arrow">→</div>
+              <div class="node is-model"><b>Generate</b></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Judge</b><span>pass → user</span></div>
+              <div class="arrow">→</div>
+              <div class="node"><b>Fail</b><span>attempts left?</span></div>
+              <div class="arrow">→</div>
+              <div class="node"><b>Yes</b><span>retry with a <u>different</u> instruction</span></div>
+              <div class="arrow" style="font-size:20px">or</div>
+              <div class="node is-stop"><b>No</b><span>safe fallback or a person</span></div>
+            </div>
+            <div class="grid grid-3" style="margin-top:36px">
+              <div class="card compact"><h3>Change the instruction</h3><p>Feed in the critique, repair the draft, route by the failed criterion, or switch to a stronger model. Same instruction = rolling the dice again.</p></div>
+              <div class="card compact"><h3>Set a limit</h3><p>Some requests never pass. Write the fallback in advance. Each attempt adds cost and latency while the customer waits.</p></div>
+              <div class="card compact is-ink"><h3>Fix the cause</h3><p>A loop treats symptoms, and optimises for the judge it talks to. If it keeps fixing the same thing, fix the prompt or the retrieval.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Which variant is better?">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 5 · Evals · notebook evals_04</span>
+            <h1>An experiment: which variant is better?</h1>
+          </header>
+          <div class="body">
+            <div class="split" style="align-items:start;gap:72px">
+              <ol class="points" style="gap:14px">
+                <li style="font-size:23px"><span>Fix the hypothesis and the metric <b>first</b></span></li>
+                <li style="font-size:23px"><span>Build a dataset with hard segments; keep a split aside</span></li>
+                <li style="font-size:23px"><span>Run every variant on every case, several times</span></li>
+                <li style="font-size:23px"><span>Score with code first, then a measured judge</span></li>
+                <li style="font-size:23px"><span>Report intervals and paired tests, by segment</span></li>
+                <li style="font-size:23px"><span>Read the failures, including the dataset's own</span></li>
+                <li style="font-size:23px"><span>Improve, then confirm on the held-out split</span></li>
+              </ol>
+              <div>
+                <p class="muted" style="font-size:20px;margin:0 0 14px">In the notebook: 30 fake support cases, three prompts and an agent with a tool.</p>
+                <div class="card compact" style="margin-bottom:18px"><h3>Explicit rules beat a minimal prompt</h3><p>The one clear difference. Most failures were the wrong action: answer, refuse or escalate.</p></div>
+                <div class="card compact is-muted" style="margin-bottom:18px"><h3>The rest: no evidence either way</h3><p>“No significant difference” means no evidence, not “equal”. The dataset hit its ceiling: next step is harder cases.</p></div>
+                <div class="card compact is-ink"><h3>Cost decides ties</h3><p>Two variants used ~45% and ~75% more tokens. A win must pay for that.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="doc" data-title="Hands-on · evals_01 – evals_04">
+      <article class="doc">
+        <span class="kicker">Unit 5 · Hands-on</span>
+        <h1>Evals and LLMs as judges</h1>
+        <p class="lead">Four notebooks, each building on the last: a basic judge, what judges can check and where they fail, a judge inside the system, and a full experiment.</p>
+        <div class="meta"><span>OPENAI_API_KEY</span><span>optional JUDGE_MODEL</span><span>evals_04 makes several hundred calls</span></div>
+
+        <h2>evals_01 · Call a model, then evaluate it</h2>
+        <p>Start with code where code works: required strings, formats, numbers. Then add a free-text judge, and then a judge with <b>structured output</b>, so code can use the verdict.</p>
+<pre><code>class Verdict(BaseModel):
+    critique: str                      # reasoning first
+    grounded: Literal["pass", "fail"]  # then named criteria
+    complete: Literal["pass", "fail"]
+    tone: Literal["pass", "fail"]</code></pre>
+        <div class="callout"><p><b>Grade named criteria</b> rather than a general score, so a failure tells you what to fix. <b>One verdict is an anecdote;</b> a pass rate over a fixed set is a measurement.</p></div>
+
+        <h2>evals_02 · What judges can check, and when to trust them</h2>
+        <p>Part 1 runs eight checks, each with a passing and a failing case: groundedness, correctness, completeness, policy, tone, refusal, agent trajectory and pairwise comparison. The answers are written by hand, so we know which should pass.</p>
+        <p>Part 2 measures four failure modes live: <b>position bias</b> (swap the order and the winner changes), <b>verbosity bias</b>, <b>prompt injection</b> inside the graded text, and <b>noise</b> across runs.</p>
+        <p>Part 3 compares the judge with human labels, reads the disagreements, improves the judge prompt and measures again.</p>
+
+        <h2>evals_03 · When an eval fails: call the model again</h2>
+        <table>
+          <tr><th>Scenario</th><th>What it shows</th></tr>
+          <tr><td>Unsupported reply</td><td>Rewrite with the policy, acting on the critique</td></tr>
+          <tr><td>Missing facts</td><td>Repair the draft vs regenerate from scratch</td></tr>
+          <tr><td>Route by criterion</td><td>A tone failure and a fact failure need different fixes</td></tr>
+          <tr><td>Escalate</td><td>Switch to a stronger model on failure</td></tr>
+          <tr><td>The loop that can't succeed</td><td>Why a limit and a fallback are mandatory</td></tr>
+          <tr><td>The judge is the problem</td><td>A false alarm now changes what the customer reads</td></tr>
+        </table>
+
+        <h2>evals_04 · A full experiment</h2>
+        <p>Hypothesis and metrics are written <b>before</b> running. A run passes only if it chose the expected action, included the required facts, included nothing forbidden, and the judge found it grounded and well-toned. Differences are tested with McNemar's test on paired cases and checked against bootstrap intervals.</p>
+        <div class="callout"><p><b>Why this is a simulation:</b> thirty invented cases written by the same author as the prompts say nothing about real traffic. In production the dataset comes from real, anonymised conversations, labelled by experts, and refreshed as traffic changes.</p></div>
+
+        <div class="try">
+          <ol>
+            <li>In evals_02, swap the order in a pairwise comparison. Does the winner change?</li>
+            <li>In evals_03, set the retry limit to 0. What does the customer see?</li>
+            <li>In evals_04, add three harder cases to the dataset. Do the variants separate?</li>
+          </ol>
+        </div>
+
+        <h2>Takeaways</h2>
+        <ol>
+          <li><b>Use code first;</b> use a judge for what needs reading.</li>
+          <li><b>Each check sees one thing.</b> A grounded answer can be incomplete, and a polite one wrong.</li>
+          <li><b>Measure the judge</b> against human labels before trusting it.</li>
+          <li><b>On retry, change the instruction,</b> set a limit, and write the fallback first.</li>
+          <li><b>Report uncertainty</b>: intervals and paired tests, by segment, and weigh the cost.</li>
+        </ol>
+      </article>
+    </section>
+  </div>
+
+  <!-- ============ UNIT 6 · GUARDRAILS ============ -->
+  <div class="unit" data-title="06 · Guardrails">
+    <section class="page" data-type="slide" data-title="Unit 6 · What must never happen">
+      <div class="stage is-green">
+        <svg class="pixels-right" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="layout-unit">
+          <span class="unit-number">06</span>
+          <h1>Guardrails: what must never happen</h1>
+          <p class="subtitle">Checks enforced by your code, around the model, that it has no way to skip.</p>
+          <div class="covers"><span>Input</span><span>Execution</span><span>Output</span><span>False alarms</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Prompts vs guardrails">
+      <div class="stage is-dark">
+        <div class="layout-statement">
+          <p class="statement">Use prompts to shape what the model <em>tends</em> to do. Use guardrails for what must <em>never</em> happen.</p>
+          <p class="statement-source">“Never refund more than $100” in a system prompt is text the model usually follows. A guardrail is a line of code it cannot skip.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Three places for a guardrail">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 6 · Guardrails · notebook guardrails_01</span>
+            <h1>Three places for a guardrail</h1>
+          </header>
+          <div class="body">
+            <div class="split split-wide" style="gap:48px">
+              <div class="diagram" data-module="diagrams/guardrail-gates.js" style="height:600px"></div>
+              <div>
+                <p class="lede" style="margin-top:0;font-size:27px">Each stage stops failures the other two can't. A guardrail can:</p>
+                <p style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px"><span class="chip">allow</span><span class="chip">modify</span><span class="chip is-red">block</span><span class="chip is-ink">escalate</span></p>
+                <table class="table is-compact">
+                  <tbody>
+                    <tr><td>1 · Input</td><td>Should this reach the model, and in what form?</td></tr>
+                    <tr><td>2 · Execution</td><td>Is this action allowed, for this user, now?</td></tr>
+                    <tr><td>3 · Output</td><td>Can the user, or another program, safely use this?</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Input guardrails">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 6 · Guardrails · notebook guardrails_02</span>
+            <h1>Input: decide what reaches the model</h1>
+            <p class="lede">Before you pay for a single token. Cheap code checks first: a message that fails on length shouldn't cost a classifier call.</p>
+          </header>
+          <div class="body">
+            <div class="flow">
+              <div class="node is-gate"><b>Validate</b><span>size, invisible characters</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Redact</b><span>personal data out</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Injection</b><span>patterns, then a classifier</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Scope</b><span>stay on the job</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Moderation</b><span>harmful requests</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-model"><b>Model</b></div>
+            </div>
+            <div class="grid grid-3" style="margin-top:36px">
+              <div class="card compact"><h3>Only at input</h3><p>Once personal data has been sent, no later check can recall it.</p></div>
+              <div class="card compact"><h3>Patterns vs classifiers</h3><p>Patterns match only what you foresaw. Classifiers generalise, but cost a call and can be wrong.</p></div>
+              <div class="card compact is-ink"><h3>Count false alarms</h3><p>Several checks blocked real customers. An attack-only test would never show it.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Execution guardrails">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 6 · Guardrails · notebook guardrails_03</span>
+            <h1>Execution: your strongest control point</h1>
+            <p class="lede">Once a model can act, a wrong answer becomes a wrong action. Code in the gap between request and execution holds however the model was persuaded.</p>
+          </header>
+          <div class="body">
+            <div class="grid grid-3" style="gap:20px">
+              <div class="card compact"><span class="tag">1</span><h3>Least privilege</h3><p>Offer only the tools this user and task need.</p></div>
+              <div class="card compact"><span class="tag">2</span><h3>Arguments &amp; business rules</h3><p>Schemas check shape; rules check meaning: refund ≤ order value, own orders only.</p></div>
+              <div class="card compact"><span class="tag">3</span><h3>Human approval</h3><p>Pause high-risk actions, and keep them few enough that each gets read.</p></div>
+              <div class="card compact"><span class="tag">4</span><h3>Budgets</h3><p>Limit turns, tool calls and tokens, with a clear reason when one fires.</p></div>
+              <div class="card compact"><span class="tag">5</span><h3>Indirect injection</h3><p>Instructions hidden in tool results. Everything an agent reads is untrusted.</p></div>
+              <div class="card compact is-ink"><span class="tag">Rule</span><h3>Identity from your system</h3><p>Who the customer is comes from the login, never from the conversation or the model's arguments.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="slide" data-title="Output guardrails">
+      <div class="stage">
+        <div class="layout-content">
+          <header>
+            <span class="unit-label">Unit 6 · Guardrails · notebook guardrails_04</span>
+            <h1>Output: the last check before the user</h1>
+            <p class="lede">Input and execution checks may pass, and the model can still write something wrong. Errors don't only come from attackers.</p>
+          </header>
+          <div class="body">
+            <div class="flow">
+              <div class="node is-model"><b>Draft</b></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Schema</b><span>repair: ask again once</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Leak</b><span>mask personal data, block secrets</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Groundedness</b><span>beyond its sources?</span></div>
+              <div class="arrow">→</div>
+              <div class="node is-gate"><b>Policy</b><span>a promise you won't keep?</span></div>
+              <div class="arrow">→</div>
+              <div class="node"><b>User</b></div>
+            </div>
+            <p style="text-align:center;margin:26px 0 0"><span class="chip is-red">On failure → safe fallback message, written in advance</span></p>
+            <div class="key-idea"><span><b>The best leak filter is not giving the model the data in the first place.</b> Output checks are the last layer, not the only one. Log the reason, not the rejected text.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-type="doc" data-title="Hands-on · guardrails_01 – guardrails_04">
+      <article class="doc">
+        <span class="kicker">Unit 6 · Hands-on</span>
+        <h1>Guardrails, stage by stage</h1>
+        <p class="lead">The Harbor Cycles assistant, asked the same things on its own and then with checks around it. All shop data is fake. Every example checks evidence afterwards: what was sent, what changed, what was shown.</p>
+        <div class="meta"><span>OPENAI_API_KEY</span><span>4 notebooks</span><span>scorecards with catches and false alarms</span></div>
+
+        <h2>guardrails_01 · Overview</h2>
+        <p>One example per stage, without and with a guardrail. The model knew every rule from its system prompt, and still broke some of them. That is the case for enforcement in code.</p>
+
+        <h2>guardrails_02 · Input</h2>
+        <table>
+          <tr><th>Check</th><th>What it does</th><th>Note</th></tr>
+          <tr><td>Validation</td><td>Length and character limits</td><td><code>ig​nore</code> with an invisible character looks like “ignore” but defeats a text search</td></tr>
+          <tr><td>PII redaction</td><td>Removes personal data before the call</td><td>The only stage where this protection is possible</td></tr>
+          <tr><td>Injection detection</td><td>Heuristic patterns, then a classifier</td><td>Cost vs coverage</td></tr>
+          <tr><td>Scope filtering</td><td>Keeps the assistant on its job</td><td>Watch for blocked real customers</td></tr>
+          <tr><td>Moderation</td><td>Flags harmful requests</td><td>Also a model; also wrong sometimes</td></tr>
+        </table>
+
+        <h2>guardrails_03 · Execution</h2>
+        <p>The agent loop from Unit 2 gains one hook: <code>guard(name, arguments, run)</code> is called before every tool. If it returns something, the tool does not run and the model receives that value instead.</p>
+<pre><code>def guard(name, args, run):
+    if name not in ALLOWED_TOOLS[SESSION.role]:
+        return "Not permitted."                      # least privilege
+    if name == "issue_refund":
+        order = ORDERS[args["order_id"]]
+        if order.customer != SESSION.customer:       # identity from login
+            return "Order not found."
+        if args["amount"] > order.total:             # business rule
+            return "Refund exceeds order value."
+        if args["amount"] > 100:
+            return queue_for_human(name, args)       # human approval
+    if run.tool_calls >= 10:
+        return "Tool budget reached."                # budget
+    return None                                      # allowed</code></pre>
+        <p>Illustrative sketch of the pattern; the notebook builds each check separately and tests it with <b>forged calls</b>, because a model behaving well today says nothing about the guard.</p>
+
+        <h2>guardrails_04 · Output</h2>
+        <p>Schema validation with retry (a Pydantic model checks an allowed <code>category</code> and <code>priority</code>), a sensitive-data leak filter, a groundedness check, a policy check, and a safe fallback. Well-behaved models rarely trigger these paths, so the notebook scripts bad drafts on purpose.</p>
+
+        <div class="try">
+          <ol>
+            <li>In guardrails_02, write a message that a real customer might send but the scope filter blocks.</li>
+            <li>In guardrails_03, forge a call to <code>issue_refund</code> for another customer's order. Which check stops it?</li>
+            <li>In guardrails_04, script a draft that promises free shipping. Does the policy check catch it?</li>
+          </ol>
+        </div>
+
+        <h2>Takeaways</h2>
+        <ol>
+          <li><b>A prompt is a request; a guardrail is enforcement.</b></li>
+          <li><b>Three stages</b>: before the model, around its actions, after its answer.</li>
+          <li><b>Test with repeated runs and forged inputs.</b> One clean run proves very little.</li>
+          <li><b>Check evidence, not the model's account.</b></li>
+          <li><b>Every check has a cost.</b> Measure false alarms as carefully as catches, and judge a rare check by the cost of a miss.</li>
+        </ol>
+      </article>
+    </section>
+  </div>
+
+  <!-- ============ CLOSING ============ -->
+  <section class="page" data-type="slide" data-title="The improvement loop">
+    <div class="stage">
+      <div class="layout-content">
+        <header>
+          <span class="unit-label">Putting it together</span>
+          <h1>Build, measure, guard, improve</h1>
+          <p class="lede">A GenAI system is never finished. Each change is a hypothesis, tested on the same dataset, and each failure is something to read.</p>
+        </header>
+        <div class="body">
+          <div class="flow">
+            <div class="node"><b>Build</b><span>embeddings, tools, MCP, skills</span></div>
+            <div class="arrow">→</div>
+            <div class="node is-gate"><b>Measure</b><span>code checks, measured judges, a fixed dataset</span></div>
+            <div class="arrow">→</div>
+            <div class="node is-gate"><b>Guard</b><span>input, execution, output</span></div>
+            <div class="arrow">→</div>
+            <div class="node"><b>Observe</b><span>log failures and their reasons</span></div>
+            <div class="arrow">→</div>
+            <div class="node is-model"><b>Improve</b><span>fix the cause, then measure again</span></div>
+            <div class="arrow">↺</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-type="slide" data-title="Questions to ask your team">
+    <div class="stage">
+      <div class="layout-content">
+        <header>
+          <span class="unit-label">For executives</span>
+          <h1>Six questions to ask your team</h1>
+        </header>
+        <div class="body">
+          <div class="grid grid-3">
+            <div class="card"><span class="tag">Knowledge</span><h3>Where do its facts come from?</h3><p>Training, retrieved documents or live tools? Can we see the source behind an answer?</p></div>
+            <div class="card"><span class="tag">Reach</span><h3>What can it touch?</h3><p>Which tools and servers, with whose permissions? Who reviewed them?</p></div>
+            <div class="card"><span class="tag">Control</span><h3>What can it do without a person?</h3><p>Which actions need approval, and what are the limits in code?</p></div>
+            <div class="card is-ink"><span class="tag">Quality</span><h3>How do we know it's better?</h3><p>Which dataset, which metric, decided before the change? How good is the judge?</p></div>
+            <div class="card is-ink"><span class="tag">Failure</span><h3>What happens when a check fails?</h3><p>What does the customer see? Who is told? Is it logged?</p></div>
+            <div class="card is-ink"><span class="tag">Cost</span><h3>What does each request cost?</h3><p>Tokens, latency, extra calls for judges and retries, and false alarms.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-type="doc" data-title="Setup · running the notebooks">
+    <article class="doc">
+      <span class="kicker">Reference</span>
+      <h1>Running the notebooks</h1>
+      <p class="lead">All notebooks are in <code>notebooks/</code> at the repository root. Each one runs without and then with the technique, so you can compare.</p>
+
+      <h2>Setup</h2>
+      <p>From the repository root, install the notebook dependencies with <code>uv</code>, then select the repo's <code>.venv</code> as the kernel:</p>
+<pre><code>uv sync --inexact --group notebooks</code></pre>
+      <p>Put your keys in a <code>.env</code> file at the repository root:</p>
+<pre><code>OPENAI_API_KEY=...
+OPENAI_MODEL=...        # optional: the model to use
+JUDGE_MODEL=...         # optional: the judge model (evals)
+TAVILY_API_KEY=...      # only for llm_tools_01, example 2</code></pre>
+      <p><code>mcp_01</code> also needs Node.js, because the Filesystem server runs through <code>npx</code>. Servers download on first use, so the first run takes longer.</p>
+
+      <h2>Order</h2>
+      <table>
+        <tr><th>#</th><th>Notebook</th><th>Builds on</th></tr>
+        <tr><td>1</td><td><code>embeddings_01</code></td><td>–</td></tr>
+        <tr><td>2</td><td><code>llm_tools_01</code></td><td>–</td></tr>
+        <tr><td>3</td><td><code>mcp_01</code></td><td>the tool loop</td></tr>
+        <tr><td>4</td><td><code>llm_skills_01</code></td><td><code>llm_tools_01</code></td></tr>
+        <tr><td>5</td><td><code>evals_01_llm_judge</code> → <code>evals_02_judge_scenarios</code> → <code>evals_03_judge_loop</code> → <code>evals_04_experiment</code></td><td>each the previous</td></tr>
+        <tr><td>6</td><td><code>guardrails_01_overview</code> → <code>guardrails_02_input</code> → <code>guardrails_03_execution</code> → <code>guardrails_04_output</code></td><td>the overview</td></tr>
+      </table>
+
+      <h2>Cost</h2>
+      <p>Most notebooks make a few dozen model calls. <code>evals_04_experiment</code> makes several hundred: it prints the maximum before the expensive cells, and caches results so re-running a cell doesn't pay twice.</p>
+
+      <div class="callout"><p><b>All data is fake.</b> Harbor Cycles, its customers, orders, tickets, vouchers and policies were created for these notebooks. Don't paste real customer data into them.</p></div>
+    </article>
+  </section>
+
+  <section class="page" data-type="slide" data-title="Wrap-up">
+    <div class="stage is-green">
+      <svg class="pixels-right" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+      <div class="layout-content" style="padding-right:440px">
+        <header>
+          <span class="unit-label">Wrap-up</span>
+          <h1 style="font-size:76px">Five things to take home</h1>
+        </header>
+        <div class="body">
+          <ol class="points">
+            <li><span><b>A model is not a system.</b> Knowledge, tools, connections and procedures sit around it, in your code.</span></li>
+            <li><span><b>The model requests, your code executes.</b> That gap is where control lives.</span></li>
+            <li><span><b>Skills guide, code enforces.</b> Prompts shape tendencies; guardrails stop what must never happen.</span></li>
+            <li><span><b>“Better” is a measurement,</b> on a fixed dataset, with a judge you've checked.</span></li>
+            <li><span><b>Every addition has a cost</b> in tokens, latency, false alarms and new risks. Weigh it.</span></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-type="slide" data-title="Thank you">
+    <div class="stage is-green cover">
+      <svg class="pixels" viewBox="0 0 960 540" preserveAspectRatio="xMinYMin meet" aria-hidden="true"><use href="#pixels" width="220" height="540"/></svg>
+      <div class="content" style="top:300px">
+        <h1>Thank you</h1>
+        <p class="course">Questions, and on to the notebooks.</p>
+        <p class="authors">Roberto Henriques · Fernando Peres</p>
+      </div>
+      <img class="logo" src="../presentation/nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ CHROME ============ -->
+<div id="progress" class="hud"><span></span></div>
+<div id="counter" class="hud" aria-live="polite">
+  <span class="unit"></span><span class="type"></span><span class="step"></span><span class="pct"></span>
+</div>
+
+<nav id="toc" aria-label="Table of contents">
+  <header>
+    <strong>Build &amp; Improving GenAI systems</strong>
+    <small>Class 6 · 02 November 2026</small>
+  </header>
+  <ol></ol>
+  <footer>
+    <kbd>t</kbd> contents · <kbd>i</kbd> progress · <kbd>←</kbd> <kbd>→</kbd> step<br />
+    <kbd>Home</kbd> / <kbd>End</kbd> first / last · <kbd>Esc</kbd> close
+  </footer>
+</nav>
+
+<script src="deck.js"></script>
+</body>
+</html>
