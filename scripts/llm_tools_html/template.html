@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How LLMs Use Tools · Interactive notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Graphite Console tokens (harness-sigmma.pen: gc-l-* / gc-d-*) */
+:root {
+  --shell:#F2F1F3; --page:#FFFFFF; --raised:#FAFAFA; --sunken:#F4F4F5;
+  --border:#E4E4E7; --divider:#EDEDEF;
+  --text:#18181B; --ink2:#52525B; --ink3:#8A8A93;
+  --nav-bg:#EDE9F8; --nav-ink:#3B2E80; --row:#F4F1FC;
+  --primary:#3A3263; --accent:#6D5BD0; --on-solid:#FFFFFF;
+  --fail-tint:#F7DAD4; --fail-base:#C2614F; --fail-ink:#7C2D1C;
+  --warn-tint:#F5EDC8; --warn-base:#C2A52B; --warn-ink:#6B5A10;
+  --risk-tint:#FAE2CE; --risk-base:#D1763C; --risk-ink:#7E3F15;
+  --pass-tint:#D8EDD5; --pass-base:#4F9F52; --pass-ink:#22552B;
+  --done-tint:#D8E7F7; --done-base:#4C8FD6; --done-ink:#1E4C83;
+  --syn-kw:#5B48C2; --syn-str:#22552B; --syn-num:#9A4A16; --syn-fn:#1E4C83; --syn-com:#8A8A93; --syn-key:#3B2E80;
+  --shadow:0 1px 2px rgba(24,24,27,.04), 0 4px 16px rgba(24,24,27,.05);
+  --ui:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  --shell:#0C0C0E; --page:#121214; --raised:#171719; --sunken:#1C1C20;
+  --border:#2A2A2F; --divider:#232327;
+  --text:#FAFAFA; --ink2:#A1A1AA; --ink3:#71717A;
+  --nav-bg:#4A3C7D; --nav-ink:#FFFFFF; --row:#241F38;
+  --primary:#6D5BD0; --accent:#8B7FD4; --on-solid:#FFFFFF;
+  --fail-tint:#40201A; --fail-base:#D97A66; --fail-ink:#F0BDB2;
+  --warn-tint:#3B3313; --warn-base:#BFA33A; --warn-ink:#EADFA6;
+  --risk-tint:#40250F; --risk-base:#D4793F; --risk-ink:#F2C7A3;
+  --pass-tint:#16331B; --pass-base:#4CA050; --pass-ink:#A9D9AC;
+  --done-tint:#122844; --done-base:#4C8FD6; --done-ink:#A7CCEE;
+  --syn-kw:#B9B1DC; --syn-str:#A9D9AC; --syn-num:#F2C7A3; --syn-fn:#A7CCEE; --syn-com:#71717A; --syn-key:#C3BCDC;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body { margin:0; background:var(--shell); color:var(--text); font:15px/1.6 var(--ui); -webkit-font-smoothing:antialiased; }
+code, pre, .mono { font-family: var(--mono); }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- top bar ---------- */
+.topbar { position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--page) 86%, transparent); backdrop-filter:saturate(1.4) blur(10px); border-bottom:1px solid var(--border); }
+.topbar-inner { max-width:1200px; margin:0 auto; padding:10px 24px; display:flex; align-items:center; gap:18px; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:14px; white-space:nowrap; }
+.brand .badge { background:var(--text); color:var(--page); }
+.nav { display:flex; gap:2px; flex:1; overflow-x:auto; scrollbar-width:none; }
+.nav a { color:var(--ink2); text-decoration:none; font-size:13px; padding:6px 10px; border-radius:8px; white-space:nowrap; }
+.nav a:hover, .nav a.on { background:var(--nav-bg); color:var(--nav-ink); }
+.tools { display:flex; gap:8px; }
+
+.btn { font:500 13px var(--ui); color:var(--text); background:var(--page); border:1px solid var(--border); border-radius:8px; padding:6px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s, border-color .15s; }
+.btn:hover { background:var(--sunken); }
+.btn.solid { background:var(--primary); border-color:var(--primary); color:var(--on-solid); }
+.btn.solid:hover { filter:brightness(1.12); }
+.btn svg { width:15px; height:15px; }
+.btn[aria-pressed="true"] { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+
+.badge { font:500 10px/1 var(--mono); min-width:20px; height:20px; padding:0 5px; border-radius:5px; display:inline-flex; align-items:center; justify-content:center; background:var(--text); color:var(--page); }
+
+/* ---------- layout ---------- */
+main { max-width:1200px; margin:0 auto; padding:28px 24px 80px; }
+section { margin-top:56px; }
+.section-head { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.section-head .kicker { font:500 12px var(--mono); color:var(--ink2); text-transform:uppercase; letter-spacing:.08em; }
+h1, h2, h3 { margin:0; letter-spacing:-.015em; }
+h2 { font-size:28px; font-weight:650; margin-bottom:8px; }
+h3 { font-size:17px; font-weight:600; }
+.lede { color:var(--ink2); max-width:760px; margin:0 0 22px; font-size:16px; }
+.panel { background:var(--page); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); }
+.pad { padding:22px; }
+
+/* ---------- hero ---------- */
+.hero { display:grid; grid-template-columns: 1.15fr 1fr; gap:28px; align-items:center; padding:36px; background:
+  radial-gradient(900px 300px at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%), var(--page); }
+.hero h1 { font-size:44px; line-height:1.08; font-weight:700; }
+.hero .quote { margin:14px 0 22px; color:var(--ink2); font-size:17px; border-left:3px solid var(--accent); padding-left:14px; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chip { display:inline-flex; align-items:center; gap:8px; font-size:13px; padding:6px 12px 6px 6px; border-radius:999px; background:var(--row); color:var(--text); border:1px solid var(--border); text-decoration:none; }
+.chip .badge { border-radius:999px; background:var(--primary); color:var(--on-solid); }
+.teaser { display:grid; gap:10px; }
+.teaser .q { font-size:13px; }
+
+/* ---------- message bubbles ---------- */
+.msg { border-radius:12px; padding:10px 14px; font-size:14px; white-space:pre-wrap; border:1px solid transparent; }
+.msg .who { display:flex; align-items:center; gap:6px; font:600 11px var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.msg.user { background:var(--sunken); border-color:var(--border); }
+.msg.user .who { color:var(--ink2); }
+.msg.fail { background:var(--fail-tint); color:var(--fail-ink); }
+.msg.pass { background:var(--pass-tint); color:var(--pass-ink); }
+.msg.warn { background:var(--warn-tint); color:var(--warn-ink); }
+.msg.done { background:var(--done-tint); color:var(--done-ink); }
+.dot { width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block; }
+
+/* ---------- concept split ---------- */
+.split { display:grid; grid-template-columns: 1fr auto 1fr; gap:0; align-items:stretch; }
+.side { padding:22px; }
+.side .role { font:600 12px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink2); display:flex; align-items:center; gap:8px; }
+.side .big { font-size:22px; font-weight:650; margin:8px 0 10px; }
+.side .big em { font-style:normal; color:var(--accent); }
+.side ul { margin:0; padding-left:18px; color:var(--ink2); font-size:14px; }
+.wire { display:flex; flex-direction:column; justify-content:center; gap:12px; padding:22px 6px; min-width:250px; }
+.wire .pkt { font:12px/1.45 var(--mono); padding:8px 10px; border-radius:8px; border:1px dashed var(--border); background:var(--raised); position:relative; }
+.wire .pkt .lbl { display:block; font:600 10px var(--mono); text-transform:uppercase; letter-spacing:.08em; color:var(--ink3); margin-bottom:2px; }
+.wire .arrowrow { display:flex; align-items:center; gap:8px; font:11px var(--mono); color:var(--ink3); }
+.wire .arrowrow::before, .wire .arrowrow::after { content:""; flex:1; height:1px; background:var(--border); }
+.keyidea { margin-top:16px; display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:12px; background:var(--nav-bg); color:var(--nav-ink); font-size:15px; }
+
+/* ---------- gap cards ---------- */
+.gaps { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
+.gap { padding:18px; display:flex; flex-direction:column; gap:8px; cursor:pointer; text-align:left; font:inherit; color:inherit; transition: transform .15s, border-color .15s; }
+.gap:hover { transform: translateY(-2px); border-color: var(--accent); }
+.gap .ic { width:36px; height:36px; border-radius:10px; display:grid; place-items:center; background:var(--row); color:var(--accent); }
+.gap .ic svg { width:20px; height:20px; }
+.gap h3 { font-size:15px; }
+.gap p { margin:0; font-size:13px; color:var(--ink2); }
+.gap .fills { margin-top:auto; padding-top:10px; border-top:1px solid var(--divider); font-size:12px; color:var(--ink2); }
+.gap .fills b { color:var(--text); font-weight:600; }
+.gap .go { font:500 11px var(--mono); color:var(--accent); }
+
+/* ---------- loop diagram ---------- */
+.loop { display:grid; grid-template-columns: 1.05fr 1fr; gap:0; overflow:hidden; }
+.loop-diagram { padding:20px; border-right:1px solid var(--border); display:flex; flex-direction:column; gap:12px; }
+.loop-diagram > svg { width:100%; height:auto; display:block; }
+.lifeline { stroke:var(--border); stroke-width:1.5; stroke-dasharray:4 5; }
+.actor rect { fill:var(--raised); stroke:var(--border); }
+.actor.model rect { fill:var(--nav-bg); stroke:transparent; }
+.actor text { fill:var(--text); font:600 14px var(--ui); }
+.actor.model text { fill:var(--nav-ink); }
+.actor .sub { font:500 10px var(--mono); fill:var(--ink2); letter-spacing:.06em; }
+.actor.model .sub { fill:var(--nav-ink); opacity:.75; }
+.hop line, .hop path.p { stroke:var(--ink3); stroke-width:1.6; fill:none; transition:stroke .25s, opacity .25s, stroke-width .25s; }
+.hop text { fill:var(--ink2); font:12px var(--mono); transition:fill .25s, opacity .25s; }
+.hop .n { fill:var(--page); stroke:var(--ink3); stroke-width:1.3; transition:all .25s; }
+.hop .nt { font:600 10px var(--mono); fill:var(--ink2); text-anchor:middle; }
+.hop .pulse { fill:var(--accent); opacity:0; }
+.loop[data-step]:not([data-step="0"]) .hop { opacity:.28; }
+.loop .hop.past { opacity:.65 !important; }
+.loop .hop.on { opacity:1 !important; }
+.hop.on line, .hop.on path.p { stroke:var(--accent); stroke-width:2.4; }
+.hop.on text { fill:var(--text); font-weight:600; }
+.hop.on .n { fill:var(--accent); stroke:var(--accent); }
+.hop.on .nt { fill:#fff; }
+.hop.on .pulse { opacity:1; animation: travel 1.1s ease-in-out infinite; }
+@keyframes travel { from { transform: translateX(0); } to { transform: translateX(var(--dx)); } }
+.repeat-band { fill:color-mix(in srgb, var(--accent) 7%, transparent); stroke:color-mix(in srgb, var(--accent) 30%, transparent); stroke-dasharray:3 4; }
+.repeat-lbl { font:600 10px var(--mono); fill:var(--accent); letter-spacing:.06em; }
+.mk-dim { fill:var(--ink3); } .mk-on { fill:var(--accent); }
+.controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.controls .prog { margin-left:auto; display:flex; gap:5px; }
+.controls .prog i { width:22px; height:4px; border-radius:2px; background:var(--border); transition:background .25s; }
+.controls .prog i.on { background:var(--accent); }
+.caption { min-height:84px; padding:14px 16px; border-radius:12px; background:var(--raised); border:1px solid var(--border); }
+.caption .t { font-weight:600; display:flex; align-items:center; gap:8px; }
+.caption p { margin:4px 0 0; font-size:14px; color:var(--ink2); }
+.loop-code { background:var(--raised); display:flex; flex-direction:column; min-width:0; }
+.loop-code .bar { display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:1px solid var(--border); font:500 12px var(--mono); color:var(--ink2); }
+.loop-code pre { margin:0; padding:12px 0; font-size:12px; line-height:1.6; overflow:auto; flex:1; }
+.loop-code .ln { display:block; padding:0 14px 0 0; transition: background .25s; border-left:3px solid transparent; }
+.loop-code .ln::before { content: attr(data-n); display:inline-block; width:34px; text-align:right; padding-right:12px; color:var(--ink3); user-select:none; }
+.loop-code .ln.hl { background:color-mix(in srgb, var(--accent) 14%, transparent); border-left-color:var(--accent); }
+.loop-code.dim .ln:not(.hl) { opacity:.45; }
+
+/* ---------- code blocks ---------- */
+details.code { border:1px solid var(--border); border-radius:12px; background:var(--raised); margin-top:12px; overflow:hidden; }
+details.code > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:9px 12px; font-size:13px; color:var(--ink2); user-select:none; }
+details.code > summary::-webkit-details-marker { display:none; }
+details.code > summary:hover { background:var(--sunken); }
+details.code .cell { font:500 11px var(--mono); color:var(--accent); background:var(--row); padding:2px 7px; border-radius:5px; }
+details.code .label { color:var(--text); font-weight:500; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+details.code .toggle { font:500 12px var(--mono); color:var(--ink2); display:flex; align-items:center; gap:4px; }
+details.code .toggle svg { width:14px; height:14px; transition: transform .2s; }
+details.code[open] .toggle svg { transform: rotate(90deg); }
+details.code .toggle .show-t { display:inline; } details.code .toggle .hide-t { display:none; }
+details.code[open] .toggle .show-t { display:none; } details.code[open] .toggle .hide-t { display:inline; }
+details.code .copy { font:500 11px var(--mono); padding:3px 8px; border-radius:6px; border:1px solid var(--border); background:var(--page); color:var(--ink2); cursor:pointer; }
+details.code .copy:hover { color:var(--text); }
+details.code pre { margin:0; padding:14px 16px; border-top:1px solid var(--border); font-size:12.5px; line-height:1.6; overflow:auto; max-height:520px; background:var(--page); }
+details.code .output { border-top:1px dashed var(--border); padding:10px 16px; font:12px/1.55 var(--mono); color:var(--ink2); white-space:pre-wrap; background:var(--raised); max-height:300px; overflow:auto; }
+details.code .output::before { content:"Output"; display:block; font:600 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); margin-bottom:4px; }
+.tok-kw { color:var(--syn-kw); font-weight:500; } .tok-str { color:var(--syn-str); } .tok-num { color:var(--syn-num); }
+.tok-fn { color:var(--syn-fn); } .tok-com { color:var(--syn-com); font-style:italic; } .tok-key { color:var(--syn-key); } .tok-bi { color:var(--syn-fn); }
+.codegrid { display:grid; grid-template-columns: 1fr 1fr; gap:0 14px; }
+
+/* ---------- examples ---------- */
+.tabs { display:flex; gap:6px; padding:6px; background:var(--page); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); position:sticky; top:62px; z-index:10; overflow-x:auto; }
+.tab { flex:1; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; border:0; background:transparent; color:var(--ink2); font:500 14px var(--ui); cursor:pointer; text-align:left; min-width:150px; }
+.tab:hover { background:var(--sunken); color:var(--text); }
+.tab .badge { background:var(--sunken); color:var(--ink2); border:1px solid var(--border); }
+.tab small { display:block; font:500 11px var(--mono); color:var(--ink3); }
+.tab[aria-selected="true"] { background:var(--nav-bg); color:var(--nav-ink); }
+.tab[aria-selected="true"] .badge { background:var(--primary); color:var(--on-solid); border-color:transparent; }
+.tab[aria-selected="true"] small { color:var(--nav-ink); opacity:.8; }
+.ex { margin-top:18px; animation: fadein .35s ease; }
+@keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.ex-head { display:flex; gap:16px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+.ex-head h2 { font-size:26px; }
+.gap-tag { display:inline-flex; align-items:center; gap:6px; font:600 11px var(--mono); text-transform:uppercase; letter-spacing:.07em; padding:5px 10px; border-radius:999px; background:var(--row); color:var(--nav-ink); }
+.ex-intro { color:var(--ink2); max-width:820px; margin:8px 0 16px; }
+.question { display:flex; gap:12px; align-items:center; padding:16px 18px; font-size:17px; font-weight:500; }
+.question .q-ic { width:34px; height:34px; border-radius:50%; background:var(--sunken); display:grid; place-items:center; flex:none; color:var(--ink2); }
+.question .q-ic svg { width:18px; height:18px; }
+
+.vs { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:14px; position:relative; }
+.vs::after { content:"VS"; position:absolute; left:50%; top:22px; transform:translateX(-50%); font:700 11px var(--mono); background:var(--page); border:1px solid var(--border); border-radius:999px; padding:5px 8px; color:var(--ink2); box-shadow:var(--shadow); }
+.col { padding:0; overflow:hidden; display:flex; flex-direction:column; }
+.col-head { display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:1px solid var(--border); }
+.col-head h3 { font-size:15px; }
+.col.without .col-head { background:linear-gradient(90deg, var(--fail-tint), transparent); }
+.col.with .col-head { background:linear-gradient(90deg, var(--pass-tint), transparent); }
+.col-head .ico { width:26px; height:26px; border-radius:8px; display:grid; place-items:center; }
+.col.without .ico { background:var(--fail-base); color:#fff; }
+.col.with .ico { background:var(--pass-base); color:#fff; }
+.col-head .ico svg { width:15px; height:15px; }
+.col-body { padding:16px 18px 18px; display:flex; flex-direction:column; gap:12px; flex:1; }
+.verdict { margin-left:auto; font:600 11px var(--mono); padding:4px 9px; border-radius:999px; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+.verdict.fail { background:var(--fail-tint); color:var(--fail-ink); border:1px solid color-mix(in srgb, var(--fail-base) 35%, transparent); }
+.verdict.warn { background:var(--warn-tint); color:var(--warn-ink); border:1px solid color-mix(in srgb, var(--warn-base) 35%, transparent); }
+.verdict.pass { background:var(--pass-tint); color:var(--pass-ink); border:1px solid color-mix(in srgb, var(--pass-base) 35%, transparent); }
+
+.flow { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:12px; border-radius:10px; background:var(--raised); border:1px solid var(--divider); }
+.node { font:500 12px var(--mono); padding:5px 10px; border-radius:8px; background:var(--page); border:1px solid var(--border); display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+.node.model { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+.node.tool { background:var(--done-tint); color:var(--done-ink); border-color:transparent; }
+.node.ans-fail { background:var(--fail-tint); color:var(--fail-ink); border-color:transparent; }
+.node.ans-warn { background:var(--warn-tint); color:var(--warn-ink); border-color:transparent; }
+.node.ans-pass { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
+.arr { color:var(--ink3); font:12px var(--mono); }
+.toolstack { display:inline-flex; flex-direction:column; gap:4px; }
+.flow-cap { font:11px var(--mono); color:var(--ink3); margin-top:-6px; }
+
+.trace { display:flex; flex-direction:column; gap:8px; }
+.step { border:1px solid color-mix(in srgb, var(--done-base) 35%, var(--border)); border-radius:10px; background:var(--done-tint); color:var(--done-ink); overflow:hidden; }
+.step > summary { list-style:none; cursor:pointer; padding:9px 12px; display:flex; gap:10px; align-items:flex-start; }
+.step > summary::-webkit-details-marker { display:none; }
+.step .sn { font:600 10px var(--mono); background:var(--done-base); color:#fff; border-radius:5px; padding:3px 6px; flex:none; margin-top:1px; }
+.step .call { font:500 12.5px/1.5 var(--mono); word-break:break-word; flex:1; }
+.step .call b { font-weight:600; }
+.step .more { font:500 11px var(--mono); opacity:.75; white-space:nowrap; }
+.step pre { margin:0; padding:10px 12px; font-size:12px; line-height:1.5; background:var(--page); color:var(--text); border-top:1px solid color-mix(in srgb, var(--done-base) 30%, transparent); max-height:260px; overflow:auto; white-space:pre-wrap; word-break:break-word; }
+.step .ret { font:600 10px var(--mono); text-transform:uppercase; letter-spacing:.08em; color:var(--ink3); display:block; margin-bottom:4px; }
+
+.explain { margin-top:14px; display:grid; gap:10px; }
+.explain .item { display:flex; gap:12px; padding:14px 16px; }
+.explain .item .badge { background:var(--row); color:var(--nav-ink); flex:none; margin-top:2px; }
+.explain .item p { margin:0; font-size:14.5px; color:var(--ink2); }
+.explain .item p strong { color:var(--text); }
+.explain code, .lede code, .md code { font-size:.88em; background:var(--sunken); border:1px solid var(--divider); padding:1px 5px; border-radius:5px; }
+
+.subhead { display:flex; align-items:center; gap:10px; margin:26px 0 8px; font:600 12px var(--mono); text-transform:uppercase; letter-spacing:.08em; color:var(--ink2); }
+.subhead::after { content:""; flex:1; height:1px; background:var(--border); }
+
+/* bars */
+.bars { display:grid; gap:12px; }
+.bar-row { display:grid; grid-template-columns: 170px 1fr 130px; gap:12px; align-items:center; font-size:13px; }
+.bar-row .name { color:var(--ink2); }
+.bar-track { height:26px; background:var(--sunken); border-radius:7px; position:relative; overflow:hidden; }
+.bar-fill { height:100%; border-radius:7px; width:0; transition: width 1s cubic-bezier(.2,.8,.2,1); }
+.bar-fill.fail { background:var(--fail-base); } .bar-fill.pass { background:var(--pass-base); } .bar-fill.done { background:var(--done-base); }
+.bar-row .val { font:600 13px var(--mono); text-align:right; }
+.gap-note { margin-top:6px; font-size:13px; color:var(--fail-ink); background:var(--fail-tint); padding:8px 12px; border-radius:8px; display:inline-flex; gap:8px; align-items:center; }
+
+/* runs compare */
+.runs { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+.run { padding:16px 18px; display:flex; flex-direction:column; gap:10px; }
+.run .rh { display:flex; align-items:center; gap:8px; font-weight:600; }
+.kv { display:grid; grid-template-columns: auto 1fr; gap:4px 14px; font:12.5px var(--mono); }
+.kv span:nth-child(odd) { color:var(--ink3); }
+.kv .hot { color:var(--fail-ink); background:var(--fail-tint); padding:0 6px; border-radius:4px; justify-self:start; font-weight:600; }
+.kv .ok { color:var(--pass-ink); background:var(--pass-tint); padding:0 6px; border-radius:4px; justify-self:start; font-weight:600; }
+.decision { font:500 12.5px var(--mono); padding:8px 10px; border-radius:8px; background:var(--raised); border:1px dashed var(--border); }
+.store { padding:14px 18px; }
+.store table { width:100%; border-collapse:collapse; font:12.5px var(--mono); }
+.store th { text-align:left; font-weight:600; color:var(--ink3); text-transform:uppercase; font-size:10px; letter-spacing:.08em; padding:6px 8px; border-bottom:1px solid var(--border); }
+.store td { padding:8px; border-bottom:1px solid var(--divider); vertical-align:top; }
+
+/* no tool */
+.notool { display:grid; grid-template-columns: 1fr auto 1fr; gap:18px; align-items:center; padding:24px; }
+.toolbox { display:flex; flex-wrap:wrap; gap:8px; }
+.toolbox .node { opacity:.55; text-decoration: line-through; text-decoration-color: var(--ink3); }
+.notool .center { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.zero { font:700 40px/1 var(--mono); color:var(--accent); }
+.zero small { display:block; font:500 11px var(--mono); color:var(--ink2); text-align:center; margin-top:4px; letter-spacing:.06em; text-transform:uppercase; }
+
+/* summary */
+.sumtable { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; }
+.sumtable th { text-align:left; font:600 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink2); padding:12px 18px; background:var(--raised); border-bottom:1px solid var(--border); }
+.sumtable td { padding:14px 18px; border-bottom:1px solid var(--divider); font-size:14px; }
+.sumtable tr:last-child td { border-bottom:0; }
+.sumtable tr:hover td { background:var(--row); }
+.chain { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.takeaways { display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; margin-top:16px; }
+.tk { padding:18px; display:flex; flex-direction:column; gap:8px; }
+.tk .num { font:600 12px var(--mono); color:var(--accent); }
+.tk h3 { font-size:15.5px; }
+.tk p { margin:0; font-size:13.5px; color:var(--ink2); }
+
+footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3); font-size:12px; font-family:var(--mono); }
+
+.pending { display:flex; gap:14px; padding:18px 20px; margin-top:14px; border-color:color-mix(in srgb, var(--warn-base) 45%, var(--border)); background:linear-gradient(90deg, var(--warn-tint), var(--page) 60%); }
+.pending p { margin:4px 0 0; color:var(--ink2); font-size:14px; }
+.chaincard { display:flex; flex-direction:column; gap:8px; }
+.chaincard .link { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.chaincard .sn { font:600 10px var(--mono); background:var(--done-base); color:#fff; border-radius:5px; padding:3px 6px; }
+.chaincard .arrowdown { margin-left:22px; padding:4px 0 4px 18px; border-left:2px dashed var(--done-base); font:12px var(--mono); color:var(--ink2); }
+.chaincard .acts { display:flex; flex-wrap:wrap; gap:8px; margin-left:22px; }
+.chaincard .acts .chip { padding:6px 12px; }
+/* ---------- run player (per-example loop) ---------- */
+.player { grid-template-columns: 1.3fr 1fr; }
+.player .loop-code pre { max-height:640px; }
+.actor.world rect { fill:var(--done-tint); stroke:transparent; }
+.actor.world text { fill:var(--done-ink); }
+.actor.world .sub { fill:var(--done-ink); opacity:.75; }
+.player.idle-world .actor.world, .player.idle-world .lifeline.world { opacity:.35; }
+.mk-bad { fill:var(--fail-base); } .mk-warn { fill:var(--warn-base); } .mk-done { fill:var(--done-base); }
+.hop.run.on line { stroke:var(--done-base); } .hop.run.on .n { fill:var(--done-base); stroke:var(--done-base); } .hop.run .pulse { fill:var(--done-base); }
+.hop.mem.fail.on line { stroke:var(--fail-base); } .hop.mem.fail.on .n { fill:var(--fail-base); stroke:var(--fail-base); } .hop.mem.fail .pulse { fill:var(--fail-base); }
+.hop.mem.warn.on line { stroke:var(--warn-base); } .hop.mem.warn.on .n { fill:var(--warn-base); stroke:var(--warn-base); } .hop.mem.warn .pulse { fill:var(--warn-base); }
+.scenes { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.scene { font:500 12px var(--mono); padding:5px 11px; border-radius:999px; border:1px solid var(--border); background:var(--page); color:var(--ink2); cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+.scene:hover { color:var(--text); }
+.scene .cnt { font:600 10px var(--mono); padding:1px 6px; border-radius:999px; background:var(--sunken); color:var(--ink3); }
+.scene.cur .cnt { background:color-mix(in srgb, currentColor 14%, transparent); color:inherit; }
+.scene.cur.fail { background:var(--fail-tint); color:var(--fail-ink); border-color:transparent; }
+.scene.cur.warn { background:var(--warn-tint); color:var(--warn-ink); border-color:transparent; }
+.scene.cur.pass { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
+.payload { margin:10px 0 0; padding:10px 12px; background:var(--page); border:1px solid var(--border); border-radius:8px; font-size:12px; line-height:1.5; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-word; }
+.payload-lbl { display:block; margin-top:10px; font:600 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); }
+.step.on { box-shadow:0 0 0 2px var(--done-base); }
+.msg.glow { animation: glow 1.1s ease 2; }
+@keyframes glow { 50% { box-shadow:0 0 0 5px color-mix(in srgb, var(--pass-base) 40%, transparent); } }
+
+@media (max-width: 980px) {
+  .hero, .loop, .split, .notool { grid-template-columns: 1fr; }
+  .loop-diagram { border-right:0; border-bottom:1px solid var(--border); }
+  .gaps, .takeaways { grid-template-columns: 1fr 1fr; }
+  .vs, .runs, .codegrid { grid-template-columns: 1fr; }
+  .vs::after { display:none; }
+  .wire { min-width:0; padding:0 22px 22px; }
+  .nav { display:none; }
+}
+@media (max-width: 560px) {
+  main { padding:18px 14px 60px; }
+  .hero { padding:22px; } .hero h1 { font-size:32px; }
+  .gaps, .takeaways { grid-template-columns: 1fr; }
+  .bar-row { grid-template-columns: 1fr; gap:4px; } .bar-row .val { text-align:left; }
+  .brand .title-t { display:none; }
+  .tools .btn .t { display:none; }
+  .tab { min-width:140px; }
+  .player .loop-code pre { max-height:340px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation:none !important; transition:none !important; }
+  html { scroll-behavior:auto; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="badge">01</span><span class="title-t">How LLMs Use Tools</span></div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#concepts">Concepts</a>
+      <a href="#loop">The loop</a>
+      <a href="#code">Core code</a>
+      <a href="#examples">Examples</a>
+      <a href="#notool">No tool</a>
+      <a href="#summary">Summary</a>
+    </nav>
+    <div class="tools">
+      <button class="btn" id="codeAll" aria-pressed="false" title="Show or hide every code cell">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
+        <span class="t">Show all code</span>
+      </button>
+      <button class="btn" id="theme" title="Toggle light/dark theme" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <div class="panel hero">
+    <div>
+      <div class="section-head"><span class="badge">nb</span><span class="kicker">notebooks/llm_tools_01.ipynb</span></div>
+      <h1>How LLMs Use Tools</h1>
+      <p class="quote">The same question, asked twice: once to a model on its own, once to a model with tools.</p>
+      <div class="chips">
+        <a class="chip" href="#concepts"><span class="badge">1</span>What tools are, and why models need them</a>
+        <a class="chip" href="#loop"><span class="badge">2</span>The tool loop, in a few lines of Python</a>
+        <a class="chip" href="#examples"><span class="badge">3</span>Five examples, side by side</a>
+        <a class="chip" href="#notool"><span class="badge">4</span>When <em>not</em> to use a tool</a>
+      </div>
+    </div>
+    <div class="teaser" id="teaser"></div>
+  </div>
+
+  <!-- CONCEPTS -->
+  <section id="concepts">
+    <div class="section-head"><span class="badge">1a</span><span class="kicker">Concept</span></div>
+    <h2>What are tools?</h2>
+    <p class="lede">A <strong>tool</strong> is a function in <em>your</em> program that you describe to the model: a name, a purpose and the arguments it takes. The model never runs anything. It can only reply with a structured request. Your code runs the function and sends the result back.</p>
+
+    <div class="panel split">
+      <div class="side">
+        <div class="role"><span class="badge" style="background:var(--primary);color:var(--on-solid)">M</span>The model</div>
+        <div class="big">decides <em>what</em> to call</div>
+        <ul>
+          <li>Reads tool names and descriptions, never the Python code</li>
+          <li>Picks a tool and fills in the arguments from the question</li>
+          <li>Writes the final answer from the returned result</li>
+        </ul>
+      </div>
+      <div class="wire" aria-hidden="true">
+        <div class="pkt"><span class="lbl">model → your code</span>{"name": "get_temperature",<br>&nbsp;"arguments": {"city": "Lisbon"}}</div>
+        <div class="arrowrow">your code runs it</div>
+        <div class="pkt"><span class="lbl">your code → model</span>{"temperature_c": 20.5, …}</div>
+      </div>
+      <div class="side">
+        <div class="role"><span class="badge">C</span>Your code</div>
+        <div class="big">decides <em>whether &amp; how</em> it runs</div>
+        <ul>
+          <li>Owns the actual function (APIs, databases, side effects)</li>
+          <li>Validates arguments, catches errors, checks permissions</li>
+          <li>Sends the result back as a <code>function_call_output</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="keyidea"><span class="badge" style="background:var(--primary);color:var(--on-solid)">!</span><div><strong>The key idea:</strong> the model decides <em>what</em> to call. Your code decides <em>whether and how</em> it runs.</div></div>
+
+    <div class="section-head" style="margin-top:44px"><span class="badge">1b</span><span class="kicker">Motivation</span></div>
+    <h2>Why do models need tools?</h2>
+    <p class="lede">A trained model is a frozen set of weights that predicts the next token. That design leaves four gaps. Click a card to jump to its example.</p>
+    <div class="gaps" id="gaps"></div>
+  </section>
+
+  <!-- LOOP -->
+  <section id="loop">
+    <div class="section-head"><span class="badge">2</span><span class="kicker">Mechanism</span></div>
+    <h2>The tool loop</h2>
+    <p class="lede">This is the whole mechanism. Agent frameworks add features around it, but the core is this loop. Press <strong>Play</strong> or step through it: the matching lines of <code>ask_with_tools</code> light up on the right.</p>
+
+    <div class="panel loop" id="loopPanel" data-step="0">
+      <div class="loop-diagram">
+        <svg viewBox="0 0 600 440" role="img" aria-label="Sequence diagram of the tool loop between your code and the model">
+          <defs>
+            <marker id="mDim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-dim" d="M0 0 10 5 0 10z"/></marker>
+            <marker id="mOn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-on" d="M0 0 10 5 0 10z"/></marker>
+          </defs>
+          <rect class="repeat-band" x="18" y="140" width="564" height="196" rx="12"/>
+          <text class="repeat-lbl" x="30" y="158">↻ REPEATS WHILE THE MODEL ASKS FOR TOOLS</text>
+          <line class="lifeline" x1="110" y1="72" x2="110" y2="430"/>
+          <line class="lifeline" x1="490" y1="72" x2="490" y2="430"/>
+          <g class="actor"><rect x="30" y="14" width="160" height="56" rx="12"/><text x="110" y="40" text-anchor="middle">Your code</text><text class="sub" x="110" y="58" text-anchor="middle">PYTHON</text></g>
+          <g class="actor model"><rect x="410" y="14" width="160" height="56" rx="12"/><text x="490" y="40" text-anchor="middle">Model</text><text class="sub" x="490" y="58" text-anchor="middle">LLM API</text></g>
+
+          <g class="hop" data-step="1">
+            <text x="300" y="104" text-anchor="middle">question + tool descriptions</text>
+            <line x1="118" y1="116" x2="482" y2="116" marker-end="url(#mDim)"/>
+            <circle class="pulse" cx="124" cy="116" r="5" style="--dx:352px"/>
+            <circle class="n" cx="110" cy="116" r="11"/><text class="nt" x="110" y="120">1</text>
+          </g>
+          <g class="hop" data-step="2">
+            <text x="300" y="186" text-anchor="middle">function_call: get_temperature(city="Lisbon")</text>
+            <line x1="482" y1="198" x2="118" y2="198" marker-end="url(#mDim)"/>
+            <circle class="pulse" cx="476" cy="198" r="5" style="--dx:-352px"/>
+            <circle class="n" cx="490" cy="198" r="11"/><text class="nt" x="490" y="202">2</text>
+          </g>
+          <g class="hop" data-step="3">
+            <path class="p" d="M118 232 h70 a14 14 0 0 1 0 28 h-70" marker-end="url(#mDim)"/>
+            <text x="210" y="250" text-anchor="start">run the Python function → 20.5 °C</text>
+            <circle class="n" cx="110" cy="246" r="11"/><text class="nt" x="110" y="250">3</text>
+          </g>
+          <g class="hop" data-step="4">
+            <text x="300" y="296" text-anchor="middle">function_call_output: {"temperature_c": 20.5}</text>
+            <line x1="118" y1="308" x2="482" y2="308" marker-end="url(#mDim)"/>
+            <circle class="pulse" cx="124" cy="308" r="5" style="--dx:352px"/>
+            <circle class="n" cx="110" cy="308" r="11"/><text class="nt" x="110" y="312">4</text>
+          </g>
+          <g class="hop" data-step="5">
+            <text x="300" y="380" text-anchor="middle">text: "It's 20.5°C in Lisbon right now."</text>
+            <line x1="482" y1="392" x2="118" y2="392" marker-end="url(#mDim)"/>
+            <circle class="pulse" cx="476" cy="392" r="5" style="--dx:-352px"/>
+            <circle class="n" cx="490" cy="392" r="11"/><text class="nt" x="490" y="396">5</text>
+          </g>
+        </svg>
+        <div class="controls">
+          <button class="btn solid" id="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play</span></button>
+          <button class="btn" id="stepBtn">Step <span class="mono" style="font-size:11px">→</span></button>
+          <button class="btn" id="reset">Reset</button>
+          <div class="prog" id="prog"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="caption" id="caption"></div>
+      </div>
+      <div class="loop-code" id="loopCode">
+        <div class="bar"><span class="cell" style="font:500 11px var(--mono);color:var(--accent);background:var(--row);padding:2px 7px;border-radius:5px">In [<span id="loopCell"></span>]</span>ask_with_tools()</div>
+        <pre id="loopPre"></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORE CODE -->
+  <section id="code">
+    <div class="section-head"><span class="badge">2b</span><span class="kicker">Notebook cells</span></div>
+    <h2>Setup and core code</h2>
+    <p class="lede">Needs <code>OPENAI_API_KEY</code> in the repo-root <code>.env</code>. The optional <code>OPENAI_MODEL</code> picks the model. Every code cell below is collapsed. Open one, or use <strong>Show all code</strong> in the top bar.</p>
+    <div class="codegrid" id="coreCode"></div>
+  </section>
+
+  <!-- EXAMPLES -->
+  <section id="examples">
+    <div class="section-head"><span class="badge">3</span><span class="kicker">Side by side</span></div>
+    <h2>Five examples: without vs with tools</h2>
+    <p class="lede">Each example asks the same question twice. These are the real answers saved in the notebook run.</p>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div id="exPanel"></div>
+  </section>
+
+  <!-- NO TOOL -->
+  <section id="notool">
+    <div class="section-head"><span class="badge">4</span><span class="kicker">Judgement</span></div>
+    <h2>When not to use a tool</h2>
+    <p class="lede">Tools are options, not obligations. Here the model gets <strong>every tool</strong> from this notebook and a question it already knows the answer to.</p>
+    <div class="panel notool" id="notoolPanel"></div>
+    <div id="notoolCode"></div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary">
+    <div class="section-head"><span class="badge">5</span><span class="kicker">Recap</span></div>
+    <h2>Summary</h2>
+    <div class="panel" style="overflow:hidden">
+      <table class="sumtable" id="sumtable"></table>
+    </div>
+    <div class="subhead">Takeaways</div>
+    <div class="takeaways" id="takeaways"></div>
+  </section>
+</main>
+<footer>Companion page for notebooks/llm_tools_01.ipynb · all answers are the saved outputs of one notebook run, and a fresh run will word them differently.</footer>
+
+<script>
+const NB = /*__NB__*/null;
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const out = (cell, title) => (NB.outs[cell] || []).find(o => o.title === title);
+const steps = cell => (NB.outs[cell] || []).filter(o => /^Step \d+:/.test(o.title || ""));
+
+function md(s) {
+  let h = esc(s);
+  h = h.replace(/`([^`]+)`/g, "<code>$1</code>");
+  h = h.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  h = h.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  h = h.replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return h;
+}
+const bullets = cell => NB.cells[cell].split("\n").filter(l => l.startsWith("- ")).map(l => l.slice(2));
+
+const PY_KW = new Set("False None True and as assert break case class continue def del elif else except finally for from if import in is lambda match not or pass raise return try while with yield".split(" "));
+const PY_BI = new Set("print len list dict sorted range type str int float isinstance enumerate zip open sum any all map filter".split(" "));
+function hlPy(src) {
+  const re = /(#[^\n]*)|([rRbBfF]{0,2}"""[\s\S]*?"""|[rRbBfF]{0,2}'''[\s\S]*?'''|[rRbBfF]{0,2}"(?:\\.|[^"\\\n])*"|[rRbBfF]{0,2}'(?:\\.|[^'\\\n])*')|(\b\d[\d_]*\.?\d*(?:e[+-]?\d+)?\b)|([A-Za-z_]\w*)(?=\s*\()|([A-Za-z_]\w*)/g;
+  let res = "", last = 0, m, prevDef = false;
+  while ((m = re.exec(src))) {
+    res += esc(src.slice(last, m.index)); last = re.lastIndex;
+    const [t, com, str, num, call, word] = m;
+    if (com) res += `<span class="tok-com">${esc(com)}</span>`;
+    else if (str) res += `<span class="tok-str">${esc(str)}</span>`;
+    else if (num) res += `<span class="tok-num">${esc(num)}</span>`;
+    else {
+      const w = call || word;
+      if (PY_KW.has(w)) res += `<span class="tok-kw">${w}</span>`;
+      else if (call && PY_BI.has(w)) res += `<span class="tok-bi">${w}</span>`;
+      else if (call || prevDef) res += `<span class="tok-fn">${w}</span>`;
+      else res += esc(w);
+      prevDef = w === "def"; continue;
+    }
+    prevDef = false;
+  }
+  return res + esc(src.slice(last));
+}
+function hlJson(src) {
+  return esc(src).replace(/(&quot;(?:[^&]|&(?!quot;))*?&quot;)(\s*:)?|\b(true|false|null)\b|(-?\b\d+\.?\d*\b)/g, (m, s, colon, lit, num) => {
+    if (s) return colon ? `<span class="tok-key">${s}</span>${colon}` : `<span class="tok-str">${s}</span>`;
+    if (lit) return `<span class="tok-kw">${lit}</span>`;
+    return `<span class="tok-num">${num}</span>`;
+  });
+}
+
+const ICON = {
+  chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>',
+  calc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+};
+
+function codeBlock(cell, label, { lang = "py", src, showOutput = true } = {}) {
+  const code = src ?? NB.cells[cell];
+  const body = lang === "json" ? hlJson(code) : hlPy(code);
+  const streams = showOutput ? (NB.outs[cell] || []).filter(o => o.stream).map(o => o.stream).join("") : "";
+  return `<details class="code">
+    <summary>
+      <span class="cell">In [${cell}]</span><span class="label">${esc(label)}</span>
+      <button class="copy" type="button" data-cell="${cell}">Copy</button>
+      <span class="toggle">${ICON.chev}<span class="show-t">Show code</span><span class="hide-t">Hide code</span></span>
+    </summary>
+    <pre><code>${body}</code></pre>
+    ${streams ? `<div class="output">${esc(streams)}</div>` : ""}
+  </details>`;
+}
+
+/* ---------- cell lookup: by content, never by index ---------- */
+const CELL_IDS = Object.keys(NB.cells).map(Number).sort((a, b) => a - b);
+function cellOf(snippet, header) {
+  let lo = 0, hi = Infinity;
+  if (header) {
+    lo = CELL_IDS.find(i => NB.cells[i].includes(header));
+    if (lo === undefined) throw new Error(`No section "${header}"`);
+    hi = CELL_IDS.find(i => i > lo && NB.cells[i].startsWith("---\n#")) ?? Infinity;
+  }
+  const hits = CELL_IDS.filter(i => i >= lo && i < hi && NB.cells[i].includes(snippet));
+  if (hits.length !== 1) throw new Error(`cellOf("${snippet}"${header ? `, "${header}"` : ""}): ${hits.length} matches`);
+  return hits[0];
+}
+const S1 = "# Example 1:", S2 = "# Example 2:", S3 = "# Example 3:", S4 = "# Example 4:", S5 = "# Example 5:", SN = "# When not to use a tool";
+const C = {
+  setup: cellOf("load_dotenv(find_dotenv"), ask: cellOf("def ask(question)"), loop: cellOf("def ask_with_tools("), helpers: cellOf("def show_trace("),
+  t_q: cellOf("show_question(question)", S1), t_wo: cellOf("show_without_tool", S1), t_fn: cellOf("def get_temperature(", S1),
+  t_schema: cellOf("temperature_tool = function_tool(", S1), t_run: cellOf("temperature_run = trace", S1), t_ex: cellOf("## Explain", S1),
+  a_q: cellOf("show_question(question)", S2), a_wo: cellOf("show_without_tool", S2), a_fn: cellOf("def suggest_activities(", S2),
+  a_run: cellOf("activities_run = trace", S2), a_ex: cellOf("## Explain", S2),
+  s_q: cellOf("show_question(question)", S3), s_wo: cellOf("show_without_tool", S3), s_fn: cellOf("def search(", S3),
+  s_run: cellOf("search_run = trace", S3), s_ex: cellOf("## Explain", S3),
+  c_q: cellOf("show_question(question)", S4), c_wo: cellOf("show_without_tool", S4), c_fn: cellOf("def calculate(", S4),
+  c_run: cellOf("calculator_run = trace", S4), c_exact: cellOf("exact = 1250", S4), c_ex: cellOf("## Explain", S4),
+  o_q: cellOf("Where is my order A1042", S5), o_wo: cellOf("show_without_tool", S5), o_fn: cellOf("def get_order(", S5),
+  o_run1: cellOf("order_run = trace", S5), o_run2: cellOf("TICKETS_BEFORE = len", S5), o_ex: cellOf("## Explain", S5),
+  n_run: cellOf("all_tools = [", SN), n_md: cellOf("tools available, the model made", SN), takeaways: cellOf("## Takeaways"),
+};
+/* The question text: from the saved output, or from the cell source when the cell has not been run. */
+function questionOf(cell) {
+  const o = out(cell, "Question"); if (o) return o.body;
+  const m = NB.cells[cell].match(/question = (?:\(\s*)?((?:"(?:[^"\\]|\\.)*"\s*)+)/);
+  return m ? [...m[1].matchAll(/"((?:[^"\\]|\\.)*)"/g)].map(x => x[1].replace(/\\(.)/g, "$1")).join("") : "";
+}
+const isRun = e => !!out(e.run, "With tools") && !!out(e.without, "Without tools");
+
+/* ---------- data ---------- */
+const GAPS = [
+  { icon: "clock", gap: "Fresh information", why: "Training stopped at a cutoff date.", fills: "Weather API, web search", ex: 0 },
+  { icon: "calc", gap: "Reliable computation", why: "It predicts digits instead of calculating them.", fills: "Calculator, code execution", ex: 3 },
+  { icon: "lock", gap: "Private data", why: "Your data was never in its training set.", fills: "Database or internal API lookup", ex: 4 },
+  { icon: "bolt", gap: "The ability to act", why: "Text alone changes nothing in the world.", fills: "Create a ticket, send an email", ex: 4 },
+];
+
+const EXAMPLES = [
+  {
+    key: "temperature", title: "Temperature", gap: "Fresh information", sum: "Fresh information", icon: "clock",
+    intro: "The current temperature changes all the time, so no training set can contain it.",
+    q: C.t_q, without: C.t_wo, run: C.t_run,
+    verdictWithout: ["warn", "Declines: no live data"], verdictWith: "Grounded in live data",
+    tools: ["get_temperature"],
+    toolNote: "<code>get_temperature</code> is an ordinary Python function that calls the free <a href=\"https://open-meteo.com\" target=\"_blank\" rel=\"noopener\">Open-Meteo</a> API. Nothing about it is specific to AI. The <strong>description</strong> in the schema is what the model reads. It never sees the Python code.",
+    code: [[C.t_fn, "get_temperature(): calls Open-Meteo"], [C.t_schema, "temperature_tool: the JSON schema the model sees"], [C.t_wo, "Without tool: ask(question)"], [C.t_run, "With tool: ask_with_tools(...)"]],
+    explain: C.t_ex,
+  },
+  {
+    key: "activities", title: "Temperature + activities", gap: "Fresh information · chained", sum: "Fresh information, chained", icon: "clock",
+    intro: "One tool is often not enough. The second tool needs the first tool's result as its input, so the model must run them in order: first find the temperature, then look up what to do at that temperature.",
+    q: C.a_q, without: C.a_wo, run: C.a_run,
+    verdictWithout: ["warn", "Generic ideas only"], verdictWith: "Weather + matching ideas",
+    tools: ["get_temperature", "suggest_activities"],
+    toolNote: "<code>get_temperature</code> is reused from Example 1. <code>suggest_activities</code> is new: it picks activities from a small table of temperature bands (<strong>fake data</strong>, created for the notebook). It takes <code>temperature_c</code> as an argument, and nothing in our code passes it along: the model has to get it from the first tool's result.",
+    code: [[C.a_fn, "ACTIVITIES, suggest_activities(), activities_tool"], [C.a_wo, "Without tools: ask(question)"], [C.a_run, "With tools: ask_with_tools(...)"]],
+    explain: C.a_ex,
+  },
+  {
+    key: "search", title: "Search", gap: "Fresh information, open-ended", sum: "Fresh information", icon: "search",
+    intro: "A weather tool answers one kind of question. A search tool lets the model look up almost anything, and it has to write the query itself.",
+    q: C.s_q, without: C.s_wo, run: C.s_run,
+    verdictWithout: ["fail", "Wrong: frozen sense of “now”"], verdictWith: "Grounded in a source",
+    tools: ["search"],
+    toolNote: "<code>search</code> queries Wikipedia and returns the opening paragraphs of the best-matching articles. A production system would often use a web search API, but the idea is the same.",
+    code: [[C.s_fn, "search() + search_tool"], [C.s_wo, "Without tool: ask(question)"], [C.s_run, "With tool: ask_with_tools(...)"]],
+    explain: C.s_ex,
+  },
+  {
+    key: "calculator", title: "Calculator", gap: "Reliable computation", sum: "Reliable computation", icon: "calc",
+    intro: "A model generates digits that look likely. It may get a long calculation right or close, but nothing guarantees it. A calculator is exact every time.",
+    q: C.c_q, without: C.c_wo, run: C.c_run,
+    verdictWithout: ["fail", "Confidently wrong"], verdictWith: "Exact",
+    tools: ["calculate"],
+    toolNote: "<code>calculate</code> walks the expression's syntax tree and allows only arithmetic. Python's <code>eval</code> would run whatever string the model produced, so it is never used here.",
+    code: [[C.c_fn, "calculate(): safe arithmetic via ast"], [C.c_wo, "Without tool: ask(question)"], [C.c_run, "With tool: ask_with_tools(...)"], [C.c_exact, "Exact value from the annuity formula"]],
+    explain: C.c_ex,
+  },
+  {
+    key: "orders", title: "Private data + action", gap: "Private data · ability to act", sum: "Private data, actions", icon: "lock",
+    intro: "This example chains two tools: the model looks up an order, reasons about the result, and then changes something. The order and ticket store are fake data created for the notebook.",
+    q: C.o_q, without: C.o_wo, run: C.o_run1,
+    verdictWithout: ["warn", "Can't see data or act"], verdictWith: "Looked up & acted",
+    tools: ["get_order", "create_ticket"],
+    toolNote: "One tool <strong>reads</strong> and one tool <strong>writes</strong>. That difference matters: a wrong read gives a bad answer, while a wrong write has real consequences.",
+    code: [[C.o_fn, "ORDERS, TICKETS, get_order(), create_ticket(), order_tools"], [C.o_wo, "Without tool: ask(question)"], [C.o_run1, "With tools: run 1 (A1042)"], [C.o_run2, "With tools: run 2 (A1043)"]],
+    explain: C.o_ex,
+  },
+];
+
+/* ---------- render: teaser ---------- */
+$("#teaser").innerHTML = `
+  <div class="msg user q"><div class="who">${ICON.user.replace("<svg", '<svg width="12" height="12"')} Question</div>${esc(out(C.t_q, "Question").body)}</div>
+  <div class="msg fail"><div class="who"><span class="dot"></span> Without tools</div>${esc(out(C.t_wo, "Without tools").body)}</div>
+  <div class="msg done" style="font-family:var(--mono);font-size:12.5px"><div class="who"><span class="dot"></span> Tool call</div>${esc(steps(C.t_run)[0].title.replace(/^Step \d+: /, ""))} → 20.5 °C</div>
+  <div class="msg pass"><div class="who"><span class="dot"></span> With tools</div>${esc(out(C.t_run, "With tools").body)}</div>`;
+
+/* ---------- render: gaps ---------- */
+$("#gaps").innerHTML = GAPS.map((g, i) => `
+  <button class="panel gap" data-ex="${g.ex}">
+    <span class="ic">${ICON[g.icon]}</span>
+    <h3>${g.gap}</h3>
+    <p>${g.why}</p>
+    <div class="fills">Filled by <b>${g.fills}</b></div>
+    <span class="go">→ Example ${g.ex + 1}</span>
+  </button>`).join("");
+document.querySelectorAll(".gap").forEach(b => b.addEventListener("click", () => { selectExample(+b.dataset.ex); $("#examples").scrollIntoView(); }));
+
+/* ---------- render: loop ---------- */
+const LOOP_SRC = NB.cells[C.loop].split("\n\n\ndef function_tool")[0];
+$("#loopCell").textContent = C.loop;
+$("#loopPre").innerHTML = hlPy(LOOP_SRC).split("\n").map((l, i) => `<span class="ln" data-n="${i + 1}">${l || " "}</span>`).join("");
+const LOOP_STEPS = [
+  { t: "Overview", p: "Your code and the model take turns. The model can answer in text, or ask your code to run a tool. Press Play.", lines: [] },
+  { t: "Send the question and the tools", p: "Your code sends the conversation and the tool descriptions: name, purpose, JSON-schema arguments.", lines: [3, 7, 8, 9, 10, 11, 12] },
+  { t: "The model asks for a tool", p: "It replies with a function_call item rather than text. It picked get_temperature and pulled city=\"Lisbon\" out of the sentence itself.", lines: [13, 15] },
+  { t: "Your code runs the function", p: "Look the name up in the registry and call the real Python function. Errors are caught and sent back so the model can recover.", lines: [19, 20, 21, 22, 23, 24, 25, 26] },
+  { t: "Send the result back", p: "Append a function_call_output with the matching call_id, then loop and call the model again with the longer conversation.", lines: [27, 28, 29, 30, 31] },
+  { t: "The model answers in text", p: "No more function calls, so the loop ends and returns the model's sentence, now grounded in the tool's result.", lines: [16, 17] },
+];
+let loopStep = 0, timer = null;
+function setLoop(n) {
+  loopStep = n;
+  const panel = $("#loopPanel"); panel.dataset.step = n;
+  panel.querySelectorAll(".hop").forEach(h => {
+    const s = +h.dataset.step;
+    h.classList.toggle("on", s === n);
+    h.classList.toggle("past", n && s < n);
+    h.querySelectorAll("line, path.p").forEach(el => el.setAttribute("marker-end", s === n ? "url(#mOn)" : "url(#mDim)"));
+  });
+  document.querySelectorAll("#prog i").forEach((el, i) => el.classList.toggle("on", i < n));
+  const st = LOOP_STEPS[n];
+  $("#caption").innerHTML = `<div class="t">${n ? `<span class="badge" style="background:var(--accent);color:#fff">${n}</span>` : ""}${st.t}</div><p>${md(st.p)}</p>`;
+  const lines = new Set(st.lines);
+  document.querySelectorAll("#loopPre .ln").forEach(l => l.classList.toggle("hl", lines.has(+l.dataset.n)));
+  $("#loopCode").classList.toggle("dim", n > 0);
+  const first = $("#loopPre .ln.hl");
+  if (first) { const pre = $("#loopPre"); pre.scrollTo({ top: first.offsetTop - pre.clientHeight / 3, behavior: "smooth" }); }
+}
+function stopPlay() { clearInterval(timer); timer = null; $("#play span").textContent = "Play"; }
+$("#play").addEventListener("click", () => {
+  if (timer) return stopPlay();
+  if (loopStep >= 5) setLoop(0);
+  $("#play span").textContent = "Pause";
+  setLoop(loopStep + 1);
+  timer = setInterval(() => { if (loopStep >= 5) return stopPlay(); setLoop(loopStep + 1); }, 2600);
+});
+$("#stepBtn").addEventListener("click", () => { stopPlay(); setLoop(loopStep >= 5 ? 0 : loopStep + 1); });
+$("#reset").addEventListener("click", () => { stopPlay(); setLoop(0); });
+setLoop(0);
+
+/* ---------- render: core code ---------- */
+$("#coreCode").innerHTML = [
+  codeBlock(C.setup, "Setup: imports, model, client"),
+  codeBlock(C.ask, "ask(): one request, one answer"),
+  codeBlock(C.loop, "ask_with_tools() + function_tool(): the loop"),
+  codeBlock(C.helpers, "Display helpers (Jupyter cards)"),
+].join("");
+
+/* ---------- render: examples ---------- */
+$("#tabs").innerHTML = EXAMPLES.map((e, i) => `
+  <button class="tab" role="tab" aria-selected="false" data-i="${i}">
+    <span class="badge">${i + 1}</span><span>${e.title}<small>${e.gap}</small></span>
+  </button>`).join("");
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => selectExample(+t.dataset.i)));
+$("#tabs").addEventListener("keydown", ev => {
+  if (!["ArrowRight", "ArrowLeft"].includes(ev.key)) return;
+  const cur = EXAMPLES.findIndex((_, i) => $(`.tab[data-i="${i}"]`).getAttribute("aria-selected") === "true");
+  const n = (cur + (ev.key === "ArrowRight" ? 1 : 3)) % 4; selectExample(n); $(`.tab[data-i="${n}"]`).focus();
+});
+
+function parseStep(o) {
+  const m = o.title.match(/^Step (\d+): (\w+)\((.*)\)$/s);
+  return { n: m[1], tool: m[2], args: m[3], result: o.body.replace(/^returned /, "") };
+}
+function traceHtml(cell) {
+  return `<div class="trace">${steps(cell).map(parseStep).map(s => `
+    <details class="step" data-k="${s.n - 1}">
+      <summary><span class="sn">CALL ${s.n}</span><span class="call"><b>${esc(s.tool)}</b>(${esc(s.args)})</span><span class="more">result ▾</span></summary>
+      <pre><span class="ret">returned → sent back to the model</span>${hlJson(s.result)}</pre>
+    </details>`).join("")}</div>`;
+}
+function flowWithout(cls) {
+  return `<div class="flow"><span class="node">${ICON.user.replace("<svg", '<svg width="12" height="12"')} you</span><span class="arr">→</span><span class="node model">model</span><span class="arr">→</span><span class="node ${cls}">answer from memory</span></div>`;
+}
+function flowWith(tools) {
+  return `<div class="flow"><span class="node">${ICON.user.replace("<svg", '<svg width="12" height="12"')} you</span><span class="arr">→</span><span class="node model">model</span><span class="arr">⇄</span>
+    <span class="toolstack">${tools.map(t => `<span class="node tool">⚙ ${t}()</span>`).join("")}</span><span class="arr">→</span><span class="node ans-pass">grounded answer</span></div>
+    <div class="flow-cap">⇄ = function_call out, function_call_output back · your code runs the tool</div>`;
+}
+
+function extraFor(e) {
+  if (e.key === "activities") {
+    const ss = steps(e.run).map(parseStep);
+    const ti = ss.findIndex(s => s.tool === "get_temperature"), ai = ss.findIndex(s => s.tool === "suggest_activities");
+    if (ti < 0 || ai < 0) return `<div class="subhead">How the two tools connect</div><div class="panel pad">In this saved run the model called: <code>${esc(ss.map(s => s.tool).join(" → ") || "no tools")}</code>.</div>`;
+    let tr = {}, ar = {}; try { tr = JSON.parse(ss[ti].result); ar = JSON.parse(ss[ai].result); } catch (_) {}
+    const passed = pyArgsToObj(ss[ai].args).temperature_c, same = +passed === +tr.temperature_c;
+    return `<div class="subhead">How the two tools connect</div>
+      <div class="panel pad chaincard">
+        <div class="link"><span class="sn">CALL ${ti + 1}</span><span class="node tool">⚙ get_temperature(${esc(ss[ti].args)})</span></div>
+        <div class="arrowdown">returns <code>temperature_c: ${esc(tr.temperature_c)}</code></div>
+        <div class="link"><span class="sn">CALL ${ai + 1}</span><span class="node tool">⚙ suggest_activities(${esc(ss[ai].args)})</span>
+          <span class="verdict ${same ? "pass" : "warn"}">${same ? "✓ same value: the model passed it on" : "≠ the model changed the value"}</span></div>
+        <div class="arrowdown">returns band <code>${esc(ar.band)}</code></div>
+        <div class="acts">${(ar.activities || []).map(a => `<span class="chip">${esc(a)}</span>`).join("")}</div>
+        <p class="flow-cap" style="margin-top:12px">Our code never copied the temperature from one call to the other: the model read it in the first result and wrote it into the second call's arguments.</p>
+      </div>`;
+  }
+  if (e.key === "calculator") {
+    const guess = parseFloat(out(C.c_wo, "Without tools").body.match(/\$([\d,]+\.\d{2})\s+after/)[1].replace(/,/g, ""));
+    const toolVal = JSON.parse(steps(C.c_run)[0].body.replace(/^returned /, "")).value;
+    const exact = parseFloat(out(C.c_exact, "Exact value").body.replace(/[$,]/g, ""));
+    const max = Math.max(guess, toolVal, exact) * 1.08;
+    const f = v => "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const diff = exact - guess;
+    return `<div class="subhead">Checking against the formula</div>
+      <div class="panel pad">
+        <div class="bars">
+          <div class="bar-row"><span class="name">Model alone</span><div class="bar-track"><div class="bar-fill fail" data-w="${guess / max * 100}"></div></div><span class="val" style="color:var(--fail-ink)">${f(guess)}</span></div>
+          <div class="bar-row"><span class="name">Model + calculate()</span><div class="bar-track"><div class="bar-fill pass" data-w="${toolVal / max * 100}"></div></div><span class="val" style="color:var(--pass-ink)">${f(toolVal)}</span></div>
+          <div class="bar-row"><span class="name">Exact (Python formula)</span><div class="bar-track"><div class="bar-fill done" data-w="${exact / max * 100}"></div></div><span class="val" style="color:var(--done-ink)">${f(exact)}</span></div>
+        </div>
+        <div class="gap-note">${ICON.x.replace("<svg", '<svg width="14" height="14"')} Without the tool the answer is off by <strong>${f(Math.abs(diff))}</strong> (${(Math.abs(diff) / exact * 100).toFixed(1)}% ${diff > 0 ? "too low" : "too high"}), with tidy working and full confidence.</div>
+      </div>`;
+  }
+  if (e.key === "orders") {
+    const o1 = JSON.parse(steps(C.o_run1)[0].body.replace(/^returned /, ""));
+    const o2 = JSON.parse(steps(C.o_run2)[0].body.replace(/^returned /, ""));
+    const run = (id, o, cell, late) => `
+      <div class="panel run">
+        <div class="rh"><span class="badge">${id}</span>${esc(out(cell === C.o_run1 ? C.o_q : C.o_run2, "Question").body)}</div>
+        <div class="kv"><span>item</span><span>${esc(o.item)}</span><span>status</span><span>${esc(o.status)}</span><span>days_late</span><span class="${late ? "hot" : "ok"}">${o.days_late}</span></div>
+        <div class="decision">${late ? "days_late &gt; 0 → condition met → <b>create_ticket()</b>" : "days_late = 0 → condition not met → <b>stop</b>"}</div>
+        <div class="chain">${steps(cell).map(parseStep).map((s, i) => `${i ? '<span class="arr">→</span>' : ""}<span class="node tool">⚙ ${s.tool}</span>`).join("")}${late ? "" : '<span class="arr">→</span><span class="node ans-warn">no ticket</span>'}</div>
+        <div class="msg pass"><div class="who"><span class="dot"></span> With tools</div>${esc(out(cell, "With tools").body)}</div>
+      </div>`;
+    const t = parseStep(steps(C.o_run1)[1]);
+    let ticket = {}; try { ticket = JSON.parse(t.result); } catch (_) {}
+    return `<div class="subhead">Same tools, same request, different order: who wrote the <code>if</code>?</div>
+      <div class="runs">${run("A1042", o1, C.o_run1, true)}${run("A1043", o2, C.o_run2, false)}</div>
+      <div class="subhead">Ticket store after the runs: the action really happened</div>
+      <div class="panel store"><table><tr><th>ticket_id</th><th>order_id</th><th>reason (written by the model)</th></tr>
+        <tr><td>${esc(ticket.ticket_id)}</td><td>${esc(ticket.order_id)}</td><td>${esc(ticket.reason)}</td></tr></table>
+        <div class="flow-cap" style="margin-top:10px">Run 2 printed: ${esc((NB.outs[C.o_run2] || []).find(o => o.stream)?.stream.trim() || "")}</div></div>`;
+  }
+  return "";
+}
+
+/* ---------- run player: every example, hop by hop ---------- */
+const TOOL_CELL = { get_temperature: C.t_fn, suggest_activities: C.a_fn, search: C.s_fn, calculate: C.c_fn, get_order: C.o_fn, create_ticket: C.o_fn };
+const J = o => JSON.stringify(o, null, 2);
+const trunc = (s, n) => (s = String(s).replace(/\s+/g, " "), s.length > n ? s.slice(0, n - 1) + "…" : s);
+
+function pyArgsToObj(s) {
+  const o = {}, re = /(\w+)=('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|[^,]+)/g; let m;
+  while ((m = re.exec(s))) {
+    let v = m[2].trim();
+    if (/^['"]/.test(v)) v = v.slice(1, -1).replace(/\\(['"\\])/g, "$1"); else if (v !== "" && !isNaN(+v)) v = +v;
+    o[m[1]] = v;
+  }
+  return o;
+}
+function summarize(tool, r) {
+  try {
+    if (tool === "get_temperature") return `${r.temperature_c} °C in ${r.city}`;
+    if (tool === "suggest_activities") return `${r.band}: ${r.activities.length} activities`;
+    if (tool === "search") return `${r.length} articles: "${r[0].title}"`;
+    if (tool === "calculate") return (+r.value).toLocaleString("en-US", { maximumFractionDigits: 2 });
+    if (tool === "get_order") return `${r.status}, days_late: ${r.days_late}`;
+    if (tool === "create_ticket") return `${r.ticket_id} created`;
+  } catch (_) {}
+  return JSON.stringify(r);
+}
+
+function askHop(q, tools) {
+  return {
+    kind: "ask", label: `question + tools [${tools.join(", ")}]`,
+    title: "Send the question and the tools",
+    text: `Your code sends the question and ${tools.length} tool description${tools.length > 1 ? "s" : ""}. The model sees names, descriptions and argument schemas, never the Python.`,
+    payload: J({ input: [{ role: "user", content: q }], tools: tools.map(t => ({ type: "function", name: t, description: "…", parameters: "…" })) }),
+    lines: [3, 7, 8, 9, 10, 11, 12],
+  };
+}
+function withScene(label, qCell, runCell, tools, world) {
+  const hops = [askHop(out(qCell, "Question").body, tools)];
+  steps(runCell).map(parseStep).forEach((s, k) => {
+    let r; try { r = JSON.parse(s.result); } catch (_) { r = s.result; }
+    const args = pyArgsToObj(s.args), sum = summarize(s.tool, r);
+    hops.push({ kind: "call", k, label: `function_call: ${s.tool}(${s.args})`,
+      title: `The model asks for ${s.tool}`,
+      text: k ? "It read the previous result, decided another step was needed, and wrote new arguments itself." : "Instead of text, it replies with a function_call. It picked the tool and pulled the arguments out of the question itself.",
+      payload: J({ type: "function_call", name: s.tool, arguments: JSON.stringify(args) }), lines: [13, 15] });
+    hops.push({ kind: "run", k, tool: s.tool, label: `${s.tool}(${Object.values(args).map(v => JSON.stringify(v)).join(", ")})`, back: sum,
+      title: `Your code runs ${s.tool}()`,
+      text: `registry["${s.tool}"](**arguments) calls the real Python function, which uses ${world}. The model takes no part in this step.`,
+      payload: typeof r === "string" ? r : J(r) });
+    hops.push({ kind: "output", k, label: `function_call_output: ${sum}`,
+      title: "Send the result back",
+      text: "The result goes back as a function_call_output with the same call_id. The loop then calls the model again with the longer conversation.",
+      payload: J({ type: "function_call_output", call_id: "call_…", output: r }), lines: [26, 27, 28, 29, 30, 31] });
+  });
+  const ans = out(runCell, "With tools").body;
+  hops.push({ kind: "answer", label: `text: "${ans}"`, final: true,
+    title: "The model answers in text",
+    text: steps(runCell).length ? "No function_call in this reply, so the loop ends and returns the text, grounded in the tool results." : "No function_call items, so the loop ends on the very first turn.",
+    payload: ans, lines: [16, 17] });
+  return { label, tone: "pass", code: "loop", hops, runCell };
+}
+function withoutScene(qCell, wCell, verdict) {
+  const q = out(qCell, "Question").body, a = out(wCell, "Without tools").body;
+  return { label: "Without tools", tone: verdict[0], code: "ask", hops: [
+    { kind: "ask", label: "question only (no tools)", title: "Send only the question",
+      text: "ask() sends the question with no tools attached. The model has nothing it can call.", payload: J({ input: q }), lines: [2, 3, 4, 5, 6] },
+    { kind: "mem", tone: verdict[0], label: `text: "${a}"`, final: true, title: `The model answers from memory: ${verdict[1]}`,
+      text: "Training data is all it has. Compare this with the tool run.", payload: a, lines: [7] },
+  ] };
+}
+
+const players = new Set();
+let hoverPlayer = null;
+document.addEventListener("keydown", ev => {
+  if (ev.ctrlKey || ev.metaKey || ev.altKey || /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)) return;
+  const P = [...players].find(p => p.root.isConnected && p.root.contains(document.activeElement)) || (hoverPlayer?.root.isConnected ? hoverPlayer : null);
+  if (!P) return;
+  if (ev.key === "ArrowRight") P.fwd();
+  else if (ev.key === "ArrowLeft") P.back();
+  else if (ev.key === " ") P.play();
+  else if (/^[1-9]$/.test(ev.key)) P.scene_(+ev.key - 1);
+  else return;
+  ev.preventDefault();
+});
+let PID = 0;
+function stopPlayers() { players.forEach(p => { p.stop(); if (!p.root.isConnected) players.delete(p); }); }
+
+function makePlayer(host, cfg) {
+  const id = "pl" + (++PID);
+  host.innerHTML = `<div class="panel loop player${cfg.idleWorld ? " idle-world" : ""}" data-step="0">
+    <div class="loop-diagram">
+      ${cfg.scenes.length > 1 ? `<div class="scenes">${cfg.scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${s.tone === "pass" ? "✓" : "✕"} ${esc(s.label)}<span class="cnt">0/${s.hops.length}</span></button>`).join('<span class="arr">·</span>')}</div>` : ""}
+      <div class="svgwrap"></div>
+      <div class="controls">
+        <button class="btn solid play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play</span></button>
+        <button class="btn backb" aria-label="Step back"><span class="mono" style="font-size:11px">←</span> Back</button>
+        <button class="btn stepb">Step <span class="mono" style="font-size:11px">→</span></button>
+        <button class="btn resetb">Reset</button>
+        <div class="prog"></div>
+      </div>
+      <div class="caption"></div>
+    </div>
+    <div class="loop-code"><div class="bar"></div><pre></pre></div>
+  </div>`;
+  const root = host.firstElementChild, P = { root, scene: 0, n: 0, timer: null, codeKey: "" };
+  const X = { world: 80, code: 310, model: 630 }, W = 720;
+
+  function svgFor(sc) {
+    let y = 120, body = "", band = null;
+    sc.hops.forEach((h, i) => {
+      const num = i + 1, m = (X.code + X.model) / 2;
+      const tone = h.kind === "mem" ? h.tone : "";
+      if (h.kind === "call" && !band) band = { y0: y - 34 };
+      if (h.kind === "ask" || h.kind === "output") {
+        body += `<g class="hop ${h.kind}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 42))}</text>
+          <line x1="${X.code + 8}" y1="${y}" x2="${X.model - 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+          <circle class="pulse" cx="${X.code + 14}" cy="${y}" r="5" style="--dx:${X.model - X.code - 30}px"/>
+          <circle class="n" cx="${X.code}" cy="${y}" r="11"/><text class="nt" x="${X.code}" y="${y + 4}">${num}</text></g>`;
+        if (h.kind === "output") band.y1 = y + 18;
+        y += 64;
+      } else if (h.kind === "run") {
+        const wm = (X.world + X.code) / 2;
+        body += `<g class="hop run" data-step="${num}"><text x="${wm}" y="${y - 10}" text-anchor="middle">${esc(trunc(h.label, 28))}</text>
+          <line x1="${X.code - 8}" y1="${y}" x2="${X.world + 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+          <line x1="${X.world + 8}" y1="${y + 24}" x2="${X.code - 8}" y2="${y + 24}" marker-end="url(#${id}-dim)"/>
+          <text x="${wm}" y="${y + 42}" text-anchor="middle">→ ${esc(trunc(h.back, 26))}</text>
+          <circle class="pulse" cx="${X.code - 14}" cy="${y}" r="5" style="--dx:${-(X.code - X.world - 30)}px"/>
+          <circle class="n" cx="${X.code}" cy="${y + 12}" r="11"/><text class="nt" x="${X.code}" y="${y + 16}">${num}</text></g>`;
+        y += 84;
+      } else {
+        body += `<g class="hop ${h.kind} ${tone}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 42))}</text>
+          <line x1="${X.model - 8}" y1="${y}" x2="${X.code + 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+          <circle class="pulse" cx="${X.model - 14}" cy="${y}" r="5" style="--dx:${-(X.model - X.code - 30)}px"/>
+          <circle class="n" cx="${X.model}" cy="${y}" r="11"/><text class="nt" x="${X.model}" y="${y + 4}">${num}</text></g>`;
+        y += 64;
+      }
+    });
+    const H = y - 20;
+    const mk = (n, c) => `<marker id="${id}-${n}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="${c}" d="M0 0 10 5 0 10z"/></marker>`;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(sc.label)}: step-by-step sequence diagram">
+      <defs>${mk("dim", "mk-dim")}${mk("on", "mk-on")}${mk("bad", "mk-bad")}${mk("warn", "mk-warn")}${mk("done", "mk-done")}</defs>
+      ${band ? `<rect class="repeat-band" x="14" y="${band.y0}" width="${W - 28}" height="${band.y1 - band.y0}" rx="12"/><text class="repeat-lbl" x="26" y="${band.y0 + 16}">↻ REPEATS WHILE THE MODEL ASKS FOR TOOLS</text>` : ""}
+      <line class="lifeline world" x1="${X.world}" y1="72" x2="${X.world}" y2="${H - 6}"/>
+      <line class="lifeline" x1="${X.code}" y1="72" x2="${X.code}" y2="${H - 6}"/>
+      <line class="lifeline" x1="${X.model}" y1="72" x2="${X.model}" y2="${H - 6}"/>
+      <g class="actor world"><rect x="${X.world - 70}" y="14" width="140" height="56" rx="12"/><text x="${X.world}" y="40" text-anchor="middle">Outside world</text><text class="sub" x="${X.world}" y="58" text-anchor="middle">${esc(cfg.world.toUpperCase())}</text></g>
+      <g class="actor"><rect x="${X.code - 75}" y="14" width="150" height="56" rx="12"/><text x="${X.code}" y="40" text-anchor="middle">Your code</text><text class="sub" x="${X.code}" y="58" text-anchor="middle">PYTHON</text></g>
+      <g class="actor model"><rect x="${X.model - 75}" y="14" width="150" height="56" rx="12"/><text x="${X.model}" y="40" text-anchor="middle">Model</text><text class="sub" x="${X.model}" y="58" text-anchor="middle">LLM API</text></g>
+      ${body}</svg>`;
+  }
+
+  function showCode(key, cell, src, label, lines) {
+    const pre = $("pre", $(".loop-code", root));
+    if (P.codeKey !== key) {
+      P.codeKey = key;
+      $(".loop-code .bar", root).innerHTML = `<span style="font:500 11px var(--mono);color:var(--accent);background:var(--row);padding:2px 7px;border-radius:5px">In [${cell}]</span>${esc(label)}`;
+      pre.innerHTML = hlPy(src).split("\n").map((l, i) => `<span class="ln" data-n="${i + 1}">${l || " "}</span>`).join("");
+    }
+    const set = new Set(lines);
+    pre.querySelectorAll(".ln").forEach(l => l.classList.toggle("hl", set.has(+l.dataset.n)));
+    $(".loop-code", root).classList.toggle("dim", lines.length > 0);
+    const first = $(".ln.hl", pre);
+    if (first) pre.scrollTo({ top: first.offsetTop - pre.clientHeight / 3, behavior: "smooth" });
+  }
+  function toolRange(src, name) {
+    const ls = src.split("\n"), s = ls.findIndex(l => l.startsWith(`def ${name}(`)), r = [];
+    for (let i = s; i < ls.length; i++) { if (i > s && /^\S/.test(ls[i])) break; r.push(i + 1); }
+    while (r.length && !ls[r[r.length - 1] - 1].trim()) r.pop();
+    return r;
+  }
+
+  function setScene(i) {
+    P.scene = i;
+    const sc = cfg.scenes[i];
+    $(".svgwrap", root).innerHTML = svgFor(sc);
+    root.querySelectorAll(".scene").forEach(b => b.classList.toggle("cur", +b.dataset.i === i));
+    $(".prog", root).innerHTML = sc.hops.map(() => "<i></i>").join("");
+    setStep(P.steps[i]);
+  }
+  function setStep(n) {
+    P.steps[P.scene] = n; root.dataset.step = n;
+    const sc = cfg.scenes[P.scene], h = sc.hops[n - 1];
+    const cnt = $(`.scene[data-i="${P.scene}"] .cnt`, root);
+    if (cnt) cnt.textContent = n === sc.hops.length ? "done" : `${n}/${sc.hops.length}`;
+    root.querySelectorAll(".hop").forEach(g => {
+      const s = +g.dataset.step, hop = sc.hops[s - 1];
+      g.classList.toggle("on", s === n); g.classList.toggle("past", n > 0 && s < n);
+      const mkr = s !== n ? "dim" : hop.kind === "run" ? "done" : hop.kind === "mem" ? (hop.tone === "fail" ? "bad" : "warn") : "on";
+      g.querySelectorAll("line").forEach(el => el.setAttribute("marker-end", `url(#${id}-${mkr})`));
+    });
+    root.querySelectorAll(".prog i").forEach((el, i) => el.classList.toggle("on", i < n));
+    const cap = $(".caption", root);
+    if (!h) {
+      cap.innerHTML = `<div class="t">${esc(sc.label)}: ${sc.hops.length} steps</div><p>Press Play to run <em>this</em> scene only, or step through it with the buttons or the ← → keys. Each scene keeps its own place, so you can switch back and forth while explaining. Every payload shown comes from the saved notebook run.</p>`;
+    } else {
+      const isJson = /^[[{]/.test(h.payload);
+      cap.innerHTML = `<div class="t"><span class="badge" style="background:${h.kind === "run" ? "var(--done-base)" : h.kind === "mem" ? `var(--${h.tone}-base)` : "var(--accent)"};color:#fff">${n}</span>${esc(h.title)}</div>
+        <p>${md(h.text)}</p><span class="payload-lbl">${h.kind === "run" ? "returned by the function" : h.final ? "text shown to the user" : "payload on this arrow"}</span>
+        <pre class="payload">${isJson ? hlJson(h.payload) : esc(h.payload)}</pre>`;
+    }
+    if (h && h.kind === "run") {
+      const c = TOOL_CELL[h.tool];
+      showCode("t" + c, c, NB.cells[c], `${h.tool}(): runs in your code`, toolRange(NB.cells[c], h.tool));
+    } else if (sc.code === "ask") {
+      showCode("ask", C.ask, NB.cells[C.ask], "ask(): no tools", h ? h.lines : []);
+    } else {
+      showCode("loop", C.loop, LOOP_SRC, "ask_with_tools()", h ? h.lines : []);
+    }
+    cfg.onHop?.(sc, h);
+  }
+  const len = () => cfg.scenes[P.scene].hops.length;
+  const cur = () => P.steps[P.scene];
+  function advance() { if (cur() < len()) { setStep(cur() + 1); return true; } return false; }
+  P.stop = () => { clearInterval(P.timer); P.timer = null; $(".play span", root).textContent = "Play"; };
+  P.play = () => {
+    if (P.timer) return P.stop();
+    if (cur() >= len()) setStep(0);
+    $(".play span", root).textContent = "Pause";
+    advance();
+    P.timer = setInterval(() => { if (!advance() || cur() >= len()) P.stop(); }, 2600);
+    if (cur() >= len()) P.stop();
+  };
+  P.fwd = () => { P.stop(); if (!advance()) setStep(0); };
+  P.back = () => { P.stop(); setStep(Math.max(0, cur() - 1)); };
+  P.scene_ = i => { if (i < cfg.scenes.length && i !== P.scene) { P.stop(); setScene(i); } };
+  $(".play", root).addEventListener("click", P.play);
+  $(".stepb", root).addEventListener("click", P.fwd);
+  $(".backb", root).addEventListener("click", P.back);
+  $(".resetb", root).addEventListener("click", () => { P.stop(); setStep(0); });
+  root.querySelectorAll(".scene").forEach(b => b.addEventListener("click", () => P.scene_(+b.dataset.i)));
+  root.addEventListener("mouseenter", () => (hoverPlayer = P));
+  root.addEventListener("mouseleave", () => { if (hoverPlayer === P) hoverPlayer = null; });
+  P.steps = cfg.scenes.map(() => 0);
+  players.add(P);
+  setScene(0);
+  return P;
+}
+
+const WORLD = { temperature: "Open-Meteo API", activities: "Open-Meteo + table", search: "Wikipedia API", calculator: "Python ast module", orders: "ORDERS / TICKETS" };
+function playerConfig(e) {
+  const scenes = [withoutScene(e.q, e.without, e.verdictWithout)];
+  if (e.key === "orders") {
+    scenes.push(withScene("With tools · A1042", C.o_q, C.o_run1, e.tools, WORLD.orders), withScene("With tools · A1043", C.o_run2, C.o_run2, e.tools, WORLD.orders));
+  } else scenes.push(withScene("With tools", e.q, e.run, e.tools, WORLD[e.key]));
+  return {
+    world: WORLD[e.key], scenes,
+    onHop(sc, h) {
+      const panel = $("#exPanel");
+      panel.querySelectorAll(".col.with .step").forEach(s => s.classList.toggle("on", sc.runCell === e.run && h?.k !== undefined && +s.dataset.k === h.k));
+      const ans = $(".col.with .msg.pass", panel);
+      if (ans) { ans.classList.remove("glow"); if (sc.runCell === e.run && h?.final) { void ans.offsetWidth; ans.classList.add("glow"); } }
+    },
+  };
+}
+
+function selectExample(i) {
+  stopPlayers();
+  const e = EXAMPLES[i];
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(+t.dataset.i === i)));
+  const ran = isRun(e);
+  const without = ran ? out(e.without, "Without tools").body : "";
+  const withAns = ran ? out(e.run, "With tools").body : "";
+  const [vCls, vTxt] = e.verdictWithout;
+  $("#exPanel").innerHTML = `<div class="ex" role="tabpanel">
+    <div class="ex-head">
+      <div><span class="gap-tag">${ICON[e.icon].replace("<svg", '<svg width="13" height="13"')} Gap: ${e.gap}</span>
+      <h2 style="margin-top:10px">Example ${i + 1}: ${e.title}</h2></div>
+    </div>
+    <p class="ex-intro">${e.intro}</p>
+    <div class="panel question"><span class="q-ic">${ICON.user}</span><span>${esc(questionOf(e.q))}</span></div>
+${ran ? `
+    <div class="subhead">Run it step by step</div>
+    <div id="exPlayer"></div>
+
+    <div class="subhead">Side by side</div>
+
+    <div class="vs">
+      <div class="panel col without">
+        <div class="col-head"><span class="ico">${ICON.x}</span><h3>Without tools</h3><span class="verdict ${vCls}">${vTxt}</span></div>
+        <div class="col-body">
+          ${flowWithout(vCls === "fail" ? "ans-fail" : "ans-warn")}
+          <div class="msg ${vCls}"><div class="who"><span class="dot"></span> Model answer</div>${esc(without)}</div>
+        </div>
+      </div>
+      <div class="panel col with">
+        <div class="col-head"><span class="ico">${ICON.check}</span><h3>With tools</h3><span class="verdict pass">${e.verdictWith}</span></div>
+        <div class="col-body">
+          ${flowWith(e.tools)}
+          ${traceHtml(e.run)}
+          <div class="msg pass"><div class="who"><span class="dot"></span> Model answer</div>${esc(withAns)}</div>
+        </div>
+      </div>
+    </div>
+
+    ${extraFor(e)}
+` : `
+    <div class="panel pending">
+      <span class="badge" style="background:var(--warn-base);color:#fff">!</span>
+      <div><h3>Not run yet</h3>
+      <p>This example has no saved outputs, so there is no answer, trace or step-by-step run to show. Run the notebook (Restart &amp; Run All), commit it, then rebuild this page:</p>
+      <pre class="payload">python scripts/llm_tools_html/build.py notebooks/llm_tools_01.ipynb scripts/llm_tools_html/template.html notebooks/llm_tools_01.html</pre>
+      <p style="margin-top:8px">${e.tools.length > 1 ? `Expected flow: the model calls <code>${e.tools.join("</code>, then <code>")}</code>, passing the first result into the second.` : ""}</p></div>
+    </div>`}
+    <div class="subhead">The tool${e.tools.length > 1 ? "s" : ""}</div>
+    <p class="ex-intro md" style="margin-top:0">${e.toolNote}</p>
+    <div class="codegrid">${e.code.map(([c, l]) => codeBlock(c, l, { showOutput: [C.t_schema, C.o_run1, C.o_run2].includes(c) })).join("")}</div>
+
+    <div class="subhead">Explain</div>
+    <div class="explain">${bullets(e.explain).map((b, k) => `<div class="panel item"><span class="badge">${i + 1}${"abcdefghij"[k]}</span><p>${md(b)}</p></div>`).join("")}</div>
+  </div>`;
+  if (ran) makePlayer($("#exPlayer"), playerConfig(e));
+  applyCodeAll();
+  requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll(".bar-fill").forEach(b => (b.style.width = b.dataset.w + "%"))));
+  history.replaceState(null, "", "#ex-" + e.key);
+}
+
+/* ---------- render: no tool ---------- */
+const NO_TOOLS = ["get_temperature", "suggest_activities", "search", "calculate", "get_order", "create_ticket"];
+$("#notoolPanel").innerHTML = `
+  <div><div class="subhead" style="margin-top:0">Tools offered</div><div class="toolbox">${NO_TOOLS.map(t => `<span class="node tool">⚙ ${t}</span>`).join("")}</div>
+    <div class="msg user" style="margin-top:14px"><div class="who">Question</div>${esc(out(C.n_run, "Question").body)}</div></div>
+  <div class="center"><div class="zero">0<small>tool calls</small></div><span class="node model">model</span></div>
+  <div><div class="msg done"><div class="who"><span class="dot"></span> Tool calls</div>${esc(out(C.n_run, "Tool calls").body)}</div>
+    <div class="msg pass" style="margin-top:10px"><div class="who"><span class="dot"></span> With tools available</div><span style="font-size:22px;font-weight:650">${esc(out(C.n_run, "With tools").body)}</span></div></div>`;
+$("#notoolCode").innerHTML = `<p class="lede" style="margin-top:14px">${md(NB.cells[C.n_md])}</p><div class="subhead">Run it step by step</div><div id="notoolPlayer"></div>` + codeBlock(C.n_run, "all_tools + all_registry: ask a question it already knows");
+makePlayer($("#notoolPlayer"), { world: "5 tools, none called", idleWorld: true, scenes: [withScene("Every tool available", C.n_run, C.n_run, NO_TOOLS, "nothing")] });
+
+/* ---------- render: summary ---------- */
+const SUMMARY = EXAMPLES.map((e, i) => [e.key === "orders" ? "Order lookup + ticket" : e.title, e.sum, e.run, i]);
+$("#sumtable").innerHTML = `<tr><th>Example</th><th>Gap filled</th><th>Tool calls in this run</th></tr>` + SUMMARY.map(([n, g, c, i]) => `
+  <tr><td><a href="#examples" data-ex="${i}" style="color:inherit;text-decoration:none;font-weight:600"><span class="badge" style="margin-right:8px">${i + 1}</span>${n}</a></td><td style="color:var(--ink2)">${g}</td>
+  <td><div class="chain">${!steps(c).length && !out(c, "With tools") ? '<span class="node ans-warn">not run yet</span>' : ""}${steps(c).map(parseStep).map((s, k) => `${k ? '<span class="arr">→</span>' : ""}<span class="node tool">${s.tool}</span>`).join("")}</div></td></tr>`).join("");
+document.querySelectorAll("#sumtable a[data-ex]").forEach(a => a.addEventListener("click", () => selectExample(+a.dataset.ex)));
+
+const TK = NB.cells[C.takeaways].split("\n").filter(l => /^\d+\. /.test(l)).map(l => {
+  const m = l.replace(/^\d+\. /, "").match(/^\*\*(.+?)\*\*\s*(.*)$/);
+  return m ? { h: m[1], p: m[2] } : { h: l, p: "" };
+});
+$("#takeaways").innerHTML = TK.map((t, i) => `<div class="panel tk"><span class="num">0${i + 1}</span><h3>${md(t.h)}</h3><p>${md(t.p)}</p></div>`).join("");
+
+/* ---------- global: code toggle, copy, theme, nav ---------- */
+let codeAll = false;
+function applyCodeAll() { document.querySelectorAll("details.code").forEach(d => (d.open = codeAll)); }
+$("#codeAll").addEventListener("click", () => {
+  codeAll = !codeAll; applyCodeAll();
+  $("#codeAll").setAttribute("aria-pressed", String(codeAll));
+  $("#codeAll .t").textContent = codeAll ? "Hide all code" : "Show all code";
+});
+document.addEventListener("click", ev => {
+  const b = ev.target.closest(".copy"); if (!b) return;
+  ev.preventDefault(); ev.stopPropagation();
+  navigator.clipboard?.writeText(NB.cells[b.dataset.cell]).then(() => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1200); });
+});
+
+const saved = localStorage.getItem("llm-tools-theme");
+const setTheme = t => { document.documentElement.dataset.theme = t; localStorage.setItem("llm-tools-theme", t); };
+setTheme(saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+$("#theme").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+
+const navLinks = [...document.querySelectorAll(".nav a")];
+const io = new IntersectionObserver(entries => entries.forEach(en => {
+  if (en.isIntersecting) navLinks.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id));
+}), { rootMargin: "-40% 0px -55% 0px" });
+document.querySelectorAll("main section[id]").forEach(s => io.observe(s));
+
+const startEx = EXAMPLES.findIndex(e => location.hash === "#ex-" + e.key);
+selectExample(startEx < 0 ? 0 : startEx);
+if (startEx >= 0) $("#examples").scrollIntoView();
+else history.replaceState(null, "", location.pathname);
+</script>
+</body>
+</html>
