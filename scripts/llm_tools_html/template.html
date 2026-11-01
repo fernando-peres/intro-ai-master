@@ -318,10 +318,34 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3)
 /* ---------- run player (per-example loop) ---------- */
 .player { grid-template-columns: 1.3fr 1fr; }
 .player .loop-code pre { max-height:640px; }
-.actor.world rect { fill:var(--done-tint); stroke:transparent; }
-.actor.world text { fill:var(--done-ink); }
-.actor.world .sub { fill:var(--done-ink); opacity:.75; }
-.player.idle-world .actor.world, .player.idle-world .lifeline.world { opacity:.35; }
+.actor.tool rect { fill:var(--done-tint); stroke:transparent; }
+.actor.tool text { fill:var(--done-ink); font:600 12.5px var(--mono); }
+.actor.tool .sub { fill:var(--done-ink); opacity:.75; }
+.actor.idle, .lifeline.idle { opacity:.35; }
+.expected-banner { font:500 12px var(--mono); padding:8px 12px; border-radius:8px; background:var(--warn-tint); color:var(--warn-ink); border:1px dashed var(--warn-base); }
+details.compare { margin-top:14px; overflow:hidden; }
+details.compare > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:14px 18px; font-weight:600; }
+details.compare > summary::-webkit-details-marker { display:none; }
+details.compare > summary:hover { background:var(--sunken); }
+details.compare > summary .badge { background:var(--primary); color:var(--on-solid); }
+details.compare .label { flex:1; }
+details.compare .toggle { font:500 12px var(--mono); color:var(--ink2); display:flex; align-items:center; gap:4px; }
+details.compare .toggle svg { width:14px; height:14px; transition:transform .2s; }
+details.compare[open] .toggle svg { transform:rotate(90deg); }
+details.compare .hide-t { display:none; } details.compare[open] .hide-t { display:inline; } details.compare[open] .show-t { display:none; }
+.cmp-grid { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--border); }
+.cmp-col { padding:16px 18px; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.cmp-col.without { border-right:1px solid var(--border); background:linear-gradient(180deg, color-mix(in srgb, var(--fail-tint) 45%, transparent), transparent 120px); }
+.cmp-col.with { background:linear-gradient(180deg, color-mix(in srgb, var(--pass-tint) 45%, transparent), transparent 120px); }
+.cmp-head { display:flex; align-items:center; gap:10px; font-weight:600; }
+.cmp-head .ico { width:24px; height:24px; border-radius:7px; display:grid; place-items:center; color:#fff; }
+.cmp-head .ico svg { width:14px; height:14px; }
+.cmp-col.without .ico { background:var(--fail-base); } .cmp-col.with .ico { background:var(--pass-base); }
+.cmp-head .verdict { margin-left:auto; }
+.loop.static { display:block; overflow:visible; }
+.loop.static svg { width:100%; height:auto; display:block; }
+.cmp-col ul { margin:0; padding-left:18px; font-size:13.5px; color:var(--ink2); display:grid; gap:3px; }
+.cmp-col ul b { color:var(--text); }
 .mk-bad { fill:var(--fail-base); } .mk-warn { fill:var(--warn-base); } .mk-done { fill:var(--done-base); }
 .hop.run.on line { stroke:var(--done-base); } .hop.run.on .n { fill:var(--done-base); stroke:var(--done-base); } .hop.run .pulse { fill:var(--done-base); }
 .hop.mem.fail.on line { stroke:var(--fail-base); } .hop.mem.fail.on .n { fill:var(--fail-base); stroke:var(--fail-base); } .hop.mem.fail .pulse { fill:var(--fail-base); }
@@ -344,7 +368,8 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3)
   .hero, .loop, .split, .notool { grid-template-columns: 1fr; }
   .loop-diagram { border-right:0; border-bottom:1px solid var(--border); }
   .gaps, .takeaways { grid-template-columns: 1fr 1fr; }
-  .vs, .runs, .codegrid { grid-template-columns: 1fr; }
+  .vs, .runs, .codegrid, .cmp-grid { grid-template-columns: 1fr; }
+  .cmp-col.without { border-right:0; border-bottom:1px solid var(--border); }
   .vs::after { display:none; }
   .wire { min-width:0; padding:0 22px 22px; }
   .nav { display:none; }
@@ -426,7 +451,7 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3)
       <div class="wire" aria-hidden="true">
         <div class="pkt"><span class="lbl">model → your code</span>{"name": "get_temperature",<br>&nbsp;"arguments": {"city": "Lisbon"}}</div>
         <div class="arrowrow">your code runs it</div>
-        <div class="pkt"><span class="lbl">your code → model</span>{"temperature_c": 20.5, …}</div>
+        <div class="pkt"><span class="lbl">your code → model</span>{"temperature_c": <span data-t1="temp"></span>, …}</div>
       </div>
       <div class="side">
         <div class="role"><span class="badge">C</span>Your code</div>
@@ -480,17 +505,17 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3)
           </g>
           <g class="hop" data-step="3">
             <path class="p" d="M118 232 h70 a14 14 0 0 1 0 28 h-70" marker-end="url(#mDim)"/>
-            <text x="210" y="250" text-anchor="start">run the Python function → 20.5 °C</text>
+            <text x="210" y="250" text-anchor="start">run the Python function → <tspan data-t1="temp"></tspan> °C</text>
             <circle class="n" cx="110" cy="246" r="11"/><text class="nt" x="110" y="250">3</text>
           </g>
           <g class="hop" data-step="4">
-            <text x="300" y="296" text-anchor="middle">function_call_output: {"temperature_c": 20.5}</text>
+            <text x="300" y="296" text-anchor="middle">function_call_output: {"temperature_c": <tspan data-t1="temp"></tspan>}</text>
             <line x1="118" y1="308" x2="482" y2="308" marker-end="url(#mDim)"/>
             <circle class="pulse" cx="124" cy="308" r="5" style="--dx:352px"/>
             <circle class="n" cx="110" cy="308" r="11"/><text class="nt" x="110" y="312">4</text>
           </g>
           <g class="hop" data-step="5">
-            <text x="300" y="380" text-anchor="middle">text: "It's 20.5°C in Lisbon right now."</text>
+            <text x="300" y="380" text-anchor="middle">text: "<tspan data-t1="answer"></tspan>"</text>
             <line x1="482" y1="392" x2="118" y2="392" marker-end="url(#mDim)"/>
             <circle class="pulse" cx="476" cy="392" r="5" style="--dx:-352px"/>
             <circle class="n" cx="490" cy="392" r="11"/><text class="nt" x="490" y="396">5</text>
@@ -645,7 +670,7 @@ const C = {
   setup: cellOf("load_dotenv(find_dotenv"), ask: cellOf("def ask(question)"), loop: cellOf("def ask_with_tools("), helpers: cellOf("def show_trace("),
   t_q: cellOf("show_question(question)", S1), t_wo: cellOf("show_without_tool", S1), t_fn: cellOf("def get_temperature(", S1),
   t_schema: cellOf("temperature_tool = function_tool(", S1), t_run: cellOf("temperature_run = trace", S1), t_ex: cellOf("## Explain", S1),
-  a_q: cellOf("show_question(question)", S2), a_wo: cellOf("show_without_tool", S2), a_fn: cellOf("def suggest_activities(", S2),
+  a_q: cellOf("show_question(question)", S2), a_wo: cellOf("show_without_tool", S2), a_fn: cellOf("def search_activities(", S2),
   a_run: cellOf("activities_run = trace", S2), a_ex: cellOf("## Explain", S2),
   s_q: cellOf("show_question(question)", S3), s_wo: cellOf("show_without_tool", S3), s_fn: cellOf("def search(", S3),
   s_run: cellOf("search_run = trace", S3), s_ex: cellOf("## Explain", S3),
@@ -684,12 +709,12 @@ const EXAMPLES = [
   },
   {
     key: "activities", title: "Temperature + activities", gap: "Fresh information · chained", sum: "Fresh information, chained", icon: "clock",
-    intro: "One tool is often not enough. The second tool needs the first tool's result as its input, so the model must run them in order: first find the temperature, then look up what to do at that temperature.",
+    intro: "One tool is often not enough. The second tool needs the first tool's result as its input, so the model must run them in order: first find the temperature, then search the web for things to do in that weather.",
     q: C.a_q, without: C.a_wo, run: C.a_run,
     verdictWithout: ["warn", "Generic ideas only"], verdictWith: "Weather + matching ideas",
-    tools: ["get_temperature", "suggest_activities"],
-    toolNote: "<code>get_temperature</code> is reused from Example 1. <code>suggest_activities</code> is new: it picks activities from a small table of temperature bands (<strong>fake data</strong>, created for the notebook). It takes <code>temperature_c</code> as an argument, and nothing in our code passes it along: the model has to get it from the first tool's result.",
-    code: [[C.a_fn, "ACTIVITIES, suggest_activities(), activities_tool"], [C.a_wo, "Without tools: ask(question)"], [C.a_run, "With tools: ask_with_tools(...)"]],
+    tools: ["get_temperature", "search_activities"],
+    toolNote: "<code>get_temperature</code> is reused from Example 1. <code>search_activities</code> is new: it turns the temperature into a word for the weather (hot, warm, mild, cool, cold) and searches the web with the <a href=\"https://tavily.com\" target=\"_blank\" rel=\"noopener\">Tavily</a> API. It takes <code>temperature_c</code> as an argument, and nothing in our code passes it along: the model has to get it from the first tool's result.",
+    code: [[C.a_fn, "search_activities(): Tavily web search + activities_tool"], [C.a_wo, "Without tools: ask(question)"], [C.a_run, "With tools: ask_with_tools(...)"]],
     explain: C.a_ex,
   },
   {
@@ -724,11 +749,15 @@ const EXAMPLES = [
   },
 ];
 
+/* ---------- Example 1 values used in the hero and the section-2 diagram ---------- */
+const T1 = { temp: JSON.parse(steps(C.t_run)[0].body.replace(/^returned /, "")).temperature_c, answer: (s => s.length > 44 ? s.slice(0, 43) + "…" : s)(out(C.t_run, "With tools").body.replace(/\s+/g, " ")) };
+document.querySelectorAll("[data-t1]").forEach(el => (el.textContent = T1[el.dataset.t1]));
+
 /* ---------- render: teaser ---------- */
 $("#teaser").innerHTML = `
   <div class="msg user q"><div class="who">${ICON.user.replace("<svg", '<svg width="12" height="12"')} Question</div>${esc(out(C.t_q, "Question").body)}</div>
   <div class="msg fail"><div class="who"><span class="dot"></span> Without tools</div>${esc(out(C.t_wo, "Without tools").body)}</div>
-  <div class="msg done" style="font-family:var(--mono);font-size:12.5px"><div class="who"><span class="dot"></span> Tool call</div>${esc(steps(C.t_run)[0].title.replace(/^Step \d+: /, ""))} → 20.5 °C</div>
+  <div class="msg done" style="font-family:var(--mono);font-size:12.5px"><div class="who"><span class="dot"></span> Tool call</div>${esc(steps(C.t_run)[0].title.replace(/^Step \d+: /, ""))} → ${T1.temp} °C</div>
   <div class="msg pass"><div class="who"><span class="dot"></span> With tools</div>${esc(out(C.t_run, "With tools").body)}</div>`;
 
 /* ---------- render: gaps ---------- */
@@ -828,7 +857,7 @@ function flowWith(tools) {
 function extraFor(e) {
   if (e.key === "activities") {
     const ss = steps(e.run).map(parseStep);
-    const ti = ss.findIndex(s => s.tool === "get_temperature"), ai = ss.findIndex(s => s.tool === "suggest_activities");
+    const ti = ss.findIndex(s => s.tool === "get_temperature"), ai = ss.findIndex(s => s.tool === "search_activities");
     if (ti < 0 || ai < 0) return `<div class="subhead">How the two tools connect</div><div class="panel pad">In this saved run the model called: <code>${esc(ss.map(s => s.tool).join(" → ") || "no tools")}</code>.</div>`;
     let tr = {}, ar = {}; try { tr = JSON.parse(ss[ti].result); ar = JSON.parse(ss[ai].result); } catch (_) {}
     const passed = pyArgsToObj(ss[ai].args).temperature_c, same = +passed === +tr.temperature_c;
@@ -836,10 +865,10 @@ function extraFor(e) {
       <div class="panel pad chaincard">
         <div class="link"><span class="sn">CALL ${ti + 1}</span><span class="node tool">⚙ get_temperature(${esc(ss[ti].args)})</span></div>
         <div class="arrowdown">returns <code>temperature_c: ${esc(tr.temperature_c)}</code></div>
-        <div class="link"><span class="sn">CALL ${ai + 1}</span><span class="node tool">⚙ suggest_activities(${esc(ss[ai].args)})</span>
+        <div class="link"><span class="sn">CALL ${ai + 1}</span><span class="node tool">⚙ search_activities(${esc(ss[ai].args)})</span>
           <span class="verdict ${same ? "pass" : "warn"}">${same ? "✓ same value: the model passed it on" : "≠ the model changed the value"}</span></div>
-        <div class="arrowdown">returns band <code>${esc(ar.band)}</code></div>
-        <div class="acts">${(ar.activities || []).map(a => `<span class="chip">${esc(a)}</span>`).join("")}</div>
+        <div class="arrowdown">Tavily query <code>${esc(ar.query || "")}</code> returns ${(ar.results || []).length} results</div>
+        <div class="acts">${(ar.results || []).map(r => `<a class="chip" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(trunc(r.title, 60))}</a>`).join("")}</div>
         <p class="flow-cap" style="margin-top:12px">Our code never copied the temperature from one call to the other: the model read it in the first result and wrote it into the second call's arguments.</p>
       </div>`;
   }
@@ -884,7 +913,7 @@ function extraFor(e) {
 }
 
 /* ---------- run player: every example, hop by hop ---------- */
-const TOOL_CELL = { get_temperature: C.t_fn, suggest_activities: C.a_fn, search: C.s_fn, calculate: C.c_fn, get_order: C.o_fn, create_ticket: C.o_fn };
+const TOOL_CELL = { get_temperature: C.t_fn, search_activities: C.a_fn, search: C.s_fn, calculate: C.c_fn, get_order: C.o_fn, create_ticket: C.o_fn };
 const J = o => JSON.stringify(o, null, 2);
 const trunc = (s, n) => (s = String(s).replace(/\s+/g, " "), s.length > n ? s.slice(0, n - 1) + "…" : s);
 
@@ -900,7 +929,7 @@ function pyArgsToObj(s) {
 function summarize(tool, r) {
   try {
     if (tool === "get_temperature") return `${r.temperature_c} °C in ${r.city}`;
-    if (tool === "suggest_activities") return `${r.band}: ${r.activities.length} activities`;
+    if (tool === "search_activities") return `${r.weather}: ${r.results.length} web results`;
     if (tool === "search") return `${r.length} articles: "${r[0].title}"`;
     if (tool === "calculate") return (+r.value).toLocaleString("en-US", { maximumFractionDigits: 2 });
     if (tool === "get_order") return `${r.status}, days_late: ${r.days_late}`;
@@ -918,7 +947,12 @@ function askHop(q, tools) {
     lines: [3, 7, 8, 9, 10, 11, 12],
   };
 }
-function withScene(label, qCell, runCell, tools, world) {
+const TOOL_BACKEND = { get_temperature: "Open-Meteo", search_activities: "Tavily", search: "Wikipedia", calculate: "Python ast", get_order: "ORDERS store", create_ticket: "TICKETS store" };
+const EXPECTED = {
+  get_temperature: { args: "city", back: "temperature_c" },
+  search_activities: { args: "city, temperature_c", back: "web results" },
+};
+function withScene(label, qCell, runCell, tools) {
   const hops = [askHop(out(qCell, "Question").body, tools)];
   steps(runCell).map(parseStep).forEach((s, k) => {
     let r; try { r = JSON.parse(s.result); } catch (_) { r = s.result; }
@@ -929,7 +963,7 @@ function withScene(label, qCell, runCell, tools, world) {
       payload: J({ type: "function_call", name: s.tool, arguments: JSON.stringify(args) }), lines: [13, 15] });
     hops.push({ kind: "run", k, tool: s.tool, label: `${s.tool}(${Object.values(args).map(v => JSON.stringify(v)).join(", ")})`, back: sum,
       title: `Your code runs ${s.tool}()`,
-      text: `registry["${s.tool}"](**arguments) calls the real Python function, which uses ${world}. The model takes no part in this step.`,
+      text: `registry["${s.tool}"](**arguments) calls the real Python function, which uses ${TOOL_BACKEND[s.tool] || "your own code"}. The model takes no part in this step.`,
       payload: typeof r === "string" ? r : J(r) });
     hops.push({ kind: "output", k, label: `function_call_output: ${sum}`,
       title: "Send the result back",
@@ -941,7 +975,31 @@ function withScene(label, qCell, runCell, tools, world) {
     title: "The model answers in text",
     text: steps(runCell).length ? "No function_call in this reply, so the loop ends and returns the text, grounded in the tool results." : "No function_call items, so the loop ends on the very first turn.",
     payload: ans, lines: [16, 17] });
-  return { label, tone: "pass", code: "loop", hops, runCell };
+  return { label, tone: "pass", code: "loop", hops, runCell, lanes: [...new Set(hops.filter(h => h.kind === "run").map(h => h.tool))] };
+}
+/* Before the notebook has been run: the same hops with generic labels and no invented values. */
+const NOT_RUN = "(expected flow: run the notebook to see the real payload)";
+function expectedWithScene(label, qCell, tools) {
+  const hops = [{ ...askHop(questionOf(qCell), tools), payload: NOT_RUN }];
+  tools.forEach((t, k) => {
+    const ex = EXPECTED[t] || { args: "…", back: "result" };
+    hops.push({ kind: "call", k, label: `function_call: ${t}(${ex.args})`, title: `The model asks for ${t}`,
+      text: k ? `It reads the first result and passes it on: ${t} needs ${ex.args}.` : "Instead of text, it replies with a function_call and fills in the arguments from the question.",
+      payload: NOT_RUN, lines: [13, 15] });
+    hops.push({ kind: "run", k, tool: t, label: `${t}(${ex.args})`, back: ex.back, title: `Your code runs ${t}()`,
+      text: `registry["${t}"](**arguments) calls the real Python function, which uses ${TOOL_BACKEND[t] || "your own code"}.`, payload: NOT_RUN });
+    hops.push({ kind: "output", k, label: `function_call_output: ${ex.back}`, title: "Send the result back",
+      text: "The result goes back as a function_call_output, and the loop calls the model again.", payload: NOT_RUN, lines: [26, 27, 28, 29, 30, 31] });
+  });
+  hops.push({ kind: "answer", label: "text: answer built from both results", final: true, title: "The model answers in text",
+    text: "No more function calls, so the loop ends and returns the text.", payload: NOT_RUN, lines: [16, 17] });
+  return { label, tone: "pass", code: "loop", hops, expected: true, lanes: tools };
+}
+function expectedWithoutScene(qCell, verdict) {
+  return { label: "Without tools", tone: verdict[0], code: "ask", expected: true, hops: [
+    { kind: "ask", label: "question only (no tools)", title: "Send only the question", text: "ask() sends the question with no tools attached.", payload: NOT_RUN, lines: [2, 3, 4, 5, 6] },
+    { kind: "mem", tone: verdict[0], label: "text: answer from memory", final: true, title: "The model answers from memory", text: "Training data is all it has.", payload: NOT_RUN, lines: [7] },
+  ] };
 }
 function withoutScene(qCell, wCell, verdict) {
   const q = out(qCell, "Question").body, a = out(wCell, "Without tools").body;
@@ -969,11 +1027,61 @@ document.addEventListener("keydown", ev => {
 let PID = 0;
 function stopPlayers() { players.forEach(p => { p.stop(); if (!p.root.isConnected) players.delete(p); }); }
 
+/* Lanes: Model | Your code | one lane per tool. */
+function seqSvg(sc, id, idleLane) {
+  const XM = 90, XC = 390, GAP = 220;
+  const lanes = sc.lanes || [];
+  const XT = Object.fromEntries(lanes.map((t, k) => [t, XC + GAP * (k + 1)]));
+  const lastX = idleLane ? XC + GAP : lanes.length ? XC + GAP * lanes.length : XC;
+  const W = Math.max(lastX + 110, 560);
+  let y = 120, body = "", band = null;
+  sc.hops.forEach((h, i) => {
+    const num = i + 1, m = (XM + XC) / 2, tone = h.kind === "mem" ? h.tone : "";
+    if (h.kind === "call" && !band) band = { y0: y - 34 };
+    if (h.kind === "ask" || h.kind === "output") {
+      body += `<g class="hop ${h.kind}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 38))}</text>
+        <line x1="${XC - 8}" y1="${y}" x2="${XM + 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+        <circle class="pulse" cx="${XC - 14}" cy="${y}" r="5" style="--dx:${-(XC - XM - 30)}px"/>
+        <circle class="n" cx="${XC}" cy="${y}" r="11"/><text class="nt" x="${XC}" y="${y + 4}">${num}</text></g>`;
+      if (h.kind === "output") band.y1 = y + 18;
+      y += 64;
+    } else if (h.kind === "run") {
+      const xt = XT[h.tool] ?? XC + GAP, wm = (XC + xt) / 2, room = Math.floor((xt - XC) / 7.6);
+      body += `<g class="hop run" data-step="${num}"><text x="${wm}" y="${y - 10}" text-anchor="middle">${esc(trunc(h.label, room))}</text>
+        <line x1="${XC + 8}" y1="${y}" x2="${xt - 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+        <line x1="${xt - 8}" y1="${y + 24}" x2="${XC + 8}" y2="${y + 24}" marker-end="url(#${id}-dim)"/>
+        <text x="${wm}" y="${y + 42}" text-anchor="middle">← ${esc(trunc(h.back, room - 2))}</text>
+        <circle class="pulse" cx="${XC + 14}" cy="${y}" r="5" style="--dx:${xt - XC - 30}px"/>
+        <circle class="n" cx="${XC}" cy="${y + 12}" r="11"/><text class="nt" x="${XC}" y="${y + 16}">${num}</text></g>`;
+      y += 84;
+    } else {
+      body += `<g class="hop ${h.kind} ${tone}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 38))}</text>
+        <line x1="${XM + 8}" y1="${y}" x2="${XC - 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+        <circle class="pulse" cx="${XM + 14}" cy="${y}" r="5" style="--dx:${XC - XM - 30}px"/>
+        <circle class="n" cx="${XM}" cy="${y}" r="11"/><text class="nt" x="${XM}" y="${y + 4}">${num}</text></g>`;
+      y += 64;
+    }
+  });
+  const H = y - 20;
+  const mk = (n, c) => `<marker id="${id}-${n}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="${c}" d="M0 0 10 5 0 10z"/></marker>`;
+  const actor = (x, cls, name, sub, w = 150) => `<line class="lifeline ${cls}" x1="${x}" y1="72" x2="${x}" y2="${H - 6}"/>
+    <g class="actor ${cls}"><rect x="${x - w / 2}" y="14" width="${w}" height="56" rx="12"/><text x="${x}" y="40" text-anchor="middle">${esc(name)}</text><text class="sub" x="${x}" y="58" text-anchor="middle">${esc(sub.toUpperCase())}</text></g>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(sc.label)}: sequence diagram">
+    <defs>${mk("dim", "mk-dim")}${mk("on", "mk-on")}${mk("bad", "mk-bad")}${mk("warn", "mk-warn")}${mk("done", "mk-done")}</defs>
+    ${band ? `<rect class="repeat-band" x="14" y="${band.y0}" width="${W - 28}" height="${band.y1 - band.y0}" rx="12"/><text class="repeat-lbl" x="${W - 26}" y="${band.y0 + 16}" text-anchor="end">↻ REPEATS WHILE THE MODEL ASKS FOR TOOLS</text>` : ""}
+    ${actor(XM, "model", "Model", "LLM API")}
+    ${actor(XC, "", "Your code", "Python")}
+    ${lanes.map((tl, k) => actor(XT[tl], "tool", `Tool ${k + 1}: ${tl}`, TOOL_BACKEND[tl] || "your code", 200)).join("")}
+    ${idleLane ? actor(XC + GAP, "tool idle", idleLane.name, idleLane.sub, 200) : ""}
+    ${body}</svg>`;
+}
+
 function makePlayer(host, cfg) {
   const id = "pl" + (++PID);
-  host.innerHTML = `<div class="panel loop player${cfg.idleWorld ? " idle-world" : ""}" data-step="0">
+  host.innerHTML = `<div class="panel loop player" data-step="0">
     <div class="loop-diagram">
       ${cfg.scenes.length > 1 ? `<div class="scenes">${cfg.scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${s.tone === "pass" ? "✓" : "✕"} ${esc(s.label)}<span class="cnt">0/${s.hops.length}</span></button>`).join('<span class="arr">·</span>')}</div>` : ""}
+      ${cfg.scenes.some(s => s.expected) ? `<div class="expected-banner">Expected flow, not a real run: run the notebook and rebuild to fill in the real values.</div>` : ""}
       <div class="svgwrap"></div>
       <div class="controls">
         <button class="btn solid play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play</span></button>
@@ -987,52 +1095,6 @@ function makePlayer(host, cfg) {
     <div class="loop-code"><div class="bar"></div><pre></pre></div>
   </div>`;
   const root = host.firstElementChild, P = { root, scene: 0, n: 0, timer: null, codeKey: "" };
-  const X = { world: 80, code: 310, model: 630 }, W = 720;
-
-  function svgFor(sc) {
-    let y = 120, body = "", band = null;
-    sc.hops.forEach((h, i) => {
-      const num = i + 1, m = (X.code + X.model) / 2;
-      const tone = h.kind === "mem" ? h.tone : "";
-      if (h.kind === "call" && !band) band = { y0: y - 34 };
-      if (h.kind === "ask" || h.kind === "output") {
-        body += `<g class="hop ${h.kind}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 42))}</text>
-          <line x1="${X.code + 8}" y1="${y}" x2="${X.model - 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
-          <circle class="pulse" cx="${X.code + 14}" cy="${y}" r="5" style="--dx:${X.model - X.code - 30}px"/>
-          <circle class="n" cx="${X.code}" cy="${y}" r="11"/><text class="nt" x="${X.code}" y="${y + 4}">${num}</text></g>`;
-        if (h.kind === "output") band.y1 = y + 18;
-        y += 64;
-      } else if (h.kind === "run") {
-        const wm = (X.world + X.code) / 2;
-        body += `<g class="hop run" data-step="${num}"><text x="${wm}" y="${y - 10}" text-anchor="middle">${esc(trunc(h.label, 28))}</text>
-          <line x1="${X.code - 8}" y1="${y}" x2="${X.world + 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
-          <line x1="${X.world + 8}" y1="${y + 24}" x2="${X.code - 8}" y2="${y + 24}" marker-end="url(#${id}-dim)"/>
-          <text x="${wm}" y="${y + 42}" text-anchor="middle">→ ${esc(trunc(h.back, 26))}</text>
-          <circle class="pulse" cx="${X.code - 14}" cy="${y}" r="5" style="--dx:${-(X.code - X.world - 30)}px"/>
-          <circle class="n" cx="${X.code}" cy="${y + 12}" r="11"/><text class="nt" x="${X.code}" y="${y + 16}">${num}</text></g>`;
-        y += 84;
-      } else {
-        body += `<g class="hop ${h.kind} ${tone}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 42))}</text>
-          <line x1="${X.model - 8}" y1="${y}" x2="${X.code + 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
-          <circle class="pulse" cx="${X.model - 14}" cy="${y}" r="5" style="--dx:${-(X.model - X.code - 30)}px"/>
-          <circle class="n" cx="${X.model}" cy="${y}" r="11"/><text class="nt" x="${X.model}" y="${y + 4}">${num}</text></g>`;
-        y += 64;
-      }
-    });
-    const H = y - 20;
-    const mk = (n, c) => `<marker id="${id}-${n}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="${c}" d="M0 0 10 5 0 10z"/></marker>`;
-    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(sc.label)}: step-by-step sequence diagram">
-      <defs>${mk("dim", "mk-dim")}${mk("on", "mk-on")}${mk("bad", "mk-bad")}${mk("warn", "mk-warn")}${mk("done", "mk-done")}</defs>
-      ${band ? `<rect class="repeat-band" x="14" y="${band.y0}" width="${W - 28}" height="${band.y1 - band.y0}" rx="12"/><text class="repeat-lbl" x="26" y="${band.y0 + 16}">↻ REPEATS WHILE THE MODEL ASKS FOR TOOLS</text>` : ""}
-      <line class="lifeline world" x1="${X.world}" y1="72" x2="${X.world}" y2="${H - 6}"/>
-      <line class="lifeline" x1="${X.code}" y1="72" x2="${X.code}" y2="${H - 6}"/>
-      <line class="lifeline" x1="${X.model}" y1="72" x2="${X.model}" y2="${H - 6}"/>
-      <g class="actor world"><rect x="${X.world - 70}" y="14" width="140" height="56" rx="12"/><text x="${X.world}" y="40" text-anchor="middle">Outside world</text><text class="sub" x="${X.world}" y="58" text-anchor="middle">${esc(cfg.world.toUpperCase())}</text></g>
-      <g class="actor"><rect x="${X.code - 75}" y="14" width="150" height="56" rx="12"/><text x="${X.code}" y="40" text-anchor="middle">Your code</text><text class="sub" x="${X.code}" y="58" text-anchor="middle">PYTHON</text></g>
-      <g class="actor model"><rect x="${X.model - 75}" y="14" width="150" height="56" rx="12"/><text x="${X.model}" y="40" text-anchor="middle">Model</text><text class="sub" x="${X.model}" y="58" text-anchor="middle">LLM API</text></g>
-      ${body}</svg>`;
-  }
-
   function showCode(key, cell, src, label, lines) {
     const pre = $("pre", $(".loop-code", root));
     if (P.codeKey !== key) {
@@ -1056,7 +1118,7 @@ function makePlayer(host, cfg) {
   function setScene(i) {
     P.scene = i;
     const sc = cfg.scenes[i];
-    $(".svgwrap", root).innerHTML = svgFor(sc);
+    $(".svgwrap", root).innerHTML = seqSvg(sc, id, cfg.idleLane);
     root.querySelectorAll(".scene").forEach(b => b.classList.toggle("cur", +b.dataset.i === i));
     $(".prog", root).innerHTML = sc.hops.map(() => "<i></i>").join("");
     setStep(P.steps[i]);
@@ -1090,7 +1152,6 @@ function makePlayer(host, cfg) {
     } else {
       showCode("loop", C.loop, LOOP_SRC, "ask_with_tools()", h ? h.lines : []);
     }
-    cfg.onHop?.(sc, h);
   }
   const len = () => cfg.scenes[P.scene].hops.length;
   const cur = () => P.steps[P.scene];
@@ -1120,31 +1181,42 @@ function makePlayer(host, cfg) {
   return P;
 }
 
-const WORLD = { temperature: "Open-Meteo API", activities: "Open-Meteo + table", search: "Wikipedia API", calculator: "Python ast module", orders: "ORDERS / TICKETS" };
 function playerConfig(e) {
+  if (!isRun(e)) return { scenes: [expectedWithoutScene(e.q, e.verdictWithout), expectedWithScene("With tools", e.q, e.tools)] };
   const scenes = [withoutScene(e.q, e.without, e.verdictWithout)];
-  if (e.key === "orders") {
-    scenes.push(withScene("With tools · A1042", C.o_q, C.o_run1, e.tools, WORLD.orders), withScene("With tools · A1043", C.o_run2, C.o_run2, e.tools, WORLD.orders));
-  } else scenes.push(withScene("With tools", e.q, e.run, e.tools, WORLD[e.key]));
-  return {
-    world: WORLD[e.key], scenes,
-    onHop(sc, h) {
-      const panel = $("#exPanel");
-      panel.querySelectorAll(".col.with .step").forEach(s => s.classList.toggle("on", sc.runCell === e.run && h?.k !== undefined && +s.dataset.k === h.k));
-      const ans = $(".col.with .msg.pass", panel);
-      if (ans) { ans.classList.remove("glow"); if (sc.runCell === e.run && h?.final) { void ans.offsetWidth; ans.classList.add("glow"); } }
-    },
-  };
+  if (e.key === "orders") scenes.push(withScene("With tools · A1042", C.o_q, C.o_run1, e.tools), withScene("With tools · A1043", C.o_run2, C.o_run2, e.tools));
+  else scenes.push(withScene("With tools", e.q, e.run, e.tools));
+  return { scenes };
+}
+
+/* Collapsed comparison: both sequence diagrams, a few short bullets each. */
+let CMP = 0;
+function compareHtml(e, cfg) {
+  const wo = cfg.scenes[0], wi = cfg.scenes[1], [vCls, vTxt] = e.verdictWithout;
+  const woAns = wo.expected ? "" : out(e.without, "Without tools").body;
+  const wiAns = wi.expected ? "" : out(e.run, "With tools").body;
+  const runs = wi.hops.filter(h => h.kind === "run");
+  const li = s => `<li>${s}</li>`;
+  const bWo = [li("1 request, no tools"), li(`Answers from memory: <b>${esc(vTxt)}</b>`), woAns ? li(`“${esc(trunc(woAns, 90))}”`) : li("Run the notebook to see the answer")];
+  const bWi = [li(`${runs.length} tool call${runs.length === 1 ? "" : "s"}${runs.length > 1 ? ", in order" : ""}`),
+    ...runs.map(h => li(`<code>${esc(h.tool)}</code> → ${esc(trunc(h.back, 40))}`)),
+    wiAns ? li(`Grounded answer: “${esc(trunc(wiAns, 90))}”`) : li("Run the notebook to see the answer")];
+  return `<details class="compare panel">
+    <summary><span class="badge">⇆</span><span class="label">Compare: without tools vs with tools</span><span class="toggle">${ICON.chev}<span class="show-t">Show</span><span class="hide-t">Hide</span></span></summary>
+    <div class="cmp-grid">
+      <div class="cmp-col without"><div class="cmp-head"><span class="ico">${ICON.x}</span>Without tools<span class="verdict ${vCls}">${esc(vTxt)}</span></div>
+        <div class="loop static" data-step="0">${seqSvg(wo, "cmp" + (++CMP))}</div><ul>${bWo.join("")}</ul></div>
+      <div class="cmp-col with"><div class="cmp-head"><span class="ico">${ICON.check}</span>With tools<span class="verdict pass">${esc(e.verdictWith)}</span></div>
+        <div class="loop static" data-step="0">${seqSvg(wi, "cmp" + (++CMP))}</div><ul>${bWi.join("")}</ul></div>
+    </div>
+  </details>`;
 }
 
 function selectExample(i) {
   stopPlayers();
   const e = EXAMPLES[i];
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(+t.dataset.i === i)));
-  const ran = isRun(e);
-  const without = ran ? out(e.without, "Without tools").body : "";
-  const withAns = ran ? out(e.run, "With tools").body : "";
-  const [vCls, vTxt] = e.verdictWithout;
+  const ran = isRun(e), cfg = playerConfig(e);
   $("#exPanel").innerHTML = `<div class="ex" role="tabpanel">
     <div class="ex-head">
       <div><span class="gap-tag">${ICON[e.icon].replace("<svg", '<svg width="13" height="13"')} Gap: ${e.gap}</span>
@@ -1152,38 +1224,16 @@ function selectExample(i) {
     </div>
     <p class="ex-intro">${e.intro}</p>
     <div class="panel question"><span class="q-ic">${ICON.user}</span><span>${esc(questionOf(e.q))}</span></div>
-${ran ? `
+
     <div class="subhead">Run it step by step</div>
     <div id="exPlayer"></div>
-
-    <div class="subhead">Side by side</div>
-
-    <div class="vs">
-      <div class="panel col without">
-        <div class="col-head"><span class="ico">${ICON.x}</span><h3>Without tools</h3><span class="verdict ${vCls}">${vTxt}</span></div>
-        <div class="col-body">
-          ${flowWithout(vCls === "fail" ? "ans-fail" : "ans-warn")}
-          <div class="msg ${vCls}"><div class="who"><span class="dot"></span> Model answer</div>${esc(without)}</div>
-        </div>
-      </div>
-      <div class="panel col with">
-        <div class="col-head"><span class="ico">${ICON.check}</span><h3>With tools</h3><span class="verdict pass">${e.verdictWith}</span></div>
-        <div class="col-body">
-          ${flowWith(e.tools)}
-          ${traceHtml(e.run)}
-          <div class="msg pass"><div class="who"><span class="dot"></span> Model answer</div>${esc(withAns)}</div>
-        </div>
-      </div>
-    </div>
-
-    ${extraFor(e)}
-` : `
+    ${compareHtml(e, cfg)}
+    ${ran ? extraFor(e) : `
     <div class="panel pending">
       <span class="badge" style="background:var(--warn-base);color:#fff">!</span>
       <div><h3>Not run yet</h3>
-      <p>This example has no saved outputs, so there is no answer, trace or step-by-step run to show. Run the notebook (Restart &amp; Run All), commit it, then rebuild this page:</p>
-      <pre class="payload">python scripts/llm_tools_html/build.py notebooks/llm_tools_01.ipynb scripts/llm_tools_html/template.html notebooks/llm_tools_01.html</pre>
-      <p style="margin-top:8px">${e.tools.length > 1 ? `Expected flow: the model calls <code>${e.tools.join("</code>, then <code>")}</code>, passing the first result into the second.` : ""}</p></div>
+      <p>This example has no saved outputs, so the player above shows the expected flow without real values. Run the notebook (Restart &amp; Run All), commit it, then rebuild this page:</p>
+      <pre class="payload">python scripts/llm_tools_html/build.py notebooks/llm_tools_01.ipynb scripts/llm_tools_html/template.html notebooks/llm_tools_01.html</pre></div>
     </div>`}
     <div class="subhead">The tool${e.tools.length > 1 ? "s" : ""}</div>
     <p class="ex-intro md" style="margin-top:0">${e.toolNote}</p>
@@ -1192,14 +1242,14 @@ ${ran ? `
     <div class="subhead">Explain</div>
     <div class="explain">${bullets(e.explain).map((b, k) => `<div class="panel item"><span class="badge">${i + 1}${"abcdefghij"[k]}</span><p>${md(b)}</p></div>`).join("")}</div>
   </div>`;
-  if (ran) makePlayer($("#exPlayer"), playerConfig(e));
+  makePlayer($("#exPlayer"), cfg);
   applyCodeAll();
   requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll(".bar-fill").forEach(b => (b.style.width = b.dataset.w + "%"))));
   history.replaceState(null, "", "#ex-" + e.key);
 }
 
 /* ---------- render: no tool ---------- */
-const NO_TOOLS = ["get_temperature", "suggest_activities", "search", "calculate", "get_order", "create_ticket"];
+const NO_TOOLS = ["get_temperature", "search_activities", "search", "calculate", "get_order", "create_ticket"];
 $("#notoolPanel").innerHTML = `
   <div><div class="subhead" style="margin-top:0">Tools offered</div><div class="toolbox">${NO_TOOLS.map(t => `<span class="node tool">⚙ ${t}</span>`).join("")}</div>
     <div class="msg user" style="margin-top:14px"><div class="who">Question</div>${esc(out(C.n_run, "Question").body)}</div></div>
@@ -1207,7 +1257,7 @@ $("#notoolPanel").innerHTML = `
   <div><div class="msg done"><div class="who"><span class="dot"></span> Tool calls</div>${esc(out(C.n_run, "Tool calls").body)}</div>
     <div class="msg pass" style="margin-top:10px"><div class="who"><span class="dot"></span> With tools available</div><span style="font-size:22px;font-weight:650">${esc(out(C.n_run, "With tools").body)}</span></div></div>`;
 $("#notoolCode").innerHTML = `<p class="lede" style="margin-top:14px">${md(NB.cells[C.n_md])}</p><div class="subhead">Run it step by step</div><div id="notoolPlayer"></div>` + codeBlock(C.n_run, "all_tools + all_registry: ask a question it already knows");
-makePlayer($("#notoolPlayer"), { world: "5 tools, none called", idleWorld: true, scenes: [withScene("Every tool available", C.n_run, C.n_run, NO_TOOLS, "nothing")] });
+makePlayer($("#notoolPlayer"), { idleLane: { name: `${NO_TOOLS.length} tools`, sub: "none called" }, scenes: [withScene("Every tool available", C.n_run, C.n_run, NO_TOOLS)] });
 
 /* ---------- render: summary ---------- */
 const SUMMARY = EXAMPLES.map((e, i) => [e.key === "orders" ? "Order lookup + ticket" : e.title, e.sum, e.run, i]);
