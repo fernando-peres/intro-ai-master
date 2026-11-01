@@ -467,19 +467,18 @@
       </div>
     </section>
 
-    <!-- template: layout-dark-1 · .point-list.is-takeaways (summary of slides 14–19) -->
+    <!-- template: layout-dark-1 · three takeaways (icon, headline, text, proof line) -->
     <section class="page" data-type="slide" data-title="Main takeaways · continuous improvement">
       <div class="stage is-night">
         <div class="layout-dark-1">
           <span class="eyebrow">Continuous improvement · Summary</span>
           <h1>Main <em>takeaways</em></h1>
-          <ul class="point-list is-takeaways">
-            <li><b>Improve the whole system</b><p>Performance comes from four dimensions working together: model optimization, harness and capability extension, experimentation and validation, and observability.</p></li>
-            <li><b>The model is not enough</b><p>Optimization improves what a model can do; the harness extends what the system can access, remember, control, and execute.</p></li>
-            <li><b>Let evidence decide</b><p>Offline experiments and production observability show what works, what fails, and where to invest next.</p></li>
-            <li><b>Spend where it pays off</b><p>Pre-training costs tens to hundreds of millions per run; harness and context changes cost engineering time and ship in days.</p></li>
-            <li><b>Iterate continuously</b><p>Feedback loops connect evaluation, adaptation, and deployment, so the system keeps improving after launch.</p></li>
-          </ul>
+          <ol class="takeaways">
+            <li><svg class="tk-icon" viewBox="0 0 64 64" aria-hidden="true"><rect x="16" y="16" width="32" height="32" rx="5"/><rect x="25" y="25" width="14" height="14" rx="2"/><path d="M24 16V9M32 16V9M40 16V9M24 55v-7M32 55v-7M40 55v-7M16 24H9M16 32H9M16 40H9M55 24h-7M55 32h-7M55 40h-7"/></svg><b>Training the model is rarely the answer</b><p>Pre-training costs tens to hundreds of millions; post-training needs data and expertise. And training alone can’t fix knowledge cut-offs, memory, actions or hallucinations.</p><small>Grok 4 ≈ $490M per training run. OpenAI: accuracy will never reach 100%</small></li>
+            <li><svg class="tk-icon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="8"/><circle cx="32" cy="32" r="18"/><circle cx="32" cy="32" r="27" stroke-dasharray="4 5"/><path d="M32 14v6M32 44v6M14 32h6M44 32h6"/></svg><b>The harness can matter more than the model</b><p>Context, memory, tools, orchestration and guardrails expand and control what the model can do. The same model performs very differently in a different harness.</p><small>GPT-5 on Terminal-Bench 2.0: 33.9% → 49.6%, changing only the harness</small></li>
+            <li><svg class="tk-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M50 26a19 19 0 0 0-33.5-7.5"/><path d="M14 38a19 19 0 0 0 33.5 7.5"/><path d="M15 10v9h9M49 54v-9h-9"/><path d="M26 36l4-6 4 4 6-8"/></svg><b>Improve continuously, with evidence</b><p>Building and maintaining a GenAI system is a loop. Invest in experiments and observability, and let feedback, data and facts drive each change.</p><small>Read real traces → find failure modes → fix → measure again</small></li>
+          </ol>
+          <p class="source">Sources: Epoch AI, Grok 4 training resources (2025); OpenAI, <i>Why language models hallucinate</i> (2025); Terminal-Bench 2.0 leaderboard, as reported in <i>A Survey on Agent System and Harness Design</i> (arXiv, 2026); H. Husain &amp; S. Shankar, AI evals guidance (2025–26).</p>
         </div>
         <span class="page-num"></span>
       </div>
