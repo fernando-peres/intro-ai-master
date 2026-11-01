@@ -367,9 +367,9 @@ body.toc-open #toc {
 .framework .is-tr, .framework .is-br { padding-left: 230px; }
 .framework .is-bl, .framework .is-br { padding-top: 30px; }
 .framework .is-tl, .framework .is-bl { padding-right: 230px; }
-.framework h3 { margin: 0; font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; color: #fff; }
-.framework h3 span { margin-right: 12px; color: var(--mint); }
-.framework h3 small { font-family: var(--font-text); font-size: 20px; font-weight: 400; color: #9a9a9a; }
+.framework h2 { margin: 0; font-family: var(--font-title); font-size: 30px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; color: #fff; }
+.framework h2 span { margin-right: 12px; color: var(--mint); }
+.framework h2 small { font-family: var(--font-text); font-size: 20px; font-weight: 400; color: #9a9a9a; }
 .framework ul { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
 .framework li { position: relative; padding-left: 22px; font-size: 22px; line-height: 1.3; color: #e4e9e6; }
 .framework li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 8px; height: 8px; background: var(--mint); }
