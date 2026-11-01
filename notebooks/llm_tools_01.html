@@ -307,6 +307,29 @@ details.code .output::before { content:"Output"; display:block; font:600 10px va
 
 footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3); font-size:12px; font-family:var(--mono); }
 
+/* ---------- run player (per-example loop) ---------- */
+.player { grid-template-columns: 1.3fr 1fr; }
+.player .loop-code pre { max-height:640px; }
+.actor.world rect { fill:var(--done-tint); stroke:transparent; }
+.actor.world text { fill:var(--done-ink); }
+.actor.world .sub { fill:var(--done-ink); opacity:.75; }
+.player.idle-world .actor.world, .player.idle-world .lifeline.world { opacity:.35; }
+.mk-bad { fill:var(--fail-base); } .mk-warn { fill:var(--warn-base); } .mk-done { fill:var(--done-base); }
+.hop.run.on line { stroke:var(--done-base); } .hop.run.on .n { fill:var(--done-base); stroke:var(--done-base); } .hop.run .pulse { fill:var(--done-base); }
+.hop.mem.fail.on line { stroke:var(--fail-base); } .hop.mem.fail.on .n { fill:var(--fail-base); stroke:var(--fail-base); } .hop.mem.fail .pulse { fill:var(--fail-base); }
+.hop.mem.warn.on line { stroke:var(--warn-base); } .hop.mem.warn.on .n { fill:var(--warn-base); stroke:var(--warn-base); } .hop.mem.warn .pulse { fill:var(--warn-base); }
+.scenes { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.scene { font:500 12px var(--mono); padding:5px 11px; border-radius:999px; border:1px solid var(--border); background:var(--page); color:var(--ink2); cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+.scene:hover { color:var(--text); }
+.scene.cur.fail { background:var(--fail-tint); color:var(--fail-ink); border-color:transparent; }
+.scene.cur.warn { background:var(--warn-tint); color:var(--warn-ink); border-color:transparent; }
+.scene.cur.pass { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
+.payload { margin:10px 0 0; padding:10px 12px; background:var(--page); border:1px solid var(--border); border-radius:8px; font-size:12px; line-height:1.5; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-word; }
+.payload-lbl { display:block; margin-top:10px; font:600 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); }
+.step.on { box-shadow:0 0 0 2px var(--done-base); }
+.msg.glow { animation: glow 1.1s ease 2; }
+@keyframes glow { 50% { box-shadow:0 0 0 5px color-mix(in srgb, var(--pass-base) 40%, transparent); } }
+
 @media (max-width: 980px) {
   .hero, .loop, .split, .notool { grid-template-columns: 1fr; }
   .loop-diagram { border-right:0; border-bottom:1px solid var(--border); }
@@ -324,6 +347,7 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3)
   .brand .title-t { display:none; }
   .tools .btn .t { display:none; }
   .tab { min-width:140px; }
+  .player .loop-code pre { max-height:340px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation:none !important; transition:none !important; }
@@ -730,7 +754,7 @@ function parseStep(o) {
 }
 function traceHtml(cell) {
   return `<div class="trace">${steps(cell).map(parseStep).map(s => `
-    <details class="step">
+    <details class="step" data-k="${s.n - 1}">
       <summary><span class="sn">CALL ${s.n}</span><span class="call"><b>${esc(s.tool)}</b>(${esc(s.args)})</span><span class="more">result ▾</span></summary>
       <pre><span class="ret">returned → sent back to the model</span>${hlJson(s.result)}</pre>
     </details>`).join("")}</div>`;
@@ -786,7 +810,241 @@ function extraFor(e) {
   return "";
 }
 
+/* ---------- run player: every example, hop by hop ---------- */
+const TOOL_CELL = { get_temperature: 17, search: 28, calculate: 37, get_order: 48, create_ticket: 48 };
+const J = o => JSON.stringify(o, null, 2);
+const trunc = (s, n) => (s = String(s).replace(/\s+/g, " "), s.length > n ? s.slice(0, n - 1) + "…" : s);
+
+function pyArgsToObj(s) {
+  const o = {}, re = /(\w+)=('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|[^,]+)/g; let m;
+  while ((m = re.exec(s))) {
+    let v = m[2].trim();
+    if (/^['"]/.test(v)) v = v.slice(1, -1).replace(/\\(['"\\])/g, "$1"); else if (v !== "" && !isNaN(+v)) v = +v;
+    o[m[1]] = v;
+  }
+  return o;
+}
+function summarize(tool, r) {
+  try {
+    if (tool === "get_temperature") return `${r.temperature_c} °C in ${r.city}`;
+    if (tool === "search") return `${r.length} articles: "${r[0].title}"`;
+    if (tool === "calculate") return (+r.value).toLocaleString("en-US", { maximumFractionDigits: 2 });
+    if (tool === "get_order") return `${r.status}, days_late: ${r.days_late}`;
+    if (tool === "create_ticket") return `${r.ticket_id} created`;
+  } catch (_) {}
+  return JSON.stringify(r);
+}
+
+function askHop(q, tools) {
+  return {
+    kind: "ask", label: `question + tools [${tools.join(", ")}]`,
+    title: "Send the question and the tools",
+    text: `Your code sends the question and ${tools.length} tool description${tools.length > 1 ? "s" : ""}. The model sees names, descriptions and argument schemas, never the Python.`,
+    payload: J({ input: [{ role: "user", content: q }], tools: tools.map(t => ({ type: "function", name: t, description: "…", parameters: "…" })) }),
+    lines: [3, 7, 8, 9, 10, 11, 12],
+  };
+}
+function withScene(label, qCell, runCell, tools, world) {
+  const hops = [askHop(out(qCell, "Question").body, tools)];
+  steps(runCell).map(parseStep).forEach((s, k) => {
+    let r; try { r = JSON.parse(s.result); } catch (_) { r = s.result; }
+    const args = pyArgsToObj(s.args), sum = summarize(s.tool, r);
+    hops.push({ kind: "call", k, label: `function_call: ${s.tool}(${s.args})`,
+      title: `The model asks for ${s.tool}`,
+      text: k ? "It read the previous result, decided another step was needed, and wrote new arguments itself." : "Instead of text, it replies with a function_call. It picked the tool and pulled the arguments out of the question itself.",
+      payload: J({ type: "function_call", name: s.tool, arguments: JSON.stringify(args) }), lines: [13, 15] });
+    hops.push({ kind: "run", k, tool: s.tool, label: `${s.tool}(${Object.values(args).map(v => JSON.stringify(v)).join(", ")})`, back: sum,
+      title: `Your code runs ${s.tool}()`,
+      text: `registry["${s.tool}"](**arguments) calls the real Python function, which uses ${world}. The model takes no part in this step.`,
+      payload: typeof r === "string" ? r : J(r) });
+    hops.push({ kind: "output", k, label: `function_call_output: ${sum}`,
+      title: "Send the result back",
+      text: "The result goes back as a function_call_output with the same call_id. The loop then calls the model again with the longer conversation.",
+      payload: J({ type: "function_call_output", call_id: "call_…", output: r }), lines: [26, 27, 28, 29, 30, 31] });
+  });
+  const ans = out(runCell, "With tools").body;
+  hops.push({ kind: "answer", label: `text: "${ans}"`, final: true,
+    title: "The model answers in text",
+    text: steps(runCell).length ? "No function_call in this reply, so the loop ends and returns the text, grounded in the tool results." : "No function_call items, so the loop ends on the very first turn.",
+    payload: ans, lines: [16, 17] });
+  return { label, tone: "pass", code: "loop", hops, runCell };
+}
+function withoutScene(qCell, wCell, verdict) {
+  const q = out(qCell, "Question").body, a = out(wCell, "Without tools").body;
+  return { label: "Without tools", tone: verdict[0], code: "ask", hops: [
+    { kind: "ask", label: "question only (no tools)", title: "Send only the question",
+      text: "ask() sends the question with no tools attached. The model has nothing it can call.", payload: J({ input: q }), lines: [2, 3, 4, 5, 6] },
+    { kind: "mem", tone: verdict[0], label: `text: "${a}"`, final: true, title: `The model answers from memory: ${verdict[1]}`,
+      text: "Training data is all it has. Compare this with the tool run.", payload: a, lines: [7] },
+  ] };
+}
+
+const players = new Set();
+let PID = 0;
+function stopPlayers() { players.forEach(p => { p.stop(); if (!p.root.isConnected) players.delete(p); }); }
+
+function makePlayer(host, cfg) {
+  const id = "pl" + (++PID);
+  host.innerHTML = `<div class="panel loop player${cfg.idleWorld ? " idle-world" : ""}" data-step="0">
+    <div class="loop-diagram">
+      ${cfg.scenes.length > 1 ? `<div class="scenes">${cfg.scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${s.tone === "pass" ? "✓" : "✕"} ${esc(s.label)}</button>`).join('<span class="arr">▸</span>')}</div>` : ""}
+      <div class="svgwrap"></div>
+      <div class="controls">
+        <button class="btn solid play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play</span></button>
+        <button class="btn stepb">Step <span class="mono" style="font-size:11px">→</span></button>
+        <button class="btn resetb">Reset</button>
+        <div class="prog"></div>
+      </div>
+      <div class="caption"></div>
+    </div>
+    <div class="loop-code"><div class="bar"></div><pre></pre></div>
+  </div>`;
+  const root = host.firstElementChild, P = { root, scene: 0, n: 0, timer: null, codeKey: "" };
+  const X = { world: 80, code: 310, model: 630 }, W = 720;
+
+  function svgFor(sc) {
+    let y = 120, body = "", band = null;
+    sc.hops.forEach((h, i) => {
+      const num = i + 1, m = (X.code + X.model) / 2;
+      const tone = h.kind === "mem" ? h.tone : "";
+      if (h.kind === "call" && !band) band = { y0: y - 34 };
+      if (h.kind === "ask" || h.kind === "output") {
+        body += `<g class="hop ${h.kind}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 42))}</text>
+          <line x1="${X.code + 8}" y1="${y}" x2="${X.model - 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+          <circle class="pulse" cx="${X.code + 14}" cy="${y}" r="5" style="--dx:${X.model - X.code - 30}px"/>
+          <circle class="n" cx="${X.code}" cy="${y}" r="11"/><text class="nt" x="${X.code}" y="${y + 4}">${num}</text></g>`;
+        if (h.kind === "output") band.y1 = y + 18;
+        y += 64;
+      } else if (h.kind === "run") {
+        const wm = (X.world + X.code) / 2;
+        body += `<g class="hop run" data-step="${num}"><text x="${wm}" y="${y - 10}" text-anchor="middle">${esc(trunc(h.label, 28))}</text>
+          <line x1="${X.code - 8}" y1="${y}" x2="${X.world + 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+          <line x1="${X.world + 8}" y1="${y + 24}" x2="${X.code - 8}" y2="${y + 24}" marker-end="url(#${id}-dim)"/>
+          <text x="${wm}" y="${y + 42}" text-anchor="middle">→ ${esc(trunc(h.back, 26))}</text>
+          <circle class="pulse" cx="${X.code - 14}" cy="${y}" r="5" style="--dx:${-(X.code - X.world - 30)}px"/>
+          <circle class="n" cx="${X.code}" cy="${y + 12}" r="11"/><text class="nt" x="${X.code}" y="${y + 16}">${num}</text></g>`;
+        y += 84;
+      } else {
+        body += `<g class="hop ${h.kind} ${tone}" data-step="${num}"><text x="${m}" y="${y - 12}" text-anchor="middle">${esc(trunc(h.label, 42))}</text>
+          <line x1="${X.model - 8}" y1="${y}" x2="${X.code + 8}" y2="${y}" marker-end="url(#${id}-dim)"/>
+          <circle class="pulse" cx="${X.model - 14}" cy="${y}" r="5" style="--dx:${-(X.model - X.code - 30)}px"/>
+          <circle class="n" cx="${X.model}" cy="${y}" r="11"/><text class="nt" x="${X.model}" y="${y + 4}">${num}</text></g>`;
+        y += 64;
+      }
+    });
+    const H = y - 20;
+    const mk = (n, c) => `<marker id="${id}-${n}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="${c}" d="M0 0 10 5 0 10z"/></marker>`;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(sc.label)}: step-by-step sequence diagram">
+      <defs>${mk("dim", "mk-dim")}${mk("on", "mk-on")}${mk("bad", "mk-bad")}${mk("warn", "mk-warn")}${mk("done", "mk-done")}</defs>
+      ${band ? `<rect class="repeat-band" x="14" y="${band.y0}" width="${W - 28}" height="${band.y1 - band.y0}" rx="12"/><text class="repeat-lbl" x="26" y="${band.y0 + 16}">↻ REPEATS WHILE THE MODEL ASKS FOR TOOLS</text>` : ""}
+      <line class="lifeline world" x1="${X.world}" y1="72" x2="${X.world}" y2="${H - 6}"/>
+      <line class="lifeline" x1="${X.code}" y1="72" x2="${X.code}" y2="${H - 6}"/>
+      <line class="lifeline" x1="${X.model}" y1="72" x2="${X.model}" y2="${H - 6}"/>
+      <g class="actor world"><rect x="${X.world - 70}" y="14" width="140" height="56" rx="12"/><text x="${X.world}" y="40" text-anchor="middle">Outside world</text><text class="sub" x="${X.world}" y="58" text-anchor="middle">${esc(cfg.world.toUpperCase())}</text></g>
+      <g class="actor"><rect x="${X.code - 75}" y="14" width="150" height="56" rx="12"/><text x="${X.code}" y="40" text-anchor="middle">Your code</text><text class="sub" x="${X.code}" y="58" text-anchor="middle">PYTHON</text></g>
+      <g class="actor model"><rect x="${X.model - 75}" y="14" width="150" height="56" rx="12"/><text x="${X.model}" y="40" text-anchor="middle">Model</text><text class="sub" x="${X.model}" y="58" text-anchor="middle">LLM API</text></g>
+      ${body}</svg>`;
+  }
+
+  function showCode(key, cell, src, label, lines) {
+    const pre = $("pre", $(".loop-code", root));
+    if (P.codeKey !== key) {
+      P.codeKey = key;
+      $(".loop-code .bar", root).innerHTML = `<span style="font:500 11px var(--mono);color:var(--accent);background:var(--row);padding:2px 7px;border-radius:5px">In [${cell}]</span>${esc(label)}`;
+      pre.innerHTML = hlPy(src).split("\n").map((l, i) => `<span class="ln" data-n="${i + 1}">${l || " "}</span>`).join("");
+    }
+    const set = new Set(lines);
+    pre.querySelectorAll(".ln").forEach(l => l.classList.toggle("hl", set.has(+l.dataset.n)));
+    $(".loop-code", root).classList.toggle("dim", lines.length > 0);
+    const first = $(".ln.hl", pre);
+    if (first) pre.scrollTo({ top: first.offsetTop - pre.clientHeight / 3, behavior: "smooth" });
+  }
+  function toolRange(src, name) {
+    const ls = src.split("\n"), s = ls.findIndex(l => l.startsWith(`def ${name}(`)), r = [];
+    for (let i = s; i < ls.length; i++) { if (i > s && /^\S/.test(ls[i])) break; r.push(i + 1); }
+    while (r.length && !ls[r[r.length - 1] - 1].trim()) r.pop();
+    return r;
+  }
+
+  function setScene(i) {
+    P.scene = i; P.n = 0;
+    const sc = cfg.scenes[i];
+    $(".svgwrap", root).innerHTML = svgFor(sc);
+    root.querySelectorAll(".scene").forEach(b => b.classList.toggle("cur", +b.dataset.i === i));
+    $(".prog", root).innerHTML = sc.hops.map(() => "<i></i>").join("");
+    setStep(0);
+  }
+  function setStep(n) {
+    P.n = n; root.dataset.step = n;
+    const sc = cfg.scenes[P.scene], h = sc.hops[n - 1];
+    root.querySelectorAll(".hop").forEach(g => {
+      const s = +g.dataset.step, hop = sc.hops[s - 1];
+      g.classList.toggle("on", s === n); g.classList.toggle("past", n > 0 && s < n);
+      const mkr = s !== n ? "dim" : hop.kind === "run" ? "done" : hop.kind === "mem" ? (hop.tone === "fail" ? "bad" : "warn") : "on";
+      g.querySelectorAll("line").forEach(el => el.setAttribute("marker-end", `url(#${id}-${mkr})`));
+    });
+    root.querySelectorAll(".prog i").forEach((el, i) => el.classList.toggle("on", i < n));
+    const cap = $(".caption", root);
+    if (!h) {
+      cap.innerHTML = `<div class="t">${esc(sc.label)}: ${sc.hops.length} steps</div><p>Press Play to watch this run, or Step through it. Every payload shown is from the saved notebook run.</p>`;
+    } else {
+      const isJson = /^[[{]/.test(h.payload);
+      cap.innerHTML = `<div class="t"><span class="badge" style="background:${h.kind === "run" ? "var(--done-base)" : h.kind === "mem" ? `var(--${h.tone}-base)` : "var(--accent)"};color:#fff">${n}</span>${esc(h.title)}</div>
+        <p>${md(h.text)}</p><span class="payload-lbl">${h.kind === "run" ? "returned by the function" : h.final ? "text shown to the user" : "payload on this arrow"}</span>
+        <pre class="payload">${isJson ? hlJson(h.payload) : esc(h.payload)}</pre>`;
+    }
+    if (h && h.kind === "run") {
+      const c = TOOL_CELL[h.tool];
+      showCode("t" + c, c, NB.cells[c], `${h.tool}(): runs in your code`, toolRange(NB.cells[c], h.tool));
+    } else if (sc.code === "ask") {
+      showCode("ask", 7, NB.cells[7], "ask(): no tools", h ? h.lines : []);
+    } else {
+      showCode("loop", 9, LOOP_SRC, "ask_with_tools()", h ? h.lines : []);
+    }
+    cfg.onHop?.(sc, h);
+  }
+  function advance() {
+    const sc = cfg.scenes[P.scene];
+    if (P.n < sc.hops.length) { setStep(P.n + 1); return true; }
+    if (P.scene < cfg.scenes.length - 1) { setScene(P.scene + 1); setStep(1); return true; }
+    return false;
+  }
+  P.stop = () => { clearInterval(P.timer); P.timer = null; $(".play span", root).textContent = "Play"; };
+  const atEnd = () => P.scene === cfg.scenes.length - 1 && P.n === cfg.scenes[P.scene].hops.length;
+  $(".play", root).addEventListener("click", () => {
+    if (P.timer) return P.stop();
+    if (atEnd()) setScene(0);
+    $(".play span", root).textContent = "Pause";
+    advance();
+    P.timer = setInterval(() => { if (!advance()) P.stop(); }, 2600);
+  });
+  $(".stepb", root).addEventListener("click", () => { P.stop(); if (!advance()) setScene(0); });
+  $(".resetb", root).addEventListener("click", () => { P.stop(); setScene(0); });
+  root.querySelectorAll(".scene").forEach(b => b.addEventListener("click", () => { P.stop(); setScene(+b.dataset.i); }));
+  players.add(P);
+  setScene(0);
+  return P;
+}
+
+const WORLD = { temperature: "Open-Meteo API", search: "Wikipedia API", calculator: "Python ast module", orders: "ORDERS / TICKETS" };
+function playerConfig(e) {
+  const scenes = [withoutScene(e.q, e.without, e.verdictWithout)];
+  if (e.key === "orders") {
+    scenes.push(withScene("With tools · A1042", 44, 50, e.tools, WORLD.orders), withScene("With tools · A1043", 52, 52, e.tools, WORLD.orders));
+  } else scenes.push(withScene("With tools", e.q, e.run, e.tools, WORLD[e.key]));
+  return {
+    world: WORLD[e.key], scenes,
+    onHop(sc, h) {
+      const panel = $("#exPanel");
+      panel.querySelectorAll(".col.with .step").forEach(s => s.classList.toggle("on", sc.runCell === e.run && h?.k !== undefined && +s.dataset.k === h.k));
+      const ans = $(".col.with .msg.pass", panel);
+      if (ans) { ans.classList.remove("glow"); if (sc.runCell === e.run && h?.final) { void ans.offsetWidth; ans.classList.add("glow"); } }
+    },
+  };
+}
+
 function selectExample(i) {
+  stopPlayers();
   const e = EXAMPLES[i];
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(+t.dataset.i === i)));
   const without = out(e.without, "Without tools").body;
@@ -799,6 +1057,11 @@ function selectExample(i) {
     </div>
     <p class="ex-intro">${e.intro}</p>
     <div class="panel question"><span class="q-ic">${ICON.user}</span><span>${esc(out(e.q, "Question").body)}</span></div>
+
+    <div class="subhead">Run it step by step</div>
+    <div id="exPlayer"></div>
+
+    <div class="subhead">Side by side</div>
 
     <div class="vs">
       <div class="panel col without">
@@ -827,6 +1090,7 @@ function selectExample(i) {
     <div class="subhead">Explain</div>
     <div class="explain">${bullets(e.explain).map((b, k) => `<div class="panel item"><span class="badge">${i + 1}${"abcdefghij"[k]}</span><p>${md(b)}</p></div>`).join("")}</div>
   </div>`;
+  makePlayer($("#exPlayer"), playerConfig(e));
   applyCodeAll();
   requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll(".bar-fill").forEach(b => (b.style.width = b.dataset.w + "%"))));
   history.replaceState(null, "", "#ex-" + e.key);
@@ -840,7 +1104,8 @@ $("#notoolPanel").innerHTML = `
   <div class="center"><div class="zero">0<small>tool calls</small></div><span class="node model">model</span></div>
   <div><div class="msg done"><div class="who"><span class="dot"></span> Tool calls</div>${esc(out(55, "Tool calls").body)}</div>
     <div class="msg pass" style="margin-top:10px"><div class="who"><span class="dot"></span> With tools available</div><span style="font-size:22px;font-weight:650">${esc(out(55, "With tools").body)}</span></div></div>`;
-$("#notoolCode").innerHTML = `<p class="lede" style="margin-top:14px">${md(NB.cells[56])}</p>` + codeBlock(55, "all_tools + all_registry: ask a question it already knows");
+$("#notoolCode").innerHTML = `<p class="lede" style="margin-top:14px">${md(NB.cells[56])}</p><div class="subhead">Run it step by step</div><div id="notoolPlayer"></div>` + codeBlock(55, "all_tools + all_registry: ask a question it already knows");
+makePlayer($("#notoolPlayer"), { world: "5 tools, none called", idleWorld: true, scenes: [withScene("Every tool available", 55, 55, NO_TOOLS, "nothing")] });
 
 /* ---------- render: summary ---------- */
 const SUMMARY = [["Temperature", "Fresh information", 21, 0], ["Search", "Fresh information", 30, 1], ["Calculator", "Reliable computation", 39, 2], ["Order lookup + ticket", "Private data, actions", 50, 3]];
