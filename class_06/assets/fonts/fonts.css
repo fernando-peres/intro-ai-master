@@ -1,14 +1,11 @@
-/* Borna is licensed, so it is not committed: drop borna-<weight>-webfont.woff2 into ./borna/.
-   Each Borna face falls back to Prompt when its file is absent. */
+/* Font roles: Borna titles, CMU Serif subtitles and long-form text, Fira Code code, Prompt general text. */
 
 @font-face {
   font-family: "Borna";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: 
-    url("./borna/borna-regular-webfont.woff2") format("woff2"),
-    url("./prompt/Prompt-Regular.woff2") format("woff2");
+  src: url("./Borna/webfont/borna-regular-webfont.woff2") format("woff2");
 }
 
 @font-face {
@@ -16,9 +13,7 @@
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: 
-    url("./borna/borna-medium-webfont.woff2") format("woff2"),
-    url("./prompt/Prompt-Medium.woff2") format("woff2");
+  src: url("./Borna/webfont/borna-medium-webfont.woff2") format("woff2");
 }
 
 @font-face {
@@ -26,9 +21,7 @@
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: 
-    url("./borna/borna-semibold-webfont.woff2") format("woff2"),
-    url("./prompt/Prompt-SemiBold.woff2") format("woff2");
+  src: url("./Borna/webfont/borna-semibold-webfont.woff2") format("woff2");
 }
 
 @font-face {
@@ -36,9 +29,15 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: 
-    url("./borna/borna-bold-webfont.woff2") format("woff2"),
-    url("./prompt/Prompt-Bold.woff2") format("woff2");
+  src: url("./Borna/webfont/borna-bold-webfont.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Prompt";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("./Prompt/Prompt-Light.ttf") format("truetype");
 }
 
 @font-face {
@@ -46,7 +45,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("./prompt/Prompt-Regular.woff2") format("woff2");
+  src: url("./Prompt/Prompt-Regular.ttf") format("truetype");
 }
 
 @font-face {
@@ -54,7 +53,7 @@
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("./prompt/Prompt-Medium.woff2") format("woff2");
+  src: url("./Prompt/Prompt-Medium.ttf") format("truetype");
 }
 
 @font-face {
@@ -62,7 +61,7 @@
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url("./prompt/Prompt-SemiBold.woff2") format("woff2");
+  src: url("./Prompt/Prompt-SemiBold.ttf") format("truetype");
 }
 
 @font-face {
@@ -70,7 +69,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("./prompt/Prompt-Bold.woff2") format("woff2");
+  src: url("./Prompt/Prompt-Bold.ttf") format("truetype");
 }
 
 @font-face {
@@ -78,7 +77,7 @@
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url("./prompt/Prompt-Italic.woff2") format("woff2");
+  src: url("./Prompt/Prompt-Italic.ttf") format("truetype");
 }
 
 @font-face {
@@ -86,7 +85,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("./cmu-serif/cmunrm.woff2") format("woff2");
+  src: url("./CMU Serif/cmunrm.ttf") format("truetype");
 }
 
 @font-face {
@@ -94,7 +93,7 @@
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url("./cmu-serif/cmunti.woff2") format("woff2");
+  src: url("./CMU Serif/cmunti.ttf") format("truetype");
 }
 
 @font-face {
@@ -102,7 +101,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("./cmu-serif/cmunbx.woff2") format("woff2");
+  src: url("./CMU Serif/cmunbx.ttf") format("truetype");
 }
 
 @font-face {
@@ -110,7 +109,7 @@
   font-style: italic;
   font-weight: 700;
   font-display: swap;
-  src: url("./cmu-serif/cmunbi.woff2") format("woff2");
+  src: url("./CMU Serif/cmunbi.ttf") format("truetype");
 }
 
 @font-face {
@@ -118,5 +117,5 @@
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url("./fira-code/FiraCode-VariableFont_wght.woff2") format("woff2");
+  src: url("./Fira_Code/FiraCode-VariableFont_wght.ttf") format("truetype");
 }
