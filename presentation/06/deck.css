@@ -423,5 +423,5 @@ body.toc-open #toc {
 .cost-chart .is-latest .track b, .cost-chart .is-latest .name { color: var(--mint); }
 .cost-chart .axis { position: absolute; left: var(--label); right: 120px; top: -10px; bottom: -42px; pointer-events: none; }
 .cost-chart .axis span { position: absolute; top: 0; bottom: 0; left: calc(var(--t) / 500 * 100%); display: flex; align-items: flex-end; padding-left: 6px; border-left: 1px dashed #34342e; font-size: 16px; line-height: 1; color: #8a8a84; font-variant-numeric: tabular-nums; }
-.layout-dark-1 .source { position: absolute; left: 94px; right: 94px; bottom: 34px; margin: 0; max-width: 1240px; font-size: 16px; line-height: 1.45; color: #9a9a9a; }
+.layout-dark-1 .source { position: absolute; left: 94px; right: 94px; bottom: 34px; margin: 0; max-width: 1000px; font-size: 16px; line-height: 1.45; color: #9a9a9a; }
 .layout-dark-1 .source i { font-style: italic; }

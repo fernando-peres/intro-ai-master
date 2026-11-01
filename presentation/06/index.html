@@ -334,7 +334,7 @@
           <h1>Improving the <em>Performance</em> of GenAI Systems</h1>
           <p class="subtitle is-wide">Four complementary dimensions form a continuous improvement framework for GenAI systems, addressing their limitations and improving <em>robustness, reliability, and output quality</em>.</p>
           <div class="framework">
-            <div class="quad is-tl"><h2><span>1</span>Model Optimization Techniques</h2><ul><li>Fine-tuning</li><li>Instruction tuning</li><li>Alignment</li><li>Compression</li></ul><p class="tag">Parametric memory</p></div>
+            <div class="quad is-tl"><h2><span>1</span>Model Optimization Techniques</h2><ul><li>Pre-training <small>(and continued pre-training)</small></li><li>Post-training <small>(RLHF and other post-training techniques)</small></li></ul><p class="tag">Parametric memory</p></div>
             <div class="quad is-tr"><h2><span>2</span>Harness and Capability Extension</h2><ul><li>Memory systems and artifacts</li><li>Context and knowledge integration</li><li>Capabilities and tools</li><li>Orchestration and control</li><li>Execution and evaluation</li></ul></div>
             <div class="quad is-bl"><h2><span>3</span>Experiments and Validation <small>(offline)</small></h2><ul><li>Benchmarks</li><li>Datasets</li><li>Test cases</li><li>Metrics</li><li>Evaluations</li></ul></div>
             <div class="quad is-br"><h2><span>4</span>Observability and Continuous Improvement</h2><ul><li>Telemetry</li><li>Traces</li><li>Metrics and evaluators</li><li>User feedback</li></ul></div>
@@ -424,11 +424,11 @@
           <span class="eyebrow">Continuous improvement · Cost</span>
           <h1>Training models is expensive; <em>improving the system</em> is not</h1>
           <table class="dark-table is-mint cost-table">
-            <colgroup><col style="width:30%" /><col style="width:27%" /><col style="width:18%" /><col /></colgroup>
-            <thead><tr><th>Where you improve</th><th>Typical cost (order of magnitude)</th><th>Who does it</th><th>Time to change</th></tr></thead>
+            <colgroup><col style="width:23%" /><col style="width:38%" /><col style="width:16%" /><col /></colgroup>
+            <thead><tr><th>Where you improve</th><th>Typical cost</th><th>Who does it</th><th>Time to change</th></tr></thead>
             <tbody>
-              <tr><td>Pre-training</td><td>$10M–$100M+ per run; frontier runs now reach hundreds of millions</td><td>Frontier labs</td><td>Months; produces a new model</td></tr>
-              <tr><td>Post-training</td><td>$1M–$10M at frontier scale (fine-tuning, RLHF, alignment)</td><td>Labs, large enterprises</td><td>Weeks; redone when the base model changes</td></tr>
+              <tr><td>Pre-training</td><td>$78M–$191M per final run (GPT-4, Gemini Ultra), up to ~$490M (Grok 4)</td><td>Frontier labs</td><td>Months; produces a new model</td></tr>
+              <tr><td>Post-training</td><td>Far less: DeepSeek-R1’s RL stage ≈ $0.3M; frontier labs don’t disclose</td><td>Labs, enterprises</td><td>Weeks; redone when the base model changes</td></tr>
               <tr><td>Harness &amp; context</td><td>Engineering time + pay-per-use inference</td><td>Product teams</td><td>Days; versioned and reversible</td></tr>
               <tr><td>Experiments &amp; observability</td><td>Tooling + engineering time</td><td>Product teams</td><td>Continuous</td></tr>
             </tbody>
@@ -438,7 +438,7 @@
             <div><b>Cheap, fast, reversible</b><p>Harness changes ship in days, cost little, and carry over when a better model arrives.</p></div>
             <div><b>Evidence before spend</b><p>Experiments and observability show where the system fails, so effort goes where it pays off.</p></div>
           </div>
-          <p class="source">Cost ranges are indicative orders of magnitude. Training figures: Stanford HAI AI Index 2024 and 2025 (estimates by Epoch AI); Cottier et al., <i>The rising costs of training frontier AI models</i>, Epoch AI (2024).</p>
+          <p class="source">Compute for the final run only; excludes research, staff, data and failed runs. Sources: Stanford HAI, AI Index Report 2024 (Epoch AI estimates); Epoch AI, <i>What did it take to train Grok 4?</i> (2025); DeepSeek-AI, DeepSeek-R1, <i>Nature</i> (2025).</p>
         </div>
         <span class="page-num"></span>
       </div>
@@ -460,7 +460,7 @@
             <div class="row"><span class="name">Llama 3.1-405B <small>Meta · 2024</small></span><span class="track"><i style="--v:170"></i><b>$170M</b></span></div>
             <div class="row is-latest"><span class="name">Grok 4 <small>xAI · 2025</small></span><span class="track"><i style="--v:490"></i><b>~$490M</b></span></div>
           </div>
-          <p class="source">Estimates of hardware and energy for the final run only; they exclude research, staff, data, and failed runs. Costs have grown about 2.4× per year since 2016.<br />Sources: Stanford HAI, AI Index Report 2024 and 2025 (estimates by Epoch AI); Epoch AI, Grok 4 training resources (2025); Cottier et al., <i>The rising costs of training frontier AI models</i>, Epoch AI (2024).</p>
+          <p class="source">Third-party estimates of compute for the final training run, priced at cloud-rental rates; they exclude research, staff, data and failed runs. Frontier training costs have grown ~2.4× per year since 2016 (95% CI 2.0–3.1×; Cottier et al., Epoch AI, 2024).<br />Sources: Stanford HAI, AI Index Report 2024 (GPT-3, GPT-4, Gemini 1.0 Ultra) and 2025 (Grok-2, Llama 3.1-405B), both using Epoch AI estimates; Epoch AI, <i>What did it take to train Grok 4?</i> (Sept 2025, median estimate).</p>
         </div>
         <span class="page-num"></span>
       </div>
