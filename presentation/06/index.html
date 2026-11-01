@@ -193,13 +193,13 @@
           <span class="eyebrow">Harness</span>
           <h1>The <em>components</em> of a harness</h1>
           <p class="subtitle">A harness turns a model into a working system through <em>five building blocks</em>.</p>
-          <ol class="component-cards">
+          <ul class="component-list">
             <li><b>Context and knowledge integration</b><p>What the model sees: instructions, documents and retrieved data.</p></li>
             <li><b>Memory and state management</b><p>What persists across steps, turns and sessions.</p></li>
             <li><b>Tools and external capabilities</b><p>Actions beyond text: search, code execution and APIs.</p></li>
             <li><b>Orchestration and control</b><p>Loops, workflows, routing, permissions and guardrails.</p></li>
             <li><b>Evaluation mechanisms</b><p>Tests, metrics and feedback that check and improve outputs.</p></li>
-          </ol>
+          </ul>
         </div>
         <span class="page-num"></span>
       </div>
@@ -212,11 +212,11 @@
           <span class="eyebrow">Harness</span>
           <h1>Three layers, <em>three roles</em></h1>
           <ol class="roles">
-            <li><div><b>Models are the <em>intelligence</em></b><p>They provide the reasoning, understanding, and generation capabilities.</p></div></li>
-            <li><div><b>The harness is the <em>system around the intelligence</em></b><p>It orchestrates models, tools, context, and workflows to turn intelligence into reliable applications.</p></div></li>
-            <li><div><b>Context &amp; knowledge provide the <em>information the intelligence needs</em></b><p>They ground the model in relevant data, memory, and knowledge to produce meaningful, context-aware responses.</p></div></li>
+            <li class="is-model"><span class="layer"><span class="swatch"></span>1 · Model</span><b>Models are the <em>intelligence</em></b><p>They provide the reasoning, understanding, and generation capabilities.</p></li>
+            <li class="is-harness"><span class="layer"><span class="swatch"></span>2 · Harness</span><b>The harness is the <em>system around the intelligence</em></b><p>It orchestrates models, tools, context, and workflows to turn intelligence into reliable applications.</p></li>
+            <li class="is-context"><span class="layer"><span class="swatch"></span>3 · Context &amp; knowledge</span><b>Context &amp; knowledge provide <em>what the intelligence needs</em></b><p>They ground the model in relevant data, memory, and knowledge to produce meaningful, context-aware responses.</p></li>
           </ol>
-          <p class="hand-note">Note: "intelligence" and "thinks" are shorthand. Models generate from learned patterns; they don't think the way people do. And context is more than knowledge: it also carries instructions, goals, and the current state of the task.</p>
+          <p class="hand-note"><b>Note:</b> "intelligence" and "thinks" are shorthand. Models generate from learned patterns; they don't think the way people do. And context is more than knowledge: it also carries instructions, goals, and the current state of the task.</p>
         </div>
         <span class="page-num"></span>
       </div>
@@ -271,7 +271,7 @@
     <section class="page is-night" data-type="doc" data-title="Harness development frameworks">
       <article class="doc-dark-1 is-pink">
         <span class="eyebrow">Harness · Frameworks</span>
-        <h1>Harness Development Frameworks — Frameworks and SDKs for Building GenAI Systems</h1>
+        <h1>Harness Development Frameworks&nbsp;— Frameworks and SDKs for Building GenAI Systems</h1>
         <p class="lead">Implemented harnesses are products you use. These frameworks are the building blocks you use to make your own harness.</p>
         <table class="dark-table">
           <colgroup><col style="width:30%" /><col style="width:20%" /><col /></colgroup>

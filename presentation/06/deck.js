@@ -81,8 +81,11 @@
           el.innerHTML = "";
           diagrams.set(el, (await mod.mount(el)) ?? {});
         } catch (err) {
+          // file:// blocks ES modules; anything else is a real error worth showing.
           el.querySelector(".diagram-status").textContent =
-            "Diagram needs an http server (see README).";
+            location.protocol === "file:"
+              ? "Diagram needs an http server (see README)."
+              : `Diagram failed to load: ${err?.message ?? err}`;
           console.error(err);
           return;
         }

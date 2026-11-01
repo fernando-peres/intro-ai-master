@@ -6,8 +6,8 @@ import { THREE, createStage, material } from "./lib.js";
 
 const R = { model: 1.0, halo: 1.14, harnessIn: 1.2, harnessOut: 2.3, boundary: 2.75 };
 const C = { model: 0x0f4a35, halo: 0x9be3bc, harness: 0x5fca9b, rim: 0xe9fbf1, spoke: 0x1d5e43, boundary: 0x8acfaa };
-const LEFT = -6.2;  // x of the bare model
-const RIGHT = 4.1;  // x of the system
+const LEFT = -5.9;  // x of the bare model
+const RIGHT = 3.75;  // x of the system
 const FUNCTIONS = ["Contextualizes", "Extends", "Coordinates", "Constrains", "Operationalizes"];
 
 const polar = (cx, r, a, z = 0) => new THREE.Vector3(cx + Math.cos(a) * r, Math.sin(a) * r, z);
@@ -38,7 +38,7 @@ function sphereModel(root, x) {
 }
 
 export function mount(el) {
-  const { root, tick, addLabel, controls } = createStage(el, { fov: 35, position: [0, 0, 12.3], spin: false });
+  const { root, tick, addLabel, controls } = createStage(el, { fov: 35, position: [0, 0, 11.6], spin: false });
 
   // ---------- Left: the bare model ----------
   const bare = sphereModel(root, LEFT);
@@ -48,18 +48,18 @@ export function mount(el) {
     root.add(o);
     return o;
   };
-  addLabel("MODEL", anchor(LEFT, -1.75), { className: "is-title" });
-  addLabel("learned capabilities", anchor(LEFT, -2.35), { className: "is-note" });
+  addLabel("MODEL", anchor(LEFT, -1.62), { className: "is-title" });
+  addLabel("learned capabilities", anchor(LEFT, -2.25), { className: "is-note" });
 
   // ---------- Middle: "+ harness" arrow ----------
   const a0 = new THREE.Vector3(LEFT + 1.75, 0, 0);
-  const a1 = new THREE.Vector3(RIGHT - R.boundary - 0.45, 0, 0);
+  const a1 = new THREE.Vector3(RIGHT - R.boundary - 0.35, 0, 0);
   root.add(dashed([a0, a1], 0xffffff, 0.16, 0.1));
   const head = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.34, 20), material(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.3 }));
   head.position.copy(a1);
   head.rotation.z = -Math.PI / 2;
   root.add(head);
-  addLabel("+ harness", anchor((a0.x + a1.x) / 2, 0.45), { className: "is-note" });
+  addLabel("+ harness", anchor((a0.x + a1.x) / 2, 0.5), { className: "is-note" });
   const arrowParticles = [0, 0.5].map((phase) => {
     const m = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 10), material(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.6 }));
     root.add(m);
@@ -85,7 +85,7 @@ export function mount(el) {
   const boundary = dashed(boundaryPts, C.boundary, 0.12, 0.1);
   boundary.position.x = RIGHT;
   root.add(boundary);
-  addLabel("GENAI SYSTEM", anchor(RIGHT, -R.boundary - 0.42), { className: "is-title" });
+  addLabel("GENAI SYSTEM", anchor(RIGHT, -R.boundary - 0.4), { className: "is-title" });
 
   // Five harness functions: a node on the rim, a label outside, a dashed flow into the model.
   const nodeGeo = new THREE.SphereGeometry(0.1, 20, 14);

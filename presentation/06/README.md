@@ -30,7 +30,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 4 | Lesson · Harness overview | `.layout-lesson` |
 | 5 | Harness for GenAI systems | `.layout-dark-1` + `diagrams/harness.js` |
 | 6 | Model ≠ GenAI system | `.layout-dark-1` + `diagrams/system.js` |
-| 7 | Components of a harness | `.layout-dark-1` + `.component-cards` |
+| 7 | Components of a harness | `.layout-dark-1` + `.component-list` |
 | 8 | Three layers, three roles | `.layout-dark-1` + `.roles` + `.hand-note` |
 | 9 | Implemented harnesses 1/2 (assistants) | `.layout-dark-1` + `.dark-table` |
 | 10 | Implemented harnesses 2/2 (coding & app building) | `.layout-dark-1` + `.dark-table` |
