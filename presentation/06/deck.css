@@ -248,7 +248,11 @@ body.toc-open #toc {
 .layout-index li { font-size: 28px; line-height: 1.35; font-weight: 400; }
 
 /* Template: unit. Slots: number + title (<span> light part, <b> key word). */
-.layout-unit-v2 h1 { position: absolute; left: 260px; top: 50%; transform: translateY(-50%); margin: 0; font-size: 74px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.05; color: var(--mint-soft); max-width: 1180px; text-wrap: balance; }
+.layout-unit-v2 .unit-head { position: absolute; left: 260px; right: 140px; top: 50%; transform: translateY(-50%); }
+.layout-unit-v2 h1 { margin: 0; font-size: 74px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.05; color: var(--mint-soft); max-width: 1180px; text-wrap: balance; }
+.layout-unit-v2 .subtitle { margin: 28px 0 0; max-width: 1080px; font-family: var(--font-serif); font-style: italic; font-size: 34px; line-height: 1.35; color: #fff; }
+.layout-unit-v2 .covers { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+.layout-unit-v2 .covers span { padding: 8px 18px; border: 2px solid rgba(255, 255, 255, 0.85); border-radius: 999px; font-size: 21px; font-weight: 500; color: #fff; }
 .layout-unit-v2 h1 b { color: #fff; font-weight: 700; }
 
 /* Template: lesson. Slots: title, current depth (.is-current), objective. */
@@ -548,3 +552,77 @@ body.toc-open #toc {
 /* Slide 27: the takeaways layout in two wider columns. */
 .takeaways.is-two { grid-template-columns: repeat(2, 1fr); gap: 96px; }
 .takeaways.is-two p { font-size: 27px; }
+
+
+/* ---------- Statement slide (template: layout-statement-dark) ---------- */
+/* Slots: .label, .statement (<em> = mint), .statement-source. One per unit, right after the unit title. */
+.layout-statement-dark { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 180px 40px 156px; }
+.layout-statement-dark .label { font-family: var(--font-text); font-weight: 600; font-size: 20px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); }
+.layout-statement-dark .statement { margin: 30px 0 0; max-width: 1240px; font-family: var(--font-serif); font-size: 60px; line-height: 1.25; color: #fff; text-wrap: pretty; }
+.layout-statement-dark .statement em { font-style: normal; color: var(--mint); }
+.layout-statement-dark .statement-source { margin: 40px 0 0; padding-top: 22px; max-width: 1240px; border-top: 1px solid #34342e; font-family: var(--font-hand); font-size: 28px; color: var(--hand); }
+
+/* ---------- Unit 4 · tools ---------- */
+.layout-dark-1 code, .doc-dark-1 code { font-family: var(--font-code); font-size: 0.86em; padding: 1px 6px; border-radius: 4px; background: #1f3a2d; color: #cdf3df; }
+
+/* Four gaps. */
+.gap-cards { position: absolute; left: 94px; right: 94px; top: 290px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.gap-cards > div { display: flex; flex-direction: column; padding: 26px 26px 28px; border-top: 2px solid var(--mint); background: #161614; min-height: 380px; }
+.gap-cards .tag, .example-cards .tag { font-family: var(--font-text); font-weight: 600; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); }
+.gap-cards b { margin-top: 12px; font-family: var(--font-title); font-weight: 700; font-size: 34px; line-height: 1.1; }
+.gap-cards p { margin: 16px 0 0; font-family: var(--font-serif); font-size: 26px; line-height: 1.4; color: #d6ddd8; }
+.gap-cards .chip { margin-top: auto; align-self: flex-start; padding: 6px 14px; border-radius: 999px; background: #1f3a2d; color: #cdf3df; font-size: 19px; font-weight: 500; }
+
+/* Tool loop. */
+.tool-flow { position: absolute; left: 94px; right: 94px; top: 300px; display: flex; align-items: stretch; gap: 12px; }
+.tool-flow .ce-arrow { align-self: center; width: 54px; }
+.tool-flow .node { flex: 1; display: flex; flex-direction: column; padding: 24px 22px; border: 2px solid #3a3a34; border-radius: 14px; background: #161614; }
+.tool-flow .node.is-model { background: #13261d; border-color: #2f6d4f; }
+.tool-flow .node.is-gate { border-color: var(--mint); }
+.tool-flow .node b { font-family: var(--font-title); font-weight: 700; font-size: 28px; }
+.tool-flow .node.is-gate b { color: var(--mint); }
+.tool-flow .node span { margin-top: 10px; font-size: 22px; line-height: 1.4; color: #cfd8d3; }
+.flow-note { position: absolute; left: 94px; right: 94px; top: 560px; margin: 0; text-align: center; font-family: var(--font-hand); font-size: 24px; color: var(--hand); }
+.key-idea { position: absolute; left: 94px; right: 94px; bottom: 90px; margin: 0; padding: 26px 32px; border-radius: 14px; background: #13261d; border: 2px solid var(--mint); font-family: var(--font-serif); font-size: 28px; line-height: 1.4; color: #e4e9e6; }
+.key-idea b { font-family: var(--font-title); color: var(--mint); }
+
+/* Descriptions are prompts: code panel + points. */
+.code-split { position: absolute; left: 94px; right: 94px; top: 210px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.code { margin: 0; padding: 30px 34px; border-radius: 14px; background: #161614; border: 1.5px solid #2b2b27; font-family: var(--font-code); font-size: 23px; line-height: 1.5; color: #e4e9e6; white-space: pre; }
+.code .c { color: #8a8a84; }
+.code .k { color: var(--mint); }
+.code .s { color: var(--hand); }
+.points { margin: 0; padding: 0; list-style: none; counter-reset: pt; display: grid; gap: 28px; }
+.points li { counter-increment: pt; position: relative; padding-left: 64px; font-family: var(--font-serif); font-size: 27px; line-height: 1.4; color: #d6ddd8; }
+.points li::before { content: counter(pt); position: absolute; left: 0; top: -2px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--mint); color: #0d1a12; font-family: var(--font-title); font-weight: 700; font-size: 22px; }
+.points li b { font-family: var(--font-title); font-weight: 700; color: #fff; }
+.points.is-cols { position: absolute; left: 94px; right: 94px; top: 250px; grid-template-columns: 1fr 1fr; gap: 44px 72px; }
+.points.is-cols li { padding-top: 4px; font-size: 32px; }
+
+/* Five examples. */
+.notes-link { position: absolute; right: 94px; top: 100px; padding: 12px 22px; border: 2px solid var(--mint); border-radius: 999px; font-family: var(--font-text); font-weight: 600; font-size: 20px; color: var(--mint); text-decoration: none; transition: background 150ms ease, color 150ms ease; }
+.notes-link:hover, .notes-link:focus-visible { background: var(--mint); color: #0d1a12; outline: none; }
+.example-cards { position: absolute; left: 94px; right: 94px; top: 210px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.example-cards > div { padding: 24px 26px 26px; border-top: 2px solid #2f6d4f; background: #161614; min-height: 270px; }
+.example-cards b { display: block; margin-top: 10px; font-family: var(--font-title); font-weight: 700; font-size: 29px; line-height: 1.12; }
+.example-cards p { margin: 12px 0 0; font-family: var(--font-serif); font-size: 23px; line-height: 1.4; color: #d6ddd8; }
+.example-cards .is-accent { background: #13261d; border-top-color: var(--mint); }
+
+/* Doc pages: hands-on extras (code blocks, meta pills, without/with, try-it box). */
+.doc-dark-1 h2 { margin: 2em 0 0.4em; padding-top: 0.6em; border-top: 1px solid #34342e; font-family: var(--font-title); font-weight: 700; font-size: 1.4em; color: #fff; }
+.doc-dark-1 h3 { margin: 1.4em 0 0.3em; font-family: var(--font-title); font-weight: 700; font-size: 1.08em; color: var(--accent); }
+.doc-dark-1 ol, .doc-dark-1 ul { font-family: var(--font-serif); color: #d6ddd8; }
+.doc-dark-1 li { margin: 0.4em 0; }
+.doc-dark-1 li b { font-family: var(--font-title); color: #fff; }
+.doc-dark-1 pre { margin: 1em 0; padding: 1.1em 1.3em; overflow-x: auto; border-radius: 12px; background: #161614; border: 1.5px solid #2b2b27; font-size: 0.82em; line-height: 1.55; }
+.doc-dark-1 pre code { padding: 0; background: none; color: #e4e9e6; font-size: inherit; }
+.doc-dark-1 .meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 1.1em 0 0; }
+.doc-dark-1 .meta span { padding: 4px 14px; border: 1px solid #3a5a4a; border-radius: 999px; font-family: var(--font-code); font-size: 0.7em; color: #cdf3df; }
+.doc-dark-1 .result { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; margin: 0.8em 0; }
+.doc-dark-1 .result > div { padding: 0.8em 1em; border-top: 2px solid #4a4a44; background: #161614; }
+.doc-dark-1 .result > .is-good { border-top-color: var(--accent); }
+.doc-dark-1 .result b { font-family: var(--font-text); font-size: 0.7em; letter-spacing: 0.08em; text-transform: uppercase; color: #b9c2bd; }
+.doc-dark-1 .result p { margin: 0.4em 0 0; }
+.doc-dark-1 .try { margin: 1.6em 0; padding: 1em 1.3em; border-radius: 12px; background: #13261d; border: 1.5px solid var(--accent); }
+.doc-dark-1 .try::before { content: "Try it"; display: block; font-family: var(--font-text); font-weight: 600; font-size: 0.7em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.doc-dark-1 .try ol { margin: 0.5em 0 0; }

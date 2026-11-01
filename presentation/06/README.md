@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A twenty-seven-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 38-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -24,36 +24,49 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 
 | # | Slide | Template |
 |---|---|---|
-| 1 | Cover | `.cover` (same as `class_06`) |
-| 2 | Table of Contents | `.layout-index` |
-| 3 | 01. What is a harness? | `.layout-unit-v2` |
-| 4 | Lesson · Harness overview | `.layout-lesson` |
-| 5 | Harness for GenAI systems | `.layout-dark-1` + `diagrams/harness.js` |
-| 6 | Model ≠ GenAI system | `.layout-dark-1` + `diagrams/system.js` |
-| 7 | Components of a harness | `.layout-dark-1` + `.component-list` |
-| 8 | Three layers, three roles | `.layout-dark-1` + `.roles` + `.hand-note` |
-| 9 | Implemented harnesses 1/2 (assistants) | `.layout-dark-1` + `.dark-table` |
-| 10 | Implemented harnesses 2/2 (coding & app building) | `.layout-dark-1` + `.dark-table` |
-| 11 | Harness development frameworks | doc · `.doc-dark-1.is-pink` |
-| 12 | Implemented harnesses vs. frameworks | doc · `.doc-dark-1.is-lime` + `.dark-table.is-compare` |
-| 13 | 02. The mindset (unit 2) | `.layout-unit-v2` |
-| 14 | Improving the performance of GenAI systems | `.layout-dark-1` + `.framework` (inline SVG cycle) |
-| 15 | Four dimensions of continuous improvement | `.layout-dark-1` + `.dimensions` |
-| 16 | An interconnected improvement system | `.layout-dark-1` + `.point-list` + `.takeaway` |
-| 17 | Why model optimization alone is not enough | `.layout-dark-1` + `.point-list.is-compact` + `.takeaway` |
-| 18 | Training vs. improving the system (cost) | `.layout-dark-1` + `.dark-table.cost-table` + `.rationale` + `.source` |
-| 19 | The rising cost of training frontier models | `.layout-dark-1` + `.cost-chart` + `.source` |
-| 20 | Main takeaways (unit 2) | `.layout-dark-1` + `.takeaways` (three columns, inline SVG icons) |
-| 21 | 03. Context (unit 3) | `.layout-unit-v2` |
-| 22 | What is context? | `.layout-dark-1` + `.ctx-window` + `.ctx-points` |
-| 23 | What is context engineering? | `.layout-dark-1` + `.ce-flow` + `.ce-quotes` |
-| 24 | Context engineering vs. prompt engineering | `.layout-dark-1` + `.ce-compare` + `.dark-table.ce-table` |
-| 25 | Context engineering in the harness | `.layout-dark-1` + `.ctx-notes` + `diagrams/context.js` |
-| 26 | Building blocks of context | doc · `.doc-dark-1` + `.disclaimer` + `.blocks` |
-| 27 | Main takeaways (unit 3) | `.layout-dark-1` + `.takeaways.is-two` |
+| 1 | Cover | |
+| 2 | Table of Contents | `layout-index` |
+| 3 | Unit 1 · What is a harness? | `layout-unit-v2` |
+| 4 | Unit 1 · One idea to keep | `layout-statement-dark` |
+| 5 | Lesson · Harness overview | `layout-lesson` |
+| 6 | Harness for GenAI systems | `layout-dark-1` |
+| 7 | Model ≠ GenAI system | `layout-dark-1` |
+| 8 | Components of a harness | `layout-dark-1` |
+| 9 | Model, harness, context: three roles | `layout-dark-1` |
+| 10 | Implemented harnesses · assistants | `layout-dark-1` |
+| 11 | Implemented harnesses · coding and app building | `layout-dark-1` |
+| 12 | Harness development frameworks | `doc · doc-dark-bg-1` |
+| 13 | Implemented harnesses vs. frameworks | `doc · doc-dark-bg-1` |
+| 14 | Unit 2 · The mindset | `layout-unit-v2` |
+| 15 | Unit 2 · One idea to keep | `layout-statement-dark` |
+| 16 | Improving the performance of GenAI systems | `layout-dark-1` |
+| 17 | Four dimensions of continuous improvement | `layout-dark-1` |
+| 18 | An interconnected improvement system | `layout-dark-1` |
+| 19 | Why model optimization alone is not enough | `layout-dark-1` |
+| 20 | Where to invest: training vs. the system | `layout-dark-1` |
+| 21 | The rising cost of training frontier models | `layout-dark-1` |
+| 22 | Main takeaways · continuous improvement | `layout-dark-1` |
+| 23 | Unit 3 · Context | `layout-unit-v2` |
+| 24 | Unit 3 · One idea to keep | `layout-statement-dark` |
+| 25 | What is context? | `layout-dark-1` |
+| 26 | What is context engineering? | `layout-dark-1` |
+| 27 | Context engineering vs. prompt engineering | `layout-dark-1` |
+| 28 | Context engineering in the harness | `layout-dark-1` |
+| 29 | Building blocks of context | `doc · doc-dark-bg-1` |
+| 30 | Main takeaways · context | `layout-dark-1` |
+| 31 | Unit 4 · Tools and Integration | `layout-unit-v2` |
+| 32 | Unit 4 · One idea to keep | `layout-statement-dark` |
+| 33 | Four gaps of a frozen model | `layout-dark-1` |
+| 34 | The tool loop | `layout-dark-1` |
+| 35 | Descriptions are prompts | `layout-dark-1` |
+| 36 | Five examples, one loop | `layout-dark-1` |
+| 37 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
+| 38 | Tools · takeaways | `layout-dark-1` |
 
 ## Templates: what changes in each instance
 
+- **Unit title** (`.stage.is-brand.layout-unit-v2` > `.unit-head`): `h1` (light part as text, key word in `<b>`), `.subtitle`, and `.covers` (one `<span>` per topic).
+- **Statement** (`.stage.is-night` > `.layout-statement-dark`): `.label` ("One idea to keep"), `.statement` (`<em>` = mint), `.statement-source`. One per unit, right after the unit title.
 - **Index** (`.stage.is-night.layout-index`): only the `<ol>` items.
 - **Unit** (`.stage.is-brand.layout-unit-v2`): the title. Write the light part as plain text and the key word in `<b>`, for example `01. What is a <b>harness</b>?`.
 - **Lesson** (`.stage.is-forest` > `.layout-lesson`): the title, which depth pill carries `.is-current` (Overview / Conceptual / Technical / Deep dive), and the `.objective` text.
