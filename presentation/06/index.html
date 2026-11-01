@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Build &amp; Improving GenAI systems</title>
+  <link rel="stylesheet" href="../fonts/fonts.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" />
+  <link rel="stylesheet" href="deck.css" />
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+
+<!--
+  Authoring (see README.md for the templates)
+  - Each <section class="page"> is one step, in order.
+  - data-type="slide": 16:9 stage (1600×900) scaled to fit. Put content in <div class="stage">.
+  - Wrap pages in <div class="unit" data-title="…"> to group them under a unit.
+  - <span class="page-num"></span> is filled with the page number by deck.js.
+  - Three.js diagram: <div class="diagram" data-module="diagrams/name.js"></div>.
+-->
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="pixels" viewBox="0 0 220 540">
+    <rect x="0" y="56" width="27.4" height="21.8"/>
+    <rect x="27" y="77.3" width="85.8" height="43.2"/>
+    <rect x="112.4" y="120.1" width="43.1" height="43.1"/>
+    <rect x="0" y="141.4" width="70.1" height="43.2"/>
+    <rect x="155.1" y="162.8" width="43.1" height="64.5"/>
+    <rect x="69.7" y="184.1" width="43.1" height="43.2"/>
+    <rect x="112.4" y="226.8" width="85.8" height="21.8"/>
+    <rect x="112.4" y="248.2" width="43.1" height="43.1"/>
+    <rect x="197.8" y="248.2" width="21.8" height="43.1"/>
+    <rect x="112.4" y="290.9" width="85.8" height="21.8"/>
+    <rect x="69.7" y="312.2" width="43.1" height="43.2"/>
+    <rect x="155.1" y="312.2" width="43.1" height="64.4"/>
+    <rect x="0" y="354.9" width="70.1" height="43.1"/>
+    <rect x="112.4" y="376.2" width="43.1" height="43.2"/>
+    <rect x="27" y="419" width="85.8" height="43.1"/>
+    <rect x="0" y="461.7" width="27.4" height="21.8"/>
+  </symbol>
+</svg>
+
+<main id="deck">
+
+  <!-- ============ COVER ============ -->
+  <section class="page" data-type="slide" data-title="Cover">
+    <div class="stage is-green cover">
+      <svg class="pixels" viewBox="0 0 960 540" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+        <rect x="0" y="56" width="27.4" height="21.8"/>
+        <rect x="27" y="77.3" width="85.8" height="43.2"/>
+        <rect x="112.4" y="120.1" width="43.1" height="43.1"/>
+        <rect x="0" y="141.4" width="70.1" height="43.2"/>
+        <rect x="155.1" y="162.8" width="43.1" height="64.5"/>
+        <rect x="69.7" y="184.1" width="43.1" height="43.2"/>
+        <rect x="112.4" y="226.8" width="85.8" height="21.8"/>
+        <rect x="112.4" y="248.2" width="43.1" height="43.1"/>
+        <rect x="197.8" y="248.2" width="21.8" height="43.1"/>
+        <rect x="112.4" y="290.9" width="85.8" height="21.8"/>
+        <rect x="69.7" y="312.2" width="43.1" height="43.2"/>
+        <rect x="155.1" y="312.2" width="43.1" height="64.4"/>
+        <rect x="0" y="354.9" width="70.1" height="43.1"/>
+        <rect x="112.4" y="376.2" width="43.1" height="43.2"/>
+        <rect x="27" y="419" width="85.8" height="43.1"/>
+        <rect x="0" y="461.7" width="27.4" height="21.8"/>
+      </svg>
+
+      <div class="content">
+        <span class="badge">Class 6 - <b>02 November 2026</b></span>
+        <h1>Build &amp; Improving<br />GenAI systems</h1>
+        <p class="course">Introduction to AI and Machine Learning</p>
+        <p class="program">Executive Master in Artificial Intelligence for Business</p>
+        <p class="authors">Roberto Henriques · Fernando Peres</p>
+      </div>
+
+      <img class="logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+    </div>
+  </section>
+
+  <!-- ============ INDEX (template: layout-index · change the <ol> items) ============ -->
+  <section class="page" data-type="slide" data-title="Index">
+    <div class="stage is-night layout-index">
+      <h1>Index</h1>
+      <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+      <ol>
+        <li>01. What is a Harness?</li>
+        <li>02. How to develop GenAI System and overcome GenAI Models Limitations?</li>
+        <li>03. Context</li>
+        <li>04. Tools and Integration</li>
+        <li>05. Workflows and Agents</li>
+        <li>06. Observability</li>
+        <li>07. Experiments</li>
+      </ol>
+      <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- ============ UNIT 1 · HARNESS ============ -->
+  <div class="unit" data-title="01 · What is a harness?">
+
+    <!-- template: layout-unit-v2 · change the number and title -->
+    <section class="page" data-type="slide" data-title="Unit 1 · What is a harness?">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <h1>01. What is a <b>harness</b>?</h1>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson · change the title, the .is-current depth and the objective -->
+    <section class="page" data-type="slide" data-title="Lesson · Harness overview">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Harness overview</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">Understand what a harness is: the layer around a GenAI model that contextualizes, extends, coordinates, constrains and operationalizes it. Tell apart the three layers of a GenAI system (the model, the harness, and the context and knowledge) and why the quality of the system depends on the harness as much as on the model.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · change the eyebrow (optional), title, subtitle (optional) and .content -->
+    <section class="page" data-type="slide" data-title="Harness for GenAI systems">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Harness</span>
+          <h1><em>Harness</em> for GenAI systems capability extensions</h1>
+          <p class="subtitle">A harness contextualizes, extends, coordinates, constrains, and operationalizes models* to enable the <em>development and execution of GenAI systems</em>.</p>
+
+          <div class="content">
+            <div class="diagram harness-diagram" data-module="diagrams/harness.js"></div>
+
+            <svg class="leaders" viewBox="0 0 1600 900" aria-hidden="true">
+              <path d="M412 546 V562 M412 554 H662 L754 577" />
+              <circle cx="754" cy="577" r="6" />
+              <path d="M880 475 L916 454 H1018 M1018 446 V462" />
+              <circle cx="880" cy="475" r="6" />
+              <path d="M942 682 L978 661 H1080 M1080 653 V669" />
+              <circle cx="942" cy="682" r="6" />
+            </svg>
+
+            <div class="callout" style="right:1242px; top:540px"><strong>MODEL</strong></div>
+            <div class="callout" style="left:118px; top:590px"><p>The intelligence<br />that thinks and<br />generates.</p></div>
+
+            <div class="callout" style="left:1034px; top:348px"><p>The system that orchestrates<br />and controls the intelligence.</p><strong style="margin-top:8px">HARNESS</strong></div>
+
+            <div class="callout" style="left:1110px; top:646px"><strong>CONTEXT AND KNOWLEDGE</strong><p style="margin-top:12px">The information that grounds<br />and guides the intelligence.</p></div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+<!-- ============ CHROME ============ -->
+<div id="progress" class="hud"><span></span></div>
+<div id="counter" class="hud" aria-live="polite">
+  <span class="unit"></span><span class="type"></span><span class="step"></span><span class="pct"></span>
+</div>
+
+<nav id="toc" aria-label="Table of contents">
+  <header>
+    <strong>Build &amp; Improving GenAI systems</strong>
+    <small>Class 6 · 02 November 2026</small>
+  </header>
+  <ol></ol>
+  <footer>
+    <kbd>t</kbd> contents · <kbd>i</kbd> progress · <kbd>←</kbd> <kbd>→</kbd> step<br />
+    <kbd>Home</kbd> / <kbd>End</kbd> first / last · <kbd>Esc</kbd> close
+  </footer>
+</nav>
+
+<script src="deck.js"></script>
+</body>
+</html>
