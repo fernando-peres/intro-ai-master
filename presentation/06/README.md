@@ -25,7 +25,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | # | Slide | Template |
 |---|---|---|
 | 1 | Cover | `.cover` (same as `class_06`) |
-| 2 | Index | `.layout-index` |
+| 2 | Table of Contents | `.layout-index` |
 | 3 | 01. What is a harness? | `.layout-unit-v2` |
 | 4 | Lesson · Harness overview | `.layout-lesson` |
 | 5 | Harness for GenAI systems | `.layout-dark-1` + `diagrams/harness.js` |
