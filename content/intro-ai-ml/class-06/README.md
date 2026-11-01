@@ -10,7 +10,20 @@ Opening `index.html` directly works for slides and docs. Three.js diagrams are E
 python3 -m http.server 8000 --directory content/intro-ai-ml/class-06
 ```
 
-Then open http://localhost:8000. Three.js and the DM Sans font load from a CDN, so you need internet access.
+Then open http://localhost:8000. Three.js loads from a CDN, so 3D diagrams need internet access.
+
+## Fonts
+
+Fonts are local, in `assets/fonts/` (declared in `fonts.css`):
+
+| Role | Font | CSS variable |
+|---|---|---|
+| Titles (`h1`, cover badge) | Borna | `--font-title` |
+| Subtitles and long-form text (`h2`, `.subtitle`, `.lead`, doc paragraphs) | CMU Serif | `--font-serif` |
+| Code (`code`, `pre`) | Fira Code | `--font-code` |
+| General text and UI | Prompt | `--font-text` |
+
+Borna is licensed and not committed; see `assets/fonts/borna/README.md`. Without it, titles fall back to Prompt.
 
 ## Keys
 

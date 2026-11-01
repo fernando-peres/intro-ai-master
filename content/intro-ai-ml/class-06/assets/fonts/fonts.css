@@ -1,0 +1,122 @@
+/* Borna is licensed, so it is not committed: drop borna-<weight>-webfont.woff2 into ./borna/.
+   Each Borna face falls back to Prompt when its file is absent. */
+
+@font-face {
+  font-family: "Borna";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: 
+    url("./borna/borna-regular-webfont.woff2") format("woff2"),
+    url("./prompt/Prompt-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Borna";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: 
+    url("./borna/borna-medium-webfont.woff2") format("woff2"),
+    url("./prompt/Prompt-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Borna";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: 
+    url("./borna/borna-semibold-webfont.woff2") format("woff2"),
+    url("./prompt/Prompt-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Borna";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: 
+    url("./borna/borna-bold-webfont.woff2") format("woff2"),
+    url("./prompt/Prompt-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Prompt";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./prompt/Prompt-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Prompt";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./prompt/Prompt-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Prompt";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./prompt/Prompt-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Prompt";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./prompt/Prompt-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Prompt";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./prompt/Prompt-Italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./cmu-serif/cmunrm.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./cmu-serif/cmunti.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./cmu-serif/cmunbx.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./cmu-serif/cmunbi.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("./fira-code/FiraCode-VariableFont_wght.woff2") format("woff2");
+}

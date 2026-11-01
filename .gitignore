@@ -231,3 +231,4 @@ node_modules/
 # Licensed font: its webfont licence does not allow publishing the files.
 apps/harness-content/src/assets/fonts/borna/*.woff2
 apps/harness-content/src/assets/fonts/borna/*.pdf
+content/intro-ai-ml/class-06/assets/fonts/borna/*.woff2

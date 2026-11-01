@@ -10,7 +10,10 @@
   --line: #dfe6df;
   --stage-w: 1600;
   --stage-h: 900;
-  --font: "DM Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-title: "Borna", "Prompt", system-ui, sans-serif;
+  --font-text: "Prompt", system-ui, sans-serif;
+  --font-serif: "CMU Serif", Georgia, serif;
+  --font-code: "Fira Code", ui-monospace, monospace;
 }
 
 * { box-sizing: border-box; }
@@ -21,9 +24,14 @@ html, body {
   overflow: hidden;
   background: #111;
   color: var(--ink);
-  font-family: var(--font);
+  font-family: var(--font-text);
   -webkit-font-smoothing: antialiased;
 }
+
+/* Font roles: titles Borna, subtitles and long-form text CMU Serif, code Fira Code, UI and general text Prompt. */
+h1, .badge { font-family: var(--font-title); }
+h2, .subtitle, .lead, .doc p, .doc li, .cover .course { font-family: var(--font-serif); }
+code, pre, kbd { font-family: var(--font-code); }
 
 /* ---------- Pages ---------- */
 
