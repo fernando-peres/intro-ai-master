@@ -1,9 +1,9 @@
 /* Class 06 deck — layout, chrome (HUD, TOC) and page types. */
 
 :root {
-  --green: #51b265;
-  --green-deep: #3f9a52;
-  --ink: #262626;
+  --green: #3ba755;
+  --green-deep: #2f8a46;
+  --ink: #222222;
   --ink-soft: #3d3d3d;
   --paper: #ffffff;
   --paper-soft: #f4f7f4;
@@ -164,24 +164,7 @@ html, body {
 .cover .program { margin: 8px 0 0; font-size: 26px; font-weight: 700; color: var(--ink); }
 .cover .authors { margin: 14px 0 0; font-size: 26px; font-weight: 400; color: var(--ink); }
 
-.wordmark {
-  position: absolute;
-  left: 52px;
-  bottom: 30px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--ink);
-}
-.wordmark .name { font-size: 32px; font-weight: 800; letter-spacing: 0.02em; }
-.wordmark .name span { font-weight: 400; }
-.wordmark .school {
-  font-size: 9.5px;
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
+.cover .logo { position: absolute; left: 52px; bottom: 36px; height: 33px; }
 
 /* ---------- HUD: progress bar + step counter (toggle with "i") ---------- */
 
@@ -271,7 +254,7 @@ body.toc-open #toc {
 }
 #toc a.in-unit { padding-left: 36px; }
 #toc a:hover { background: rgba(255, 255, 255, 0.06); }
-#toc a.is-current { background: rgba(81, 178, 101, 0.18); box-shadow: inset 3px 0 0 var(--green); }
+#toc a.is-current { background: rgba(59, 167, 85, 0.2); box-shadow: inset 3px 0 0 var(--green); }
 #toc a .n { opacity: 0.5; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
 #toc a .kind { margin-left: auto; opacity: 0.45; font-size: 11px; text-transform: uppercase; }
 #toc footer { padding: 24px; font-size: 12px; opacity: 0.55; line-height: 1.7; }
