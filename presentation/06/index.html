@@ -25,6 +25,7 @@
 -->
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5V12l3.6 2.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="pixels" viewBox="0 0 220 540">
     <rect x="0" y="56" width="27.4" height="21.8"/>
     <rect x="27" y="77.3" width="85.8" height="43.2"/>
@@ -424,13 +425,13 @@
           <span class="eyebrow">Continuous improvement · Cost</span>
           <h1>Training models is expensive; <em>improving the system</em> is not</h1>
           <table class="dark-table is-mint cost-table">
-            <colgroup><col style="width:23%" /><col style="width:38%" /><col style="width:16%" /><col /></colgroup>
-            <thead><tr><th>Where you improve</th><th>Typical cost</th><th>Who does it</th><th>Time to change</th></tr></thead>
+            <colgroup><col style="width:21%" /><col style="width:38%" /><col style="width:17%" /><col /></colgroup>
+            <thead><tr><th>Where you improve</th><th>Typical cost (a sense of scale)</th><th>Who does it</th><th>Time to change</th></tr></thead>
             <tbody>
-              <tr><td>Pre-training</td><td>$78M–$191M per final run (GPT-4, Gemini Ultra), up to ~$490M (Grok 4)</td><td>Frontier labs</td><td>Months; produces a new model</td></tr>
-              <tr><td>Post-training</td><td>Far less: DeepSeek-R1’s RL stage ≈ $0.3M; frontier labs don’t disclose</td><td>Labs, enterprises</td><td>Weeks; redone when the base model changes</td></tr>
-              <tr><td>Harness &amp; context</td><td>Engineering time + pay-per-use inference</td><td>Product teams</td><td>Days; versioned and reversible</td></tr>
-              <tr><td>Experiments &amp; observability</td><td>Tooling + engineering time</td><td>Product teams</td><td>Continuous</td></tr>
+              <tr><td>Pre-training</td><td><span class="price" role="img" aria-label="5 of 5"><b>$$$$$</b><i></i></span><small>$10M–$100M+ per run; e.g. Grok 4 ≈ $490M</small></td><td>Frontier labs</td><td><span class="clocks" role="img" aria-label="4 of 4"><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg></span><small>Months; produces a new model</small></td></tr>
+              <tr><td>Post-training</td><td><span class="price" role="img" aria-label="2 of 5"><b>$$</b><i>$$$</i></span><small>~$1M–$5M, depending on the technique. Frontier labs don’t disclose; DeepSeek-R1’s RL stage ≈ $0.3M</small></td><td>Labs, enterprises</td><td><span class="clocks" role="img" aria-label="3 of 4"><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock is-off" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg></span><small>Weeks; redone when the base model changes</small></td></tr>
+              <tr><td>Harness &amp; context</td><td><span class="price" role="img" aria-label="1 of 5"><b>$</b><i>$$$$</i></span><small>Engineering time + pay-per-use inference</small></td><td>Product teams</td><td><span class="clocks" role="img" aria-label="1 of 4"><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock is-off" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock is-off" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock is-off" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg></span><small>Days; versioned and reversible</small></td></tr>
+              <tr><td>Experiments &amp; observability</td><td><span class="price" role="img" aria-label="1 of 5"><b>$</b><i>$$$$</i></span><small>Tooling + engineering time</small></td><td>Product teams</td><td><span class="clocks" role="img" aria-label="1 of 4"><svg class="clock" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock is-off" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock is-off" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg><svg class="clock is-off" viewBox="0 0 24 24" aria-hidden="true"><use href="#clock"/></svg></span><small>Continuous</small></td></tr>
             </tbody>
           </table>
           <div class="rationale">
@@ -438,7 +439,7 @@
             <div><b>Cheap, fast, reversible</b><p>Harness changes ship in days, cost little, and carry over when a better model arrives.</p></div>
             <div><b>Evidence before spend</b><p>Experiments and observability show where the system fails, so effort goes where it pays off.</p></div>
           </div>
-          <p class="source">Compute for the final run only; excludes research, staff, data and failed runs. Sources: Stanford HAI, AI Index Report 2024 (Epoch AI estimates); Epoch AI, <i>What did it take to train Grok 4?</i> (2025); DeepSeek-AI, DeepSeek-R1, <i>Nature</i> (2025).</p>
+          <p class="source">Indicative ranges, to give a sense of scale. Sources: Stanford HAI, AI Index 2024 (Epoch AI estimates); Epoch AI, Grok 4 (2025); DeepSeek-R1, <i>Nature</i> (2025).</p>
         </div>
         <span class="page-num"></span>
       </div>

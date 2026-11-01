@@ -406,10 +406,11 @@ body.toc-open #toc {
 
 /* Slide 18: cost table + rationale strip. */
 .layout-dark-1 .dark-table.cost-table { top: 176px; font-size: 23px; }
-.rationale { position: absolute; left: 94px; right: 94px; bottom: 112px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
+.cost-table ~ .source { max-width: 1180px; }
+.rationale { position: absolute; left: 94px; right: 94px; bottom: 92px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
 .rationale div { padding-top: 18px; border-top: 2px solid var(--mint); }
 .rationale b { display: block; font-family: var(--font-title); font-weight: 700; font-size: 27px; line-height: 1.15; }
-.rationale p { margin: 10px 0 0; font-family: var(--font-serif); font-size: 23px; line-height: 1.38; color: #d6ddd8; }
+.rationale p { margin: 8px 0 0; font-family: var(--font-serif); font-size: 22px; line-height: 1.38; color: #d6ddd8; }
 
 /* Slide 19: horizontal bar chart. Bar width = --v / 500 of the track. */
 .cost-chart { position: absolute; left: 94px; right: 94px; top: 250px; display: grid; gap: 14px; --label: 330px; }
@@ -425,3 +426,13 @@ body.toc-open #toc {
 .cost-chart .axis span { position: absolute; top: 0; bottom: 0; left: calc(var(--t) / 500 * 100%); display: flex; align-items: flex-end; padding-left: 6px; border-left: 1px dashed #34342e; font-size: 16px; line-height: 1; color: #8a8a84; font-variant-numeric: tabular-nums; }
 .layout-dark-1 .source { position: absolute; left: 94px; right: 94px; bottom: 34px; margin: 0; max-width: 1000px; font-size: 16px; line-height: 1.45; color: #9a9a9a; }
 .layout-dark-1 .source i { font-style: italic; }
+
+/* Slide 18: cost as a $ scale (filled vs dimmed) and time as clocks, with the detail underneath. */
+.cost-table .price { display: block; font-family: var(--font-title); font-weight: 700; font-size: 30px; letter-spacing: 0.06em; line-height: 1; }
+.cost-table .price b { color: var(--mint); }
+.cost-table .price i { font-style: normal; color: #34342e; }
+.cost-table .clocks { display: flex; gap: 6px; color: var(--mint); }
+.cost-table .clock { width: 26px; height: 26px; }
+.cost-table .clock.is-off { color: #34342e; }
+.layout-dark-1 .cost-table td { padding-top: 12px; padding-bottom: 12px; }
+.cost-table td small { display: block; margin-top: 6px; font-size: 19px; line-height: 1.3; color: #c4ccc8; }
