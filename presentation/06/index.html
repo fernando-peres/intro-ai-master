@@ -25,6 +25,7 @@
 -->
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="flow-arrow" viewBox="0 0 70 24"><path d="M2 12H62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6"/><path d="M56 4l10 8-10 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5V12l3.6 2.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="pixels" viewBox="0 0 220 540">
     <rect x="0" y="56" width="27.4" height="21.8"/>
@@ -482,6 +483,218 @@
         </div>
         <span class="page-num"></span>
       </div>
+    </section>
+
+  </div>
+
+  <!-- ============ UNIT 3 · CONTEXT ============ -->
+  <div class="unit" data-title="03 · Context">
+
+    <!-- template: layout-unit-v2 · change the number and title -->
+    <section class="page" data-type="slide" data-title="Unit 3 · Context">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <h1>03. <b>Context</b></h1>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · context window bar + three points -->
+    <section class="page" data-type="slide" data-title="What is context?">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Context</span>
+          <h1>What is <em>context</em>?</h1>
+          <p class="subtitle is-wide">Everything the model sees when it generates a response: the <em>tokens in its context window</em>.</p>
+          <div class="ctx-window">
+            <div class="ctx-bracket"><span>Context window · a finite token budget</span></div>
+            <div class="ctx-bar">
+              <span style="--w:15"><b>System instructions</b></span>
+              <span style="--w:10"><b>User input</b></span>
+              <span style="--w:18"><b>Conversation history</b></span>
+              <span style="--w:24"><b>Retrieved knowledge</b></span>
+              <span style="--w:18"><b>Tool results</b></span>
+              <span style="--w:15"><b>Memory &amp; state</b></span>
+            </div>
+          </div>
+          <div class="ctx-points">
+            <div><b>Weights + context are all it knows</b><p>At inference, the model can only use what it learned in training and what is in the window.</p></div>
+            <div><b>The window is finite</b><p>Every token competes for space and for the model’s attention.</p></div>
+            <div><b>More is not better</b><p>Accuracy drops as inputs grow longer (“context rot”), so relevance beats volume.</p></div>
+          </div>
+          <p class="source">Sources: Anthropic, <i>Effective context engineering for AI agents</i> (2025); Chroma Research, <i>Context Rot</i> (2025).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · context engineering pipeline (sources → steps → window → model) -->
+    <section class="page" data-type="slide" data-title="What is context engineering?">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Context</span>
+          <h1>What is <em>context engineering</em>?</h1>
+          <p class="subtitle is-wide">Designing the systems that <em>select, structure, and deliver the right information</em> to the model at each step.</p>
+          <div class="ce-flow">
+            <div class="ce-col">
+              <h2>Sources</h2>
+              <ul class="ce-chips">
+                <li>Instructions <small>support policy</small></li>
+                <li>Knowledge <small>shipping FAQ</small></li>
+                <li>Tools <small>order lookup #4512</small></li>
+                <li>Memory <small>prefers email</small></li>
+                <li>History <small>last 3 messages</small></li>
+                <li class="is-out">Full product catalog</li>
+                <li class="is-out">Old chat logs</li>
+              </ul>
+            </div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="ce-col">
+              <h2>Engineering</h2>
+              <ol class="ce-steps">
+                <li><b>Retrieve</b> what may be relevant</li>
+                <li><b>Select &amp; filter</b> what is needed now</li>
+                <li><b>Compress &amp; order</b> to fit the budget</li>
+                <li><b>Inject</b> into the window</li>
+              </ol>
+            </div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="ce-col">
+              <h2>Context window</h2>
+              <div class="ce-window">
+                <span>Support policy</span><span>Shipping FAQ</span><span>Order #4512: in transit</span><span>Prefers email</span><span>Last 3 messages</span><span class="is-user">“Where is my order?”</span>
+              </div>
+            </div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="ce-col is-model"><span class="ce-model"></span><h2>Model</h2></div>
+          </div>
+          <div class="ce-quotes">
+            <p>“The delicate art and science of filling the context window with just the right information for the next step.” <span>Andrej Karpathy (2025)</span></p>
+            <p>“Curating and maintaining the optimal set of tokens during LLM inference.” <span>Anthropic (2025)</span></p>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · two panels + comparison table -->
+    <section class="page" data-type="slide" data-title="Context engineering vs. prompt engineering">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Context</span>
+          <h1>Context engineering <em>vs.</em> prompt engineering</h1>
+          <div class="ce-compare">
+            <div class="ce-panel">
+              <h2>Prompt engineering</h2>
+              <div class="ce-mini">
+                <span class="box">Prompt</span>
+                <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+                <span class="ce-model is-sm"></span>
+              </div>
+              <p><b>What to say.</b> Wording one instruction well.</p>
+            </div>
+            <div class="ce-panel is-wide">
+              <h2>Context engineering</h2>
+              <div class="ce-mini">
+                <span class="stack"><span>Instructions</span><span>Knowledge</span><span>Tools</span><span>Memory</span></span>
+                <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+                <span class="box is-accent">Assemble</span>
+                <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+                <span class="box is-window">Context<br />window</span>
+                <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+                <span class="ce-model is-sm"></span>
+                <span class="loop">repeats at every step</span>
+              </div>
+              <p><b>What the model sees.</b> A system that fills the window at every step.</p>
+            </div>
+          </div>
+          <table class="dark-table is-mint ce-table">
+            <colgroup><col style="width:18%" /><col style="width:36%" /><col /></colgroup>
+            <thead><tr><th></th><th>Prompt engineering</th><th>Context engineering</th></tr></thead>
+            <tbody>
+              <tr><td>Scope</td><td>One instruction</td><td>Everything in the window: instructions, knowledge, memory, tool results</td></tr>
+              <tr><td>When</td><td>Written once, before the call</td><td>Assembled at runtime, for every step of a task</td></tr>
+              <tr><td>Skills</td><td>Writing, examples, formatting</td><td>Retrieval, data and memory design, orchestration, evaluation</td></tr>
+            </tbody>
+          </table>
+          <p class="takeaway is-sm">Prompt engineering is <em>part of</em> context engineering.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · What / How / Why + Three.js diagram (diagrams/context.js) -->
+    <section class="page" data-type="slide" data-title="Context engineering in the harness">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Context</span>
+          <h1><em>Context engineering</em> in the harness</h1>
+          <div class="ctx-notes">
+            <div><span>What</span><p>Design and develop the contextual knowledge and systems that support task execution.</p></div>
+            <div><span>How</span><p>Runtime mechanisms that dynamically <b>retrieve, assemble, prioritize and inject</b> relevant information into the context window.</p></div>
+            <div><span>Why</span><p>Better performance and reliability, especially in specialized domains with specific and proprietary data.</p></div>
+          </div>
+          <div class="content">
+            <div class="diagram context-diagram" data-module="diagrams/context.js"></div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: doc-dark-bg-1 · building blocks of context (mint accent) -->
+    <section class="page is-night" data-type="doc" data-title="Building blocks of context">
+      <article class="doc-dark-1">
+        <span class="eyebrow">Context · Reference</span>
+        <h1>Building blocks of context</h1>
+        <p class="lead">The pieces a harness draws on to fill the context window, grouped by role.</p>
+        <p class="disclaimer"><b>Not exhaustive.</b> A common list for instructional purposes; real systems combine, rename and extend these blocks.</p>
+        <div class="blocks">
+          <section>
+            <h2>Knowledge</h2>
+            <dl>
+              <dt>Documents (Markdown)</dt><dd>Curated text the model can read directly.</dd>
+              <dt>Knowledge graphs</dt><dd>Entities and the relations between them.</dd>
+              <dt>Ontologies</dt><dd>Formal concepts, categories and rules of a domain.</dd>
+              <dt>Semantics</dt><dd>Shared meaning: glossaries, definitions, metric logic.</dd>
+            </dl>
+          </section>
+          <section>
+            <h2>Schemas</h2>
+            <dl>
+              <dt>Memory</dt><dd>What the system remembers, and in what shape.</dd>
+              <dt>Entity</dt><dd>The structure of domain objects (customer, order…).</dd>
+              <dt>Input</dt><dd>The expected format of requests and parameters.</dd>
+              <dt>Output</dt><dd>Structured responses the system can validate (e.g. JSON).</dd>
+            </dl>
+          </section>
+          <section>
+            <h2>Prompts &amp; skills</h2>
+            <dl>
+              <dt>Prompts</dt><dd>Reusable instructions, roles and templates.</dd>
+              <dt>Skills</dt><dd>Packaged instructions, scripts and resources, loaded only when a task needs them.</dd>
+            </dl>
+          </section>
+          <section>
+            <h2>Rules &amp; policies</h2>
+            <dl>
+              <dt>Business rules</dt><dd>Domain logic the system must follow.</dd>
+              <dt>Guardrails</dt><dd>Safety, compliance and quality checks on inputs and outputs.</dd>
+            </dl>
+          </section>
+          <section class="is-full">
+            <h2>Repositories</h2>
+            <dl>
+              <div><dt>Databases</dt><dd>Structured records, queried for exact facts.</dd></div>
+              <div><dt>Vector stores</dt><dd>Embeddings that enable search by meaning.</dd></div>
+              <div><dt>Memory stores</dt><dd>Persisted conversation, user and task memory.</dd></div>
+              <div><dt>Retrievers (RAG)</dt><dd><b>Vector</b>: semantic similarity. <b>Hybrid</b>: keywords plus vectors. <b>Graph</b>: follows relations between entities. <b>Agentic</b>: the model decides what to retrieve, and when.</dd></div>
+            </dl>
+          </section>
+        </div>
+      </article>
     </section>
   </div>
 

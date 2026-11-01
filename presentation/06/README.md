@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A twenty-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A twenty-six-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -44,6 +44,12 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 18 | Training vs. improving the system (cost) | `.layout-dark-1` + `.dark-table.cost-table` + `.rationale` + `.source` |
 | 19 | The rising cost of training frontier models | `.layout-dark-1` + `.cost-chart` + `.source` |
 | 20 | Main takeaways (unit 2) | `.layout-dark-1` + `.takeaways` (three columns, inline SVG icons) |
+| 21 | 03. Context (unit 3) | `.layout-unit-v2` |
+| 22 | What is context? | `.layout-dark-1` + `.ctx-window` + `.ctx-points` |
+| 23 | What is context engineering? | `.layout-dark-1` + `.ce-flow` + `.ce-quotes` |
+| 24 | Context engineering vs. prompt engineering | `.layout-dark-1` + `.ce-compare` + `.dark-table.ce-table` |
+| 25 | Context engineering in the harness | `.layout-dark-1` + `.ctx-notes` + `diagrams/context.js` |
+| 26 | Building blocks of context | doc · `.doc-dark-1` + `.disclaimer` + `.blocks` |
 
 ## Templates: what changes in each instance
 
