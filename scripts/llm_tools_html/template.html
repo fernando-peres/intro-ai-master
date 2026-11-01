@@ -451,7 +451,7 @@ details.compare .hide-t { display:none; } details.compare[open] .hide-t { displa
       <div class="wire" aria-hidden="true">
         <div class="pkt"><span class="lbl">model → your code</span>{"name": "get_temperature",<br>&nbsp;"arguments": {"city": "Lisbon"}}</div>
         <div class="arrowrow">your code runs it</div>
-        <div class="pkt"><span class="lbl">your code → model</span>{"temperature_c": 20.5, …}</div>
+        <div class="pkt"><span class="lbl">your code → model</span>{"temperature_c": <span data-t1="temp"></span>, …}</div>
       </div>
       <div class="side">
         <div class="role"><span class="badge">C</span>Your code</div>
@@ -505,17 +505,17 @@ details.compare .hide-t { display:none; } details.compare[open] .hide-t { displa
           </g>
           <g class="hop" data-step="3">
             <path class="p" d="M118 232 h70 a14 14 0 0 1 0 28 h-70" marker-end="url(#mDim)"/>
-            <text x="210" y="250" text-anchor="start">run the Python function → 20.5 °C</text>
+            <text x="210" y="250" text-anchor="start">run the Python function → <tspan data-t1="temp"></tspan> °C</text>
             <circle class="n" cx="110" cy="246" r="11"/><text class="nt" x="110" y="250">3</text>
           </g>
           <g class="hop" data-step="4">
-            <text x="300" y="296" text-anchor="middle">function_call_output: {"temperature_c": 20.5}</text>
+            <text x="300" y="296" text-anchor="middle">function_call_output: {"temperature_c": <tspan data-t1="temp"></tspan>}</text>
             <line x1="118" y1="308" x2="482" y2="308" marker-end="url(#mDim)"/>
             <circle class="pulse" cx="124" cy="308" r="5" style="--dx:352px"/>
             <circle class="n" cx="110" cy="308" r="11"/><text class="nt" x="110" y="312">4</text>
           </g>
           <g class="hop" data-step="5">
-            <text x="300" y="380" text-anchor="middle">text: "It's 20.5°C in Lisbon right now."</text>
+            <text x="300" y="380" text-anchor="middle">text: "<tspan data-t1="answer"></tspan>"</text>
             <line x1="482" y1="392" x2="118" y2="392" marker-end="url(#mDim)"/>
             <circle class="pulse" cx="476" cy="392" r="5" style="--dx:-352px"/>
             <circle class="n" cx="490" cy="392" r="11"/><text class="nt" x="490" y="396">5</text>
@@ -749,11 +749,15 @@ const EXAMPLES = [
   },
 ];
 
+/* ---------- Example 1 values used in the hero and the section-2 diagram ---------- */
+const T1 = { temp: JSON.parse(steps(C.t_run)[0].body.replace(/^returned /, "")).temperature_c, answer: (s => s.length > 44 ? s.slice(0, 43) + "…" : s)(out(C.t_run, "With tools").body.replace(/\s+/g, " ")) };
+document.querySelectorAll("[data-t1]").forEach(el => (el.textContent = T1[el.dataset.t1]));
+
 /* ---------- render: teaser ---------- */
 $("#teaser").innerHTML = `
   <div class="msg user q"><div class="who">${ICON.user.replace("<svg", '<svg width="12" height="12"')} Question</div>${esc(out(C.t_q, "Question").body)}</div>
   <div class="msg fail"><div class="who"><span class="dot"></span> Without tools</div>${esc(out(C.t_wo, "Without tools").body)}</div>
-  <div class="msg done" style="font-family:var(--mono);font-size:12.5px"><div class="who"><span class="dot"></span> Tool call</div>${esc(steps(C.t_run)[0].title.replace(/^Step \d+: /, ""))} → 20.5 °C</div>
+  <div class="msg done" style="font-family:var(--mono);font-size:12.5px"><div class="who"><span class="dot"></span> Tool call</div>${esc(steps(C.t_run)[0].title.replace(/^Step \d+: /, ""))} → ${T1.temp} °C</div>
   <div class="msg pass"><div class="who"><span class="dot"></span> With tools</div>${esc(out(C.t_run, "With tools").body)}</div>`;
 
 /* ---------- render: gaps ---------- */
