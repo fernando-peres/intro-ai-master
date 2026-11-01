@@ -1014,7 +1014,7 @@ function vTable(head, rows) {
 }
 const cellH = (html, cls = "") => ({ html, cls });
 const visPanel = (title, sub, inner) => `<div class="panel vis"><h3>${esc(title)}</h3>${sub ? `<p class="sub">${md(sub)}</p>` : ""}${inner}</div>`;
-const notRun = (b, what = "This part") => `<div class="panel pending"><span class="badge" style="background:var(--warn-base);color:#fff">!</span><div><h3>Not run yet</h3><p>${esc(what)} has no saved outputs. Run <code>${esc(b.file)}</code> (Restart &amp; Run All), commit it, then rebuild this page:</p><pre class="payload">python scripts/guardrails_html/build.py scripts/guardrails_html/template.html notebooks/guardrails_overview.html notebooks/guardrails_0*.ipynb</pre></div></div>`;
+const notRun = (b, what = "This part") => `<div class="panel pending"><span class="badge" style="background:var(--warn-base);color:#fff">!</span><div><h3>Not run yet</h3><p>${esc(what)} has no saved outputs. Run <code>${esc(b.file)}</code> (Restart &amp; Run All), commit it, then rebuild this page:</p><pre class="payload">python scripts/guardrails_html/build.py scripts/guardrails_html/template.html notebooks/guardrails_0*.ipynb</pre></div></div>`;
 </script>
 <script>
 /* =====================================================================

@@ -1,6 +1,6 @@
 # Meta prompt: interactive HTML companion for a lesson notebook
 
-Reusable instructions distilled from building `notebooks/llm_tools_01.html`. Copy the block below into a new session, fill in the `{…}` fields, and adapt the "Topic mapping" section.
+Reusable instructions distilled from building `html/tools.html`. Copy the block below into a new session, fill in the `{…}` fields, and adapt the "Topic mapping" section.
 
 ---
 
@@ -69,8 +69,9 @@ PLAYER (per example)
 BUILD
 - Keep a template + a stdlib-only build script in the repo
   (scripts/<name>_html/template.html, build.py, README.md) that injects the
-  notebook's cells and saved outputs into the template:
-  python scripts/<name>_html/build.py <notebook> <template> <output.html>
+  notebook's cells and saved outputs into the template and writes the page to
+  html/<name>.html at the repo root, never to notebooks/:
+  python scripts/<name>_html/build.py <notebook> <template>
 
 WORKFLOW
 - Plan first, then implement. Ask only when a choice is genuinely mine

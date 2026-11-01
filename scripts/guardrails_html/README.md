@@ -1,9 +1,9 @@
 # guardrails_html
 
-Builds `notebooks/guardrails_overview.html`, one tab per guardrails notebook (01 overview, 02 input, 03 execution, 04 output), from the notebooks' cells and **saved outputs**. Re-run a notebook first, then rebuild:
+Builds `html/guardrails.html`, one tab per guardrails notebook (01 overview, 02 input, 03 execution, 04 output), from the notebooks' cells and **saved outputs**. Re-run a notebook first, then rebuild:
 
 ```bash
-python scripts/guardrails_html/build.py scripts/guardrails_html/template.html notebooks/guardrails_overview.html notebooks/guardrails_01_overview.ipynb notebooks/guardrails_02_input.ipynb notebooks/guardrails_03_execution.ipynb notebooks/guardrails_04_output.ipynb
+python scripts/guardrails_html/build.py scripts/guardrails_html/template.html notebooks/guardrails_01_overview.ipynb notebooks/guardrails_02_input.ipynb notebooks/guardrails_03_execution.ipynb notebooks/guardrails_04_output.ipynb
 ```
 
 Standard library only. Each notebook is keyed by the word after its number (`guardrails_02_input` → `input`).

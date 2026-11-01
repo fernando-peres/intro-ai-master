@@ -1,12 +1,14 @@
 """Inject the guardrails notebooks' cells and saved outputs into the HTML template (see README.md).
 
-Usage: python build.py <template.html> <output.html> <notebook.ipynb> [<notebook.ipynb> ...]
+Usage: python build.py <template.html> <notebook.ipynb> [<notebook.ipynb> ...]
+Writes html/guardrails.html at the repo root.
 Each notebook is keyed by the word after the number in its name: guardrails_02_input -> "input".
 """
 import html, json, re, sys
 from pathlib import Path
 
-tpl_path, out_path, *nb_paths = sys.argv[1:]
+out_path = Path(__file__).resolve().parents[2] / "html" / "guardrails.html"
+tpl_path, *nb_paths = sys.argv[1:]
 assert nb_paths, __doc__
 
 
@@ -50,5 +52,6 @@ for p in nb_paths:
 payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
 tpl = open(tpl_path, encoding="utf-8").read()
 assert "/*__NB__*/null" in tpl
+out_path.parent.mkdir(exist_ok=True)
 open(out_path, "w", encoding="utf-8").write(tpl.replace("/*__NB__*/null", payload))
-print("ok", ", ".join(data), len(payload))
+print("ok", out_path, ", ".join(data), len(payload))

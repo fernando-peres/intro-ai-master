@@ -1,6 +1,12 @@
 """Inject llm_tools_01.ipynb cells and saved outputs into the HTML template (see README.md)."""
-import html, json, re, sys
-nb_path, tpl_path, out_path = sys.argv[1:4]
+import html
+import json
+import re
+import sys
+from pathlib import Path
+
+out_path = Path(__file__).resolve().parents[2] / "html" / "tools.html"
+nb_path, tpl_path = sys.argv[1:3]
 nb = json.load(open(nb_path))
 cells, outs = {}, {}
 for i, c in enumerate(nb["cells"]):
@@ -22,5 +28,6 @@ for i, c in enumerate(nb["cells"]):
 data = json.dumps({"cells": cells, "outs": outs}, ensure_ascii=False).replace("</", "<\\/")
 tpl = open(tpl_path).read()
 assert "/*__NB__*/" in tpl
+out_path.parent.mkdir(exist_ok=True)
 open(out_path, "w").write(tpl.replace("/*__NB__*/null", data))
-print("ok", len(data))
+print("ok", out_path, len(data))
