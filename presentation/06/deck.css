@@ -521,6 +521,7 @@ body.toc-open #toc {
 .context-diagram .d-label { background: none; box-shadow: none; padding: 0; color: #fff; }
 .context-diagram .d-label.is-ring { font-family: var(--font-text); font-weight: 600; font-size: 16px; letter-spacing: 0.1em; }
 .context-diagram .d-label.is-dark { color: #10392a; }
+.context-diagram .d-label.is-sm { font-size: 13px; }
 .context-diagram .d-label.is-layer { font-family: var(--font-text); font-weight: 600; font-size: 20px; line-height: 1.2; letter-spacing: 0.08em; color: #cfd8d3; white-space: normal; width: 170px; }
 .context-diagram .d-label.is-layer.is-left { text-align: right; }
 .context-diagram .d-label.is-left { transform: translate(-100%, -50%); }
@@ -543,3 +544,7 @@ body.toc-open #toc {
 .blocks dd b { font-family: var(--font-title); color: var(--accent); }
 .blocks .is-full dl { display: grid; grid-template-columns: 1fr 1fr; column-gap: 3em; }
 .blocks .is-full dl > div:last-child { grid-column: 1 / -1; }
+
+/* Slide 27: the takeaways layout in two wider columns. */
+.takeaways.is-two { grid-template-columns: repeat(2, 1fr); gap: 96px; }
+.takeaways.is-two p { font-size: 27px; }

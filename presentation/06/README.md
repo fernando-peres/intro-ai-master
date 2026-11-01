@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A twenty-six-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A twenty-seven-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -50,6 +50,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 24 | Context engineering vs. prompt engineering | `.layout-dark-1` + `.ce-compare` + `.dark-table.ce-table` |
 | 25 | Context engineering in the harness | `.layout-dark-1` + `.ctx-notes` + `diagrams/context.js` |
 | 26 | Building blocks of context | doc · `.doc-dark-1` + `.disclaimer` + `.blocks` |
+| 27 | Main takeaways (unit 3) | `.layout-dark-1` + `.takeaways.is-two` |
 
 ## Templates: what changes in each instance
 
