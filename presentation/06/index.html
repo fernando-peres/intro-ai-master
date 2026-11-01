@@ -18,6 +18,7 @@
   Authoring (see README.md for the templates)
   - Each <section class="page"> is one step, in order.
   - data-type="slide": 16:9 stage (1600×900) scaled to fit. Put content in <div class="stage">.
+  - data-type="doc": a scrolling document page. Use <section class="page is-night" data-type="doc"> + <article class="doc-dark-1">.
   - Wrap pages in <div class="unit" data-title="…"> to group them under a unit.
   - <span class="page-num"></span> is filled with the page number by deck.js.
   - Three.js diagram: <div class="diagram" data-module="diagrams/name.js"></div>.
@@ -170,6 +171,160 @@
       </div>
     </section>
 
+    <!-- template: layout-dark-1 · diagram: diagrams/system.js -->
+    <section class="page" data-type="slide" data-title="Model ≠ GenAI system">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Harness</span>
+          <h1>Model <em>≠</em> GenAI System</h1>
+          <p class="subtitle">The model provides learned capabilities, while the harness <em>contextualizes, extends, coordinates, constrains, and operationalizes</em> them.</p>
+          <div class="content">
+            <div class="diagram system-diagram" data-module="diagrams/system.js"></div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · five component cards -->
+    <section class="page" data-type="slide" data-title="Components of a harness">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Harness</span>
+          <h1>The <em>components</em> of a harness</h1>
+          <p class="subtitle">A harness turns a model into a working system through <em>five building blocks</em>.</p>
+          <ol class="component-cards">
+            <li><b>Context and knowledge integration</b><p>What the model sees: instructions, documents and retrieved data.</p></li>
+            <li><b>Memory and state management</b><p>What persists across steps, turns and sessions.</p></li>
+            <li><b>Tools and external capabilities</b><p>Actions beyond text: search, code execution and APIs.</p></li>
+            <li><b>Orchestration and control</b><p>Loops, workflows, routing, permissions and guardrails.</p></li>
+            <li><b>Evaluation mechanisms</b><p>Tests, metrics and feedback that check and improve outputs.</p></li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three roles + handwritten note -->
+    <section class="page" data-type="slide" data-title="Model, harness, context: three roles">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Harness</span>
+          <h1>Three layers, <em>three roles</em></h1>
+          <ol class="roles">
+            <li><div><b>Models are the <em>intelligence</em></b><p>They provide the reasoning, understanding, and generation capabilities.</p></div></li>
+            <li><div><b>The harness is the <em>system around the intelligence</em></b><p>It orchestrates models, tools, context, and workflows to turn intelligence into reliable applications.</p></div></li>
+            <li><div><b>Context &amp; knowledge provide the <em>information the intelligence needs</em></b><p>They ground the model in relevant data, memory, and knowledge to produce meaningful, context-aware responses.</p></div></li>
+          </ol>
+          <p class="hand-note">Note: "intelligence" and "thinks" are shorthand. Models generate from learned patterns; they don't think the way people do. And context is more than knowledge: it also carries instructions, goals, and the current state of the task.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · .dark-table (1 / 2) -->
+    <section class="page" data-type="slide" data-title="Implemented harnesses · assistants">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">1 / 2 · General-purpose assistants</span>
+          <h1><em>Implemented Harnesses</em> — Ready-to-Use GenAI Systems</h1>
+          <table class="dark-table is-mint">
+            <colgroup><col class="c1" /><col class="c2" /><col /></colgroup>
+            <thead><tr><th>Product</th><th>Provider</th><th>Main harness capabilities</th></tr></thead>
+            <tbody>
+              <tr><td>ChatGPT</td><td>OpenAI</td><td>Context management, memory, web search, tools, file processing, application integrations, agentic workflows</td></tr>
+              <tr><td>Claude</td><td>Anthropic</td><td>Conversational context, projects, artifacts, knowledge integration, tools, application connections</td></tr>
+              <tr><td>Gemini</td><td>Google</td><td>Multimodal interaction, tool use, information retrieval, Google ecosystem integrations</td></tr>
+              <tr><td>Microsoft Copilot</td><td>Microsoft</td><td>Microsoft 365 context, work and web grounding, document and email integration, agents</td></tr>
+              <tr><td>Perplexity</td><td>Perplexity AI</td><td>Real-time web search, source citation, retrieval, research workflows</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · .dark-table (2 / 2) -->
+    <section class="page" data-type="slide" data-title="Implemented harnesses · coding and app building">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">2 / 2 · Coding &amp; app-building agents</span>
+          <h1><em>Implemented Harnesses</em> — Ready-to-Use GenAI Systems</h1>
+          <table class="dark-table is-mint">
+            <colgroup><col class="c1" /><col class="c2" /><col /></colgroup>
+            <thead><tr><th>Product</th><th>Provider</th><th>Main harness capabilities</th></tr></thead>
+            <tbody>
+              <tr><td>OpenAI Codex</td><td>OpenAI</td><td>Coding-agent loop, repository context, terminal execution, testing, code editing, sandboxing, approvals</td></tr>
+              <tr><td>Claude Code</td><td>Anthropic</td><td>Agent loop, file-system and shell tools, project instructions, skills, hooks, MCP integrations, permissions</td></tr>
+              <tr><td>GitHub Copilot</td><td>GitHub/Microsoft</td><td>IDE context, repository integration, coding tools, agent workflows, code review</td></tr>
+              <tr><td>Cursor</td><td>Anysphere</td><td>Codebase indexing, file editing, terminal tools, agentic coding, workspace context</td></tr>
+              <tr><td>Replit</td><td>Replit</td><td>Cloud workspace, agent that plans and builds apps, code execution, databases, deployment</td></tr>
+              <tr><td>Lovable</td><td>Lovable</td><td>Prompt-to-app generation, full-stack scaffolding, visual editing, backend integrations, deployment</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: doc-dark-bg-1 · scrolling document page (pink accent) -->
+    <section class="page is-night" data-type="doc" data-title="Harness development frameworks">
+      <article class="doc-dark-1 is-pink">
+        <span class="eyebrow">Harness · Frameworks</span>
+        <h1>Harness Development Frameworks — Frameworks and SDKs for Building GenAI Systems</h1>
+        <p class="lead">Implemented harnesses are products you use. These frameworks are the building blocks you use to make your own harness.</p>
+        <table class="dark-table">
+          <colgroup><col style="width:30%" /><col style="width:20%" /><col /></colgroup>
+          <thead><tr><th>Framework / SDK</th><th>Organization</th><th>Main harness components</th></tr></thead>
+          <tbody>
+            <tr><td>LangChain</td><td>LangChain</td><td>Model integration, agents, tools, retrieval, middleware</td></tr>
+            <tr><td>LangGraph</td><td>LangChain</td><td>Stateful graphs, workflow orchestration, persistence, checkpoints, human-in-the-loop</td></tr>
+            <tr><td>CrewAI</td><td>CrewAI</td><td>Agents, roles, crews, tasks, flows, tools, delegation</td></tr>
+            <tr><td>OpenAI Agents SDK</td><td>OpenAI</td><td>Agent loop, tools, handoffs, guardrails, sessions, tracing</td></tr>
+            <tr><td>Microsoft AutoGen</td><td>Microsoft</td><td>Agent communication, multi-agent collaboration, message routing, orchestration</td></tr>
+            <tr><td>Semantic Kernel</td><td>Microsoft</td><td>Plugins, function calling, model connectors, process orchestration</td></tr>
+            <tr><td>LlamaIndex</td><td>LlamaIndex</td><td>Data connectors, indexing, RAG, retrieval, knowledge-centric agents</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <!-- template: doc-dark-bg-1 · comparison table (lime accent) -->
+    <section class="page is-night" data-type="doc" data-title="Implemented harnesses vs. frameworks">
+      <article class="doc-dark-1 is-lime">
+        <span class="eyebrow">Harness · Compare</span>
+        <h1>Implemented harnesses vs. harness development frameworks</h1>
+        <p class="lead">One is a finished system ready to use; the other is a kit for building your own.</p>
+        <table class="dark-table is-compare">
+          <colgroup><col style="width:24%" /><col style="width:36%" /><col /></colgroup>
+          <thead><tr><th>Dimension</th><th>Implemented harnesses</th><th>Harness development frameworks</th></tr></thead>
+          <tbody>
+            <tr><td>Main purpose</td><td>Execute real user tasks</td><td>Build customized AI applications and agents</td></tr>
+            <tr><td>Target audience</td><td>End users, developers, organizations</td><td>AI engineers and software developers</td></tr>
+            <tr><td>Readiness</td><td>Operational system</td><td>Building blocks requiring configuration and implementation</td></tr>
+            <tr><td>Model integration</td><td>Already integrated</td><td>Developer-configured</td></tr>
+            <tr><td>Tools, memory, orchestration</td><td>Prebuilt or configurable</td><td>Supplied as primitives, abstractions, and APIs</td></tr>
+            <tr><td>Examples</td><td>ChatGPT, Claude Code, Codex</td><td>LangChain, LangGraph, CrewAI, OpenAI Agents SDK</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+  </div>
+
+  <!-- ============ UNIT 2 · MINDSET ============ -->
+  <div class="unit" data-title="02 · The mindset for building GenAI systems">
+
+    <!-- template: layout-unit-v2 · change the number and title -->
+    <section class="page" data-type="slide" data-title="Unit 2 · The mindset">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <h1>02. The Mindset for Building and <b>Continuously Improving</b> GenAI Systems</h1>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
   </div>
 
 </main>

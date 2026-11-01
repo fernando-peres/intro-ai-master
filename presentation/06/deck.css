@@ -248,7 +248,7 @@ body.toc-open #toc {
 .layout-index li { font-size: 28px; line-height: 1.35; font-weight: 400; }
 
 /* Template: unit. Slots: number + title (<span> light part, <b> key word). */
-.layout-unit-v2 h1 { position: absolute; left: 260px; top: 50%; transform: translateY(-50%); margin: 0; font-size: 74px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.05; color: var(--mint-soft); max-width: 1180px; }
+.layout-unit-v2 h1 { position: absolute; left: 260px; top: 50%; transform: translateY(-50%); margin: 0; font-size: 74px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.05; color: var(--mint-soft); max-width: 1180px; text-wrap: balance; }
 .layout-unit-v2 h1 b { color: #fff; font-weight: 700; }
 
 /* Template: lesson. Slots: title, current depth (.is-current), objective. */
@@ -290,3 +290,63 @@ body.toc-open #toc {
 .callout { position: absolute; }
 .callout strong { display: block; font-family: var(--font-text); font-weight: 600; font-size: 31px; letter-spacing: 0.01em; line-height: 1; }
 .callout p { margin: 0; font-family: var(--font-hand); color: var(--hand); font-size: 27px; line-height: 1.6; }
+
+/* Slide 6: model ≠ GenAI system diagram (diagrams/system.js). Labels are HTML on a dark stage. */
+.system-diagram { position: absolute !important; left: 94px; top: 280px; width: 1412px !important; height: 580px !important; background: transparent !important; border-radius: 0 !important; }
+.system-diagram .diagram-hint { color: #555; }
+.system-diagram .d-label { background: none; box-shadow: none; padding: 0; color: #fff; }
+.system-diagram .d-label.is-title { font-family: var(--font-text); font-weight: 600; font-size: 28px; letter-spacing: 0.02em; }
+.system-diagram .d-label.is-note { font-family: var(--font-hand); color: var(--hand); font-size: 26px; font-weight: 400; }
+.system-diagram .d-label.is-fn { font-size: 20px; font-weight: 500; padding: 5px 14px; border-radius: 999px; background: #17251f; border: 1.5px solid var(--mint); color: var(--mint); }
+.system-diagram .d-label.is-left { transform: translate(-100%, -50%); }
+.system-diagram .d-label.is-right { transform: translate(0, -50%); }
+
+/* Slide 7: harness components as numbered cards. */
+.component-cards { position: absolute; left: 94px; right: 94px; top: 270px; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px; counter-reset: comp; }
+.component-cards li { counter-increment: comp; background: #181814; border-top: 4px solid var(--mint); border-radius: 0 0 16px 16px; padding: 26px 24px 30px; min-height: 420px; }
+.component-cards li::before { content: "0" counter(comp); display: block; font-family: var(--font-title); font-weight: 700; font-size: 54px; line-height: 1; color: var(--mint); }
+.component-cards b { display: block; margin-top: 26px; font-family: var(--font-title); font-weight: 700; font-size: 27px; line-height: 1.15; }
+.component-cards p { margin: 16px 0 0; font-family: var(--font-serif); font-size: 23px; line-height: 1.4; color: #cfd8d3; }
+
+/* Slide 8: three numbered roles + a handwritten note. */
+.roles { position: absolute; left: 94px; right: 140px; top: 220px; margin: 0; padding: 0; list-style: none; display: grid; gap: 34px; counter-reset: role; }
+.roles li { counter-increment: role; display: grid; grid-template-columns: 96px 1fr; align-items: start; }
+.roles li::before { content: counter(role); font-family: var(--font-title); font-weight: 700; font-size: 72px; line-height: 0.95; color: var(--mint); }
+.roles b { display: block; font-family: var(--font-title); font-weight: 700; font-size: 34px; line-height: 1.2; }
+.roles b em { font-style: normal; color: var(--mint); }
+.roles p { margin: 8px 0 0; font-family: var(--font-serif); font-size: 27px; line-height: 1.4; color: #cfd8d3; }
+.hand-note { position: absolute; left: 190px; right: 140px; bottom: 74px; margin: 0; padding-top: 18px; border-top: 1px dashed #4a4a44; font-family: var(--font-hand); color: var(--hand); font-size: 25px; line-height: 1.5; }
+
+/* Dark table (slides 9a/9b and the doc-dark-bg-1 pages). Accent: .is-mint (default), .is-pink, .is-lime. */
+.dark-table { --accent: var(--mint); width: 100%; border-collapse: collapse; color: #fff; }
+.dark-table.is-pink, .is-pink .dark-table { --accent: #ff4fd8; }
+.dark-table.is-lime, .is-lime .dark-table { --accent: #e6f57a; }
+.dark-table th { text-align: left; font-weight: 300; font-size: 0.62em; letter-spacing: 0.04em; text-transform: uppercase; color: #cfd8d3; padding: 0 16px 14px 4px; border-bottom: 4px solid #8f8f8f; }
+.dark-table td { padding: 16px 16px 16px 4px; border-top: 1px solid #4a4a44; vertical-align: middle; line-height: 1.3; }
+.dark-table tr:first-child td { border-top: 0; }
+.dark-table td:first-child { font-family: var(--font-title); font-weight: 700; color: var(--accent); }
+.dark-table.is-compare th { text-transform: none; font-family: var(--font-title); font-weight: 700; font-size: 0.95em; letter-spacing: 0; color: #fff; }
+.layout-dark-1 .dark-table { position: absolute; left: 94px; right: 94px; top: 196px; width: auto; font-size: 25px; }
+.layout-dark-1 .dark-table td { padding-top: 14px; padding-bottom: 14px; }
+.layout-dark-1 .dark-table col.c1 { width: 320px; }
+.layout-dark-1 .dark-table col.c2 { width: 300px; }
+
+/* ---------- Doc pages (data-type="doc"): vertical scroll, sized in real pixels ---------- */
+
+.page[data-type="doc"] { overflow-y: auto; overscroll-behavior: contain; background: var(--paper-soft); outline: none; }
+
+/* Template: doc-dark-bg-1 (long-form text and tables on black, like dark-bg-1). Slots: eyebrow, h1,
+   .lead (optional), body text and .dark-table. Accent: .is-mint (default), .is-pink, .is-lime. */
+.page[data-type="doc"].is-night { background: var(--night); color: #fff; }
+.doc-dark-1 { --accent: var(--mint); max-width: 1240px; margin: 0 auto; padding: 88px 48px 160px; font-size: 21px; line-height: 1.6; }
+.doc-dark-1.is-pink { --accent: #ff4fd8; }
+.doc-dark-1.is-lime { --accent: #e6f57a; }
+.doc-dark-1 .eyebrow { font-size: 16px; letter-spacing: 0.04em; text-transform: uppercase; color: #9a9a9a; font-weight: 300; }
+.doc-dark-1 h1 { margin: 8px 0 0; font-size: 48px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; color: var(--accent); }
+.doc-dark-1 .lead { margin: 20px 0 0; max-width: 900px; font-style: italic; font-size: 25px; line-height: 1.45; color: #e8ece9; }
+.doc-dark-1 p { font-family: var(--font-serif); color: #d6ddd8; }
+.doc-dark-1 .dark-table { margin: 48px 0 0; font-size: 22px; }
+.doc-dark-1 .dark-table th { font-size: 14px; }
+.doc-dark-1 .dark-table.is-compare th { font-size: 22px; }
+.doc-dark-1 .dark-table td { padding: 20px 20px 20px 4px; }
+.doc-dark-1 .source { margin-top: 36px; font-family: var(--font-text); font-size: 15px; color: #8a8a84; }
