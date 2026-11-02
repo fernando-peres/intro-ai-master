@@ -94,6 +94,13 @@ SERVICES: tuple[Service, ...] = (
         check_path="/_stcore/health",
     ),
     Service(
+        name="w-and-a",
+        kind="web",
+        port=8502,
+        command=("uv", "run", "w-and-a"),
+        check_path="/_stcore/health",
+    ),
+    Service(
         name="deck-06",
         kind="static",
         port=8080,

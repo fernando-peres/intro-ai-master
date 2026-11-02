@@ -1,0 +1,66 @@
+/* Colour code shared with deck 06, Unit 05 (presentation/06/deck.css .wa-*):
+   model = deep green, our code / check = mint, workflow = lime, agent = pink, tool = dashed grey. */
+:root {
+  --wa-model: #2f6d4f;
+  --wa-model-bg: #13261d;
+  --wa-code: #6ee7a0;
+  --wa-wf: #e6f57a;
+  --wa-agent: #ff4fd8;
+  --wa-tool: #8f8f8f;
+}
+
+.wa-title { margin: 0 0 4px; font-family: "Cormorant Garamond", Georgia, serif; font-size: 2.6rem; font-weight: 500; line-height: 1.1; }
+.wa-title b { color: var(--wa-code); font-weight: 500; }
+.wa-sub { margin: 0; color: #c9bfb2; }
+
+.wa-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 2px; font-size: 0.82rem; color: #c9bfb2; }
+.wa-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.wa-legend span::before { content: ""; width: 13px; height: 13px; border-radius: 4px; border: 2px solid var(--wa-tool); }
+.wa-legend .k-model::before { background: var(--wa-model-bg); border-color: var(--wa-model); }
+.wa-legend .k-code::before { border-color: var(--wa-code); }
+.wa-legend .k-wf::before { border-color: var(--wa-wf); }
+.wa-legend .k-agent::before { border-color: var(--wa-agent); }
+.wa-legend .k-tool::before { border-style: dashed; }
+.wa-legend .k-human::before { border-color: #fff; border-radius: 50%; }
+
+.wa-status { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; border: 1px solid #554c42; }
+.wa-status.is-live { border-color: var(--wa-code); color: var(--wa-code); }
+
+.wa-head { margin: 4px 0 10px; }
+.wa-who { margin: 0 0 8px; font-size: 1.02rem; }
+.wa-who b { font-weight: 600; }
+.wa-who.is-wf b { color: var(--wa-wf); }
+.wa-who.is-agent b { color: var(--wa-agent); }
+.wa-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.wa-flow span { padding: 5px 11px; border-radius: 8px; border: 2px solid #554c42; font-size: 0.8rem; white-space: nowrap; }
+.wa-flow i { font-style: normal; color: var(--wa-tool); }
+.wa-flow .is-model { background: var(--wa-model-bg); border-color: var(--wa-model); }
+.wa-flow .is-code { border-color: var(--wa-code); }
+.wa-flow .is-wf { border-color: var(--wa-wf); color: var(--wa-wf); }
+.wa-flow .is-agent { border-color: var(--wa-agent); color: var(--wa-agent); }
+.wa-flow .is-tool { border-style: dashed; border-color: var(--wa-tool); }
+.wa-flow .is-human { border-color: #fff; }
+
+.wa-events { display: grid; gap: 5px; margin: 0 0 10px; }
+.wa-ev { border-left: 3px solid var(--wa-tool); border-radius: 0 8px 8px 0; background: rgba(255, 255, 255, 0.03); }
+.wa-ev summary { cursor: pointer; padding: 6px 10px; font-size: 0.84rem; list-style: none; display: flex; gap: 8px; align-items: baseline; }
+.wa-ev summary::-webkit-details-marker { display: none; }
+.wa-ev summary::before { content: "▸"; color: #8c8378; }
+.wa-ev[open] summary::before { content: "▾"; }
+.wa-ev .actor { padding: 0 7px; border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; background: #2a2a26; color: #e4e9e6; }
+.wa-ev .t { margin-left: auto; color: #8c8378; font-size: 0.74rem; }
+.wa-ev pre { margin: 0; padding: 4px 12px 10px 26px; white-space: pre-wrap; font-size: 0.8rem; color: #e4ddd2; background: none; }
+.wa-ev.k-model { border-left-color: var(--wa-model); }
+.wa-ev.k-model .actor { background: var(--wa-model-bg); color: #cdf3df; }
+.wa-ev.k-code { border-left-color: var(--wa-code); }
+.wa-ev.k-code .actor { background: var(--wa-code); color: #0d1a12; }
+.wa-ev.k-wf { border-left-color: var(--wa-wf); }
+.wa-ev.k-wf .actor { background: var(--wa-wf); color: #1b1d0c; }
+.wa-ev.k-agent { border-left-color: var(--wa-agent); }
+.wa-ev.k-agent .actor { background: var(--wa-agent); color: #1f0b1b; }
+.wa-ev.k-tool { border-left-style: dashed; }
+.wa-ev.is-fail summary { color: #f87171; }
+
+.wa-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; font-size: 0.76rem; color: #c9bfb2; }
+.wa-stats span { padding: 2px 9px; border-radius: 999px; border: 1px solid #554c42; }
+.wa-stats .is-recorded { border-color: #fbbf24; color: #fbbf24; }

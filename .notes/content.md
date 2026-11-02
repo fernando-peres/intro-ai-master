@@ -88,20 +88,27 @@ Structure:
 08. Experiments
 
 ---
-- [ ]
+- [x]
 in unit 01. What is harness, add in the proper place a slide to explain n practice what is harness. For example before claude code, codex, we use tools like chatgpt to generate the code and we need to read/understand and copy/paste adapt the code in vscode. Althouth chatGPT is harness it was not a harness for coding. with calude code/code/copilot they create several capacities aroun d the models that enabled they create file, read file, make plan, see spec, ui [search the web and validate and create the content 1-2 slides, make a diagram if it is possible]
 
 
 ---
 
-- [x] Workflows and Agents
+- [] 
+- 
+
+
+Workflows and Agents
   
   
 Objective: Talk about orchestrators , brief description of agents and workflows (their role in genai systems)
 Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
+Diagrams: make digrams / flows to represent these building blocks. use colors references to agenet, workflow,... in this way to keep consistence among slides of this unit.
 
-# review slide Unit 06. Workflows and Agents
+# Add slides of unit 06 Workflows and Agents
+## create the slide Unit 06. Workflows and Agents [AFTER slide 64]
 rename? "Orchestrators: Workflows and Agents" [review and update table of contents]
+
 ## lesson : Overview: workflows and agents
 prompt->model (manual/not dynamic)
 What is an Agent and a workflow
@@ -123,6 +130,37 @@ one slide to conect agentic RAG
 ## unit main takeways   [search in the web and review/validate and write content]
 1. each one has its space (depens the problem/solution and stage)
 2. agent important, but the context is the fuel
+
+
+# task - create a prompt to create a streamlit app about Agents and workflows
+create in apps/w-and-a/ [streamlit app]
+add the app to TUI (all-apps) 
+
+use the content of the created slides to guide the app creation
+
+create a chat bot, prompt -> model, workflow, agent, agentic (tabs to demonstrate the differnce among them)
+
+add few tools just to show how them (if they can) use the tools
+
+make the chat like apps, show events like tool usage, tools resul, reasoning, etc. show colapsed...
+
+
+
+---
+ /plan
+
+  in apps/w-and-a/ instead of tabs """chatbot , prompt-> model, wrokflow,..""" add them in a left side
+  tool bar. move the header to the left bar too:"""[Pasted text #3 +9 lines] """
+
+  the right side, chat area, show a chat area with turns between user and assistant.
+
+  for each option [ """chatbot , prompt-> model, wrokflow,.."""]  create another page for explain the
+  each tool (Chat) . example: agent notes, and explain and show a diagram of the solution
+
+  create a page for the tools explaining and enable test the tools
+
+  in presentations/06/ when talk about chatbots, you need to mention that it can have a step by step
+  flow behind, deterministic [serach in the web to explain better]
 
 ---
 

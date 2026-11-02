@@ -18,11 +18,11 @@ notebooks = [
 package = false
 
 [tool.uv.workspace]
-members = ["apps/all-apps", "apps/algo-server", "apps/harness-content-api", "apps/rag-in-action", "packages/algo", "packages/genai"]
+members = ["apps/all-apps", "apps/algo-server", "apps/harness-content-api", "apps/rag-in-action", "apps/w-and-a", "packages/algo", "packages/genai"]
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
-testpaths = ["apps/all-apps/tests", "apps/algo-server/tests", "apps/harness-content-api/tests", "apps/rag-in-action/tests", "packages/algo/tests", "packages/genai/tests"]
+testpaths = ["apps/all-apps/tests", "apps/algo-server/tests", "apps/harness-content-api/tests", "apps/rag-in-action/tests", "apps/w-and-a/tests", "packages/algo/tests", "packages/genai/tests"]
 markers = ["slow: downloads and runs real models (GPT-2, GloVe, MiniLM)"]
 
 [tool.ruff]
@@ -30,13 +30,13 @@ target-version = "py314"
 line-length = 100
 
 [tool.importlinter]
-root_packages = ["algo", "algo_server", "all_apps", "genai", "harness_content_api", "rag_in_action"]
+root_packages = ["algo", "algo_server", "all_apps", "genai", "harness_content_api", "rag_in_action", "w_and_a"]
 
 [[tool.importlinter.contracts]]
 name = "packages/* never import apps/*"
 type = "forbidden"
 source_modules = ["algo", "genai"]
-forbidden_modules = ["algo_server", "all_apps", "harness_content_api", "rag_in_action"]
+forbidden_modules = ["algo_server", "all_apps", "harness_content_api", "rag_in_action", "w_and_a"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
@@ -45,4 +45,4 @@ select = ["E", "F", "I", "UP", "B"]
 "notebooks/*" = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["algo", "algo_server", "all_apps", "genai", "harness_content_api", "rag_in_action"]
+known-first-party = ["algo", "algo_server", "all_apps", "genai", "harness_content_api", "rag_in_action", "w_and_a"]

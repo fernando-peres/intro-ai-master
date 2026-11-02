@@ -1,0 +1,94 @@
+{
+  "Why is order 1042 late, and what can you offer me?": {
+    "mode": "prompt",
+    "question": "Why is order 1042 late, and what can you offer me?",
+    "answer": "Sorry about the delay. I can’t see live details for order 1042 from here, so I can’t confirm the exact cause.\n\nCommon reasons are:\n- carrier delays\n- weather / route disruptions\n- customs or sorting issues\n- warehouse packing or stock delays\n\nWhat I can offer:\n- help you check the latest status\n- a replacement if the order is lost or significantly delayed\n- refund of shipping if applicable\n- a discount/store credit as a goodwill gesture\n\nIf you send me the email used for the order or the tracking number, I can help you faster.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "One shot",
+        "body": "No chat history, no tools, no instructions about the shop.",
+        "at": "2026-11-02-14-03-36",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Addressing customer support inquiry**\n\nI need to respond in a customer support context without specifics. I can't access order details, but I should ask for the order number, which the user provided as 1042. I might need to explain that I can't see the system. Apologizing and suggesting common reasons for delays, like carrier issues or weather, would be good. I could also mention compensation options like expedited replacements or discounts, while being direct and concise in my response.",
+        "at": "2026-11-02-14-03-40",
+        "t": 4.64
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Responding to user inquiry**\n\nI can assist the user by checking their status if they provide their email or zip code. Depending on the policy, I can then offer options like a replacement, a refund for shipping, or perhaps a discount or store credit. I want to ensure my response is direct and to the point, so the user understands their options clearly. It feels important to keep the communication straightforward and helpful!",
+        "at": "2026-11-02-14-03-40",
+        "t": 4.64
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 375,
+    "seconds": 4.64,
+    "recorded": false
+  },
+  "How did the return window change between 2025 and 2026?": {
+    "mode": "prompt",
+    "question": "How did the return window change between 2025 and 2026?",
+    "answer": "I don’t have the 2025 and 2026 return-policy details here, so I can’t compare the window accurately.\n\nIf you paste the two policy versions (or the relevant dates), I can tell you exactly how it changed.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "One shot",
+        "body": "No chat history, no tools, no instructions about the shop.",
+        "at": "2026-11-02-14-03-40",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Clarifying return window changes**\n\nThe user is asking how the return window changed between 2025 and 2026, but there’s no prior context or specific policy details provided. I think I should clarify their question because they might expect an answer based on some data that isn't available. I’ll need to let them know that I can’t determine the change without the relevant policy or document details. It’s important to ask for that to give a proper answer!",
+        "at": "2026-11-02-14-03-44",
+        "t": 3.61
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 186,
+    "seconds": 3.61,
+    "recorded": false
+  },
+  "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?": {
+    "mode": "prompt",
+    "question": "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
+    "answer": "You paid **€127.25** total.\n\nCalculation:\n- 15% off €49.90 = **€42.42** per lamp (rounded to cents)\n- 3 lamps × €42.42 = **€127.26**\n\nIf you calculate before rounding, the exact total is **€127.245**, which rounds to **€127.25**.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "One shot",
+        "body": "No chat history, no tools, no instructions about the shop.",
+        "at": "2026-11-02-14-03-44",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Calculating total cost**\n\nI need to compute the total for items priced at $49.90 each with a 15% discount. I'll take 85% of the price for the discounted amount, which is $49.90 times 0.85, equaling $42.415. For three items, that totals $127.245. Since currency is usually rounded to the nearest cent, I’ll finalize the total as $127.25. Now, I'll put together a brief summary of this calculation!",
+        "at": "2026-11-02-14-03-47",
+        "t": 3.32
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 180,
+    "seconds": 3.32,
+    "recorded": false
+  }
+}

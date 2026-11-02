@@ -1,0 +1,374 @@
+{
+  "Why is order 1042 late, and what can you offer me?": {
+    "mode": "agentic",
+    "question": "Why is order 1042 late, and what can you offer me?",
+    "answer": "Order 1042 is delayed because Storm Ilda closed the Porto hub for two days; parcels are moving again. The promised delivery was 2026-10-30, and the expected delivery is 2026-11-05, so it qualifies for our late-delivery policy.\n\nWe can offer either:\n- a 15% voucher on the order total, or\n- free express shipping on your next order.\n\nIf you’d like, I can also note that returns are available within 30 days of delivery for a full refund.",
+    "events": [
+      {
+        "kind": "reasoning",
+        "actor": "lead",
+        "title": "Reasoning summary",
+        "body": "**Structuring subtasks in JSON**\n\nI need to provide the answer in JSON format, specifically focusing on subtasks. The user's inquiry about why order 1042 is late leads me to suggest splitting the request into one to three subtasks. I'll likely break it down into two subtasks: one for investigating the lateness of order 1042 and another for finding any applicable policies on compensation. My goal is to ensure clarity and organization in the response while adhering to the required format.",
+        "at": "2026-11-02-14-04-33",
+        "t": 2.86
+      },
+      {
+        "kind": "plan",
+        "actor": "lead",
+        "title": "Plan · 2 subtask(s)",
+        "body": "1. orders: Look up order 1042 and determine its current status, shipping/tracking details, and the most likely reason it is late.\n2. policies: Find the shop policies relevant to delayed orders and what remedies or offers we can provide the customer, such as refunds, replacements, credits, or other goodwill options.",
+        "at": "2026-11-02-14-04-33",
+        "t": 2.86
+      },
+      {
+        "kind": "handoff",
+        "actor": "lead",
+        "title": "Hand off → Orders specialist",
+        "body": "Look up order 1042 and determine its current status, shipping/tracking details, and the most likely reason it is late.",
+        "at": "2026-11-02-14-04-33",
+        "t": 2.86
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Orders specialist",
+        "title": "Reasoning summary",
+        "body": "**Using lookup order**\n\nI’m thinking we should use lookup_order to find the necessary information. It seems we need to report the facts only briefly to keep things concise and clear. So, the next step is to call the tool and gather what I need. I really want to make sure I get the right details without overcomplicating everything. Keeping it simple should help the user understand the information better! Let’s get this started.",
+        "at": "2026-11-02-14-04-36",
+        "t": 5.63
+      },
+      {
+        "kind": "tool_call",
+        "actor": "Orders specialist",
+        "title": "Call lookup_order",
+        "body": "{\n  \"order_id\": \"1042\"\n}",
+        "at": "2026-11-02-14-04-36",
+        "t": 5.63
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "lookup_order returned",
+        "body": "{\n  \"order_id\": \"1042\",\n  \"status\": \"delayed\",\n  \"items\": [\n    \"Oak floor lamp\",\n    \"Linen cushion cover (x2)\"\n  ],\n  \"total_eur\": 189.7,\n  \"ship_to_city\": \"Porto\",\n  \"ordered\": \"2026-10-24\",\n  \"promised_delivery\": \"2026-10-30\",\n  \"expected_delivery\": \"2026-11-05\",\n  \"delay_reason\": \"Storm Ilda closed the Porto hub for two days; parcels are moving again.\"\n}",
+        "at": "2026-11-02-14-04-36",
+        "t": 5.63
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Orders specialist",
+        "title": "Reasoning summary",
+        "body": "**Gathering shipping details**\n\nI need to find the current status of the shipping and tracking details while also considering why there might be a delay. I'll stick to the facts and highlight the shipping details, like the destination city and expected dates. However, it looks like there might not be a tracking number to provide. So, I'll make sure to craft a concise response that focuses on these key points! I've got this!",
+        "at": "2026-11-02-14-04-39",
+        "t": 9.14
+      },
+      {
+        "kind": "report",
+        "actor": "Orders specialist",
+        "title": "Orders specialist reports",
+        "body": "Order 1042 is **delayed**.\n\n- **Items:** Oak floor lamp; Linen cushion cover (x2)\n- **Ship-to city:** Porto\n- **Ordered:** 2026-10-24\n- **Promised delivery:** 2026-10-30\n- **Expected delivery:** 2026-11-05\n\n**Most likely reason for the delay:** Storm Ilda closed the Porto hub for two days, and parcels are moving again.",
+        "at": "2026-11-02-14-04-39",
+        "t": 9.14
+      },
+      {
+        "kind": "handoff",
+        "actor": "lead",
+        "title": "Hand off → Policies specialist",
+        "body": "Find the shop policies relevant to delayed orders and what remedies or offers we can provide the customer, such as refunds, replacements, credits, or other goodwill options.",
+        "at": "2026-11-02-14-04-39",
+        "t": 9.14
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Policies specialist",
+        "title": "Reasoning summary",
+        "body": "**Clarifying search policies**\n\nI need to look into our search policies to ensure we report accurate facts. I’m considering querying about delayed orders, late delivery, shipping, returns, warranties, and potential discounts. It seems important to also explore remedies or offers that could be relevant. I’ll make sure to follow the proper search protocols as I gather this information. It’s all about providing the right details efficiently!",
+        "at": "2026-11-02-14-04-42",
+        "t": 11.77
+      },
+      {
+        "kind": "tool_call",
+        "actor": "Policies specialist",
+        "title": "Call search_policies",
+        "body": "{\n  \"query\": \"delayed orders late delivery shipping refunds replacements credits goodwill\"\n}",
+        "at": "2026-11-02-14-04-42",
+        "t": 11.77
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "search_policies returned",
+        "body": "{\n  \"query\": \"delayed orders late delivery shipping refunds replacements credits goodwill\",\n  \"results\": [\n    {\n      \"id\": \"delivery-delays\",\n      \"title\": \"Late deliveries\",\n      \"text\": \"If an order arrives more than 3 days after the promised date, the customer gets a 15% voucher on the order total, or free express shipping on the next order. Weather delays are covered too.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-14-04-42",
+        "t": 11.77
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Policies specialist",
+        "title": "Reasoning summary",
+        "body": "**Considering shipping policies**\n\nI should focus on providing facts, so I might mention that there's no direct replacement for items. The user’s request is about delayed orders, and I should highlight the remedies we have for late deliveries and our returns policy. I’ll look for specific information related to shipping and delays to help clarify things for the user. Let's make sure to provide useful insights!",
+        "at": "2026-11-02-14-04-45",
+        "t": 15.1
+      },
+      {
+        "kind": "tool_call",
+        "actor": "Policies specialist",
+        "title": "Call search_policies",
+        "body": "{\n  \"query\": \"replacement damaged items shipping delay goodwill credit voucher express shipping\"\n}",
+        "at": "2026-11-02-14-04-45",
+        "t": 15.1
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "search_policies returned",
+        "body": "{\n  \"query\": \"replacement damaged items shipping delay goodwill credit voucher express shipping\",\n  \"results\": [\n    {\n      \"id\": \"delivery-delays\",\n      \"title\": \"Late deliveries\",\n      \"text\": \"If an order arrives more than 3 days after the promised date, the customer gets a 15% voucher on the order total, or free express shipping on the next order. Weather delays are covered too.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-14-04-45",
+        "t": 15.1
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Policies specialist",
+        "title": "Reasoning summary",
+        "body": "**Considering shop policies**\n\nI need to mention that there's no replacement stated in the policy. I could highlight that it mentions a voucher or free express shipping on the next order, and that there’s a full refund on returns within 30 days after delivery. I should also be cautious about checking if there are specific shipping policies related to delayed orders. However, the search results seem sufficient for my needs. Should I include a citation, since it’s just factual information?",
+        "at": "2026-11-02-14-04-49",
+        "t": 18.96
+      },
+      {
+        "kind": "report",
+        "actor": "Policies specialist",
+        "title": "Policies specialist reports",
+        "body": "Relevant policies found:\n\n- **Late deliveries:** If an order arrives **more than 3 days after the promised date**, the customer gets **a 15% voucher on the order total** or **free express shipping on the next order**. **Weather delays are covered**.\n- **Returns policy (from 2026-01-01):** Customers can **return any item within 30 days of delivery for a full refund**. **Return shipping is free for orders over €50**, and **refunds are paid within 5 working days**.\n\n**Replacement:** I did not find a policy stating replacement is offered for delayed orders.",
+        "at": "2026-11-02-14-04-49",
+        "t": 18.96
+      },
+      {
+        "kind": "reasoning",
+        "actor": "lead",
+        "title": "Reasoning summary",
+        "body": "**Addressing delivery issues**\n\nI need to provide a brief response focused on specialists' findings regarding a delivery delay. The order has been delayed due to Storm Ilda affecting the Porto hub, with parcels resuming movement. If the delivery arrives more than three days late, I can offer a 15% voucher or free express shipping on the next order. In this case, with a promised date of 2026-10-30 and an expected delivery of 2026-11-05, it qualifies for compensation. I’ll also mention the return policy and ensure clarity without overpromising.",
+        "at": "2026-11-02-14-04-53",
+        "t": 22.82
+      },
+      {
+        "kind": "reasoning",
+        "actor": "reviewer",
+        "title": "Reasoning summary",
+        "body": "**Evaluating draft compliance**\n\nI need to check the draft against the findings to ensure every fact is accurate. The statement about qualifying for the late-delivery policy seems true since it's over three days after the promised date. Offering a 15% voucher or free express shipping aligns with our policy. The note about returns within 30 days also matches what's in the policy. I don't see any unsupported phrasing, so I can likely conclude with a PASS.",
+        "at": "2026-11-02-14-04-57",
+        "t": 26.43
+      },
+      {
+        "kind": "check",
+        "actor": "reviewer",
+        "title": "Review: pass",
+        "body": "PASS",
+        "at": "2026-11-02-14-04-57",
+        "t": 26.43
+      }
+    ],
+    "llm_calls": 8,
+    "tool_calls": 3,
+    "tokens": 3767,
+    "seconds": 26.43,
+    "recorded": false
+  },
+  "How did the return window change between 2025 and 2026?": {
+    "mode": "agentic",
+    "question": "How did the return window change between 2025 and 2026?",
+    "answer": "The return window increased in 2026.  \n\n- **2025:** 14 days from delivery  \n- **2026:** 30 days from delivery  \n\nSo, the return window got **16 days longer** in 2026.",
+    "events": [
+      {
+        "kind": "reasoning",
+        "actor": "lead",
+        "title": "Reasoning summary",
+        "body": "**Creating JSON subtasks**\n\nI need to format the answer as JSON with specific subtasks. It seems like I’ll need to involve a policies specialist because the user is asking about shop policies. I think I should compare the return window between 2025 and 2026, so I'll craft a subtask: finding the return window policy for both years and highlighting any changes. If policies can search and calculate the details, it’ll streamline things. Let’s get that JSON output ready!",
+        "at": "2026-11-02-14-05-00",
+        "t": 3.63
+      },
+      {
+        "kind": "plan",
+        "actor": "lead",
+        "title": "Plan · 1 subtask(s)",
+        "body": "1. policies: Find the shop return-window policy for 2025 and 2026, then compare them and state how the return window changed.",
+        "at": "2026-11-02-14-05-00",
+        "t": 3.63
+      },
+      {
+        "kind": "handoff",
+        "actor": "lead",
+        "title": "Hand off → Policies specialist",
+        "body": "Find the shop return-window policy for 2025 and 2026, then compare them and state how the return window changed.",
+        "at": "2026-11-02-14-05-00",
+        "t": 3.63
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Policies specialist",
+        "title": "Reasoning summary",
+        "body": "**Searching for policy updates**\n\nI need to check specific policies, particularly focusing on return window policies for different years, like 2025 and 2026. It seems important to gather factual information and compare any updates for those years. I’ll conduct a search for relevant policy texts that might help clarify changes or details about the return window. Keeping the report brief and focused on facts will help make the information clearer for whoever might need it!",
+        "at": "2026-11-02-14-05-03",
+        "t": 6.48
+      },
+      {
+        "kind": "tool_call",
+        "actor": "Policies specialist",
+        "title": "Call search_policies",
+        "body": "{\n  \"query\": \"return window 2025\"\n}",
+        "at": "2026-11-02-14-05-03",
+        "t": 6.48
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "search_policies returned",
+        "body": "{\n  \"query\": \"return window 2025\",\n  \"results\": [\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-14-05-03",
+        "t": 6.48
+      },
+      {
+        "kind": "tool_call",
+        "actor": "Policies specialist",
+        "title": "Call search_policies",
+        "body": "{\n  \"query\": \"return window 2026\"\n}",
+        "at": "2026-11-02-14-05-03",
+        "t": 6.48
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "search_policies returned",
+        "body": "{\n  \"query\": \"return window 2026\",\n  \"results\": [\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    },\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-14-05-03",
+        "t": 6.48
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Policies specialist",
+        "title": "Reasoning summary",
+        "body": "**Considering return policy changes**\n\nI need to deliver a concise answer focused on the facts. The return window has changed from 14 days to 30 days, which is an increase of 16 days—more than doubling the original period. It’s important to mention both the old and new dates clearly. This might provide clarity on the significance of the change for users who are considering returns. I'll ensure the response is straightforward and helpful.",
+        "at": "2026-11-02-14-05-06",
+        "t": 9.72
+      },
+      {
+        "kind": "report",
+        "actor": "Policies specialist",
+        "title": "Policies specialist reports",
+        "body": "- **2025 return window:** 14 days from delivery.\n- **2026 return window:** 30 days from delivery.\n\n**Change:** the return window increased by **16 days** in 2026, from **14 days to 30 days**.",
+        "at": "2026-11-02-14-05-06",
+        "t": 9.72
+      },
+      {
+        "kind": "reasoning",
+        "actor": "lead",
+        "title": "Reasoning summary",
+        "body": "**Correcting findings**\n\nI need to provide a brief answer that's 120 words or less, focusing solely on specialist findings. My main goal is to clarify how the data changed from 2025 to 2026. I realized there's a mistake in my findings. For instance, the difference between 14 and 30 actually represents a 16-day increase. So, I just need to make sure I'm answering directly while keeping everything clear and concise. I'll work on getting that figured out!",
+        "at": "2026-11-02-14-05-09",
+        "t": 12.79
+      },
+      {
+        "kind": "reasoning",
+        "actor": "reviewer",
+        "title": "Reasoning summary",
+        "body": "**Evaluating the draft findings**\n\nI need to evaluate the draft against the findings. The draft mentions an increase in the return window starting in 2026, going from 14 days in 2025 to 30 days in 2026, which is a 16-day lengthening. It's important I confirm these details and ensure everything is supported in the output. I think my goal here is to conclude that it passes the evaluation! Time to get to work on this.",
+        "at": "2026-11-02-14-05-21",
+        "t": 23.9
+      },
+      {
+        "kind": "check",
+        "actor": "reviewer",
+        "title": "Review: pass",
+        "body": "PASS",
+        "at": "2026-11-02-14-05-21",
+        "t": 23.9
+      }
+    ],
+    "llm_calls": 5,
+    "tool_calls": 2,
+    "tokens": 1674,
+    "seconds": 23.9,
+    "recorded": false
+  },
+  "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?": {
+    "mode": "agentic",
+    "question": "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
+    "answer": "You paid **€127.25** in total.",
+    "events": [
+      {
+        "kind": "reasoning",
+        "actor": "lead",
+        "title": "Reasoning summary",
+        "body": "**Determining JSON subtasks**\n\nI’m thinking about how to reply with JSON that includes only the necessary subtasks, which I should split into manageable groups of 1 to 3. I need to consider if there are any specialist policies that apply to my calculations. It’s important that these policies guide how I manage the total. Ultimately, I’ll make sure my response is clean and only reflects the JSON format I need to use!",
+        "at": "2026-11-02-14-05-24",
+        "t": 3.53
+      },
+      {
+        "kind": "plan",
+        "actor": "lead",
+        "title": "Plan · 1 subtask(s)",
+        "body": "1. policies: Calculate the total price for 3 lamps at €49.90 each with a 15% spring discount applied.",
+        "at": "2026-11-02-14-05-24",
+        "t": 3.53
+      },
+      {
+        "kind": "handoff",
+        "actor": "lead",
+        "title": "Hand off → Policies specialist",
+        "body": "Calculate the total price for 3 lamps at €49.90 each with a 15% spring discount applied.",
+        "at": "2026-11-02-14-05-24",
+        "t": 3.53
+      },
+      {
+        "kind": "reasoning",
+        "actor": "Policies specialist",
+        "title": "Reasoning summary",
+        "body": "**Calculating exact arithmetic**\n\nI need to perform some precise arithmetic calculations. I think it's best to use the calculation tool for this task, as it should give me accurate results. My goal is to keep things factual and straightforward, so I’ll focus on those specific numbers. I have to make sure I’m clear and concise in my presentation of the results as well, so the user can easily understand the information!",
+        "at": "2026-11-02-14-05-27",
+        "t": 6.39
+      },
+      {
+        "kind": "tool_call",
+        "actor": "Policies specialist",
+        "title": "Call calculate",
+        "body": "{\n  \"expression\": \"3 * 49.90 * 0.85\"\n}",
+        "at": "2026-11-02-14-05-27",
+        "t": 6.39
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "calculate returned",
+        "body": "{\n  \"expression\": \"3 * 49.90 * 0.85\",\n  \"result\": 127.25\n}",
+        "at": "2026-11-02-14-05-27",
+        "t": 6.39
+      },
+      {
+        "kind": "report",
+        "actor": "Policies specialist",
+        "title": "Policies specialist reports",
+        "body": "Total: **€127.25**",
+        "at": "2026-11-02-14-05-28",
+        "t": 7.68
+      },
+      {
+        "kind": "reasoning",
+        "actor": "reviewer",
+        "title": "Reasoning summary",
+        "body": "**Evaluating draft consistency**\n\nI need to check if the draft aligns with the findings. The draft indicates a payment of €127.25 in total, which matches the findings also stating a total of €127.25. There doesn't seem to be any issue here, so it looks like everything checks out. I think I can just respond with a simple \"PASS\" to confirm that. That feels straightforward and clear!",
+        "at": "2026-11-02-14-05-33",
+        "t": 12.31
+      },
+      {
+        "kind": "check",
+        "actor": "reviewer",
+        "title": "Review: pass",
+        "body": "PASS",
+        "at": "2026-11-02-14-05-33",
+        "t": 12.31
+      }
+    ],
+    "llm_calls": 5,
+    "tool_calls": 1,
+    "tokens": 920,
+    "seconds": 12.31,
+    "recorded": false
+  }
+}

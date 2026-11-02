@@ -1,0 +1,78 @@
+{
+  "Why is order 1042 late, and what can you offer me?": {
+    "mode": "chatbot",
+    "question": "Why is order 1042 late, and what can you offer me?",
+    "answer": "I’m sorry your order is late. I can’t see order 1042 or the shipping details from here, so I can’t tell the exact reason.\n\nWhat I can suggest:\n- Check the shipping confirmation email for a tracking link\n- Look for any delivery updates from the carrier\n- If the tracking shows no movement, contact the carrier directly\n\nIf you want, I can help you write a short message to customer support or the carrier.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "No tools",
+        "body": "It can only talk: it has no access to orders or policies.",
+        "at": "2026-11-02-14-03-26",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Crafting customer support response**\n\nI need to answer as a customer assistant, keeping it brief with a limit of about 120 words. Honestly, I can't access details about why order 1042 is late, but I want to be helpful. I could suggest the user check their confirmation or shipping email, maybe use the tracking link, or contact the carrier. I could also offer to help draft a message if they need it. Let's make sure the response is concise and empathetic!",
+        "at": "2026-11-02-14-03-30",
+        "t": 3.59
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 249,
+    "seconds": 3.59,
+    "recorded": false
+  },
+  "How did the return window change between 2025 and 2026?": {
+    "mode": "chatbot",
+    "question": "How did the return window change between 2025 and 2026?",
+    "answer": "I’m sorry, but I can’t know that from here because I don’t have access to Pebble & Pine’s policy history or records. If you paste the 2025 and 2026 return-policy text, I can compare them and summarize the change clearly.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "No tools",
+        "body": "It can only talk: it has no access to orders or policies.",
+        "at": "2026-11-02-14-03-30",
+        "t": 0.0
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 170,
+    "seconds": 1.88,
+    "recorded": false
+  },
+  "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?": {
+    "mode": "chatbot",
+    "question": "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
+    "answer": "Each lamp after the 15% discount costs **€42.42** (rounded to the nearest cent).\n\nFor 3 lamps: **€42.42 × 3 = €127.26**.\n\nSo you paid **€127.26** in total.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "No tools",
+        "body": "It can only talk: it has no access to orders or policies.",
+        "at": "2026-11-02-14-03-32",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Calculating total cost**\n\nI need to keep my answer under 120 words. First, I’m calculating 49.90 times 0.85, which equals 42.415. Then, multiplying that result by 3 gives me about 127.245. It looks like I should round that to €127.25 for cents. I might mention that this reflects a discount as well. Let’s put all of this together into a concise response that clearly outlines the final amount and the factor of the discount.",
+        "at": "2026-11-02-14-03-36",
+        "t": 3.82
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 199,
+    "seconds": 3.82,
+    "recorded": false
+  }
+}

@@ -93,7 +93,7 @@
         <li>02. The Mindset for GenAI Systems</li>
         <li>03. Context &amp; Context Engineering</li>
         <li>04. Tools and Integration</li>
-        <li>05. Workflows and Agents</li>
+        <li>05. Orchestrators: Workflows and Agents</li>
         <li>06. Guardrails and Evals</li>
         <li>07. Observability</li>
         <li>08. Experiments</li>
@@ -1620,7 +1620,450 @@ while True:
 
   </div>
 
-  <!-- ============ UNIT 5 · WORKFLOWS AND AGENTS: to come ============ -->
+  <!-- ============ UNIT 5 · ORCHESTRATORS: WORKFLOWS AND AGENTS ============ -->
+  <!-- Colour code for the whole unit (deck.css .wa-*): model = deep green, your code = mint,
+       workflow = lime (--wf), agent = pink (--agent), tool = dashed grey, person = white. -->
+  <div class="unit" data-title="05 · Orchestrators: Workflows and Agents">
+
+    <!-- template: layout-unit-v2 · change the number, title, subtitle and covers -->
+    <section class="page" data-type="slide" data-title="Unit 5 · Orchestrators: Workflows and Agents">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="unit-head">
+          <h1>05. Orchestrators: <b>Workflows and Agents</b></h1>
+          <p class="subtitle">Who decides the next step: your code or the model?</p>
+          <div class="covers"><span>Prompt → model</span><span>Workflows</span><span>Agents</span><span>When to use which</span><span>Agentic systems</span><span>Agentic RAG</span></div>
+        </div>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-statement-dark · one idea to keep -->
+    <section class="page" data-type="slide" data-title="Unit 5 · One idea to keep">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">One idea to keep</span>
+          <p class="statement">A workflow follows <em>the path you drew</em>. An agent <em>chooses its own path</em>.</p>
+          <p class="statement-source">Both are orchestration. Only the decider changes.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · Workflows and agents overview">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Overview: workflows and agents</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">Understand the orchestrator: the part of a GenAI system that decides the next step. Tell apart a single prompt, a workflow (your code decides) and an agent (the model decides), and know when each one fits.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · manual flow -->
+    <section class="page" data-type="slide" data-title="Prompt → model">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Workflows &amp; agents</span>
+          <h1>Prompt → model: <em>the person is the orchestrator</em></h1>
+          <p class="subtitle is-wide">One question, one answer. Every next step is decided, and done, by hand.</p>
+          <div class="wa-flow is-manual">
+            <div class="wa-node is-human"><span class="who">Person</span><b>Writes a prompt</b><span>“Draft a reply to this complaint.”</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-node is-model"><span class="who">Model</span><b>Answers once</b><span>A draft, from what it was given.</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-node is-human"><span class="who">Person</span><b>Decides what’s next</b><span>Checks the order, fixes the draft, pastes it into the email.</span></div>
+          </div>
+          <svg class="wa-return" viewBox="0 0 1280 90" aria-hidden="true">
+            <path d="M1090 2 V44 H190 V8" /><path d="M176 22 L190 6 L204 22" />
+            <text x="640" y="80" text-anchor="middle">…and again, by hand, for the next case</text>
+          </svg>
+          <p class="key-idea"><b>Simple, but it doesn’t scale.</b> Nothing is automated or repeatable: the quality depends on who writes the prompt and what they do with the answer.</p>
+        </div>
+        <div class="wa-legend"><span class="k-human">Person</span><span class="k-model">Model</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · two panels -->
+    <section class="page" data-type="slide" data-title="The orchestrator">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Workflows &amp; agents</span>
+          <h1>The <em>orchestrator</em> decides the next step</h1>
+          <p class="subtitle is-wide">Take the person out of the loop and something else must decide. There are two answers.</p>
+          <div class="wa-split">
+            <div class="wa-panel is-wf">
+              <span class="tag">Workflow</span>
+              <b>Your code decides the path</b>
+              <p>The steps are drawn in advance. The model fills in each step; the order never changes.</p>
+              <div class="wa-mini"><span class="is-model">Model</span><i>→</i><span class="is-wf">Code: route</span><i>→</i><span class="is-tool">Tool</span><i>→</i><span class="is-model">Model</span></div>
+            </div>
+            <div class="wa-panel is-agent">
+              <span class="tag">Agent</span>
+              <b>The model decides the path</b>
+              <p>It gets a goal and tools, then chooses the next step, again and again, until it is done.</p>
+              <div class="wa-mini"><span>Goal</span><i>→</i><span class="is-agent">Model ⇄ tools ↻</span><i>→</i><span>Answer</span></div>
+            </div>
+          </div>
+          <p class="flow-note wa-orch-note">Orchestrator: the part of the system that decides what happens next.</p>
+          <p class="source wa-src">“Workflows are systems where LLMs and tools are orchestrated through predefined code paths. Agents […] are systems where LLMs dynamically direct their own processes and tool usage.” Anthropic, <i>Building effective agents</i> (2024).</p>
+        </div>
+        <div class="wa-legend"><span class="k-model">Model</span><span class="k-wf">Workflow</span><span class="k-agent">Agent</span><span class="k-tool">Tool</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · fixed path + five patterns -->
+    <section class="page" data-type="slide" data-title="What is a workflow?">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Workflows</span>
+          <h1>A workflow: <em>the same path, every time</em></h1>
+          <p class="subtitle is-wide">Example: a customer-support request. The model does the language; your code fixes the order.</p>
+          <div class="wa-flow">
+            <div class="wa-node is-model"><span class="who">Model</span><b>1 · Classify</b><span>refund, delay or question?</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-node is-wf"><span class="who">Code</span><b>2 · Route</b><span>pick the path for that type</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-node is-tool"><span class="who">Tool</span><b>3 · Look up</b><span>the order in the system</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-node is-model"><span class="who">Model</span><b>4 · Draft</b><span>the reply, with the facts</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-node is-wf"><span class="who">Code</span><b>5 · Check</b><span>rules pass? then send</span></div>
+          </div>
+          <p class="wa-patterns-label">Five common patterns</p>
+          <div class="wa-patterns">
+            <div><b>Chaining</b><p>One step’s output feeds the next.</p></div>
+            <div><b>Routing</b><p>Send each case to its own path.</p></div>
+            <div><b>Parallel</b><p>Split the work, run side by side, merge.</p></div>
+            <div><b>Orchestrator-workers</b><p>A lead model splits the job; workers do the parts.</p></div>
+            <div><b>Evaluator-optimizer</b><p>One drafts, another critiques; repeat.</p></div>
+          </div>
+          <p class="source wa-src">Patterns from Anthropic, <i>Building effective agents</i> (2024).</p>
+        </div>
+        <div class="wa-legend"><span class="k-model">Model</span><span class="k-wf">Workflow step (code)</span><span class="k-tool">Tool</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · agent loop -->
+    <section class="page" data-type="slide" data-title="What is an agent?">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Agents</span>
+          <h1>An agent: <em>a model using tools in a loop</em></h1>
+          <p class="subtitle is-wide">You give it a goal and a set of tools. It decides the steps, one at a time.</p>
+          <div class="wa-flow is-agent-loop">
+            <div class="wa-node is-human"><span class="who">Person</span><b>Goal</b><span>“Why is order 1042 late, and what can we offer?”</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-loop">
+              <span class="label">Agent loop</span>
+              <div class="wa-node is-agent"><span class="who">Model</span><b>Think</b><span>what do I need next?</span></div>
+              <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+              <div class="wa-node is-tool"><span class="who">Tool</span><b>Act</b><span>look up the order, the policy…</span></div>
+              <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+              <div class="wa-node is-code"><span class="who">Code</span><b>Observe</b><span>the result goes back to the model</span></div>
+              <span class="again">↺ repeat until done, or until a limit is hit</span>
+            </div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="wa-node is-model"><span class="who">Model</span><b>Answer</b><span>with the facts it found</span></div>
+          </div>
+          <div class="example-cards wa-agent-cards">
+            <div><span class="tag">Flexible</span><b>Picks its own steps</b><p>Different cases, different paths. Nobody drew them in advance.</p></div>
+            <div><span class="tag">Grounded</span><b>Learns from results</b><p>Each tool result is “ground truth” that shapes the next step.</p></div>
+            <div><span class="tag">Bounded</span><b>Stops on purpose</b><p>When the goal is met, or at a step, time or cost limit set in code.</p></div>
+          </div>
+          <p class="source wa-src">Anthropic, <i>Building effective agents</i> (2024): agents are “LLMs using tools based on environmental feedback in a loop”.</p>
+        </div>
+        <div class="wa-legend"><span class="k-human">Person</span><span class="k-agent">Agent (model decides)</span><span class="k-tool">Tool</span><span class="k-code">Your code</span><span class="k-model">Model</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · .dark-table.is-compare -->
+    <section class="page" data-type="slide" data-title="Prompt, workflow, agent compared">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Workflows &amp; agents</span>
+          <h1>Three ways to use a model, <em>side by side</em></h1>
+          <table class="dark-table is-compare wa-table">
+            <colgroup><col class="c1" /><col /><col /><col /></colgroup>
+            <thead><tr><th></th><th>Prompt → model</th><th class="is-wf">Workflow</th><th class="is-agent">Agent</th></tr></thead>
+            <tbody>
+              <tr><td>Who decides the next step</td><td>A person, every time</td><td>Your code, in advance</td><td>The model, while it runs</td></tr>
+              <tr><td>The path</td><td>One shot</td><td>Fixed and repeatable</td><td>Changes case by case</td></tr>
+              <tr><td>Predictability</td><td>High, but manual</td><td>High</td><td>Lower</td></tr>
+              <tr><td>Cost and speed</td><td>Lowest</td><td>Low to medium</td><td>Higher: more calls, more time</td></tr>
+              <tr><td>Best for</td><td>Single answers, drafts</td><td>Known, repeatable processes</td><td>Open-ended tasks, unknown steps</td></tr>
+              <tr><td>Main risk</td><td>Doesn’t scale</td><td>Breaks on cases nobody foresaw</td><td>Wrong turns, loops, cost overruns</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · decision flow -->
+    <section class="page" data-type="slide" data-title="When to use which">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Workflows &amp; agents</span>
+          <h1>When to use <em>which</em></h1>
+          <div class="wa-decide">
+            <div><span class="q">Is one good answer enough, with a person checking it?</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="a">Prompt → model<small>a draft, a summary, an idea</small></span></div>
+            <div><span class="q">Can you draw the steps in advance, and do they repeat?</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="a is-wf">Workflow<small>invoices, triage, standard replies</small></span></div>
+            <div><span class="q">Do the next steps depend on what it finds along the way?</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="a is-agent">Agent<small>research, investigation, coding</small></span></div>
+          </div>
+          <p class="key-idea wa-key"><b>Start simple.</b> Use the simplest option that works, and add autonomy only when it pays for itself in results you can measure.</p>
+          <p class="flow-note wa-mix">They mix: a workflow can contain an agent step, and an agent can call a workflow as a tool.</p>
+        </div>
+        <div class="wa-legend"><span class="k-human">Prompt → model</span><span class="k-wf">Workflow</span><span class="k-agent">Agent</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · Agents">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Agents</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li>Overview</li>
+                <li class="is-current">Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">Tell a chatbot, an agent and an agentic system apart. See the agent as one component inside the harness, the main types of agents, and the common ways several agents are put together, including agentic RAG.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three columns -->
+    <section class="page" data-type="slide" data-title="Chatbot, agent, agentic system">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Agents</span>
+          <h1>Chatbot, agent, <em>agentic system</em></h1>
+          <div class="wa-three">
+            <div><span class="tag">Chatbot</span><b>It talks</b><p>Answers questions in a conversation. It can explain and draft, but it doesn’t act.</p><div class="chips"><span>conversation</span><span>chat memory</span></div></div>
+            <div class="is-agent"><span class="tag">Agent</span><b>It acts toward a goal</b><p>Plans, uses tools, checks the results and keeps going over many steps, without a person driving each one.</p><div class="chips"><span>goal</span><span>tools</span><span>loop</span></div></div>
+            <div class="is-system"><span class="tag">Agentic system</span><b>A team with rules</b><p>Several agents and workflows working as one system, with shared memory, tools and controls around them.</p><div class="chips"><span>many agents</span><span>workflows</span><span>guardrails &amp; evals</span></div></div>
+          </div>
+          <p class="hand-note wa-hand"><b>Note:</b> “agent” is often a sales label. Ask what it can do on its own, and what it is allowed to change.</p>
+        </div>
+        <div class="wa-legend"><span class="k-agent">Agent</span><span class="k-wf">Workflow</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · agent inside the harness -->
+    <section class="page" data-type="slide" data-title="Agents inside the harness">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Agents</span>
+          <h1>The agent is <em>one part of the harness</em></h1>
+          <div class="wa-harness">
+            <span class="label">Harness</span>
+            <div class="part" style="left:40px; top:70px"><b>Context</b>instructions, documents</div>
+            <div class="part" style="left:320px; top:50px"><b>Memory</b>what it keeps between steps</div>
+            <div class="part is-tool" style="left:600px; top:70px"><b>Tools</b>search, systems, actions</div>
+            <div class="agent"><b>Agent</b><span>Model</span></div>
+            <div class="part" style="left:40px; top:420px"><b>Guardrails</b>what it may not do</div>
+            <div class="part" style="left:320px; top:436px"><b>Evals</b>is it any good?</div>
+            <div class="part" style="left:600px; top:420px"><b>Observability</b>what did it do?</div>
+          </div>
+          <ol class="points wa-side">
+            <li><b>The agent decides the steps.</b> The harness decides what it can see, use and change.</li>
+            <li><b>Its quality comes from the parts around it:</b> the context it gets and the tools it can call.</li>
+            <li><b>Same agent, different harness, different system.</b> The idea from Unit 1, one level up.</li>
+          </ol>
+        </div>
+        <div class="wa-legend"><span class="k-code">Harness (your code)</span><span class="k-agent">Agent</span><span class="k-model">Model</span><span class="k-tool">Tool</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · job cards + autonomy scale -->
+    <section class="page" data-type="slide" data-title="Types of agents">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Agents</span>
+          <h1>Types of agents: <em>by job and by autonomy</em></h1>
+          <p class="wa-row-label" style="top:206px">By job</p>
+          <div class="example-cards wa-jobs">
+            <div><span class="tag">Assistant</span><b>Helps a person</b><p>Answers, drafts and summarises inside the tools you already use.</p><span class="ex">e.g. Copilot, ChatGPT, Claude</span></div>
+            <div><span class="tag">Task agent</span><b>Finishes a defined task</b><p>Uses tools to complete one job end to end.</p><span class="ex">e.g. process a refund, book a delivery</span></div>
+            <div><span class="tag">Research agent</span><b>Finds and compares</b><p>Searches, reads many sources and writes a cited report.</p><span class="ex">e.g. “deep research” features</span></div>
+            <div><span class="tag">Coding / computer use</span><b>Works in software</b><p>Writes and runs code, or operates apps on a screen.</p><span class="ex">e.g. Claude Code, Codex, Cursor</span></div>
+          </div>
+          <p class="wa-row-label" style="top:556px">By autonomy</p>
+          <p class="wa-scale-note">more autonomy → more guardrails and evals</p>
+          <div class="wa-scale">
+            <div style="--c:#6b4a63"><b>Suggests</b>A person reviews and takes every action.</div>
+            <div style="--c:#b0449a"><b>Acts after approval</b>It prepares the action; a person says yes.</div>
+            <div style="--c:var(--agent)"><b>Acts on its own</b>Within limits set in code, and watched.</div>
+          </div>
+        </div>
+        <div class="wa-legend"><span class="k-agent">Agent</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · four mini diagrams -->
+    <section class="page" data-type="slide" data-title="Types of agentic systems">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Agentic systems</span>
+          <h1>Four common ways to <em>put agents together</em></h1>
+          <div class="wa-systems">
+            <div>
+              <svg viewBox="0 0 300 170" aria-hidden="true">
+                <circle class="a" cx="150" cy="40" r="30" /><text x="150" y="40">Think</text>
+                <rect class="t" x="200" y="105" width="90" height="50" rx="10" /><text x="245" y="130">Act</text>
+                <rect class="w" x="10" y="105" width="90" height="50" rx="10" /><text x="55" y="130">Observe</text>
+                <path class="e" d="M178 55 L222 102 M200 130 H102 M70 102 L122 56" />
+              </svg>
+              <span class="tag">Agent loop (ReAct)</span><b>One agent, a few tools</b><p>Think, act, observe, repeat. The usual place to start.</p><span class="ex">A support agent that looks up orders and policies.</span>
+            </div>
+            <div>
+              <svg viewBox="0 0 300 170" aria-hidden="true">
+                <rect class="w" x="10" y="65" width="64" height="40" rx="8" /><text x="42" y="85">A</text>
+                <path class="a" d="M150 50 L182 85 L150 120 L118 85 Z" /><text x="150" y="85">?</text>
+                <rect class="w" x="226" y="15" width="64" height="40" rx="8" /><text x="258" y="35">B</text>
+                <rect class="w" x="226" y="115" width="64" height="40" rx="8" /><text x="258" y="135">C</text>
+                <path class="e" d="M74 85 H118 M178 72 L226 40 M178 98 L226 130" />
+              </svg>
+              <span class="tag">Agent graph</span><b>Steps drawn as a map</b><p>Code draws the boxes and arrows; the agent picks the branch. Easy to trace, pause and resume.</p><span class="ex">e.g. LangGraph</span>
+            </div>
+            <div>
+              <svg viewBox="0 0 300 170" aria-hidden="true">
+                <circle class="a" cx="150" cy="36" r="28" /><text x="150" y="36">Lead</text>
+                <circle class="a" cx="55" cy="130" r="26" /><text x="55" y="130">A</text>
+                <circle class="a" cx="150" cy="130" r="26" /><text x="150" y="130">B</text>
+                <circle class="a" cx="245" cy="130" r="26" /><text x="245" y="130">C</text>
+                <path class="e" d="M130 56 L72 110 M150 64 V104 M170 56 L228 110" />
+              </svg>
+              <span class="tag">Supervisor</span><b>A lead and specialists</b><p>A lead agent splits the job, specialists do the parts, the lead combines them.</p><span class="ex">Research: one searches, one checks numbers, one writes.</span>
+            </div>
+            <div>
+              <svg viewBox="0 0 300 170" aria-hidden="true">
+                <circle class="a" cx="50" cy="85" r="32" /><text x="50" y="85">Triage</text>
+                <circle class="a" cx="250" cy="40" r="30" /><text x="250" y="40">Billing</text>
+                <circle class="a" cx="250" cy="130" r="30" /><text x="250" y="130">Tech</text>
+                <path class="e" d="M84 76 L218 46 M84 94 L218 124" /><path class="e" d="M206 38 L220 46 L208 56" />
+              </svg>
+              <span class="tag">Handoff</span><b>Pass the case on</b><p>One agent hands the conversation to the specialist that fits, which takes over.</p><span class="ex">e.g. OpenAI Agents SDK handoffs</span>
+            </div>
+          </div>
+          <p class="flow-note wa-combine">Real systems combine them, and often wrap them in a workflow.</p>
+          <p class="source">Yao et al., <i>ReAct</i> (2022); Anthropic, <i>Building effective agents</i> (2024); LangGraph and OpenAI Agents SDK docs.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · classic RAG vs agentic RAG -->
+    <section class="page" data-type="slide" data-title="Connect · agentic RAG">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Agents · connect to Unit 3</span>
+          <h1>Agentic RAG: <em>retrieval becomes a tool</em></h1>
+          <p class="subtitle is-wide">The same RAG from Unit 3. What changes is who decides when, where and how often to look.</p>
+          <div class="wa-rag">
+            <div class="wa-panel is-wf">
+              <span class="tag">Classic RAG · a workflow</span>
+              <b>Always one search</b>
+              <p>Question, then search, then answer. Same steps for every question.</p>
+              <div class="wa-mini"><span>Question</span><i>→</i><span class="is-tool">Search</span><i>→</i><span class="is-model">Answer</span></div>
+            </div>
+            <div class="wa-panel is-agent">
+              <span class="tag">Agentic RAG · an agent</span>
+              <b>Searches as often as it needs</b>
+              <p>Decides whether to search, which source to use, and whether what it found is enough.</p>
+              <div class="wa-mini"><span>Question</span><i>→</i><span class="is-agent">Agent ↻</span><i>⇄</i><span class="is-tool">Docs</span><span class="is-tool">Database</span><span class="is-tool">Web</span></div>
+              <span class="ex">“Compare our 2025 and 2026 return policies” → two searches, then a comparison.</span>
+            </div>
+          </div>
+          <p class="key-idea wa-rag-key"><b>More flexible, and more to check.</b> More searches cost more time and money. The answer is still only as good as what it retrieves.</p>
+        </div>
+        <div class="wa-legend"><span class="k-wf">Workflow</span><span class="k-agent">Agent</span><span class="k-tool">Tool</span><span class="k-model">Model</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · app link (apps/w-and-a) -->
+    <section class="page" data-type="slide" data-title="Workflows and agents · in action">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Workflows &amp; agents</span>
+          <h1>Workflows and agents <em>in action</em></h1>
+          <a class="notes-link" href="http://localhost:8502" target="_blank" rel="noopener">Open the app <span aria-hidden="true">↗</span></a>
+          <p class="subtitle">The same question, asked five ways. Watch who decides each step.</p>
+          <div class="wa-tabs">
+            <div><b>Chatbot</b><span>Talks and remembers the chat. No tools.</span></div>
+            <div><b>Prompt → model</b><span>One shot. No memory, no tools.</span></div>
+            <div class="is-wf"><b>Workflow</b><span>Fixed path: classify, route, tool, draft, check.</span></div>
+            <div class="is-agent"><b>Agent</b><span>The model picks tools in a loop.</span></div>
+            <div class="is-agent"><b>Agentic system</b><span>A lead, two specialists and a reviewer.</span></div>
+          </div>
+          <div class="example-cards wa-app-cards">
+            <div><span class="tag">What you see</span><b>Every step, folded</b><p>Reasoning, routing, tool calls and their results, one click to open.</p></div>
+            <div class="is-accent"><span class="tag">What to try</span><b>One question, five tabs</b><p>Compare the steps, the tool calls, the time and the answer.</p></div>
+            <div><span class="tag">The data</span><b>A shop that doesn’t exist</b><p>Invented orders, policies and weather, so every fact must come from a tool.</p></div>
+          </div>
+          <p class="flow-note wa-app-note">Run it from the repo root: <code>uv run w-and-a</code>. Live runs need an OpenAI key; without one, the app plays recorded runs.</p>
+        </div>
+        <div class="wa-legend"><span class="k-wf">Workflow</span><span class="k-agent">Agent</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three takeaways -->
+    <section class="page" data-type="slide" data-title="Workflows and agents · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Workflows &amp; agents · Takeaways</span>
+          <h1>Main <em>takeaways</em></h1>
+          <ol class="points rag-tk">
+            <li><b>Each one has its place.</b> A prompt, a workflow or an agent: the right choice depends on the problem, the solution and the stage, from prototype to production.</li>
+            <li><b>Agents matter, but context is the fuel.</b> An agent is only as good as the information and tools it is given.</li>
+            <li><b>Start simple, then measure.</b> Add autonomy only when evals show it pays for itself. That is the next unit.</li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+  </div>
 
   <!-- ============ UNIT 6 · GUARDRAILS AND EVALS ============ -->
   <div class="unit" data-title="06 · Guardrails and Evals">

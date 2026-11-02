@@ -35,6 +35,7 @@ Defined in `src/all_apps/services.py`.
 | ai-intro | http://localhost:5173 | algo-server, for its AI labs only |
 | harness-content | http://localhost:5174 | harness-content-api |
 | rag-in-action | http://localhost:8501 | `OPENAI_API_KEY`, for chat answers only |
+| w-and-a | http://localhost:8502 | `OPENAI_API_KEY` for live runs; without it, recorded runs |
 | deck-06 | http://localhost:8080/presentation/06/ | `just`; runs `just serve 8080` |
 | algo-server | http://localhost:8000 | |
 | harness-content-api | http://localhost:8001 | postgres |

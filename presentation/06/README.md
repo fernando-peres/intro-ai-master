@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 81-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 98-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -88,23 +88,40 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 62 | MCP · takeaways | `layout-dark-1` |
 | 63 | Alert · using third-party tools and MCP servers | `layout-alert` |
 | 64 | Alert · building tools and MCP servers | `layout-alert` |
-| 65 | Unit 6 · Guardrails and Evals | `layout-unit-v2` |
-| 66 | Unit 6 · One idea to keep | `layout-statement-dark` |
-| 67 | Lesson · Guardrails overview | `layout-lesson` |
-| 68 | Guardrails · what and why | `layout-dark-1` |
-| 69 | Guardrails · types | `layout-dark-1` |
-| 70 | Guardrails · in action (links to `html/guardrails.html`) | `layout-dark-1` |
-| 71 | Guardrails · accelerators | `doc · doc-dark-bg-1` |
-| 72 | Guardrails · takeaways | `layout-dark-1` |
-| 73 | Lesson · Evals overview | `layout-lesson` |
-| 74 | Evals · what and why | `layout-dark-1` |
-| 75 | Evals · types | `layout-dark-1` |
-| 76 | Evals · in action (links to `html/evals.html`) | `layout-dark-1` |
-| 77 | Evals · accelerators | `doc · doc-dark-bg-1` |
-| 78 | Evals · takeaways | `layout-dark-1` |
-| 79 | Next · Observability | `layout-statement-dark` |
-| 80 | Unit 7 · Observability | `layout-unit-v2` |
-| 81 | Unit 8 · Experiments | `layout-unit-v2` |
+| 65 | Unit 5 · Orchestrators: Workflows and Agents | `layout-unit-v2` |
+| 66 | Unit 5 · One idea to keep | `layout-statement-dark` |
+| 67 | Lesson · Workflows and agents overview | `layout-lesson` |
+| 68 | Prompt → model | `layout-dark-1` |
+| 69 | The orchestrator | `layout-dark-1` |
+| 70 | What is a workflow? | `layout-dark-1` |
+| 71 | What is an agent? | `layout-dark-1` |
+| 72 | Prompt, workflow, agent compared | `layout-dark-1` |
+| 73 | When to use which | `layout-dark-1` |
+| 74 | Lesson · Agents | `layout-lesson` |
+| 75 | Chatbot, agent, agentic system | `layout-dark-1` |
+| 76 | Agents inside the harness | `layout-dark-1` |
+| 77 | Types of agents | `layout-dark-1` |
+| 78 | Types of agentic systems | `layout-dark-1` |
+| 79 | Connect · agentic RAG | `layout-dark-1` |
+| 80 | Workflows and agents · in action (links to `apps/w-and-a`) | `layout-dark-1` |
+| 81 | Workflows and agents · takeaways | `layout-dark-1` |
+| 82 | Unit 6 · Guardrails and Evals | `layout-unit-v2` |
+| 83 | Unit 6 · One idea to keep | `layout-statement-dark` |
+| 84 | Lesson · Guardrails overview | `layout-lesson` |
+| 85 | Guardrails · what and why | `layout-dark-1` |
+| 86 | Guardrails · types | `layout-dark-1` |
+| 87 | Guardrails · in action (links to `html/guardrails.html`) | `layout-dark-1` |
+| 88 | Guardrails · accelerators | `doc · doc-dark-bg-1` |
+| 89 | Guardrails · takeaways | `layout-dark-1` |
+| 90 | Lesson · Evals overview | `layout-lesson` |
+| 91 | Evals · what and why | `layout-dark-1` |
+| 92 | Evals · types | `layout-dark-1` |
+| 93 | Evals · in action (links to `html/evals.html`) | `layout-dark-1` |
+| 94 | Evals · accelerators | `doc · doc-dark-bg-1` |
+| 95 | Evals · takeaways | `layout-dark-1` |
+| 96 | Next · Observability | `layout-statement-dark` |
+| 97 | Unit 7 · Observability | `layout-unit-v2` |
+| 98 | Unit 8 · Experiments | `layout-unit-v2` |
 
 ## Templates: what changes in each instance
 
@@ -119,6 +136,8 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 - **Alert** (`.stage.is-night` > `.layout-dark-1.layout-alert`): a security warning for executives, amber accent. Slots: `.alert-chip` (label with a warning icon), `h1` (`<em>` = amber), `.alert-rows` (one `.alert-hd` header row, then one row per risk: `b` name, `p` what can happen, `p.do` what to do) and `.source`.
 
 - **Dark table** (`table.dark-table`): uppercase column headers, first column in the accent colour. Works inside `.layout-dark-1` (absolutely placed under the title) and inside `.doc-dark-1`. Add `.is-compare` for bold sentence-case headers.
+
+- **Unit 5 colour code** (`.wa-*` in `deck.css`): one colour per building block on every Unit 5 slide and in `apps/w-and-a`. Model = deep green, your code = mint, workflow = lime (`--wf`), agent = pink (`--agent`), tool = dashed grey, person = white. `.wa-legend` shows the key at the bottom of a slide.
 
 - **Bar chart** (`.cost-chart`): one `.row` per bar; set the value on the bar as `style="--v:191"` (the track spans 0–500). Put the sources in `.source` under the chart.
 
