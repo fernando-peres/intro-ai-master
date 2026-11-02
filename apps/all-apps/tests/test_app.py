@@ -4,9 +4,9 @@ import sys
 from dataclasses import replace
 
 from all_apps.app import AllAppsApp
-from all_apps.services import Page, Service
-from all_apps.supervisor import Status
-from all_apps.widgets import Pages, ServiceRow, TerminalView
+from all_apps.services import Page, Service, pages
+from all_apps.supervisor import Status, Supervisor
+from all_apps.widgets import CPU_STYLE, MEM_STYLE, Details, Pages, ServiceRow, TerminalView
 
 _SERVE = "print('\\x1b[31mhello-{0}\\x1b[0m',flush=True);import time;time.sleep(60)"
 
@@ -148,3 +148,32 @@ def test_pages_link_red_until_served_and_html_by_existence(tmp_path) -> None:
             assert str(app.query_one(Pages).content).startswith("[green]●")
 
     asyncio.run(scenario())
+
+
+def test_repo_pages_include_course_notes() -> None:
+    found = {page.name: page for page in pages()}
+    for name in ("context", "tools", "mcp", "guardrails", "evals"):
+        assert name in found and found[name].exists, name
+
+
+def test_details_show_cpu_and_memory_on_separate_coloured_lines() -> None:
+    class _Proc:
+        pid = 4242
+
+    supervisor = Supervisor(_services()[:1])
+    rt = next(iter(supervisor.runtimes.values()))
+    rt.process, rt.started_at, rt.status = _Proc(), 0.0, Status.RUNNING
+    rt.cpu, rt.rss = 12.0, 150 * 1024 * 1024
+    rt.cpu_history.extend([1.0, 5.0, 12.0] * 20)
+    rt.rss_history.extend([100, 120, 150] * 20)
+    text = Details()._text(rt, supervisor)
+    lines = text.plain.splitlines()
+    pid_line = next(line for line in lines if line.startswith("PID 4242"))
+    cpu_line = next(line for line in lines if line.startswith("cpu "))
+    mem_line = next(line for line in lines if line.startswith("mem "))
+    assert "CPU" not in pid_line and "MB" not in pid_line
+    assert "12%" in cpu_line and "MB" in mem_line
+    assert max(len(cpu_line), len(mem_line)) <= 54
+    styles = {text.plain[span.start : span.end].strip(): str(span.style) for span in text.spans}
+    assert styles["cpu"] == f"bold {CPU_STYLE}" and styles["mem"] == f"bold {MEM_STYLE}"
+    assert CPU_STYLE != MEM_STYLE

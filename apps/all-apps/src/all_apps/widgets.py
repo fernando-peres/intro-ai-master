@@ -39,8 +39,13 @@ _KEY_BYTES = {
     "pageup": b"\x1b[5~",
     "pagedown": b"\x1b[6~",
 }
+#: CPU and memory each get their own colour, distinct from every status colour.
+CPU_STYLE = "cyan"
+MEM_STYLE = "magenta"
 _PYTE_COLOR = {"brown": "yellow", "brightbrown": "bright_yellow"}
 _DETAILS_WIDTH = 54
+#: "cpu " + an 8-wide value, then the newest samples that fit the line.
+_SPARK_WIDTH = _DETAILS_WIDTH - 12
 
 
 def is_serving(rt: Runtime) -> bool:
@@ -112,8 +117,16 @@ class Details(Static):
             text.append(f"Port held by {owner}, not started here\n", style="green")
         elif rt.process is not None and rt.started_at is not None:
             uptime = format_uptime(time.monotonic() - rt.started_at)
-            text.append(f"PID {rt.process.pid} · up {uptime} · ")
-            text.append(f"{format_bytes(rt.rss)} · {rt.cpu:.0f}% CPU\n")
+            text.append(f"PID {rt.process.pid} · up {uptime}\n")
+            for label, value, history, style in (
+                ("cpu", f"{rt.cpu:.0f}%", rt.cpu_history, CPU_STYLE),
+                ("mem", format_bytes(rt.rss), rt.rss_history, MEM_STYLE),
+            ):
+                text.append(f"{label} ", style=f"bold {style}")
+                text.append(f"{value:<8}", style=style)
+                if history:
+                    text.append(sparkline(list(history)[-_SPARK_WIDTH:]), style=style)
+                text.append("\n")
         else:
             text.append("Not running\n", style="dim")
         if rt.check is not None:
@@ -129,9 +142,6 @@ class Details(Static):
                 text.append(dep.value, style=STATUS_STYLE[dep][1])
         if rt.note:
             text.append(f"\n{rt.note}", style="yellow")
-        if rt.process is not None and rt.cpu_history:
-            text.append(f"\ncpu {sparkline(rt.cpu_history)}", style="cyan")
-            text.append(f"\nmem {sparkline(rt.rss_history)}", style="cyan")
         if rt.errors.last:
             text.append(f"\n{rt.errors.last[:_DETAILS_WIDTH]}", style="red")
         for event in rt.events:

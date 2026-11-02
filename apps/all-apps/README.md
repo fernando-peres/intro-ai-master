@@ -47,7 +47,7 @@ Starting harness-content-api applies migrations and seeds dev users first. Stopp
 Links, with a dot: green when they'll open, red when they won't.
 
 - **deck-06**: green while the deck server answers (started here, or already holding port 8080). Clicking it while red selects the deck-06 service so `space` starts it.
-- **`html/*.html`**: standalone pages, opened straight from disk, so they need no server. Every `.html` in the repo's `html/` folder is listed; red means the file is gone.
+- **`html/*.html`**: standalone pages, opened straight from disk, so they need no server. Every `.html` in the repo's `html/` folder is listed (today: context, evals, guardrails, mcp, tools); red means the file is gone.
 
 ## Statuses
 
@@ -60,7 +60,7 @@ Links, with a dot: green when they'll open, red when they won't.
 | `crashed` | Exited on its own; Details shows the exit code |
 | `port busy` | Something this CLI didn't start holds the port, usually the same app started by hand (green ◆); Details names it. It's never killed; stop it yourself and the status clears |
 
-Details also shows PID, uptime, CPU and memory across the process tree, check latency, restarts, last exit code and dependency state. Below those are CPU and memory sparklines for the last 48 seconds, the latest error-looking line, and the last 5 status changes with UTC timestamps. A red `!N` on a row counts error-looking lines in that service's output since it started.
+Details also shows PID and uptime, then CPU (cyan) and memory (magenta) across the process tree, each on its own line with its value and a sparkline of the last ~40 seconds, then check latency, restarts, last exit code and dependency state. Below those are the latest error-looking line, and the last 5 status changes with UTC timestamps. A red `!N` on a row counts error-looking lines in that service's output since it started.
 
 ## Test
 
