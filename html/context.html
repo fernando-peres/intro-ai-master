@@ -313,6 +313,16 @@ tr.hl td { background:var(--row); }
 .post.is-res { border-color:var(--accent); }
 .post .pill { margin:0 4px 4px 0; }
 @media (max-width: 980px) { .lanes, .caps, .scores { grid-template-columns:1fr; } .flowlbl { min-width:0; width:100%; } }
+
+/* in action: extra segment kinds, overflow, scores */
+.seg.s-blk { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; box-shadow:inset 3px 0 0 var(--accent); }
+.seg.s-blk span { color:var(--nav-ink); }
+.seg.s-noise { background:var(--sunken); color:var(--ink3); }
+.seg.s-buried { background:var(--warn-tint); color:var(--warn-ink); border-color:transparent; }
+.seg.s-buried span { color:var(--warn-ink); }
+.tokbar.is-over span { background:var(--fail-base); }
+.scorerow { display:flex; flex-wrap:wrap; gap:6px; }
+.act .lane { min-height:100%; }
 footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2); font-size:12.5px; }
 
 @media (max-width: 980px) {
@@ -341,7 +351,7 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2)
   <section class="panel hero">
     <span class="kicker">Interactive notes · for decision makers</span>
     <h1>The model only knows what you put in front of it. <em>Here is how that gets built.</em></h1>
-    <p class="lede">Seven building blocks of context engineering, each explained in two sentences and shown on one running case. Click through: every example is live.</p>
+    <p class="lede">A model only knows what it learned in training and what is in its context window right now. Each tab shows one building block in action: <b>same model, same question, with and without that block</b>, and how the answer changes.</p>
     <div class="world">
       <span class="chip"><b>Northbay Outdoor</b> · outdoor-gear retailer</span>
       <span class="chip">Customer: Maria Costa</span>
@@ -422,8 +432,9 @@ function memoryPanel() {
     [["The idea", "An assistant only “remembers” what the system saves for it between conversations."],
      ["Memory schema", "The rules: which facts can be kept, in what format, who may change them, and for how long."],
      ["Memory store", "The records themselves: Maria’s actual values, with when and where each one came from."]])}
-  ${subtabs("memory", [["schema", "Schema vs. store"], ["action", "Memory in action"]])}
-  <div class="case" data-group="memory" data-sub="schema" role="tabpanel">
+  ${subtabs("memory", [["act", "In action: with vs. without"], ["schema", "Schema vs. store"]])}
+  ${actCase("memory")}
+  <div class="case" data-group="memory" data-sub="schema" role="tabpanel" hidden>
     <div class="grid2">
       <div class="panel pad">
         <span class="label">Memory schema · the blueprint</span>
@@ -443,13 +454,6 @@ function memoryPanel() {
         </table></div>
         <p class="muted" style="margin-top:12px">One schema, millions of stores: every customer gets their own records in the same shape.</p>
       </div>
-    </div>
-  </div>
-  <div class="case" data-group="memory" data-sub="action" role="tabpanel" hidden>
-    <div class="panel player" id="memPlayer">
-      <ol class="steps" id="memSteps"></ol>
-      <div class="stage" id="memStage" aria-live="polite"></div>
-      <div class="stage-foot"><span class="fict">Step <span id="memN">1</span> of 4</span><span style="display:flex;gap:8px"><button class="btn" id="memPrev">Back</button><button class="btn solid" id="memNext">Next step</button></span></div>
     </div>
   </div>
   ${why("Personalisation without retraining, and with rules: you decide what the assistant may keep, so privacy and accuracy are designed in, not hoped for.")}`;
@@ -547,7 +551,9 @@ function graphPanel() {
     [["The idea", "Each fact is a link between two things: <i>Maria placed order #4512</i>; <i>order #4512 contains batch B-19</i>."],
      ["How it’s used", "For a question, the system walks the links that matter and hands only those facts to the model."],
      ["What it fixes", "Answers that need several hops (customer → order → product → policy) that a document search would miss."]])}
-  <div class="case"><div class="panel kg">
+  ${subtabs("graph", [["act", "In action: with vs. without"], ["explore", "Explore the graph"]])}
+  ${actCase("graph")}
+  <div class="case" data-group="graph" data-sub="explore" role="tabpanel" hidden><div class="panel kg">
     <svg viewBox="0 0 830 470" role="img" aria-label="Knowledge graph of Northbay Outdoor facts">${edges}${nodes}</svg>
     <div class="side">
       <span class="label">Ask the graph</span>
@@ -581,8 +587,9 @@ function entityPanel() {
     [["The idea", "Define the fields of a <i>ReturnRequest</i> or a <i>ReturnDecision</i> once: names, types, allowed values."],
      ["Input", "The model turns an email or chat into that structure. A validator checks it before anything happens."],
      ["Output", "The model must answer in the agreed structure, so the refunds system can act on it automatically."]])}
-  ${subtabs("entity", [["input", "Input: text → entity"], ["output", "Output: decision → system"]])}
-  <div class="case" data-group="entity" data-sub="input" role="tabpanel">
+  ${subtabs("entity", [["act", "In action: with vs. without"], ["input", "Input: text → entity"], ["output", "Output: decision → system"]])}
+  ${actCase("entity")}
+  <div class="case" data-group="entity" data-sub="input" role="tabpanel" hidden>
     <div class="grid2">
       <div class="panel pad stack">
         <span class="label">Customer email (unstructured)</span>
@@ -678,7 +685,9 @@ function packPanel() {
     [["The idea", "Like the folder a manager hands a new colleague: everything needed for <i>this</i> job, nothing else."],
      ["What goes in", "Instructions, policies, the customer’s memory, the relevant records, retrieved documents, allowed tools, the answer format."],
      ["The constraint", "The context window has a budget. A good pack is complete <i>and</i> small. More is not better."]])}
-  <div class="case"><div class="pack">
+  ${subtabs("pack", [["act", "In action: with vs. without"], ["build", "Build the pack"]])}
+  ${actCase("pack")}
+  <div class="case" data-group="pack" data-sub="build" role="tabpanel" hidden><div class="pack">
     <div class="panel pad">
       <div class="case-head"><span class="label">Pack · “Handle a return request”</span><span class="fict">tokens ≈ words × 1.3</span></div>
       <ul class="items" id="packItems" style="margin-top:10px"></ul>
@@ -788,8 +797,9 @@ function embedPanel() {
     [["The idea", "Each text gets a position. “Send back my jacket” lands near “Print a return label”, even with no words in common."],
      ["How similarity is scored", "<b>Cosine similarity</b> compares direction only (−1 to 1). The <b>dot product</b> also grows with a vector’s length, so long, “loud” items can win without being more relevant."],
      ["Retrieval", "Score the question against every item and keep the <b>top k</b> (here k = 5). Those go into the context."]])}
-  ${subtabs("embed", [["text", "Text retrieval"], ["images", "Images + metadata"]])}
-  <div class="case" data-group="embed" data-sub="text" role="tabpanel">
+  ${subtabs("embed", [["act", "In action: with vs. without"], ["text", "Text retrieval"], ["images", "Images + metadata"]])}
+  ${actCase("embed")}
+  <div class="case" data-group="embed" data-sub="text" role="tabpanel" hidden>
     <div class="panel pad stack">
       <div class="case-head"><span class="label">Help-centre snippets in 2D · pick a customer question</span><span class="fict">2D for intuition; real embeddings have hundreds of dimensions</span></div>
       <div class="qbtns" id="embQ">${QUERIES.map((q, k) => `<button class="btn" data-k="${k}" aria-pressed="false">${q[0]}</button>`).join("")}</div>
@@ -886,8 +896,9 @@ function ragPanel() {
     [["Indexing (once)", "Split documents into short chunks, embed each one, store it with metadata like source, language and date."],
      ["Retrieval (every question)", "Embed the question, filter by metadata, score each chunk (cosine similarity), keep the top k (here k = 4)."],
      ["Generation", "The model answers from those passages and cites them, so answers stay current without retraining."]])}
-  ${subtabs("rag", [["index", "1 · Indexing"], ["retrieve", "2 · Retrieval"], ["compare", "3 · Without vs. with RAG"], ["images", "4 · Image RAG"], ["beyond", "5 · Beyond basic RAG"]])}
-  <div class="case" data-group="rag" data-sub="index" role="tabpanel">
+  ${subtabs("rag", [["act", "In action: with vs. without"], ["index", "1 · Indexing"], ["retrieve", "2 · Retrieval"], ["images", "3 · Image RAG"], ["beyond", "4 · Beyond basic RAG"]])}
+  ${actCase("rag")}
+  <div class="case" data-group="rag" data-sub="index" role="tabpanel" hidden>
     <div class="pipe">
       <div class="panel"><span class="badge">1</span><h3>Documents</h3><p>Returns policy (EN, PT, old 2023 version), shipping FAQ, care guide, warranty.</p></div>
       <div class="panel"><span class="badge">2</span><h3>Chunk</h3><p>Split into short passages that each answer one thing.</p></div>
@@ -931,7 +942,7 @@ function ragPanel() {
       </div>
     </div>
   </div>
-  ${ragComparePanel()}${imgRagPanel()}${beyondPanel()}
+  ${imgRagPanel()}${beyondPanel()}
   ${why("Your documents, not the model’s memory: answers are current, cited and auditable, and updating the knowledge means updating a document, not training a model.")}`;
 }
 function initRag() {
@@ -1256,8 +1267,9 @@ function topicsPanel() {
     [["The idea", "Each post becomes one point that blends what is <i>seen</i>, <i>written</i> and <i>said</i>. Similar posts form clusters."],
      ["Topic modeling", "Clusters are found automatically and named from their top keywords, so new trends appear without anyone defining them."],
      ["Semantic search", "A query lands in the same space; the nearest posts come back, even if they never use the query’s words."]])}
-  ${subtabs("topics", [["map", "Topic map"], ["search", "Semantic search"]])}
-  <div class="case" data-group="topics" data-sub="map" role="tabpanel">
+  ${subtabs("topics", [["act", "In action: with vs. without"], ["map", "Topic map"], ["search", "Semantic search"]])}
+  ${actCase("topics")}
+  <div class="case" data-group="topics" data-sub="map" role="tabpanel" hidden>
     <div class="panel pad stack">
       <div class="case-head"><span class="label">“Loop” · ${POSTS.length} posts (videos + photos) · topics found by clustering</span><span class="fict">fictional app and posts</span></div>
       <div class="plotwrap">
@@ -1323,9 +1335,152 @@ function initTopics() {
   search(0);
 }
 
+/* =====================================================================
+   IN ACTION · same model, same question, with vs. without one context block
+   ===================================================================== */
+const ACT_STEPS = ["Request arrives", "Context window is assembled", "The context block adds its part", "The model answers"];
+const SCORE_NAMES = ["Correct", "Personal", "Actionable", "Trustworthy"];
+const SYS = { k: "sys", label: "Instructions", tok: 120, text: "You are Northbay’s assistant. Use only the information below; say if you don’t know.", step: 1 };
+const ACTIONS = {
+  memory: {
+    block: "memory",
+    ask: ["Maria · new chat, 3 days later", "“Hi again! Any news on my jacket?”"],
+    without: { segs: [SYS, { k: "q", label: "Question", tok: 20, text: "Any news on my jacket?", step: 1 },
+      { k: "miss", label: "No memory", tok: 0, text: "Nothing about who Maria is, what she bought, or what she asked last time.", step: 2 }],
+      answer: "“Happy to help! Could you share your order number and describe the issue?” (sent by SMS)", scores: [0, 0, 0, 1] },
+    with: { segs: [SYS, { k: "blk", label: "Memory · Maria", tok: 60, text: "Prefers email · size M · open issue: Trail Shell leaks at the shoulder (#4512) · replacement approved 2 Nov", step: 2 },
+      { k: "q", label: "Question", tok: 20, text: "Any news on my jacket?", step: 1 }],
+      answer: "“Yes! Your replacement Trail Shell in size M ships today. The tracking link is in your email, as you prefer.”", scores: [1, 1, 1, 1] },
+    how: "The model cannot remember past chats. Memory hands it three facts it could never guess (the open issue, her size, her channel), so “my jacket” stops being ambiguous and the answer becomes personal.",
+  },
+  graph: {
+    block: "knowledge graph",
+    ask: ["Maria", "“I saw on the news that Atlantic Textiles recalled jackets. Is mine affected?”"],
+    without: { segs: [SYS, { k: "q", label: "Question", tok: 30, text: "Is my jacket affected by the Atlantic Textiles recall?", step: 1 },
+      { k: "miss", label: "No connected facts", tok: 0, text: "The model doesn’t know which jacket she has, who made it, or which batches the recall covers.", step: 2 }],
+      answer: "“Recalls can affect many products. To be safe, please stop using your jacket and return it.”", scores: [0, 0, 0, 0] },
+    with: { segs: [SYS, { k: "blk", label: "Knowledge graph · path", tok: 70, text: "Maria → order #4512 → batch B-19 → Trail Shell → made by Atlantic Textiles → recall R-17 → affects batch B-22 only", step: 2 },
+      { k: "q", label: "Question", tok: 30, text: "Is my jacket affected by the Atlantic Textiles recall?", step: 1 }],
+      answer: "“No. Your Trail Shell is from batch B-19; recall R-17 only covers batch B-22. You can keep using it.”", scores: [1, 1, 1, 1] },
+    how: "The answer needs a chain of four facts that live in different systems. The graph walks that chain and gives the model only the path, so it can reason correctly and show why.",
+  },
+  entity: {
+    block: "entity schema",
+    ask: ["Email from Maria", "“The red Trail Shell from my order 4512 (came 12th Oct) leaks after one hike. Money back or a new one, whatever’s faster!”"],
+    without: { segs: [SYS, { k: "q", label: "Email", tok: 60, text: "The red Trail Shell from my order 4512 leaks… money back or a new one.", step: 1 },
+      { k: "miss", label: "No schema", tok: 0, text: "No agreed format: the model can reply in any words it likes.", step: 2 }],
+      answer: "“So sorry Maria! We’ll sort it out for you very soon 😊” → no case opened, no label: someone must read and re-type it.", scores: [1, 1, 0, 0] },
+    with: { segs: [SYS, { k: "q", label: "Email", tok: 60, text: "The red Trail Shell from my order 4512 leaks… money back or a new one.", step: 1 },
+      { k: "blk", label: "Entity schemas", tok: 90, text: "Read into ReturnRequest {order_id, product, delivered_on, reason, wanted_outcome}; answer only as ReturnDecision {decision, reason, refund_eur, next_step}", step: 2 }],
+      answer: "ReturnRequest ✓ valid → ReturnDecision {approve_replacement, defect, €0, send_return_label} → label emailed automatically, in 2 seconds.", scores: [1, 1, 1, 1] },
+    how: "The schema tells the model exactly which fields to fill and which values are allowed. Its output can then flow straight into the refunds system instead of waiting for a human.",
+  },
+  pack: {
+    block: "context pack", cap: 8000,
+    ask: ["Task", "Handle Maria’s return request for order #4512."],
+    without: { segs: [SYS, { k: "noise", label: "Full chat history · 2 years", tok: 6000, text: "Every message Maria ever sent…", step: 2 },
+      { k: "noise", label: "Old policy (2023)", tok: 900, text: "Worn items cannot be returned.", step: 2 },
+      { k: "buried", label: "Today’s policy · buried in the middle", tok: 900, text: "Worn once, undamaged, with tags: returnable; €10 fee.", step: 2 },
+      { k: "noise", label: "Entire catalogue", tok: 12000, text: "3,400 products…", step: 2 },
+      { k: "q", label: "Task", tok: 30, text: "Handle the return for order #4512.", step: 1 }],
+      answer: "“Sorry, worn items can’t be returned.” It followed the old policy; today’s rule was lost in the noise, and the window overflowed.", scores: [0, 0, 0, 0] },
+    with: { segs: [SYS, { k: "blk", label: "Pack · return policy (today)", tok: 900, text: "Worn once, undamaged, with tags: returnable; €10 fee.", step: 2 },
+      { k: "blk", label: "Pack · order #4512 + memory", tok: 300, text: "Trail Shell, delivered 12 Oct · prefers email", step: 2 },
+      { k: "blk", label: "Pack · tools + output format", tok: 500, text: "create_return_label · ReturnDecision", step: 2 },
+      { k: "q", label: "Task", tok: 30, text: "Handle the return for order #4512.", step: 1 }],
+      answer: "“Approved: the return label is in your email; a €10 cleaning fee applies.” Correct rule, label created.", scores: [1, 1, 1, 1] },
+    how: "More is not better. The pack gives the model only what this task needs, today’s version, in a sensible order, so the key rule is impossible to miss.",
+  },
+  embed: {
+    block: "embeddings",
+    ask: ["Maria", "“How do I send back my jacket?”"],
+    without: { segs: [SYS, { k: "q", label: "Question", tok: 20, text: "How do I send back my jacket?", step: 1 },
+      { k: "miss", label: "Keyword search: 0 results", tok: 0, text: "No help article contains the words “send back”.", step: 2 }],
+      answer: "“You can usually return items by contacting customer service.” Generic, with no steps.", scores: [0, 0, 0, 0] },
+    with: { segs: [SYS, { k: "blk", label: "Found by meaning · R2", tok: 40, text: "Print a free return label from your order page, then drop the parcel at any CTT point.", step: 2 },
+      { k: "blk", label: "Found by meaning · R1", tok: 30, text: "Return unworn items within 30 days.", step: 2 },
+      { k: "q", label: "Question", tok: 20, text: "How do I send back my jacket?", step: 1 }],
+      answer: "“Print the free return label from your order page and drop the parcel at any CTT point, within 30 days.”", scores: [1, 0, 1, 1] },
+    how: "People rarely use the exact words of your documents. Embeddings match meaning, so “send back” finds the article about return labels, and the model can give real steps.",
+  },
+  rag: {
+    block: "RAG", toggle: true,
+    ask: ["Maria", "“Can I return a jacket I wore once on a hike?”"],
+    without: { segs: [SYS, { k: "q", label: "Question", tok: 20, text: "Can I return a jacket I wore once on a hike?", step: 1 },
+      { k: "miss", label: "No retrieval", tok: 0, text: "Nothing about Northbay’s policy reaches the model.", step: 2 }],
+      answer: "“Usually, worn items can’t be returned. Please check the store’s policy.”", scores: [0, 0, 0, 0] },
+    with: { segs: [SYS, { k: "blk", label: "Retrieved · C2 [Returns policy §2]", tok: 60, text: "@POLICY", step: 2 },
+      { k: "blk", label: "Retrieved · C1 [Returns policy §1]", tok: 40, text: "Unworn items can be returned within 30 days of delivery.", step: 2 },
+      { k: "q", label: "Question", tok: 20, text: "Can I return a jacket I wore once on a hike?", step: 1 }],
+      answer: "@ANSWER", scores: [1, 0, 1, 1] },
+    how: "The model was trained before Northbay wrote this policy, and it never saw your documents. RAG fetches the two relevant passages at question time, so the answer is today’s rule, with a citation.",
+  },
+  topics: {
+    block: "semantic search",
+    ask: ["Brand manager at Loop", "“Show me rainy-day content for our autumn campaign.”"],
+    without: { segs: [SYS, { k: "q", label: "Request", tok: 20, text: "Rainy-day content for an autumn campaign.", step: 1 },
+      { k: "miss", label: "Hashtag search #rain", tok: 40, text: "2 posts tagged #raindays. Videos where rain is only seen or said are invisible.", step: 2 }],
+      answer: "“I found 2 posts: ‘Yellow coat, grey sky’ and one boots haul.” Thin campaign, missed creators.", scores: [0, 0, 1, 1] },
+    with: { segs: [SYS, { k: "blk", label: "Semantic search · 7 posts", tok: 180, text: "Rainy-day outfits ×4 · Hiking in the rain · Rainy campsite dinner · Rain cape on a bike (matched on caption, speech and visuals)", step: 2 },
+      { k: "q", label: "Request", tok: 20, text: "Rainy-day content for an autumn campaign.", step: 1 }],
+      answer: "“7 posts across 3 topics, led by ‘3 cosy rainy-day outfits’ (rising fast). Shortlist attached.”", scores: [1, 1, 1, 1] },
+    how: "Creators don’t tag consistently. Semantic search reads what is shown, written and said, so the model gets the full picture and can build a real shortlist.",
+  },
+};
+function actCase(group) {
+  const c = ACTIONS[group];
+  return `<div class="case" data-group="${group}" data-sub="act" role="tabpanel">
+    <div class="panel pad stack act" id="act-${group}">
+      <div class="case-head"><span class="label">Same model · same request · with and without ${c.block}</span>
+        ${c.toggle ? `<label class="toggle"><input type="checkbox" class="act-toggle"/> Policy changed today: no cleaning fee</label>` : `<span class="fict">fictional data</span>`}</div>
+      <div class="msg user"><span class="who"><span class="dot"></span>${c.ask[0]}</span>${c.ask[1]}</div>
+      <ol class="simsteps">${ACT_STEPS.map((s, i) => `<li data-k="${i}"><span class="badge">${i + 1}</span>${i === 2 ? `${c.block[0].toUpperCase() + c.block.slice(1)} adds its part` : s}</li>`).join("")}</ol>
+      <div class="lanes"><div class="lane"></div><div class="lane is-rag"></div></div>
+      <p class="keyidea act-how" hidden><b>How ${c.block} instructed the model ·</b><span>${c.how}</span></p>
+      <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span class="act-n">1</span> of 4 · token counts are illustrative</span><span style="display:flex;gap:8px"><button class="btn act-prev">Back</button><button class="btn solid act-next">Next step</button></span></div>
+    </div>
+  </div>`;
+}
+function initAct(group) {
+  const c = ACTIONS[group], root = $("#act-" + group);
+  if (!root) return;
+  let i = 0;
+  const fill = (txt, fresh) => txt === "@POLICY"
+    ? (fresh ? "Items worn outdoors once can be returned if undamaged and with tags. No cleaning fee (updated today)." : "Items worn outdoors once can be returned if undamaged and with tags; a €10 cleaning fee applies.")
+    : txt === "@ANSWER" ? `“Yes. A jacket worn once outdoors can be returned if it is undamaged and has its tags${fresh ? ", and there is no cleaning fee" : "; a €10 cleaning fee applies"} [Returns policy §2].”` : txt;
+  const lane = (side, step, fresh) => {
+    const L = c[side], good = side === "with", cap = c.cap || 400;
+    const segs = L.segs.filter((x) => x.step <= step);
+    const used = segs.reduce((s, x) => s + x.tok, 0), over = used > cap;
+    const scores = L.scores.map((v, k) => `<span class="pill ${v ? "pass" : "fail"}">${v ? "✓" : "✗"} ${SCORE_NAMES[k]}</span>`).join("");
+    return `<div class="lane-head"><b>${good ? "With" : "Without"} ${c.block}</b><span class="pill ${good ? "pass" : "fail"}">${good ? "informed" : "guessing"}</span></div>
+      <div class="window sim"><span class="label">Context window</span>
+        ${segs.length ? segs.map((x) => `<div class="seg s-${x.k}"><span>${x.label}${x.tok ? `<small>${x.tok.toLocaleString("en")} tok</small>` : ""}</span><p>${fill(x.text, fresh)}</p></div>`).join("") : `<p class="muted">Empty: nothing has been sent yet.</p>`}
+      </div>
+      <div class="tokbar ${over ? "is-over" : ""}" title="${used} of ${cap} tokens"><span style="width:${Math.min(100, (used / cap) * 100)}%"></span></div>
+      <span class="fict">${used.toLocaleString("en")} of ${cap.toLocaleString("en")} tokens${over ? " · over budget" : ""}</span>
+      ${step >= 3 ? `<div class="msg ${good ? "pass" : "fail"}"><span class="who"><span class="dot"></span>Model output</span>${fill(L.answer, fresh)}</div><div class="scorerow">${scores}</div>` : ""}`;
+  };
+  const render = () => {
+    const fresh = !!$(".act-toggle", root)?.checked, lanes = $$(".lane", root);
+    lanes[0].innerHTML = lane("without", i, fresh);
+    lanes[1].innerHTML = lane("with", i, fresh);
+    $$(".simsteps li", root).forEach((li, k) => { li.classList.toggle("on", k === i); li.classList.toggle("done", k < i); });
+    $(".act-n", root).textContent = i + 1;
+    $(".act-prev", root).disabled = i === 0;
+    $(".act-next", root).textContent = i === 3 ? "Start again" : "Next step";
+    $(".act-how", root).hidden = i < 3;
+  };
+  $(".act-next", root).onclick = () => { i = (i + 1) % 4; render(); };
+  $(".act-prev", root).onclick = () => { if (i > 0) { i--; render(); } };
+  $(".simsteps", root).onclick = (e) => { const li = e.target.closest("li"); if (li) { i = +li.dataset.k; render(); } };
+  $(".act-toggle", root)?.addEventListener("change", () => { i = 3; render(); });
+  render();
+}
+
 /* ---------- mount ---------- */
 const BUILD = { memory: memoryPanel, graph: graphPanel, entity: entityPanel, pack: packPanel, embed: embedPanel, rag: ragPanel, topics: topicsPanel };
-const INIT = { memory: initMemory, graph: initGraph, entity: initEntity, pack: initPack, embed: initEmbed, rag: () => { initRag(); initRagCompare(); initImgRag(); initBeyond(); }, topics: initTopics };
+const INIT = { memory: () => initAct("memory"), graph: () => { initGraph(); initAct("graph"); }, entity: () => { initEntity(); initAct("entity"); }, pack: () => { initPack(); initAct("pack"); }, embed: () => { initEmbed(); initAct("embed"); }, rag: () => { initRag(); initImgRag(); initBeyond(); initAct("rag"); }, topics: () => { initTopics(); initAct("topics"); } };
 $("#panels").innerHTML = TOPICS.map((t) => `<section class="topic" role="tabpanel" id="panel-${t.id}" aria-labelledby="tab-${t.id}" hidden>${BUILD[t.id]()}</section>`).join("");
 TOPICS.forEach((t) => INIT[t.id]());
 

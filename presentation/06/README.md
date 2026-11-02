@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 38-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 39-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -54,14 +54,15 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 28 | Context engineering in the harness | `layout-dark-1` |
 | 29 | Building blocks of context | `doc · doc-dark-bg-1` |
 | 30 | Main takeaways · context | `layout-dark-1` |
-| 31 | Unit 4 · Tools and Integration | `layout-unit-v2` |
-| 32 | Unit 4 · One idea to keep | `layout-statement-dark` |
-| 33 | Four gaps of a frozen model | `layout-dark-1` |
-| 34 | The tool loop | `layout-dark-1` |
-| 35 | Descriptions are prompts | `layout-dark-1` |
-| 36 | Five examples, one loop | `layout-dark-1` |
-| 37 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
-| 38 | Tools · takeaways | `layout-dark-1` |
+| 31 | The right information, at the right time | `layout-dark-1` |
+| 32 | Unit 4 · Tools and Integration | `layout-unit-v2` |
+| 33 | Unit 4 · One idea to keep | `layout-statement-dark` |
+| 34 | Four gaps of a frozen model | `layout-dark-1` |
+| 35 | The tool loop | `layout-dark-1` |
+| 36 | Descriptions are prompts | `layout-dark-1` |
+| 37 | Five examples, one loop | `layout-dark-1` |
+| 38 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
+| 39 | Tools · takeaways | `layout-dark-1` |
 
 ## Templates: what changes in each instance
 

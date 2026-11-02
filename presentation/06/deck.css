@@ -655,3 +655,29 @@ body.toc-open #toc {
 .context-diagram .d-label.is-output { position: absolute; top: 10px; right: 30px; left: auto; transform: none !important; }
 .context-diagram .d-label.is-output.is-on { animation: out-pop2 .4s ease-out; }
 @keyframes out-pop2 { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+/* Slide 31: the right information, at the right time */
+.rit { position: absolute; left: 94px; right: 94px; top: 200px; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 64px; }
+.rit h2 { margin: 0; font-family: var(--font-text); font-weight: 600; font-size: 19px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); }
+.rit-left > p { margin: 14px 0 0; font-family: var(--font-serif); font-size: 25px; line-height: 1.4; color: #d6ddd8; }
+.rit-left > p b { font-family: var(--font-title); color: #fff; }
+.rit-chips { margin: 20px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rit-chips li { padding: 14px 16px; border-radius: 12px; background: #161614; border: 1.5px solid #2f6d4f; }
+.rit-chips b { display: block; font-family: var(--font-title); font-size: 23px; }
+.rit-chips span { display: block; margin-top: 4px; font-size: 17px; color: #b9c2bd; }
+.rit-left .rit-arrow { font-family: var(--font-hand); color: var(--hand); font-size: 25px; }
+.rit-cases { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.rit-case { position: relative; padding: 16px; border-radius: 14px; background: #161614; border: 1.5px solid #3a3a34; }
+.rit-case.is-good { border-color: var(--mint); background: #13261d; }
+.rit-case b { display: block; margin-top: 14px; font-family: var(--font-title); font-size: 23px; line-height: 1.15; }
+.rit-case p { margin: 6px 0 0; font-family: var(--font-serif); font-size: 19px; line-height: 1.35; color: #d6ddd8; }
+.rit-case .mark { position: absolute; top: 10px; right: 12px; font-size: 22px; font-weight: 700; color: #f08a7e; }
+.rit-case.is-good .mark { color: var(--mint); }
+.cw { display: flex; flex-direction: column; gap: 3px; height: 190px; padding: 8px; border: 1.5px dashed #4a4a44; border-radius: 10px; justify-content: flex-end; }
+.cw-seg { display: block; flex: none; height: 15px; border-radius: 4px; background: #34342e; font-size: 11px; line-height: 15px; padding: 0 6px; color: #0d1a12; font-weight: 600; }
+.cw-seg.q { background: #a7ccee; }
+.cw-seg.i { background: #e4e9e6; }
+.cw-seg.key { background: var(--mint); }
+.cw-seg.n { background: #4a4a44; }
+.is-bad .cw-seg.key { background: #6f8a7a; }
+.takeaway.rit-take { bottom: 104px; }

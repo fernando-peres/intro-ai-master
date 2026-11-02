@@ -772,6 +772,40 @@
         <span class="page-num"></span>
       </div>
     </section>
+
+    <!-- template: layout-dark-1 · the right information, at the right time -->
+    <section class="page" data-type="slide" data-title="The right information, at the right time">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Context · The core idea</span>
+          <h1>The <em>right information</em>, at the <em>right time</em></h1>
+          <div class="rit">
+            <div class="rit-left">
+              <h2>What a model can’t know on its own</h2>
+              <p>It knows only its training and what is in its context window <b>right now</b>.</p>
+              <ul class="rit-chips">
+                <li><b>Your private data</b><span>never in its training set</span></li>
+                <li><b>Today’s facts</b><span>after its training cut-off</span></li>
+                <li><b>This customer</b><span>history, preferences, open issues</span></li>
+                <li><b>The task’s current state</b><span>steps done, results so far</span></li>
+              </ul>
+              <p class="rit-arrow">Context engineering brings these in.</p>
+            </div>
+            <div class="rit-right">
+              <h2>How much to give it</h2>
+              <div class="rit-cases">
+                <div class="rit-case is-bad"><div class="cw"><span class="cw-seg q">question</span></div><b>Too little</b><p>It fills the gaps with guesses.</p><span class="mark">✗</span></div>
+                <div class="rit-case is-bad"><div class="cw"><span class="cw-seg n"></span><span class="cw-seg n"></span><span class="cw-seg n"></span><span class="cw-seg n"></span><span class="cw-seg key">key fact</span><span class="cw-seg n"></span><span class="cw-seg n"></span><span class="cw-seg n"></span><span class="cw-seg n"></span><span class="cw-seg q">question</span></div><b>Too much</b><p>The key fact gets lost in the middle; accuracy drops.</p><span class="mark">✗</span></div>
+                <div class="rit-case is-good"><div class="cw"><span class="cw-seg i">instructions</span><span class="cw-seg key">key fact</span><span class="cw-seg key">customer</span><span class="cw-seg q">question</span></div><b>Just right, just in time</b><p>Small, relevant, current: the answer is right.</p><span class="mark">✓</span></div>
+              </div>
+            </div>
+          </div>
+          <p class="takeaway is-sm rit-take">Context engineering gives the model <em>what training never could</em>, and only <em>the portion this step needs</em>.</p>
+          <p class="source">Sources: Anthropic, <i>Effective context engineering for AI agents</i> (2025); Liu et al., <i>Lost in the Middle</i>, TACL (2024); Chroma Research, <i>Context Rot</i> (2025).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
   </div>
 
   <!-- ============ UNIT 4 · TOOLS AND INTEGRATION ============ -->
