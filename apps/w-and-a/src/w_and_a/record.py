@@ -15,7 +15,7 @@ def main() -> None:
         sys.exit("OPENAI_API_KEY is not set in the repo-root .env")
     for mode, runner in MODES.items():
         runs = {}
-        for question in PRESETS:
+        for question in (p.question for p in PRESETS):
             print(f"{mode}: {question}", flush=True)
             runs[question] = runner(question, llm)
         print(f"  saved {replay.save(mode, runs)}")

@@ -64,6 +64,16 @@ def search_policies(query: str) -> dict:
     return {"query": query, "results": [{k: p[k] for k in ("id", "title", "text")} for p in hits]}
 
 
+def find_orders(query: str) -> dict:
+    wanted = _terms(query)
+    hits = [
+        {k: o[k] for k in ("order_id", "items", "ship_to_city", "status")}
+        for o in ORDERS.values()
+        if wanted & _terms(" ".join([*o["items"], o["ship_to_city"]]))
+    ]
+    return {"query": query, "results": hits}
+
+
 def get_weather(city: str) -> dict:
     return WEATHER.get(city.strip().lower()) or {"error": f"No weather data for {city!r}."}
 
@@ -109,6 +119,13 @@ TOOLS: dict[str, Tool] = {
             "reason for any delay.",
             _string_param("order_id", "The order id, e.g. '1042'."),
             lookup_order,
+        ),
+        Tool(
+            "find_orders",
+            "Find Pebble & Pine orders by item or delivery city, when the order id is unknown "
+            "or wrong. Returns the matching ids.",
+            _string_param("query", "Items or city, e.g. 'wool throw Coimbra'."),
+            find_orders,
         ),
         Tool(
             "search_policies",

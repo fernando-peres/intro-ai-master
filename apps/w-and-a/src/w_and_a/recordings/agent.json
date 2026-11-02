@@ -1,214 +1,350 @@
 {
-  "Why is order 1042 late, and what can you offer me?": {
+  "Write a short, friendly apology for a late delivery.": {
     "mode": "agent",
-    "question": "Why is order 1042 late, and what can you offer me?",
-    "answer": "Order 1042 is delayed because Storm Ilda closed the Porto hub for two days; parcels are moving again. It was promised for 2026-10-30 and is now expected on 2026-11-05.\n\nBecause it’s more than 3 days late, you qualify for either:\n- a 15% voucher on the order total: €28.46\n- or free express shipping on your next order\n\nIf you want, I can help you choose the best option.",
+    "question": "Write a short, friendly apology for a late delivery.",
+    "answer": "Of course — here’s a short, friendly apology:\n\n“Hi there, and sorry for the delay with your delivery. We know how frustrating this can be, and we’re really sorry for the inconvenience. Thank you for your patience and understanding while we work to get your order to you as soon as possible.”\n\nIf you’d like, I can also make it warmer, more formal, or tailored to a customer email/SMS.",
     "events": [
       {
         "kind": "note",
         "actor": "agent",
         "title": "Goal and tools",
-        "body": "Tools: lookup_order, search_policies, get_weather, calculate. Limit: 6 rounds.",
-        "at": "2026-11-02-14-04-10",
+        "body": "Tools: lookup_order, find_orders, search_policies, get_weather, calculate. Limit: 6 rounds.",
+        "at": "2026-11-02-16-04-06",
         "t": 0.0
       },
       {
         "kind": "reasoning",
         "actor": "agent",
         "title": "Reasoning summary",
-        "body": "**Searching for order and policies**\n\nI need to find an answer that’s brief, so let’s keep it under 120 words. I should look up order 1042 and check the policies regarding late delivery compensation. It might be helpful to offer options based on that information. I plan to use tools for this, so I’ll search for the order and the policy on late delivery or compensation, possibly in parallel to save time. Let's see what I can offer!",
-        "at": "2026-11-02-14-04-13",
-        "t": 2.69
+        "body": "**Crafting an apology**\n\nI need to create a friendly and brief apology for a late delivery. I don’t think any tools are necessary for this. It seems I can write the text directly, probably without needing to include specific details. The goal is to keep it generic and under 120 words while maintaining a friendly tone. Alright, I’ll draft something that conveys understanding and empathy towards the situation. Let’s get started on that!",
+        "at": "2026-11-02-16-04-09",
+        "t": 2.64
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 539,
+    "seconds": 2.64,
+    "recorded": false
+  },
+  "What's the status of order 1043?": {
+    "mode": "agent",
+    "question": "What's the status of order 1043?",
+    "answer": "Order 1043 has been delivered.\n\n- Item: Ceramic table lamp\n- Ordered: 2026-10-20\n- Promised delivery: 2026-10-25\n- Delivered: 2026-10-24",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "agent",
+        "title": "Goal and tools",
+        "body": "Tools: lookup_order, find_orders, search_policies, get_weather, calculate. Limit: 6 rounds.",
+        "at": "2026-11-02-16-04-09",
+        "t": 0.0
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call lookup_order",
+        "body": "{\n  \"order_id\": \"1043\"\n}",
+        "at": "2026-11-02-16-04-11",
+        "t": 1.46
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "lookup_order returned",
+        "body": "{\n  \"order_id\": \"1043\",\n  \"status\": \"delivered\",\n  \"items\": [\n    \"Ceramic table lamp\"\n  ],\n  \"total_eur\": 64.0,\n  \"ship_to_city\": \"Lisbon\",\n  \"ordered\": \"2026-10-20\",\n  \"promised_delivery\": \"2026-10-25\",\n  \"delivered\": \"2026-10-24\"\n}",
+        "at": "2026-11-02-16-04-11",
+        "t": 1.46
+      }
+    ],
+    "llm_calls": 2,
+    "tool_calls": 1,
+    "tokens": 965,
+    "seconds": 2.96,
+    "recorded": false
+  },
+  "Can I still return the lamp from order 1043, and who pays shipping?": {
+    "mode": "agent",
+    "question": "Can I still return the lamp from order 1043, and who pays shipping?",
+    "answer": "Yes — order 1043’s lamp can still be returned. It was delivered on 2026-10-24, and returns are allowed within 30 days of delivery, so you’re still within the window.\n\nReturn shipping is free for orders over €50, and this order was €64, so Pebble & Pine covers the return shipping.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "agent",
+        "title": "Goal and tools",
+        "body": "Tools: lookup_order, find_orders, search_policies, get_weather, calculate. Limit: 6 rounds.",
+        "at": "2026-11-02-16-04-12",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "agent",
+        "title": "Reasoning summary",
+        "body": "**Searching order and shipping policies**\n\nI need to respond with the specific details of the order and shipping policies. I'll look up order 1043 to see if it contains a lamp and check the relevant dates. It’s important to determine if the item is still eligible for return. I think a good approach would be to use a parallel lookup for both the order details and the shipping policy to get the information efficiently. Let’s do this!",
+        "at": "2026-11-02-16-04-15",
+        "t": 2.72
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call lookup_order",
+        "body": "{\n  \"order_id\": \"1043\"\n}",
+        "at": "2026-11-02-16-04-15",
+        "t": 2.72
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "lookup_order returned",
+        "body": "{\n  \"order_id\": \"1043\",\n  \"status\": \"delivered\",\n  \"items\": [\n    \"Ceramic table lamp\"\n  ],\n  \"total_eur\": 64.0,\n  \"ship_to_city\": \"Lisbon\",\n  \"ordered\": \"2026-10-20\",\n  \"promised_delivery\": \"2026-10-25\",\n  \"delivered\": \"2026-10-24\"\n}",
+        "at": "2026-11-02-16-04-15",
+        "t": 2.72
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call search_policies",
+        "body": "{\n  \"query\": \"returns shipping who pays return shipping lamp\"\n}",
+        "at": "2026-11-02-16-04-15",
+        "t": 2.72
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "search_policies returned",
+        "body": "{\n  \"query\": \"returns shipping who pays return shipping lamp\",\n  \"results\": [\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    },\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-16-04-15",
+        "t": 2.72
+      },
+      {
+        "kind": "reasoning",
+        "actor": "agent",
+        "title": "Reasoning summary",
+        "body": "**Calculating return details**\n\nI need to keep my response brief, aiming for under 120 words. I think calculating isn't necessary here. Based on my inference, yes, the return should be possible within 30 days, since today is November 2 and the delivery date was October 24, making it 9 days after delivery. The question of who pays for shipping arises. Since the order total is €64, which is over €50, Pebble & Pine will cover the return shipping. Also, I should mention the return deadline.",
+        "at": "2026-11-02-16-04-18",
+        "t": 6.07
+      }
+    ],
+    "llm_calls": 2,
+    "tool_calls": 2,
+    "tokens": 1381,
+    "seconds": 6.07,
+    "recorded": false
+  },
+  "Where is order 1045? It's the wool throw going to Coimbra.": {
+    "mode": "agent",
+    "question": "Where is order 1045? It's the wool throw going to Coimbra.",
+    "answer": "I couldn’t find order 1045. The wool throw going to Coimbra is order 1044, and it’s currently **processing**.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "agent",
+        "title": "Goal and tools",
+        "body": "Tools: lookup_order, find_orders, search_policies, get_weather, calculate. Limit: 6 rounds.",
+        "at": "2026-11-02-16-04-18",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "agent",
+        "title": "Reasoning summary",
+        "body": "**Searching for order details**\n\nI need to find order details with ID 1045, but if it’s incorrect or unknown, I might have to use a backup plan. I can consider running a search for \"wool throw Coimbra\" with the find_orders function. It seems like using both functions in parallel could be a good idea in case the lookup fails. So, I'll run both the lookup_order for 1045 and the find_orders together for efficiency!",
+        "at": "2026-11-02-16-04-21",
+        "t": 2.78
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call lookup_order",
+        "body": "{\n  \"order_id\": \"1045\"\n}",
+        "at": "2026-11-02-16-04-21",
+        "t": 2.78
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "lookup_order returned",
+        "body": "{\n  \"error\": \"No order '1045'. Known orders have four digits.\"\n}",
+        "at": "2026-11-02-16-04-21",
+        "t": 2.78
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call find_orders",
+        "body": "{\n  \"query\": \"wool throw Coimbra\"\n}",
+        "at": "2026-11-02-16-04-21",
+        "t": 2.78
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "find_orders returned",
+        "body": "{\n  \"query\": \"wool throw Coimbra\",\n  \"results\": [\n    {\n      \"order_id\": \"1044\",\n      \"items\": [\n        \"Wool throw\",\n        \"Pine side table\"\n      ],\n      \"ship_to_city\": \"Coimbra\",\n      \"status\": \"processing\"\n    }\n  ]\n}",
+        "at": "2026-11-02-16-04-21",
+        "t": 2.78
+      },
+      {
+        "kind": "reasoning",
+        "actor": "agent",
+        "title": "Reasoning summary",
+        "body": "**Updating order status**\n\nI need to respond regarding order id 1044, mentioning its status and noting that order 1045 doesn't exist. I could say something like, \"I couldn't find order 1045; the wool throw to Coimbra is order 1044, and it's currently processing.\" I want to keep it brief and to the point, focusing on providing the essential information without unnecessary details.",
+        "at": "2026-11-02-16-04-24",
+        "t": 5.53
+      }
+    ],
+    "llm_calls": 2,
+    "tool_calls": 2,
+    "tokens": 1210,
+    "seconds": 5.53,
+    "recorded": false
+  },
+  "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?": {
+    "mode": "agent",
+    "question": "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?",
+    "answer": "1042: delayed in Porto; promised 2026-10-30, now expected 2026-11-05. Weather risk is high today there: heavy rain and gusts to 70 km/h. You’re owed a 15% voucher on €189.70 = €28.46, or free express shipping on the next order.\n\n1044: processing for Coimbra; promised 2026-11-07. Weather risk is lower: rain easing this afternoon. No compensation owed yet unless it arrives more than 3 days late.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "agent",
+        "title": "Goal and tools",
+        "body": "Tools: lookup_order, find_orders, search_policies, get_weather, calculate. Limit: 6 rounds.",
+        "at": "2026-11-02-16-04-24",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "agent",
+        "title": "Reasoning summary",
+        "body": "**Evaluating order issues**\n\nI need to look up two orders and consider factors like weather risks based on the delivery city. It’s important to determine if there’s an owed amount due to delays and check policies related to refunds or compensation. I should inspect the order statuses and reasons for any delays. I want to keep my response brief, under 120 words. I'll use tools to check both orders and the weather, then explore the late delivery compensation policy.",
+        "at": "2026-11-02-16-04-27",
+        "t": 3.29
       },
       {
         "kind": "tool_call",
         "actor": "agent",
         "title": "Call lookup_order",
         "body": "{\n  \"order_id\": \"1042\"\n}",
-        "at": "2026-11-02-14-04-13",
-        "t": 2.69
+        "at": "2026-11-02-16-04-27",
+        "t": 3.29
       },
       {
         "kind": "tool_result",
         "actor": "tool",
         "title": "lookup_order returned",
         "body": "{\n  \"order_id\": \"1042\",\n  \"status\": \"delayed\",\n  \"items\": [\n    \"Oak floor lamp\",\n    \"Linen cushion cover (x2)\"\n  ],\n  \"total_eur\": 189.7,\n  \"ship_to_city\": \"Porto\",\n  \"ordered\": \"2026-10-24\",\n  \"promised_delivery\": \"2026-10-30\",\n  \"expected_delivery\": \"2026-11-05\",\n  \"delay_reason\": \"Storm Ilda closed the Porto hub for two days; parcels are moving again.\"\n}",
-        "at": "2026-11-02-14-04-13",
-        "t": 2.69
+        "at": "2026-11-02-16-04-27",
+        "t": 3.29
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call lookup_order",
+        "body": "{\n  \"order_id\": \"1044\"\n}",
+        "at": "2026-11-02-16-04-27",
+        "t": 3.29
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "lookup_order returned",
+        "body": "{\n  \"order_id\": \"1044\",\n  \"status\": \"processing\",\n  \"items\": [\n    \"Wool throw\",\n    \"Pine side table\"\n  ],\n  \"total_eur\": 238.5,\n  \"ship_to_city\": \"Coimbra\",\n  \"ordered\": \"2026-11-01\",\n  \"promised_delivery\": \"2026-11-07\"\n}",
+        "at": "2026-11-02-16-04-27",
+        "t": 3.29
       },
       {
         "kind": "tool_call",
         "actor": "agent",
         "title": "Call search_policies",
-        "body": "{\n  \"query\": \"late delivery compensation offer delay\"\n}",
-        "at": "2026-11-02-14-04-13",
-        "t": 2.69
+        "body": "{\n  \"query\": \"late delivery compensation\"\n}",
+        "at": "2026-11-02-16-04-30",
+        "t": 5.86
       },
       {
         "kind": "tool_result",
         "actor": "tool",
         "title": "search_policies returned",
-        "body": "{\n  \"query\": \"late delivery compensation offer delay\",\n  \"results\": [\n    {\n      \"id\": \"delivery-delays\",\n      \"title\": \"Late deliveries\",\n      \"text\": \"If an order arrives more than 3 days after the promised date, the customer gets a 15% voucher on the order total, or free express shipping on the next order. Weather delays are covered too.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
-        "at": "2026-11-02-14-04-13",
-        "t": 2.69
+        "body": "{\n  \"query\": \"late delivery compensation\",\n  \"results\": [\n    {\n      \"id\": \"delivery-delays\",\n      \"title\": \"Late deliveries\",\n      \"text\": \"If an order arrives more than 3 days after the promised date, the customer gets a 15% voucher on the order total, or free express shipping on the next order. Weather delays are covered too.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-16-04-30",
+        "t": 5.86
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call get_weather",
+        "body": "{\n  \"city\": \"Porto\"\n}",
+        "at": "2026-11-02-16-04-30",
+        "t": 5.86
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "get_weather returned",
+        "body": "{\n  \"city\": \"Porto\",\n  \"today\": \"heavy rain, wind gusts to 70 km/h\",\n  \"temp_c\": 13\n}",
+        "at": "2026-11-02-16-04-30",
+        "t": 5.86
+      },
+      {
+        "kind": "tool_call",
+        "actor": "agent",
+        "title": "Call get_weather",
+        "body": "{\n  \"city\": \"Coimbra\"\n}",
+        "at": "2026-11-02-16-04-30",
+        "t": 5.86
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "get_weather returned",
+        "body": "{\n  \"city\": \"Coimbra\",\n  \"today\": \"rain easing in the afternoon\",\n  \"temp_c\": 15\n}",
+        "at": "2026-11-02-16-04-30",
+        "t": 5.86
       },
       {
         "kind": "reasoning",
         "actor": "agent",
         "title": "Reasoning summary",
-        "body": "**Calculating voucher offer**\n\nI need to figure out an answer regarding being late and what can be offered to the user. If it's been more than three days past the promised date, I might need to offer a 15% voucher or free express shipping. I should calculate 15% of 189.7 to determine the voucher amount, so I’ll compute that as 189.7 multiplied by 0.15 to get the exact amount needed.",
-        "at": "2026-11-02-14-04-16",
-        "t": 5.51
+        "body": "**Calculating order status and weather risks**\n\nI need to figure out what I’m owed. Order 1042 was promised for October 30, but it's actually expected on November 5, which is six days late. Since it's more than three days, I get a 15% voucher on the total. I’ll calculate that as 15% of 189.7, which rounds to about 28.46. For order 1044, it’s processing and promised by November 7. The weather in Coimbra seems manageable, but I need to check each order's location and associated weather risks.",
+        "at": "2026-11-02-16-04-35",
+        "t": 10.84
+      },
+      {
+        "kind": "reasoning",
+        "actor": "agent",
+        "title": "Reasoning summary",
+        "body": "**Determining payout for orders**\n\nI’m thinking that there may not be a payout owed for order 1044 since it’s not late. For order 1042, though, it’s a different story because of the delay. So, I should answer that the payout is likely only for the delayed order, which means I need to calculate the value to determine the voucher amount. Let’s get those numbers sorted out!",
+        "at": "2026-11-02-16-04-35",
+        "t": 10.84
       },
       {
         "kind": "tool_call",
         "actor": "agent",
         "title": "Call calculate",
         "body": "{\n  \"expression\": \"189.7 * 0.15\"\n}",
-        "at": "2026-11-02-14-04-16",
-        "t": 5.51
+        "at": "2026-11-02-16-04-35",
+        "t": 10.84
       },
       {
         "kind": "tool_result",
         "actor": "tool",
         "title": "calculate returned",
         "body": "{\n  \"expression\": \"189.7 * 0.15\",\n  \"result\": 28.46\n}",
-        "at": "2026-11-02-14-04-16",
-        "t": 5.51
-      }
-    ],
-    "llm_calls": 3,
-    "tool_calls": 3,
-    "tokens": 2188,
-    "seconds": 8.53,
-    "recorded": false
-  },
-  "How did the return window change between 2025 and 2026?": {
-    "mode": "agent",
-    "question": "How did the return window change between 2025 and 2026?",
-    "answer": "The return window increased from **14 days** in 2025 to **30 days** in 2026, so it became **16 days longer**.",
-    "events": [
-      {
-        "kind": "note",
-        "actor": "agent",
-        "title": "Goal and tools",
-        "body": "Tools: lookup_order, search_policies, get_weather, calculate. Limit: 6 rounds.",
-        "at": "2026-11-02-14-04-19",
-        "t": 0.0
+        "at": "2026-11-02-16-04-35",
+        "t": 10.84
       },
       {
         "kind": "reasoning",
         "actor": "agent",
         "title": "Reasoning summary",
-        "body": "**Searching for policy changes**\n\nI’m looking for information regarding policy changes between 2025 and 2026. I think I’ll need to use the search function with a query that targets that specific timeframe. Perhaps the query can include terms like \"policy changes 2025 2026\" to return relevant facts. I wonder if I can find any dated texts related to specific policies during that time. Let's get started on the search!",
-        "at": "2026-11-02-14-04-22",
-        "t": 2.87
-      },
-      {
-        "kind": "tool_call",
-        "actor": "agent",
-        "title": "Call search_policies",
-        "body": "{\n  \"query\": \"return window 2025 2026\"\n}",
-        "at": "2026-11-02-14-04-22",
-        "t": 2.87
-      },
-      {
-        "kind": "tool_result",
-        "actor": "tool",
-        "title": "search_policies returned",
-        "body": "{\n  \"query\": \"return window 2025 2026\",\n  \"results\": [\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
-        "at": "2026-11-02-14-04-22",
-        "t": 2.87
-      },
-      {
-        "kind": "tool_call",
-        "actor": "agent",
-        "title": "Call search_policies",
-        "body": "{\n  \"query\": \"returns policy\"\n}",
-        "at": "2026-11-02-14-04-22",
-        "t": 2.87
-      },
-      {
-        "kind": "tool_result",
-        "actor": "tool",
-        "title": "search_policies returned",
-        "body": "{\n  \"query\": \"returns policy\",\n  \"results\": [\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    },\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    }\n  ]\n}",
-        "at": "2026-11-02-14-04-22",
-        "t": 2.87
-      },
-      {
-        "kind": "tool_call",
-        "actor": "agent",
-        "title": "Call search_policies",
-        "body": "{\n  \"query\": \"2026 return window\"\n}",
-        "at": "2026-11-02-14-04-22",
-        "t": 2.87
-      },
-      {
-        "kind": "tool_result",
-        "actor": "tool",
-        "title": "search_policies returned",
-        "body": "{\n  \"query\": \"2026 return window\",\n  \"results\": [\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    },\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    }\n  ]\n}",
-        "at": "2026-11-02-14-04-22",
-        "t": 2.87
-      },
-      {
-        "kind": "reasoning",
-        "actor": "agent",
-        "title": "Reasoning summary",
-        "body": "**Clarifying return window changes**\n\nI want to keep my answer concise and stay focused on the return window. The change from 14 days to 30 days is key, so I can say it increased by 16 days. I might also want to mention that this is a growth of about 2.1 times. However, since the user specifically asked about the return window, I’ll stick to that and maybe avoid details about free shipping or refund timing for now.",
-        "at": "2026-11-02-14-04-26",
-        "t": 7.06
+        "body": "**Summarizing delivery updates**\n\nI need to create a concise message, keeping it under 120 words. I’ll mention that flight 1042 is delayed until November 5, with Porto experiencing heavy rain and wind. Additionally, there’s an owed voucher of €28.46 or I can get free express shipping on my next order. For flight 1044, it’s processing in Coimbra with a promised date of November 7, where the rain is easing, and no compensation is owed yet. Let's keep it clear!",
+        "at": "2026-11-02-16-04-38",
+        "t": 14.62
       }
     ],
-    "llm_calls": 2,
-    "tool_calls": 3,
-    "tokens": 1431,
-    "seconds": 7.06,
-    "recorded": false
-  },
-  "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?": {
-    "mode": "agent",
-    "question": "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
-    "answer": "You paid **€127.25**.",
-    "events": [
-      {
-        "kind": "note",
-        "actor": "agent",
-        "title": "Goal and tools",
-        "body": "Tools: lookup_order, search_policies, get_weather, calculate. Limit: 6 rounds.",
-        "at": "2026-11-02-14-04-26",
-        "t": 0.0
-      },
-      {
-        "kind": "reasoning",
-        "actor": "agent",
-        "title": "Reasoning summary",
-        "body": "**Calculating currency total**\n\nI need to do a quick calculation: 3 times 49.90 times 0.85. That gives me 127.245. Now, should I round that to two decimals? Seems logical, so I'll go with €127.25. I want to keep it short and simple, staying under 120 words. Making it clean helps convey the information better! Overall, it's straightforward, but I want to ensure it’s clear for whoever's reading this.",
-        "at": "2026-11-02-14-04-29",
-        "t": 2.88
-      },
-      {
-        "kind": "tool_call",
-        "actor": "agent",
-        "title": "Call calculate",
-        "body": "{\n  \"expression\": \"3 * 49.90 * 0.85\"\n}",
-        "at": "2026-11-02-14-04-29",
-        "t": 2.88
-      },
-      {
-        "kind": "tool_result",
-        "actor": "tool",
-        "title": "calculate returned",
-        "body": "{\n  \"expression\": \"3 * 49.90 * 0.85\",\n  \"result\": 127.25\n}",
-        "at": "2026-11-02-14-04-29",
-        "t": 2.88
-      }
-    ],
-    "llm_calls": 2,
-    "tool_calls": 1,
-    "tokens": 789,
-    "seconds": 4.36,
+    "llm_calls": 4,
+    "tool_calls": 6,
+    "tokens": 4601,
+    "seconds": 14.62,
     "recorded": false
   }
 }

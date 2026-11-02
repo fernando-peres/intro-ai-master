@@ -1,78 +1,126 @@
 {
-  "Why is order 1042 late, and what can you offer me?": {
+  "Write a short, friendly apology for a late delivery.": {
     "mode": "chatbot",
-    "question": "Why is order 1042 late, and what can you offer me?",
-    "answer": "I’m sorry your order is late. I can’t see order 1042 or the shipping details from here, so I can’t tell the exact reason.\n\nWhat I can suggest:\n- Check the shipping confirmation email for a tracking link\n- Look for any delivery updates from the carrier\n- If the tracking shows no movement, contact the carrier directly\n\nIf you want, I can help you write a short message to customer support or the carrier.",
+    "question": "Write a short, friendly apology for a late delivery.",
+    "answer": "We’re very sorry your delivery is running late. We know how frustrating that can be, and we truly appreciate your patience. Our team is looking into it and will do what we can to get it to you as soon as possible. Thank you for your understanding, and please let us know if there’s anything else we can help with.",
     "events": [
       {
         "kind": "note",
         "actor": "code",
         "title": "No tools",
         "body": "It can only talk: it has no access to orders or policies.",
-        "at": "2026-11-02-14-03-26",
+        "at": "2026-11-02-16-03-05",
         "t": 0.0
       },
       {
         "kind": "reasoning",
         "actor": "model",
         "title": "Reasoning summary",
-        "body": "**Crafting customer support response**\n\nI need to answer as a customer assistant, keeping it brief with a limit of about 120 words. Honestly, I can't access details about why order 1042 is late, but I want to be helpful. I could suggest the user check their confirmation or shipping email, maybe use the tracking link, or contact the carrier. I could also offer to help draft a message if they need it. Let's make sure the response is concise and empathetic!",
-        "at": "2026-11-02-14-03-30",
-        "t": 3.59
+        "body": "**Crafting a brief apology**\n\nI’m focusing on creating a short and friendly apology for a late delivery for the user. I want to keep it generic, avoiding any mention of reasons behind the delay. I'll aim for a friendly tone that acknowledges the situation without being too formal or lengthy. A concise message will show understanding and maintain goodwill. Let’s make sure it’s warm and sincere, yet still brief, so it fits within the word limit!",
+        "at": "2026-11-02-16-03-11",
+        "t": 5.61
       }
     ],
     "llm_calls": 1,
     "tool_calls": 0,
-    "tokens": 249,
-    "seconds": 3.59,
+    "tokens": 192,
+    "seconds": 5.61,
     "recorded": false
   },
-  "How did the return window change between 2025 and 2026?": {
+  "What's the status of order 1043?": {
     "mode": "chatbot",
-    "question": "How did the return window change between 2025 and 2026?",
-    "answer": "I’m sorry, but I can’t know that from here because I don’t have access to Pebble & Pine’s policy history or records. If you paste the 2025 and 2026 return-policy text, I can compare them and summarize the change clearly.",
+    "question": "What's the status of order 1043?",
+    "answer": "I’m sorry, but I can’t check order status from here because I don’t have access to orders or your account.\n\nIf you’d like, you can:\n- check your confirmation/shipping email for a tracking link\n- log into your Pebble & Pine account\n- contact support with order number **1043**\n\nIf you want, I can help you draft a message to support.",
     "events": [
       {
         "kind": "note",
         "actor": "code",
         "title": "No tools",
         "body": "It can only talk: it has no access to orders or policies.",
-        "at": "2026-11-02-14-03-30",
+        "at": "2026-11-02-16-03-11",
         "t": 0.0
       }
     ],
     "llm_calls": 1,
     "tool_calls": 0,
-    "tokens": 170,
-    "seconds": 1.88,
+    "tokens": 190,
+    "seconds": 1.96,
     "recorded": false
   },
-  "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?": {
+  "Can I still return the lamp from order 1043, and who pays shipping?": {
     "mode": "chatbot",
-    "question": "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
-    "answer": "Each lamp after the 15% discount costs **€42.42** (rounded to the nearest cent).\n\nFor 3 lamps: **€42.42 × 3 = €127.26**.\n\nSo you paid **€127.26** in total.",
+    "question": "Can I still return the lamp from order 1043, and who pays shipping?",
+    "answer": "Sorry, I can’t check order 1043 or your return eligibility from here, and I don’t have access to our return policy details.\n\nPlease check your order confirmation or the returns section in your account for the return window and shipping rules. If you’d like, I can help you draft a message to support asking:\n- whether order 1043 is still returnable\n- whether return shipping is paid by you or by Pebble & Pine",
     "events": [
       {
         "kind": "note",
         "actor": "code",
         "title": "No tools",
         "body": "It can only talk: it has no access to orders or policies.",
-        "at": "2026-11-02-14-03-32",
+        "at": "2026-11-02-16-03-13",
+        "t": 0.0
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 255,
+    "seconds": 3.52,
+    "recorded": false
+  },
+  "Where is order 1045? It's the wool throw going to Coimbra.": {
+    "mode": "chatbot",
+    "question": "Where is order 1045? It's the wool throw going to Coimbra.",
+    "answer": "Sorry, I can’t see order 1045 or its tracking from here. Please check your order confirmation email for the tracking link or delivery update. If you can send me the tracking number or the carrier name, I can help you interpret it. Otherwise, the quickest option is to contact our support team directly with order 1045 and Coimbra as the destination.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "No tools",
+        "body": "It can only talk: it has no access to orders or policies.",
+        "at": "2026-11-02-16-03-16",
         "t": 0.0
       },
       {
         "kind": "reasoning",
         "actor": "model",
         "title": "Reasoning summary",
-        "body": "**Calculating total cost**\n\nI need to keep my answer under 120 words. First, I’m calculating 49.90 times 0.85, which equals 42.415. Then, multiplying that result by 3 gives me about 127.245. It looks like I should round that to €127.25 for cents. I might mention that this reflects a discount as well. Let’s put all of this together into a concise response that clearly outlines the final amount and the factor of the discount.",
-        "at": "2026-11-02-14-03-36",
-        "t": 3.82
+        "body": "**Responding to customer inquiries**\n\nI need to approach this as a customer assistant, but I don't have access to orders or policies. I should keep my response brief, ideally under 120 words. I have to say that I can't provide certain information, and it might be helpful to suggest the user check their confirmation or tracking email or contact support directly. It's important not to make up any information, so I'll focus on crafting a concise apology and offering clear next steps.",
+        "at": "2026-11-02-16-03-19",
+        "t": 3.03
       }
     ],
     "llm_calls": 1,
     "tool_calls": 0,
-    "tokens": 199,
-    "seconds": 3.82,
+    "tokens": 221,
+    "seconds": 3.03,
+    "recorded": false
+  },
+  "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?": {
+    "mode": "chatbot",
+    "question": "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?",
+    "answer": "I’m sorry, but I can’t see order 1042 or 1044, their current locations, weather exposure, or any amount owed.\n\nWhat I can do:\n- If you paste the tracking links/numbers, I can help you read the status.\n- If you have photos or a courier update, I can help judge whether weather may have caused damage.\n- For “what you’ll be owed,” that depends on the carrier’s claim outcome and our refund/replacement policy, which I can’t access here.\n\nIf you want, send the latest tracking updates for both orders and I’ll help interpret them.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "No tools",
+        "body": "It can only talk: it has no access to orders or policies.",
+        "at": "2026-11-02-16-03-19",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Crafting a customer response**\n\nI need to respond as a customer assistant since I can't access order information, policies, or systems. The user is asking about specific orders and weather risks, but I'll keep it brief. I should clarify that I can't check order status, provide weather updates, or discuss compensation. It might be helpful to suggest they check their tracking emails. If they share their tracking numbers, I can help interpret them, but I won’t have system access. Let's keep this concise!",
+        "at": "2026-11-02-16-03-22",
+        "t": 3.21
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 312,
+    "seconds": 3.21,
     "recorded": false
   }
 }

@@ -9,8 +9,11 @@ Build a Streamlit app in `apps/w-and-a/` (Python package `w_and_a`, console scri
 ## Audience and tone
 Executives and other non-technical people. Short labels, plain English, no jargon without a one-line explanation. Every screen should answer "who decided this step?"
 
-## The five tabs (same question works in all five)
-1. **Chatbot**: keeps the chat history, has no tools. It talks; it cannot look anything up.
+## Layout
+A left sidebar holds the header (title, subtitle, colour legend, Live/Offline status) and the navigation, in three groups: **Chat** (the five modes), **How it works** (one page per mode: explanation, a diagram in the colour code, the tools and limits, the exact instructions sent) and **Try the tools** (each tool's spec as the model sees it, a form to run it, the invented data). The right side is the selected page; a chat page is a plain chat of user/assistant turns with the input pinned at the bottom.
+
+## The five modes (same question works in all five)
+1. **Chatbot**, with a *Scripted flow* / *LLM* switch. Scripted: a fixed decision tree (menu, keywords, templates, an order lookup from a rule), with no model; it works without a key. LLM: keeps the chat history, has no tools. Either way it talks; it cannot reason over your systems.
 2. **Prompt → model**: one shot, with no history and no tools. The person is the orchestrator.
 3. **Workflow**: a path fixed in code: classify (model) → route (code) → tool call (code picks the tool) → draft (model) → rule check (code), with one revision if the check fails.
 4. **Agent**: a model with all tools in a loop (think → act → observe). The model picks the tools and the order. Code enforces a step limit of 6.
@@ -18,20 +21,24 @@ Executives and other non-technical people. Short labels, plain English, no jargo
 
 ## Tools (invented data: Pebble & Pine, an online home-goods shop that does not exist)
 - `lookup_order(order_id)`: status, items, promised and expected dates, delay reason.
+- `find_orders(query)`: orders matching items or a city, for when the id is unknown or wrong.
 - `search_policies(query)`: the best-matching policy snippets (returns 2025 vs 2026, delivery delays, shipping, warranty).
 - `get_weather(city)`: invented weather for today.
 - `calculate(expression)`: safe arithmetic via the AST, never `eval`.
 
 Because every fact is invented, a correct answer must come from a tool. The chatbot and the single prompt visibly can't know.
 
-## Preset questions (buttons in every tab)
-- "Why is order 1042 late, and what can you offer me?"
-- "How did the return window change between 2025 and 2026?"
-- "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?"
+## Preset questions (buttons in every chat, and the Compare page)
+Each question is the best fit for one mode and has a one-line takeaway:
+1. "Write a short, friendly apology for a late delivery." (Prompt → model: no private data, so one call is enough)
+2. "What's the status of order 1043?" (Workflow: known steps)
+3. "Can I still return the lamp from order 1043, and who pays shipping?" (Agent: two lookups the path didn't plan)
+4. "Where is order 1045? It's the wool throw going to Coimbra." (Agent: recovers when a step fails)
+5. "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?" (Agent: one agent copes, and a team costs twice as much)
 
 ## What the chat shows
-A chat-like UI (`st.chat_message`). Under each answer, every event is shown **collapsed** (`<details>`), with an icon, the actor and a colour:
-reasoning summary, plan, route, workflow step, tool call (name + arguments), tool result (JSON), check (pass/fail), handoff, specialist report and notes. A footer shows LLM calls, tool calls, tokens and seconds. While a run is in progress, the events stream live into a status box.
+A chat-like UI (`st.chat_message`). Above each answer, every event is shown **collapsed** (`<details>`), with an icon, the actor and a colour:
+reasoning summary, plan, route or rule fired, workflow step, tool call (name + arguments), tool result (JSON), check (pass/fail), handoff, specialist report and notes. A footer shows LLM calls, tool calls, tokens and seconds. While a run is in progress, the events stream live into a status box.
 
 ## Colour code (identical to the slides)
 Model = deep green, your code / check = mint `#6ee7a0`, workflow = lime `#e6f57a`, agent = pink `#ff4fd8`, tool = dashed grey, person = white. A legend appears at the top of the page.
@@ -49,12 +56,15 @@ OpenAI Responses API with function tools; chain turns with `previous_response_id
 - Add it to the all-apps TUI (`apps/all-apps/src/all_apps/services.py`) with health check `/_stcore/health`.
 
 ## Structure
-- `engine/`: free of Streamlit. `events.py` (Event, Trace, Run), `data.py` (invented shop), `tools.py`, `llm.py` (LLM protocol + OpenAI), `modes.py` (one runner per tab), `replay.py`.
-- `ui/`: theme CSS and HTML rendering of events (all text escaped).
-- `app.py`: tabs, presets, chat input, live status.
+- `engine/`: free of Streamlit. `events.py` (Event, Trace, Run), `data.py` (invented shop), `tools.py`, `llm.py` (LLM protocol + OpenAI), `modes.py` (one runner per mode), `replay.py`.
+- `engine/scripted.py`: the rule-based chatbot.
+- `views/`: `chat`, `notes`, `tools` pages; `notes/<mode>.md` holds the page text.
+- `ui/`: theme CSS, HTML rendering of events (all text escaped), Graphviz diagrams.
+- `app.py`: sidebar header and navigation.
 - `record.py`: records the preset runs for offline use.
 
 ## Acceptance
 - The engine is unit-tested with a scripted fake LLM: tools (including calculator safety), workflow routing and the check, the agent loop and its step limit, the agentic plan fallback, and the replay files load.
 - `uv run ruff check`, `uv run pytest apps/w-and-a`, `uv run lint-imports` pass.
-- In every tab the same preset question gives visibly different steps. The workflow always takes the same path; the agent's path varies.
+- An offline `AppTest` runs the app, the scripted chatbot across two turns, and a replayed preset.
+- In every chat the same preset question gives visibly different steps. The workflow always takes the same path; the agent's path varies.

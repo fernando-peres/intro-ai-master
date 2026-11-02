@@ -1874,13 +1874,57 @@ while True:
           <span class="eyebrow">Agents</span>
           <h1>Chatbot, agent, <em>agentic system</em></h1>
           <div class="wa-three">
-            <div><span class="tag">Chatbot</span><b>It talks</b><p>Answers questions in a conversation. It can explain and draft, but it doesn’t act.</p><div class="chips"><span>conversation</span><span>chat memory</span></div></div>
+            <div><span class="tag">Chatbot</span><b>It talks</b><p>Answers in a conversation. Behind it: a fixed script, a model, or both. It doesn’t pursue a goal on its own.</p><div class="chips"><span>scripted flow</span><span>LLM</span><span>chat memory</span></div></div>
             <div class="is-agent"><span class="tag">Agent</span><b>It acts toward a goal</b><p>Plans, uses tools, checks the results and keeps going over many steps, without a person driving each one.</p><div class="chips"><span>goal</span><span>tools</span><span>loop</span></div></div>
             <div class="is-system"><span class="tag">Agentic system</span><b>A team with rules</b><p>Several agents and workflows working as one system, with shared memory, tools and controls around them.</p><div class="chips"><span>many agents</span><span>workflows</span><span>guardrails &amp; evals</span></div></div>
           </div>
           <p class="hand-note wa-hand"><b>Note:</b> “agent” is often a sales label. Ask what it can do on its own, and what it is allowed to change.</p>
         </div>
         <div class="wa-legend"><span class="k-agent">Agent</span><span class="k-wf">Workflow</span></div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three chatbot kinds -->
+    <section class="page" data-type="slide" data-title="Chatbots: scripted, LLM or hybrid">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Agents · Chatbots</span>
+          <h1>A chatbot can follow <em>a script, a model, or both</em></h1>
+          <p class="subtitle is-wide">Many chatbots have no AI behind them: a step-by-step flow, drawn in advance.</p>
+          <div class="wa-bots">
+            <div class="is-wf">
+              <span class="tag">Scripted flow</span><b>A decision tree</b>
+              <ol class="wa-steps">
+                <li class="is-human">“Where is my order?”</li>
+                <li class="is-wf">Rule: order words → ask for the number</li>
+                <li class="is-tool">Look up the order</li>
+                <li class="is-wf">Fixed reply from a template</li>
+              </ol>
+              <p>Code decides every step: <em>same input, same answer</em>. Predictable, auditable and cheap, but brittle off-script.</p>
+            </div>
+            <div class="is-model">
+              <span class="tag">LLM chatbot</span><b>A model writes each reply</b>
+              <ol class="wa-steps">
+                <li class="is-human">“Where is my order?”</li>
+                <li class="is-model">Model + chat history</li>
+                <li>Free-text reply</li>
+              </ol>
+              <p>Understands any wording and sounds natural. With no tools it can’t look anything up, and may invent.</p>
+            </div>
+            <div class="is-hybrid">
+              <span class="tag">Hybrid · the most common</span><b>Rules first, a model for the rest</b>
+              <ol class="wa-steps">
+                <li class="is-human">Customer message</li>
+                <li class="is-wf">Matches a flow? → run the script</li>
+                <li class="is-model">No match? → the model answers</li>
+              </ol>
+              <p>Control where it matters (orders, payments, identity); flexibility for open questions. The model is the <em>fallback</em>.</p>
+            </div>
+          </div>
+          <p class="source wa-src">Google, Dialogflow CX docs: deterministic flows and “generative fallback” when input matches no intent. Microsoft, Copilot Studio docs: topics built from message, question and condition nodes.</p>
+        </div>
+        <div class="wa-legend"><span class="k-human">Person</span><span class="k-wf">Script (code decides)</span><span class="k-model">Model</span><span class="k-tool">Tool</span></div>
         <span class="page-num"></span>
       </div>
     </section>
@@ -2029,7 +2073,7 @@ while True:
           <a class="notes-link" href="http://localhost:8502" target="_blank" rel="noopener">Open the app <span aria-hidden="true">↗</span></a>
           <p class="subtitle">The same question, asked five ways. Watch who decides each step.</p>
           <div class="wa-tabs">
-            <div><b>Chatbot</b><span>Talks and remembers the chat. No tools.</span></div>
+            <div><b>Chatbot</b><span>Scripted flow or LLM: switch and compare.</span></div>
             <div><b>Prompt → model</b><span>One shot. No memory, no tools.</span></div>
             <div class="is-wf"><b>Workflow</b><span>Fixed path: classify, route, tool, draft, check.</span></div>
             <div class="is-agent"><b>Agent</b><span>The model picks tools in a loop.</span></div>
@@ -2037,10 +2081,10 @@ while True:
           </div>
           <div class="example-cards wa-app-cards">
             <div><span class="tag">What you see</span><b>Every step, folded</b><p>Reasoning, routing, tool calls and their results, one click to open.</p></div>
-            <div class="is-accent"><span class="tag">What to try</span><b>One question, five tabs</b><p>Compare the steps, the tool calls, the time and the answer.</p></div>
+            <div class="is-accent"><span class="tag">What to try</span><b>One question, five chats</b><p>Compare the steps, the tool calls, the time and the answer. Each chat has a “How it works” page with its diagram.</p></div>
             <div><span class="tag">The data</span><b>A shop that doesn’t exist</b><p>Invented orders, policies and weather, so every fact must come from a tool.</p></div>
           </div>
-          <p class="flow-note wa-app-note">Run it from the repo root: <code>uv run w-and-a</code>. Live runs need an OpenAI key; without one, the app plays recorded runs.</p>
+          <p class="flow-note wa-app-note">Run it from the repo root: <code>uv run w-and-a</code>. A Tools page lets you run each tool. Live runs need an OpenAI key; without one, the scripted chatbot still works and presets replay recorded runs.</p>
         </div>
         <div class="wa-legend"><span class="k-wf">Workflow</span><span class="k-agent">Agent</span></div>
         <span class="page-num"></span>

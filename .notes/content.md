@@ -147,6 +147,7 @@ make the chat like apps, show events like tool usage, tools resul, reasoning, et
 
 
 ---
+- [x]
  /plan
 
   in apps/w-and-a/ instead of tabs """chatbot , prompt-> model, wrokflow,..""" add them in a left side
@@ -161,6 +162,23 @@ make the chat like apps, show events like tool usage, tools resul, reasoning, et
 
   in presentations/06/ when talk about chatbots, you need to mention that it can have a step by step
   flow behind, deterministic [serach in the web to explain better]
+
+
+---
+
+Create the slides of observability
+# 
+- Objective: Talk about observability their role in genai systems)
+Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
+Diagrams: make digrams / flows to represent these building blocks. use colors references to agenet, workflow,... in this way to keep consistence among slides of this unit.
+
+# lesson: observability & traceability, continuous imprvement [review lesson's titla], create a small 
+what it is? Why we need?
+present concepts of traces, finops, ...
+
+We can use evals, metrics, llm as judges
+
+
 
 ---
 
@@ -201,6 +219,8 @@ Difference between Agent and chatbot and workflow and ...
 
 Types of agents
 
+---
+
 # Unit 06. Observability
 
 What is and why (observability)
@@ -208,6 +228,9 @@ What is and why (observability)
 traces
 
 evals and llms as judge
+
+---
+
 
 # Unit 07. Experiments
 

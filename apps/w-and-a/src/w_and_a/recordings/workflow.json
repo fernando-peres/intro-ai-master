@@ -1,278 +1,390 @@
 {
-  "Why is order 1042 late, and what can you offer me?": {
+  "Write a short, friendly apology for a late delivery.": {
     "mode": "workflow",
-    "question": "Why is order 1042 late, and what can you offer me?",
-    "answer": "Order 1042 is delayed because Storm Ilda closed the Porto hub for two days, and parcels are moving again now. The promised delivery was 2026-10-30, and the current expected delivery is 2026-11-05.\n\nBecause it’s more than 3 days late, you’re eligible for either:\n- a 15% voucher on the order total, or\n- free express shipping on your next order.\n\nIf you’d like, I can help you choose the option.",
+    "question": "Write a short, friendly apology for a late delivery.",
+    "answer": "Of course — here’s a short, friendly apology:\n\n“Sorry for the delay with your delivery. We understand this is frustrating and appreciate your patience. Thank you for bearing with us.”",
     "events": [
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 1 · Classify",
         "body": "The model labels the request.",
-        "at": "2026-11-02-14-03-47",
+        "at": "2026-11-02-16-03-38",
         "t": 0.0
       },
       {
         "kind": "reasoning",
         "actor": "model",
         "title": "Reasoning summary",
-        "body": "**Classifying customer inquiry**\n\nI need to classify a customer message regarding a late order. They’re asking why their order is late and what I can offer as a resolution. This seems to fall under a specific category related to their order, which could be simply labeled as \"order.\" Keeping it to one word makes sense for categorization purposes. I think this will help streamline how we address their concern.",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
+        "body": "**Classifying message intent**\n\nI see that the customer's message is asking for an apology, so it's important to classify this correctly. This isn't about their order, policy, or price; it's something different. I just need to distill it down to one word. It's all about accurately understanding the user's intent to respond appropriately. Making sure I'm on point with this will help maintain good customer relations and ensure the user feels heard and valued!",
+        "at": "2026-11-02-16-03-41",
+        "t": 2.17
+      },
+      {
+        "kind": "route",
+        "actor": "workflow",
+        "title": "Step 2 · Route → other",
+        "body": "No tool fits: the model answers from the message alone.",
+        "at": "2026-11-02-16-03-41",
+        "t": 2.17
+      },
+      {
+        "kind": "step",
+        "actor": "workflow",
+        "title": "Step 3 · Look up",
+        "body": "Our code calls the tool for this route.",
+        "at": "2026-11-02-16-03-41",
+        "t": 2.17
+      },
+      {
+        "kind": "step",
+        "actor": "workflow",
+        "title": "Step 4 · Draft",
+        "body": "The model writes the reply from the facts.",
+        "at": "2026-11-02-16-03-41",
+        "t": 2.17
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Crafting a concise apology**\n\nI need to write a brief apology for a late delivery, keeping it under 120 words. Since there aren't specific facts to include, I'll focus on crafting a general, friendly apology without making any unsupported claims. The customer reached out in English, but since the company is in Portugal, I wonder if Portuguese would be more suitable. However, responding in English seems fine too. I’ll aim for a concise and warm tone in my apology.",
+        "at": "2026-11-02-16-03-44",
+        "t": 5.66
+      },
+      {
+        "kind": "check",
+        "actor": "workflow",
+        "title": "Step 5 · Check: pass",
+        "body": "Not empty, short enough, and it states the key fact.",
+        "at": "2026-11-02-16-03-44",
+        "t": 5.66
+      }
+    ],
+    "llm_calls": 2,
+    "tool_calls": 0,
+    "tokens": 331,
+    "seconds": 5.66,
+    "recorded": false
+  },
+  "What's the status of order 1043?": {
+    "mode": "workflow",
+    "question": "What's the status of order 1043?",
+    "answer": "Order 1043 has been **delivered**. It was delivered on **2026-10-24** to **Lisbon**.",
+    "events": [
+      {
+        "kind": "step",
+        "actor": "workflow",
+        "title": "Step 1 · Classify",
+        "body": "The model labels the request.",
+        "at": "2026-11-02-16-03-44",
+        "t": 0.0
       },
       {
         "kind": "route",
         "actor": "workflow",
         "title": "Step 2 · Route → order",
         "body": "Order path: find the order id, look up the order, and if it is late, look up the late-delivery policy.",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
+        "at": "2026-11-02-16-03-45",
+        "t": 1.31
       },
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 3 · Look up",
         "body": "Our code calls the tool for this route.",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
+        "at": "2026-11-02-16-03-45",
+        "t": 1.31
       },
       {
         "kind": "tool_call",
         "actor": "workflow",
         "title": "Call lookup_order",
-        "body": "{\n  \"order_id\": \"1042\"\n}",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
+        "body": "{\n  \"order_id\": \"1043\"\n}",
+        "at": "2026-11-02-16-03-45",
+        "t": 1.31
       },
       {
         "kind": "tool_result",
         "actor": "tool",
         "title": "lookup_order returned",
-        "body": "{\n  \"order_id\": \"1042\",\n  \"status\": \"delayed\",\n  \"items\": [\n    \"Oak floor lamp\",\n    \"Linen cushion cover (x2)\"\n  ],\n  \"total_eur\": 189.7,\n  \"ship_to_city\": \"Porto\",\n  \"ordered\": \"2026-10-24\",\n  \"promised_delivery\": \"2026-10-30\",\n  \"expected_delivery\": \"2026-11-05\",\n  \"delay_reason\": \"Storm Ilda closed the Porto hub for two days; parcels are moving again.\"\n}",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
-      },
-      {
-        "kind": "tool_call",
-        "actor": "workflow",
-        "title": "Call search_policies",
-        "body": "{\n  \"query\": \"late deliveries voucher\"\n}",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
-      },
-      {
-        "kind": "tool_result",
-        "actor": "tool",
-        "title": "search_policies returned",
-        "body": "{\n  \"query\": \"late deliveries voucher\",\n  \"results\": [\n    {\n      \"id\": \"delivery-delays\",\n      \"title\": \"Late deliveries\",\n      \"text\": \"If an order arrives more than 3 days after the promised date, the customer gets a 15% voucher on the order total, or free express shipping on the next order. Weather delays are covered too.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
+        "body": "{\n  \"order_id\": \"1043\",\n  \"status\": \"delivered\",\n  \"items\": [\n    \"Ceramic table lamp\"\n  ],\n  \"total_eur\": 64.0,\n  \"ship_to_city\": \"Lisbon\",\n  \"ordered\": \"2026-10-20\",\n  \"promised_delivery\": \"2026-10-25\",\n  \"delivered\": \"2026-10-24\"\n}",
+        "at": "2026-11-02-16-03-45",
+        "t": 1.31
       },
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 4 · Draft",
         "body": "The model writes the reply from the facts.",
-        "at": "2026-11-02-14-03-50",
-        "t": 2.52
-      },
-      {
-        "kind": "reasoning",
-        "actor": "model",
-        "title": "Reasoning summary",
-        "body": "**Crafting a concise response**\n\nThe user wants a brief answer, no more than 120 words, addressing a customer's question about a delay. The promised delivery was on 2026-10-30, but now it's expected on 2026-11-05, which is six days late—so this qualifies. I’ll mention that we can offer a 15% voucher on the total order or free express shipping on the next order. Oh, and I should explain that Storm Ilda closed the Porto hub for two days, but parcels are moving again. Let's piece this together!",
-        "at": "2026-11-02-14-03-53",
-        "t": 6.26
+        "at": "2026-11-02-16-03-45",
+        "t": 1.31
       },
       {
         "kind": "check",
         "actor": "workflow",
         "title": "Step 5 · Check: pass",
         "body": "Not empty, short enough, and it states the key fact.",
-        "at": "2026-11-02-14-03-53",
-        "t": 6.26
+        "at": "2026-11-02-16-03-49",
+        "t": 4.54
       }
     ],
     "llm_calls": 2,
-    "tool_calls": 2,
-    "tokens": 690,
-    "seconds": 6.26,
+    "tool_calls": 1,
+    "tokens": 296,
+    "seconds": 4.54,
     "recorded": false
   },
-  "How did the return window change between 2025 and 2026?": {
+  "Can I still return the lamp from order 1043, and who pays shipping?": {
     "mode": "workflow",
-    "question": "How did the return window change between 2025 and 2026?",
-    "answer": "The return window increased from **14 days after delivery in 2025** to **30 days after delivery from 2026-01-01**. So, it became **16 days longer**.",
+    "question": "Can I still return the lamp from order 1043, and who pays shipping?",
+    "answer": "I can’t confirm for order 1043 because I don’t have the delivery date.\n\nUnder the current policy, items can be returned within 30 days of delivery. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\n\nIf you share the delivery date and order total, I can help check it.",
     "events": [
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 1 · Classify",
         "body": "The model labels the request.",
-        "at": "2026-11-02-14-03-53",
+        "at": "2026-11-02-16-03-49",
         "t": 0.0
       },
       {
         "kind": "reasoning",
         "actor": "model",
         "title": "Reasoning summary",
-        "body": "**Classifying customer inquiry**\n\nI have to classify the customer’s message regarding a change in the return window policy between years. It seems like I need to focus on getting this right, and I should use just one word in my response. I’m curious about how to best convey that clearly and concisely to ensure the customer understands. Let’s keep things straightforward to avoid confusion.",
-        "at": "2026-11-02-14-03-56",
-        "t": 2.68
+        "body": "**Classifying message**\n\nI need to classify the message, which is about the return policy and who pays for shipping. It seems straightforward, so I think I can sum it up in just one word: \"policy.\" This kind of encapsulation helps keep things clear and concise. It’s interesting how a single word can convey so much in the right context! I'm making sure I focus on the key aspect without over-complicating it.",
+        "at": "2026-11-02-16-03-51",
+        "t": 2.58
       },
       {
         "kind": "route",
         "actor": "workflow",
         "title": "Step 2 · Route → policy",
         "body": "Policy path: search the policies with the customer's words.",
-        "at": "2026-11-02-14-03-56",
-        "t": 2.68
+        "at": "2026-11-02-16-03-51",
+        "t": 2.58
       },
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 3 · Look up",
         "body": "Our code calls the tool for this route.",
-        "at": "2026-11-02-14-03-56",
-        "t": 2.68
+        "at": "2026-11-02-16-03-51",
+        "t": 2.58
       },
       {
         "kind": "tool_call",
         "actor": "workflow",
         "title": "Call search_policies",
-        "body": "{\n  \"query\": \"How did the return window change between 2025 and 2026?\"\n}",
-        "at": "2026-11-02-14-03-56",
-        "t": 2.68
+        "body": "{\n  \"query\": \"Can I still return the lamp from order 1043, and who pays shipping?\"\n}",
+        "at": "2026-11-02-16-03-51",
+        "t": 2.58
       },
       {
         "kind": "tool_result",
         "actor": "tool",
         "title": "search_policies returned",
-        "body": "{\n  \"query\": \"How did the return window change between 2025 and 2026?\",\n  \"results\": [\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
-        "at": "2026-11-02-14-03-56",
-        "t": 2.69
+        "body": "{\n  \"query\": \"Can I still return the lamp from order 1043, and who pays shipping?\",\n  \"results\": [\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    },\n    {\n      \"id\": \"returns-2025\",\n      \"title\": \"Returns policy (2025, replaced on 2026-01-01)\",\n      \"text\": \"Items could be returned within 14 days of delivery. The customer paid return shipping (€5.90). Refunds were paid within 10 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-16-03-51",
+        "t": 2.58
       },
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 4 · Draft",
         "body": "The model writes the reply from the facts.",
-        "at": "2026-11-02-14-03-56",
-        "t": 2.69
+        "at": "2026-11-02-16-03-51",
+        "t": 2.58
       },
       {
         "kind": "reasoning",
         "actor": "model",
         "title": "Reasoning summary",
-        "body": "**Explaining return window changes**\n\nI need to keep my answer under 120 words, focusing on how the return window changed between 2025 and 2026. I'll emphasize the facts: it increased from 14 days to 30 days. I could say something like, \"The return window has increased by 16 days.\" It's essential to present this succinctly while ensuring it's clear. Let's work on crafting a concise response that captures these points effectively!",
-        "at": "2026-11-02-14-04-02",
-        "t": 8.28
+        "body": "**Clarifying return policy**\n\nI need to provide facts about the return policy. I can't determine if order 1043 is returnable without its delivery date or value. The policy states that returns within 30 days are eligible for free shipping for orders over €50. It suggests that the company pays return shipping in this case. However, for orders €50 or less, it’s unclear who covers shipping. So, I can only affirm that free return shipping applies to orders over €50, and for others, the policy doesn't specify.",
+        "at": "2026-11-02-16-03-55",
+        "t": 6.61
       },
       {
         "kind": "check",
         "actor": "workflow",
         "title": "Step 5 · Check: pass",
         "body": "Not empty, short enough, and it states the key fact.",
-        "at": "2026-11-02-14-04-02",
-        "t": 8.28
+        "at": "2026-11-02-16-03-55",
+        "t": 6.61
       }
     ],
     "llm_calls": 2,
     "tool_calls": 1,
-    "tokens": 453,
-    "seconds": 8.28,
+    "tokens": 628,
+    "seconds": 6.61,
     "recorded": false
   },
-  "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?": {
+  "Where is order 1045? It's the wool throw going to Coimbra.": {
     "mode": "workflow",
-    "question": "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
-    "answer": "You paid **€127.25** in total for the 3 lamps after the 15% spring discount.",
+    "question": "Where is order 1045? It's the wool throw going to Coimbra.",
+    "answer": "I can’t find order **1045** in our system.  \nIf you send the correct order number, I can help check it.",
     "events": [
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 1 · Classify",
         "body": "The model labels the request.",
-        "at": "2026-11-02-14-04-02",
+        "at": "2026-11-02-16-03-55",
         "t": 0.0
-      },
-      {
-        "kind": "reasoning",
-        "actor": "model",
-        "title": "Reasoning summary",
-        "body": "**Classifying price calculation**\n\nI see that I need to classify this task as a price calculation. It seems straightforward since there's just one word to focus on. I should keep things simple and clear to ensure I’m capturing exactly what’s needed. I wonder if there are any specific factors I need to consider or any additional context that could be helpful for this classification. But for now, it appears to be primarily about pricing.",
-        "at": "2026-11-02-14-04-05",
-        "t": 2.9
       },
       {
         "kind": "route",
         "actor": "workflow",
-        "title": "Step 2 · Route → price",
-        "body": "Price path: the model writes the sum, the calculator computes it.",
-        "at": "2026-11-02-14-04-05",
-        "t": 2.9
+        "title": "Step 2 · Route → order",
+        "body": "Order path: find the order id, look up the order, and if it is late, look up the late-delivery policy.",
+        "at": "2026-11-02-16-03-57",
+        "t": 1.48
       },
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 3 · Look up",
         "body": "Our code calls the tool for this route.",
-        "at": "2026-11-02-14-04-05",
-        "t": 2.9
-      },
-      {
-        "kind": "reasoning",
-        "actor": "model",
-        "title": "Reasoning summary",
-        "body": "**Calculating discount expression**\n\nI need to provide just the arithmetic expression for the problem. So, I'll compute 3 * 49.90 * (1 - 0.15) or I could express it as 3 * 49.90 * 0.85, since a 15% discount means the user pays 85%. I suspect I can use decimal numbers, but I won't include any currency signs. I'll ensure to keep it simple and straightforward—just the expression.",
-        "at": "2026-11-02-14-04-07",
-        "t": 5.56
+        "at": "2026-11-02-16-03-57",
+        "t": 1.48
       },
       {
         "kind": "tool_call",
         "actor": "workflow",
-        "title": "Call calculate",
-        "body": "{\n  \"expression\": \"3*49.90*(1-15/100)\"\n}",
-        "at": "2026-11-02-14-04-07",
-        "t": 5.56
+        "title": "Call lookup_order",
+        "body": "{\n  \"order_id\": \"1045\"\n}",
+        "at": "2026-11-02-16-03-57",
+        "t": 1.48
       },
       {
         "kind": "tool_result",
         "actor": "tool",
-        "title": "calculate returned",
-        "body": "{\n  \"expression\": \"3*49.90*(1-15/100)\",\n  \"result\": 127.25\n}",
-        "at": "2026-11-02-14-04-07",
-        "t": 5.56
+        "title": "lookup_order returned",
+        "body": "{\n  \"error\": \"No order '1045'. Known orders have four digits.\"\n}",
+        "at": "2026-11-02-16-03-57",
+        "t": 1.48
       },
       {
         "kind": "step",
         "actor": "workflow",
         "title": "Step 4 · Draft",
         "body": "The model writes the reply from the facts.",
-        "at": "2026-11-02-14-04-07",
-        "t": 5.56
-      },
-      {
-        "kind": "reasoning",
-        "actor": "model",
-        "title": "Reasoning summary",
-        "body": "**Crafting a concise answer**\n\nI need to keep my response brief, aiming for 120 words or less, and focus solely on the essential facts. It might be helpful to include a total or summary element in there, too. I want to stay clear and direct, avoiding fluff that doesn’t add value. Let’s make sure the information is accurate and serves the purpose well. Overall, I want to be as helpful and straightforward as possible!",
-        "at": "2026-11-02-14-04-10",
-        "t": 8.5
+        "at": "2026-11-02-16-03-57",
+        "t": 1.48
       },
       {
         "kind": "check",
         "actor": "workflow",
         "title": "Step 5 · Check: pass",
         "body": "Not empty, short enough, and it states the key fact.",
-        "at": "2026-11-02-14-04-10",
-        "t": 8.5
+        "at": "2026-11-02-16-03-59",
+        "t": 3.8
       }
     ],
-    "llm_calls": 3,
+    "llm_calls": 2,
     "tool_calls": 1,
-    "tokens": 464,
-    "seconds": 8.5,
+    "tokens": 325,
+    "seconds": 3.8,
+    "recorded": false
+  },
+  "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?": {
+    "mode": "workflow",
+    "question": "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?",
+    "answer": "I only have details for order **1042**:\n\n- **Where is it?** Delayed in/through **Porto**; the Porto hub was closed for two days due to **Storm Ilda**, and parcels are moving again.\n- **Weather risk?** Yes — weather caused the delay, but it’s now moving.\n- **What are you owed?** Since it’s expected **6 days after** the promised date, you qualify for a **15% voucher** or **free express shipping on your next order**.  \n  - 15% of **€189.70** = **€28.46** voucher.\n\nI don’t have any information for **order 1044**.",
+    "events": [
+      {
+        "kind": "step",
+        "actor": "workflow",
+        "title": "Step 1 · Classify",
+        "body": "The model labels the request.",
+        "at": "2026-11-02-16-03-59",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Classifying user inquiry**\n\nI need to classify the user's message, which asks about the status of specific orders, weather risks, and owed amounts. The mention of specific orders means I should classify it simply as \"order.\" Keeping it straightforward with one word makes it easier to address the user's inquiry effectively. I want to make sure I'm clearly understanding their request so I can provide the appropriate response that fits what they're asking for!",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "route",
+        "actor": "workflow",
+        "title": "Step 2 · Route → order",
+        "body": "Order path: find the order id, look up the order, and if it is late, look up the late-delivery policy.",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "step",
+        "actor": "workflow",
+        "title": "Step 3 · Look up",
+        "body": "Our code calls the tool for this route.",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "tool_call",
+        "actor": "workflow",
+        "title": "Call lookup_order",
+        "body": "{\n  \"order_id\": \"1042\"\n}",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "lookup_order returned",
+        "body": "{\n  \"order_id\": \"1042\",\n  \"status\": \"delayed\",\n  \"items\": [\n    \"Oak floor lamp\",\n    \"Linen cushion cover (x2)\"\n  ],\n  \"total_eur\": 189.7,\n  \"ship_to_city\": \"Porto\",\n  \"ordered\": \"2026-10-24\",\n  \"promised_delivery\": \"2026-10-30\",\n  \"expected_delivery\": \"2026-11-05\",\n  \"delay_reason\": \"Storm Ilda closed the Porto hub for two days; parcels are moving again.\"\n}",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "tool_call",
+        "actor": "workflow",
+        "title": "Call search_policies",
+        "body": "{\n  \"query\": \"late deliveries voucher\"\n}",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "tool_result",
+        "actor": "tool",
+        "title": "search_policies returned",
+        "body": "{\n  \"query\": \"late deliveries voucher\",\n  \"results\": [\n    {\n      \"id\": \"delivery-delays\",\n      \"title\": \"Late deliveries\",\n      \"text\": \"If an order arrives more than 3 days after the promised date, the customer gets a 15% voucher on the order total, or free express shipping on the next order. Weather delays are covered too.\"\n    },\n    {\n      \"id\": \"returns-2026\",\n      \"title\": \"Returns policy (from 2026-01-01)\",\n      \"text\": \"Return any item within 30 days of delivery for a full refund. Return shipping is free for orders over €50. Refunds are paid within 5 working days.\"\n    }\n  ]\n}",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "step",
+        "actor": "workflow",
+        "title": "Step 4 · Draft",
+        "body": "The model writes the reply from the facts.",
+        "at": "2026-11-02-16-04-02",
+        "t": 2.69
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Providing order information**\n\nI need to address the orders 1042 and 1044. For order 1042, I have some facts but unfortunately, I can’t provide any info on 1044. The voucher for order 1042 was promised by October 30, but it seems there will be a delay until November 5, which is six days later. This means I should offer a 15% voucher or free express shipping on the next order, which would amount to about €28.46. Also, I should mention that Storm Ilda delayed shipping in Porto for two days.",
+        "at": "2026-11-02-16-04-06",
+        "t": 7.48
+      },
+      {
+        "kind": "check",
+        "actor": "workflow",
+        "title": "Step 5 · Check: pass",
+        "body": "Not empty, short enough, and it states the key fact.",
+        "at": "2026-11-02-16-04-06",
+        "t": 7.48
+      }
+    ],
+    "llm_calls": 2,
+    "tool_calls": 2,
+    "tokens": 831,
+    "seconds": 7.48,
     "recorded": false
   }
 }

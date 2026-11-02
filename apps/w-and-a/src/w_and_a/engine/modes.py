@@ -1,4 +1,4 @@
-"""One runner per tab. The difference between them is who decides the next step:
+"""One runner per mode. The difference between them is who decides the next step:
 a person (chatbot, prompt), our code (workflow) or the model (agent, agentic system).
 
 Every runner takes the question and an `LLM`, records each step on a `Trace`, and returns
@@ -9,7 +9,7 @@ import json
 import re
 from collections.abc import Callable
 
-from w_and_a.engine.data import SHOP
+from w_and_a.engine.data import SHOP, TODAY
 from w_and_a.engine.events import Event, Run, Trace
 from w_and_a.engine.llm import LLM, Reply, tool_output
 from w_and_a.engine.tools import TOOLS, as_json, run_tool
@@ -19,7 +19,45 @@ SPECIALIST_STEP_LIMIT = 4
 
 _ASSISTANT = (
     f"You are the customer assistant of {SHOP}, an online home-goods shop in Portugal. "
-    "Be brief: at most 120 words."
+    f"Today is {TODAY}. Be brief: at most 120 words."
+)
+CHATBOT_RULES = (
+    f"{_ASSISTANT} You have no access to orders, policies or any system. "
+    "If you can't know something, say so."
+)
+PROMPT_RULES = "Answer briefly."
+CLASSIFY_RULES = (
+    "Classify the customer's message. Reply with one word only: "
+    "order (about a specific order), policy (returns, delivery, warranty rules), "
+    "price (a calculation), or other."
+)
+EXPRESSION_RULES = (
+    "Write one arithmetic expression for this, using numbers and + - * / ( ) only. "
+    "Reply with the expression only."
+)
+DRAFT_RULES = f"{_ASSISTANT} Use only the facts provided. If they don't answer it, say so."
+AGENT_RULES = (
+    f"{_ASSISTANT} Use the tools to find facts; never guess order details, policies or "
+    "prices. Use calculate for any arithmetic. If a tool fails or a fact is missing, try "
+    "another way before answering; if you still can't, say what you need from the customer."
+)
+LEAD_PLAN_RULES = (
+    f"You lead the support team of {SHOP}. Today is {TODAY}. Specialists: 'orders' can "
+    "look up and find orders and check today's weather; 'policies' can search shop "
+    "policies and calculate. Split the request into 1 to 3 subtasks, in the order they "
+    "must run: each specialist receives the findings of the ones before it. "
+    'Reply with JSON only: {"subtasks": '
+    '[{"specialist": "orders" or "policies", "task": "..."}]}'
+)
+SPECIALIST_RULES = (
+    "You are the {name} at " + SHOP + ". Today is " + TODAY + ". Use your tools; if one "
+    "fails, try another way. Report facts only, briefly."
+)
+LEAD_WRITE_RULES = f"{_ASSISTANT} Write the reply using only the specialists' findings."
+REVIEW_RULES = (
+    f"Today is {TODAY}. You review support replies. Check the draft against the findings: "
+    "every fact must come from them, and it must answer every part of the customer's "
+    "message. Reply PASS, or FAIL: <what is wrong>."
 )
 
 
@@ -32,7 +70,8 @@ def _ask(trace: Trace, llm: LLM, actor: str, **kwargs) -> Reply:
     return reply
 
 
-def _call_tool(trace: Trace, actor: str, name: str, arguments: dict) -> dict:
+def call_tool(trace: Trace, actor: str, name: str, arguments: dict) -> dict:
+    """Runs a tool for `actor` and records the call and its result."""
     trace.emit("tool_call", actor, f"Call {name}", as_json(arguments))
     result = run_tool(name, arguments)
     trace.run.tool_calls += 1
@@ -48,10 +87,7 @@ def chatbot(question: str, llm: LLM, history: list[dict] | None = None, on_event
     trace.emit(
         "note", "code", "No tools", "It can only talk: it has no access to orders or policies."
     )
-    instructions = (
-        f"{_ASSISTANT} You have no access to orders, policies or any system. "
-        "If you can't know something, say so."
-    )
+    instructions = CHATBOT_RULES
     messages = [*(history or []), {"role": "user", "content": question}]
     reply = _ask(trace, llm, "model", instructions=instructions, input=messages)
     return trace.finish(reply.text)
@@ -62,7 +98,7 @@ def prompt_model(question: str, llm: LLM, on_event=None) -> Run:
     trace.emit(
         "note", "code", "One shot", "No chat history, no tools, no instructions about the shop."
     )
-    reply = _ask(trace, llm, "model", instructions="Answer briefly.", input=question)
+    reply = _ask(trace, llm, "model", instructions=PROMPT_RULES, input=question)
     return trace.finish(reply.text)
 
 
@@ -81,19 +117,14 @@ def workflow(question: str, llm: LLM, on_event=None) -> Run:
     trace = Trace(Run("workflow", question), on_event)
 
     trace.emit("step", "workflow", "Step 1 · Classify", "The model labels the request.")
-    classify = (
-        "Classify the customer's message. Reply with one word only: "
-        "order (about a specific order), policy (returns, delivery, warranty rules), "
-        "price (a calculation), or other."
-    )
-    route = _label(_ask(trace, llm, "model", instructions=classify, input=question).text)
+    route = _label(_ask(trace, llm, "model", instructions=CLASSIFY_RULES, input=question).text)
 
     trace.emit("route", "workflow", f"Step 2 · Route → {route}", _ROUTE_TEXT[route])
     trace.emit("step", "workflow", "Step 3 · Look up", "Our code calls the tool for this route.")
     facts, must_mention = _gather(trace, llm, route, question)
 
     trace.emit("step", "workflow", "Step 4 · Draft", "The model writes the reply from the facts.")
-    draft_rules = f"{_ASSISTANT} Use only the facts provided. If they don't answer it, say so."
+    draft_rules = DRAFT_RULES
     draft_input = f"Customer message: {question}\n\nFacts from our systems:\n{as_json(facts)}"
     answer = _ask(trace, llm, "model", instructions=draft_rules, input=draft_input).text
 
@@ -133,24 +164,22 @@ def _gather(trace: Trace, llm: LLM, route: str, question: str) -> tuple[dict, li
         if not found:
             trace.emit("note", "workflow", "No order id", "The path asks the customer for it.")
             return {"missing": "order id; ask the customer for it"}, []
-        order = _call_tool(trace, "workflow", "lookup_order", {"order_id": found.group()})
+        order = call_tool(trace, "workflow", "lookup_order", {"order_id": found.group()})
         facts = {"order": order}
         if order.get("status") == "delayed":
-            facts["policy"] = _call_tool(
+            facts["policy"] = call_tool(
                 trace, "workflow", "search_policies", {"query": "late deliveries voucher"}
             )
         return facts, [found.group()]
     if route == "policy":
         return {
-            "policies": _call_tool(trace, "workflow", "search_policies", {"query": question})
+            "policies": call_tool(trace, "workflow", "search_policies", {"query": question})
         }, []
     if route == "price":
-        ask = (
-            "Write one arithmetic expression for this, using numbers and + - * / ( ) only. "
-            "Reply with the expression only."
+        expr = _ask(trace, llm, "model", instructions=EXPRESSION_RULES, input=question).text.strip(
+            "` \n"
         )
-        expr = _ask(trace, llm, "model", instructions=ask, input=question).text.strip("` \n")
-        result = _call_tool(trace, "workflow", "calculate", {"expression": expr})
+        result = call_tool(trace, "workflow", "calculate", {"expression": expr})
         value = result.get("result")
         return {"calculation": result}, [f"{value:.2f}"] if value is not None else []
     return {}, []
@@ -180,7 +209,7 @@ def tool_loop(
         if not reply.calls:
             return reply.text
         outputs = [
-            tool_output(c, _call_tool(trace, actor, c.name, c.arguments)) for c in reply.calls
+            tool_output(c, call_tool(trace, actor, c.name, c.arguments)) for c in reply.calls
         ]
         reply = _ask(
             trace,
@@ -207,18 +236,14 @@ def agent(question: str, llm: LLM, on_event=None) -> Run:
         "Goal and tools",
         f"Tools: {', '.join(TOOLS)}. Limit: {AGENT_STEP_LIMIT} rounds.",
     )
-    instructions = (
-        f"{_ASSISTANT} Use the tools to find facts; never guess order details, policies or "
-        "prices. Use calculate for any arithmetic."
-    )
-    answer = tool_loop(trace, llm, "agent", instructions, question, list(TOOLS), AGENT_STEP_LIMIT)
+    answer = tool_loop(trace, llm, "agent", AGENT_RULES, question, list(TOOLS), AGENT_STEP_LIMIT)
     return trace.finish(answer)
 
 
 # ---------- Several agents: an agentic system ----------
 
 SPECIALISTS: dict[str, tuple[str, list[str]]] = {
-    "orders": ("Orders specialist", ["lookup_order", "get_weather"]),
+    "orders": ("Orders specialist", ["lookup_order", "find_orders", "get_weather"]),
     "policies": ("Policies specialist", ["search_policies", "calculate"]),
 }
 
@@ -235,13 +260,9 @@ def _plan(text: str, question: str) -> list[dict]:
 
 def agentic(question: str, llm: LLM, on_event=None) -> Run:
     trace = Trace(Run("agentic", question), on_event)
-    lead = (
-        f"You lead the support team of {SHOP}. Specialists: 'orders' can look up orders and "
-        "today's weather; 'policies' can search shop policies and calculate. Split the "
-        'request into 1 to 3 subtasks. Reply with JSON only: {"subtasks": '
-        '[{"specialist": "orders" or "policies", "task": "..."}]}'
+    plan = _plan(
+        _ask(trace, llm, "lead", instructions=LEAD_PLAN_RULES, input=question).text, question
     )
-    plan = _plan(_ask(trace, llm, "lead", instructions=lead, input=question).text, question)
     trace.emit(
         "plan",
         "lead",
@@ -253,26 +274,24 @@ def agentic(question: str, llm: LLM, on_event=None) -> Run:
     for task in plan:
         name, tools = SPECIALISTS[task["specialist"]]
         trace.emit("handoff", "lead", f"Hand off → {name}", task["task"])
-        rules = f"You are the {name} at {SHOP}. Use your tools; report facts only, briefly."
-        report = tool_loop(trace, llm, name, rules, task["task"], tools, SPECIALIST_STEP_LIMIT)
+        rules = SPECIALIST_RULES.format(name=name)
+        brief = task["task"] + ("\n\nFindings so far:\n" + "\n\n".join(reports) if reports else "")
+        report = tool_loop(trace, llm, name, rules, brief, tools, SPECIALIST_STEP_LIMIT)
         trace.emit("report", name, f"{name} reports", report)
         reports.append(f"{name}: {report}")
 
     findings = "\n\n".join(reports)
-    write = f"{_ASSISTANT} Write the reply using only the specialists' findings."
+    write = LEAD_WRITE_RULES
     draft_input = f"Customer message: {question}\n\nFindings:\n{findings}"
     answer = _ask(trace, llm, "lead", instructions=write, input=draft_input).text
 
-    review = (
-        "You review support replies. Check the draft against the findings: every fact must "
-        "come from them. Reply PASS, or FAIL: <what is wrong>."
-    )
+    review = REVIEW_RULES
     verdict = _ask(
         trace,
         llm,
         "reviewer",
         instructions=review,
-        input=f"Findings:\n{findings}\n\nDraft:\n{answer}",
+        input=f"Customer message: {question}\n\nFindings:\n{findings}\n\nDraft:\n{answer}",
     ).text.strip()
     passed = verdict.upper().startswith("PASS")
     trace.emit("check", "reviewer", "Review: " + ("pass" if passed else "fail"), verdict)
@@ -292,4 +311,22 @@ MODES: dict[str, Runner] = {
     "agentic": agentic,
 }
 
-__all__ = ["MODES", "Event", "Run"]
+#: The instructions each mode sends, in order, for the "how it works" pages.
+PROMPTS: dict[str, list[tuple[str, str]]] = {
+    "chatbot": [("Chatbot (LLM)", CHATBOT_RULES)],
+    "prompt": [("Single prompt", PROMPT_RULES)],
+    "workflow": [
+        ("1 · Classify", CLASSIFY_RULES),
+        ("3 · Price route: write the expression", EXPRESSION_RULES),
+        ("4 · Draft", DRAFT_RULES),
+    ],
+    "agent": [("Agent", AGENT_RULES)],
+    "agentic": [
+        ("Lead · plan", LEAD_PLAN_RULES),
+        ("Specialist", SPECIALIST_RULES),
+        ("Lead · write", LEAD_WRITE_RULES),
+        ("Reviewer", REVIEW_RULES),
+    ],
+}
+
+__all__ = ["MODES", "PROMPTS", "Event", "Run"]

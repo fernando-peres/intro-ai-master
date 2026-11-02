@@ -1,94 +1,126 @@
 {
-  "Why is order 1042 late, and what can you offer me?": {
+  "Write a short, friendly apology for a late delivery.": {
     "mode": "prompt",
-    "question": "Why is order 1042 late, and what can you offer me?",
-    "answer": "Sorry about the delay. I can’t see live details for order 1042 from here, so I can’t confirm the exact cause.\n\nCommon reasons are:\n- carrier delays\n- weather / route disruptions\n- customs or sorting issues\n- warehouse packing or stock delays\n\nWhat I can offer:\n- help you check the latest status\n- a replacement if the order is lost or significantly delayed\n- refund of shipping if applicable\n- a discount/store credit as a goodwill gesture\n\nIf you send me the email used for the order or the tracking number, I can help you faster.",
+    "question": "Write a short, friendly apology for a late delivery.",
+    "answer": "Sorry for the delay with your delivery — we know that’s frustrating, and we sincerely apologize. Thank you for your patience and understanding.",
     "events": [
       {
         "kind": "note",
         "actor": "code",
         "title": "One shot",
         "body": "No chat history, no tools, no instructions about the shop.",
-        "at": "2026-11-02-14-03-36",
+        "at": "2026-11-02-16-03-22",
         "t": 0.0
-      },
-      {
-        "kind": "reasoning",
-        "actor": "model",
-        "title": "Reasoning summary",
-        "body": "**Addressing customer support inquiry**\n\nI need to respond in a customer support context without specifics. I can't access order details, but I should ask for the order number, which the user provided as 1042. I might need to explain that I can't see the system. Apologizing and suggesting common reasons for delays, like carrier issues or weather, would be good. I could also mention compensation options like expedited replacements or discounts, while being direct and concise in my response.",
-        "at": "2026-11-02-14-03-40",
-        "t": 4.64
-      },
-      {
-        "kind": "reasoning",
-        "actor": "model",
-        "title": "Reasoning summary",
-        "body": "**Responding to user inquiry**\n\nI can assist the user by checking their status if they provide their email or zip code. Depending on the policy, I can then offer options like a replacement, a refund for shipping, or perhaps a discount or store credit. I want to ensure my response is direct and to the point, so the user understands their options clearly. It feels important to keep the communication straightforward and helpful!",
-        "at": "2026-11-02-14-03-40",
-        "t": 4.64
       }
     ],
     "llm_calls": 1,
     "tool_calls": 0,
-    "tokens": 375,
-    "seconds": 4.64,
+    "tokens": 55,
+    "seconds": 3.01,
     "recorded": false
   },
-  "How did the return window change between 2025 and 2026?": {
+  "What's the status of order 1043?": {
     "mode": "prompt",
-    "question": "How did the return window change between 2025 and 2026?",
-    "answer": "I don’t have the 2025 and 2026 return-policy details here, so I can’t compare the window accurately.\n\nIf you paste the two policy versions (or the relevant dates), I can tell you exactly how it changed.",
+    "question": "What's the status of order 1043?",
+    "answer": "I don’t have access to your order system, so I can’t see order 1043’s status directly.\n\nIf you want, send me:\n- the store/platform name, or\n- the order details/screenshot,\n\nand I’ll help interpret it.",
     "events": [
       {
         "kind": "note",
         "actor": "code",
         "title": "One shot",
         "body": "No chat history, no tools, no instructions about the shop.",
-        "at": "2026-11-02-14-03-40",
+        "at": "2026-11-02-16-03-25",
         "t": 0.0
       },
       {
         "kind": "reasoning",
         "actor": "model",
         "title": "Reasoning summary",
-        "body": "**Clarifying return window changes**\n\nThe user is asking how the return window changed between 2025 and 2026, but there’s no prior context or specific policy details provided. I think I should clarify their question because they might expect an answer based on some data that isn't available. I’ll need to let them know that I can’t determine the change without the relevant policy or document details. It’s important to ask for that to give a proper answer!",
-        "at": "2026-11-02-14-03-44",
-        "t": 3.61
+        "body": "**Requesting more context**\n\nI realize that I can’t provide the answer without more context. I probably should ask for more details or say that I can’t access the information. But there’s this thought about pretending to know, yet I need to be careful with that. Since there's no order system context, I’ll just say I don’t have access right now. It might be helpful to invite them to share more about what they need!",
+        "at": "2026-11-02-16-03-30",
+        "t": 4.47
       }
     ],
     "llm_calls": 1,
     "tool_calls": 0,
-    "tokens": 186,
-    "seconds": 3.61,
+    "tokens": 138,
+    "seconds": 4.47,
     "recorded": false
   },
-  "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?": {
+  "Can I still return the lamp from order 1043, and who pays shipping?": {
     "mode": "prompt",
-    "question": "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
-    "answer": "You paid **€127.25** total.\n\nCalculation:\n- 15% off €49.90 = **€42.42** per lamp (rounded to cents)\n- 3 lamps × €42.42 = **€127.26**\n\nIf you calculate before rounding, the exact total is **€127.245**, which rounds to **€127.25**.",
+    "question": "Can I still return the lamp from order 1043, and who pays shipping?",
+    "answer": "I can’t see order 1043 from here, so I can’t confirm eligibility.\n\nIn general:\n- **Yes, if it’s still within the return window** and meets the return conditions.\n- **Shipping is usually paid by the customer** unless the lamp was **damaged, defective, or sent incorrectly**, or the seller offers **free returns**.\n\nIf you tell me the **purchase date** and **reason for return**, I can help you figure it out.",
     "events": [
       {
         "kind": "note",
         "actor": "code",
         "title": "One shot",
         "body": "No chat history, no tools, no instructions about the shop.",
-        "at": "2026-11-02-14-03-44",
+        "at": "2026-11-02-16-03-30",
+        "t": 0.0
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 301,
+    "seconds": 2.91,
+    "recorded": false
+  },
+  "Where is order 1045? It's the wool throw going to Coimbra.": {
+    "mode": "prompt",
+    "question": "Where is order 1045? It's the wool throw going to Coimbra.",
+    "answer": "I don’t have access to your order system, so I can’t see order **1045** directly.\n\nIf you send me the **tracking number** or the **carrier name**, I can help you check where the wool throw to **Coimbra** is.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "One shot",
+        "body": "No chat history, no tools, no instructions about the shop.",
+        "at": "2026-11-02-16-03-33",
         "t": 0.0
       },
       {
         "kind": "reasoning",
         "actor": "model",
         "title": "Reasoning summary",
-        "body": "**Calculating total cost**\n\nI need to compute the total for items priced at $49.90 each with a 15% discount. I'll take 85% of the price for the discounted amount, which is $49.90 times 0.85, equaling $42.415. For three items, that totals $127.245. Since currency is usually rounded to the nearest cent, I’ll finalize the total as $127.25. Now, I'll put together a brief summary of this calculation!",
-        "at": "2026-11-02-14-03-47",
-        "t": 3.32
+        "body": "**Considering logistics support**\n\nI realize I probably can’t provide an answer without specific system data. I should be honest and ask the user for more information. Since I’m an assistant, maybe I need to clarify that I don't have access to the order system. However, if the user gives me tracking information, I might still be able to help! It feels a bit brief, but I think this approach could work.",
+        "at": "2026-11-02-16-03-36",
+        "t": 2.98
       }
     ],
     "llm_calls": 1,
     "tool_calls": 0,
-    "tokens": 180,
-    "seconds": 3.32,
+    "tokens": 142,
+    "seconds": 2.98,
+    "recorded": false
+  },
+  "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?": {
+    "mode": "prompt",
+    "question": "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?",
+    "answer": "I don’t have access to your order system, so I can’t see where orders **1042** and **1044** are or what you’re owed.\n\nIf you paste either:\n- the **current status/tracking location** for each order, and\n- the **order total / deposit / contract terms**,\n\nI can tell you:\n- **where each is**\n- whether there’s any **weather risk**\n- and **what you should be owed**.",
+    "events": [
+      {
+        "kind": "note",
+        "actor": "code",
+        "title": "One shot",
+        "body": "No chat history, no tools, no instructions about the shop.",
+        "at": "2026-11-02-16-03-36",
+        "t": 0.0
+      },
+      {
+        "kind": "reasoning",
+        "actor": "model",
+        "title": "Reasoning summary",
+        "body": "**Clarifying order information**\n\nI’m trying to figure out how to respond to the user about orders 1042 and 1044. It seems I don’t have access to an order lookup system. I need to be honest about that, so I could suggest a template or ask for specific details, like account information. I should also mention that if they provide tracking details, I could help assess any potential issues. Lastly, I need to address any owed amounts clearly.",
+        "at": "2026-11-02-16-03-38",
+        "t": 2.65
+      }
+    ],
+    "llm_calls": 1,
+    "tool_calls": 0,
+    "tokens": 247,
+    "seconds": 2.65,
     "recorded": false
   }
 }

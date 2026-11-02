@@ -1,7 +1,11 @@
 """Pebble & Pine, an online home-goods shop that does not exist. Every fact here is invented,
 so a correct answer about it can only come from a tool."""
 
+from dataclasses import dataclass
+
 SHOP = "Pebble & Pine"
+#: The date every model is told it is today; the order dates are set around it.
+TODAY = "2026-11-02"
 
 ORDERS: dict[str, dict] = {
     "1042": {
@@ -88,8 +92,87 @@ WEATHER: dict[str, dict] = {
     "coimbra": {"city": "Coimbra", "today": "rain easing in the afternoon", "temp_c": 15},
 }
 
-PRESETS: tuple[str, ...] = (
-    "Why is order 1042 late, and what can you offer me?",
-    "How did the return window change between 2025 and 2026?",
-    "I bought 3 lamps at €49.90 each with the 15% spring discount. What did I pay?",
+
+@dataclass(frozen=True)
+class Preset:
+    """An example question, asked in every chat. Each one is the best fit for one mode."""
+
+    question: str
+    #: The mode this question was chosen to show off (a key of `modes.MODES`).
+    best: str
+    #: The lesson of the question, in one line.
+    takeaway: str
+    #: What each chat does with it, keyed by chat key (`MODE_KEYS`).
+    watch: dict[str, str]
+
+
+#: The chats a preset can run in: the two chatbot variants, then the other four modes.
+MODE_KEYS = ("chatbot_scripted", "chatbot_llm", "prompt", "workflow", "agent", "agentic")
+
+PRESETS: tuple[Preset, ...] = (
+    Preset(
+        "Write a short, friendly apology for a late delivery.",
+        "prompt",
+        "No private data needed: one manual call is enough.",
+        {
+            "chatbot_scripted": "“late delivery” trips the order rule: it asks for an id.",
+            "chatbot_llm": "Writes it well: no shop data is needed.",
+            "prompt": "One call, a good answer. Nothing more was needed.",
+            "workflow": "Classify → no tool fits → draft: two calls for one call's work.",
+            "agent": "No tool needed: the same text, at a higher price.",
+            "agentic": "A plan, handoffs and a review for one paragraph: more steps, more drift.",
+        },
+    ),
+    Preset(
+        "What's the status of order 1043?",
+        "workflow",
+        "Known steps: a workflow is cheap and does the same thing every time.",
+        {
+            "chatbot_scripted": "A rule finds the id and a template answers.",
+            "chatbot_llm": "It can't see orders: it says so.",
+            "prompt": "It can't see orders: it hands the work back to you.",
+            "workflow": "Classify → look up → draft. Correct, cheap, the same every time.",
+            "agent": "Same answer, more tokens: the freedom wasn't needed.",
+            "agentic": "Same answer, about five model calls.",
+        },
+    ),
+    Preset(
+        "Can I still return the lamp from order 1043, and who pays shipping?",
+        "agent",
+        "It needs two lookups the path didn't plan: only the agent gets both.",
+        {
+            "chatbot_scripted": "The first rule wins: it gives the order status, not returns.",
+            "chatbot_llm": "No order, no policy: generic advice.",
+            "prompt": "No order, no policy: generic advice.",
+            "workflow": "One route only: it gets the policy or the order, never both.",
+            "agent": "It looks up the order *and* the policy: yes, in time; shipping is free.",
+            "agentic": "The lead splits the two questions between two specialists.",
+        },
+    ),
+    Preset(
+        "Where is order 1045? It's the wool throw going to Coimbra.",
+        "agent",
+        "A step fails: the agent changes course; the workflow just reports the error.",
+        {
+            "chatbot_scripted": "The lookup fails: “check the number”.",
+            "chatbot_llm": "It can't check, so it can't notice the wrong id.",
+            "prompt": "It can't check, so it can't notice the wrong id.",
+            "workflow": "The lookup fails and the path ends: “no such order”.",
+            "agent": "Sees the error, searches by item and city, finds 1044.",
+            "agentic": "The orders specialist recovers the same way.",
+        },
+    ),
+    Preset(
+        "Orders 1042 and 1044: where is each, any weather risk, and what will I be owed?",
+        "agent",
+        "Many parts: one agent copes. A team costs twice as much, and facts can slip in handoffs.",
+        {
+            "chatbot_scripted": "The first id wins; the rest is ignored.",
+            "chatbot_llm": "It can't do any part of it.",
+            "prompt": "It asks you for every fact it would need.",
+            "workflow": "The path takes the first id only: 1044 is skipped.",
+            "agent": "One loop, six tools, every part answered.",
+            "agentic": "Plan → two specialists → reviewer: about twice the tokens of the agent.",
+        },
+    ),
 )

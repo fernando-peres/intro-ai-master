@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 98-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 99-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -99,29 +99,30 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 73 | When to use which | `layout-dark-1` |
 | 74 | Lesson · Agents | `layout-lesson` |
 | 75 | Chatbot, agent, agentic system | `layout-dark-1` |
-| 76 | Agents inside the harness | `layout-dark-1` |
-| 77 | Types of agents | `layout-dark-1` |
-| 78 | Types of agentic systems | `layout-dark-1` |
-| 79 | Connect · agentic RAG | `layout-dark-1` |
-| 80 | Workflows and agents · in action (links to `apps/w-and-a`) | `layout-dark-1` |
-| 81 | Workflows and agents · takeaways | `layout-dark-1` |
-| 82 | Unit 6 · Guardrails and Evals | `layout-unit-v2` |
-| 83 | Unit 6 · One idea to keep | `layout-statement-dark` |
-| 84 | Lesson · Guardrails overview | `layout-lesson` |
-| 85 | Guardrails · what and why | `layout-dark-1` |
-| 86 | Guardrails · types | `layout-dark-1` |
-| 87 | Guardrails · in action (links to `html/guardrails.html`) | `layout-dark-1` |
-| 88 | Guardrails · accelerators | `doc · doc-dark-bg-1` |
-| 89 | Guardrails · takeaways | `layout-dark-1` |
-| 90 | Lesson · Evals overview | `layout-lesson` |
-| 91 | Evals · what and why | `layout-dark-1` |
-| 92 | Evals · types | `layout-dark-1` |
-| 93 | Evals · in action (links to `html/evals.html`) | `layout-dark-1` |
-| 94 | Evals · accelerators | `doc · doc-dark-bg-1` |
-| 95 | Evals · takeaways | `layout-dark-1` |
-| 96 | Next · Observability | `layout-statement-dark` |
-| 97 | Unit 7 · Observability | `layout-unit-v2` |
-| 98 | Unit 8 · Experiments | `layout-unit-v2` |
+| 76 | Chatbots: scripted, LLM or hybrid | `layout-dark-1` |
+| 77 | Agents inside the harness | `layout-dark-1` |
+| 78 | Types of agents | `layout-dark-1` |
+| 79 | Types of agentic systems | `layout-dark-1` |
+| 80 | Connect · agentic RAG | `layout-dark-1` |
+| 81 | Workflows and agents · in action (links to `apps/w-and-a`) | `layout-dark-1` |
+| 82 | Workflows and agents · takeaways | `layout-dark-1` |
+| 83 | Unit 6 · Guardrails and Evals | `layout-unit-v2` |
+| 84 | Unit 6 · One idea to keep | `layout-statement-dark` |
+| 85 | Lesson · Guardrails overview | `layout-lesson` |
+| 86 | Guardrails · what and why | `layout-dark-1` |
+| 87 | Guardrails · types | `layout-dark-1` |
+| 88 | Guardrails · in action (links to `html/guardrails.html`) | `layout-dark-1` |
+| 89 | Guardrails · accelerators | `doc · doc-dark-bg-1` |
+| 90 | Guardrails · takeaways | `layout-dark-1` |
+| 91 | Lesson · Evals overview | `layout-lesson` |
+| 92 | Evals · what and why | `layout-dark-1` |
+| 93 | Evals · types | `layout-dark-1` |
+| 94 | Evals · in action (links to `html/evals.html`) | `layout-dark-1` |
+| 95 | Evals · accelerators | `doc · doc-dark-bg-1` |
+| 96 | Evals · takeaways | `layout-dark-1` |
+| 97 | Next · Observability | `layout-statement-dark` |
+| 98 | Unit 7 · Observability | `layout-unit-v2` |
+| 99 | Unit 8 · Experiments | `layout-unit-v2` |
 
 ## Templates: what changes in each instance
 

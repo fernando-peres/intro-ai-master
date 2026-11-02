@@ -1,4 +1,4 @@
-"""HTML fragments for the page. Every string from the model or a tool is escaped."""
+"""HTML fragments for the pages. Every string from the model or a tool is escaped."""
 
 import html
 from pathlib import Path
@@ -9,22 +9,28 @@ from w_and_a.engine.events import Event, Run
 
 _CSS = Path(__file__).with_name("theme.css").read_text(encoding="utf-8")
 
-#: Per tab: label, who decides, colour class, and the flow strip as (text, colour class).
+#: Per mode: one-line kind, label, nav icon, who decides, colour class, flow strip (text, class).
 MODE_INFO: dict[str, dict] = {
     "chatbot": {
+        "kind": "Talks, can't act",
+        "icon": ":material/chat:",
         "label": "Chatbot",
-        "who": "<b>A person</b> decides every next step. The model only talks, and remembers "
-        "this chat.",
+        "who": "<b>A person</b> decides every next step. The bot only talks: it follows a "
+        "fixed script, or a model that remembers this chat.",
         "cls": "",
         "flow": [("You", "is-human"), ("Model + chat history", "is-model"), ("Reply", "")],
     },
     "prompt": {
+        "kind": "Manual: you call the model, once",
+        "icon": ":material/arrow_forward:",
         "label": "Prompt → model",
         "who": "<b>A person</b> is the orchestrator. One question, one answer, no memory.",
         "cls": "",
         "flow": [("You", "is-human"), ("Model, once", "is-model"), ("Reply", "")],
     },
     "workflow": {
+        "kind": "Fixed steps: our code decides the path",
+        "icon": ":material/account_tree:",
         "label": "Workflow",
         "who": "<b>Our code</b> decides the path. Same steps, every time.",
         "cls": "is-wf",
@@ -37,6 +43,8 @@ MODE_INFO: dict[str, dict] = {
         ],
     },
     "agent": {
+        "kind": "Autonomous: the model decides the steps",
+        "icon": ":material/smart_toy:",
         "label": "Agent",
         "who": "<b>The model</b> decides the path: which tool, in what order, and when it is done.",
         "cls": "is-agent",
@@ -48,6 +56,8 @@ MODE_INFO: dict[str, dict] = {
         ],
     },
     "agentic": {
+        "kind": "A team: agents plan, hand off and check",
+        "icon": ":material/groups:",
         "label": "Agentic system",
         "who": "<b>A team of agents</b>: a lead plans and hands off, specialists use their own "
         "tools, a reviewer checks.",
@@ -59,6 +69,24 @@ MODE_INFO: dict[str, dict] = {
             ("Lead: write", "is-agent"),
             ("Reviewer: check", "is-agent"),
         ],
+    },
+}
+
+#: The Chatbot page's two variants: a fixed script (code decides) or a model.
+CHATBOT_VARIANTS: dict[str, dict] = {
+    "scripted": {
+        "kind": "Fixed script: rules decide, no model",
+        "label": "Scripted flow",
+        "who": "<b>Our code</b> decides every step: a fixed decision tree. No model, no key.",
+        "cls": "is-wf",
+        "flow": [("You", "is-human"), ("Match a rule", "is-wf"), ("Template reply", "is-wf")],
+    },
+    "llm": {
+        "kind": "Talks, can't act: a model with no tools",
+        "label": "LLM",
+        "who": "<b>A model</b> writes each reply and remembers this chat. It has no tools.",
+        "cls": "",
+        "flow": [("You", "is-human"), ("Model + chat history", "is-model"), ("Reply", "")],
     },
 }
 
@@ -100,13 +128,67 @@ def legend() -> str:
     )
 
 
-def tab_head(mode: str) -> str:
-    info = MODE_INFO[mode]
-    flow = "<i>→</i>".join(f'<span class="{c}">{esc(t)}</span>' for t, c in info["flow"])
-    return (
-        f'<div class="wa-head"><p class="wa-who {info["cls"]}">{info["who"]}</p>'
-        f'<div class="wa-flow">{flow}</div></div>'
+def header(live_model: str | None) -> str:
+    status = (
+        f'<span class="wa-status is-live">Live · {esc(live_model)}</span>'
+        if live_model
+        else '<span class="wa-status">Offline · presets replay recorded runs</span>'
     )
+    return (
+        '<div class="wa-side"><h1 class="wa-title">Workflows and <b>agents</b></h1>'
+        '<p class="wa-sub">Customer support for Pebble &amp; Pine, an invented shop. Ask the '
+        f"same question in every chat and watch who decides each step.</p>{legend()}{status}</div>"
+    )
+
+
+def _chips(items: list[tuple[str, str]]) -> str:
+    return "<i>→</i>".join(f'<span class="{c}">{esc(t)}</span>' for t, c in items)
+
+
+def mode_head(info: dict) -> str:
+    return (
+        f'<div class="wa-head"><p class="wa-kind {info["cls"]}">{esc(info["kind"])}</p>'
+        f'<p class="wa-who">{info["who"]}</p>'
+        f'<div class="wa-flow">{_chips(info["flow"])}</div></div>'
+    )
+
+
+def _chip(e: Event) -> tuple[str, str] | None:
+    title = e.title
+    if e.kind == "step":
+        name = title.split("· ", 1)[-1]
+        return None if name == "Look up" else (name, "is-model")
+    if e.kind == "route" and "Route → " in title:
+        return ("Route: " + title.split("→ ", 1)[1], "is-wf")
+    if e.kind == "route" and title.startswith("Rule · "):
+        return ("Rule: " + title[7:].split(":")[0], "is-wf")
+    if e.kind == "tool_call":
+        return (title.removeprefix("Call "), "is-tool")
+    if e.kind == "check":
+        word = "Review" if e.actor == "reviewer" else "Check"
+        return (f"{word} {'✗' if 'fail' in title.lower() else '✓'}", "is-code")
+    if e.kind == "reasoning":
+        return ("Think", "is-agent")
+    if e.kind == "plan":
+        return ("Plan", "is-agent")
+    if e.kind == "handoff":
+        return ("→ " + title.split("→ ", 1)[-1], "is-agent")
+    return None
+
+
+def path(items: list[Event]) -> str:
+    """The steps a run took, as one strip of chips; repeats in a row collapse into one."""
+    chips: list[tuple[str, str]] = []
+    for chip in filter(None, map(_chip, items)):
+        if not chips or chips[-1] != chip:
+            chips.append(chip)
+    chips = chips or [("Model, once", "is-model")]
+    return f'<div class="wa-flow wa-path"><b>Path taken</b>{_chips(chips)}</div>'
+
+
+def takeaway(text: str, best: str | None = None) -> str:
+    fit = f'<span class="wa-best">Best fit: {esc(best)}</span>' if best else ""
+    return f'<p class="wa-takeaway">{esc(text)}{fit}</p>'
 
 
 def icon(event: Event) -> str:
@@ -140,6 +222,10 @@ def stats(run: Run) -> str:
     if run.recorded:
         out += '<span class="is-recorded">Recorded run</span>'
     return f'<div class="wa-stats">{out}</div>'
+
+
+def watch(text: str) -> str:
+    return f'<div class="wa-watch"><b>What to watch</b> {esc(text)}</div>'
 
 
 def markdown_safe(text: str) -> str:
