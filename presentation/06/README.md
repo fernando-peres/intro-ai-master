@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 51-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 58-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -58,23 +58,30 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 32 | Main takeaways · context | `layout-dark-1` |
 | 33 | The right information, at the right time | `layout-dark-1` |
 | 34 | Lesson · RAG overview | `layout-lesson` |
-| 35 | Unit 4 · Tools and Integration | `layout-unit-v2` |
-| 36 | Unit 4 · One idea to keep | `layout-statement-dark` |
-| 37 | Four gaps of a frozen model | `layout-dark-1` |
-| 38 | The tool loop | `layout-dark-1` |
-| 39 | Descriptions are prompts | `layout-dark-1` |
-| 40 | Five examples, one loop | `layout-dark-1` |
-| 41 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
-| 42 | Tools · takeaways | `layout-dark-1` |
-| 43 | Lesson · MCP overview | `layout-lesson` |
-| 44 | From N × M to N + M | `layout-dark-1` |
-| 45 | MCP · client and server | `layout-dark-1` |
-| 46 | MCP · the moving parts | `layout-dark-1` |
-| 47 | MCP · discovery is built in | `layout-dark-1` |
-| 48 | MCP · least privilege in three layers | `layout-dark-1` |
-| 49 | When to use MCP | `layout-dark-1` |
-| 50 | Before you connect a server | `layout-dark-1` |
-| 51 | MCP · takeaways | `layout-dark-1` |
+| 35 | RAG · what it is and why | `layout-dark-1` |
+| 36 | RAG · indexing and retrieval | `layout-dark-1` |
+| 37 | RAG · indexing strategies | `layout-dark-1` |
+| 38 | RAG · retrieval strategies | `layout-dark-1` |
+| 39 | RAG · semantic search | `layout-dark-1` |
+| 40 | RAG · metadata and hybrid search | `layout-dark-1` |
+| 41 | RAG · in action (example) | `layout-dark-1` |
+| 42 | Unit 4 · Tools and Integration | `layout-unit-v2` |
+| 43 | Unit 4 · One idea to keep | `layout-statement-dark` |
+| 44 | Four gaps of a frozen model | `layout-dark-1` |
+| 45 | The tool loop | `layout-dark-1` |
+| 46 | Descriptions are prompts | `layout-dark-1` |
+| 47 | Five examples, one loop | `layout-dark-1` |
+| 48 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
+| 49 | Tools · takeaways | `layout-dark-1` |
+| 50 | Lesson · MCP overview | `layout-lesson` |
+| 51 | From N × M to N + M | `layout-dark-1` |
+| 52 | MCP · client and server | `layout-dark-1` |
+| 53 | MCP · the moving parts | `layout-dark-1` |
+| 54 | MCP · discovery is built in | `layout-dark-1` |
+| 55 | MCP · least privilege in three layers | `layout-dark-1` |
+| 56 | When to use MCP | `layout-dark-1` |
+| 57 | Before you connect a server | `layout-dark-1` |
+| 58 | MCP · takeaways | `layout-dark-1` |
 
 ## Templates: what changes in each instance
 

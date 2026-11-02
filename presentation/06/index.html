@@ -894,6 +894,161 @@
       </div>
     </section>
 
+    <!-- template: layout-dark-1 · without vs. with RAG -->
+    <section class="page" data-type="slide" data-title="RAG · what it is and why">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>What is <em>RAG</em>, and why?</h1>
+          <p class="subtitle is-wide">Retrieval-Augmented Generation: <em>look it up first</em>, then answer from what was found.</p>
+          <div class="rag-why">
+            <div class="row is-bad">
+              <span class="lbl">Without RAG</span>
+              <span class="box">Question</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-model">Model</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-out">Answer from memory</span>
+              <span class="chips"><i>✗ outdated</i><i>✗ doesn’t know your data</i><i>✗ no source</i></span>
+            </div>
+            <div class="row is-good">
+              <span class="lbl">With RAG</span>
+              <span class="box">Question</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-key">Retrieve<small>from your documents</small></span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-win">Context window<small>question + passages</small></span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-model">Model</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-out">Answer + [source]</span>
+              <span class="chips"><i>✓ current</i><i>✓ private data</i><i>✓ citable</i><i>✓ no retraining</i></span>
+            </div>
+          </div>
+          <p class="key-idea rag-key"><b>The model doesn’t change.</b> What changes is what it sees: the right passages from your documents, placed in the context window at question time.</p>
+          <p class="source">Source: Lewis et al., <i>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</i>, NeurIPS (2020).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · two pipelines around a shared index -->
+    <section class="page" data-type="slide" data-title="RAG · indexing and retrieval">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>Two phases: <em>indexing</em> and <em>retrieval</em></h1>
+          <div class="rag-phases">
+            <div class="ph">
+              <span class="lbl">1 · Indexing<small>once, refreshed when documents change</small></span>
+              <div class="flow"><span class="box">Load<small>documents</small></span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box">Chunk<small>split into passages</small></span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box">Embed<small>meaning → numbers</small></span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box">Store<small>+ metadata</small></span></div>
+            </div>
+            <div class="rag-index"><b>Index</b><span>passages · vectors · metadata</span></div>
+            <div class="ph is-ret">
+              <span class="lbl">2 · Retrieval<small>for every question</small></span>
+              <div class="flow"><span class="box">Embed the question</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box">Search the index<small>closest in meaning</small></span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box">Top-k passages</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-win">Into the context</span><svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg><span class="box is-model">Generate</span></div>
+            </div>
+          </div>
+          <p class="takeaway is-sm rag-take">Indexing decides <em>what can be found</em>; retrieval decides <em>what the model sees</em>.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · five steps × strategies -->
+    <section class="page" data-type="slide" data-title="RAG · indexing strategies">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>Indexing: <em>every step is a design choice</em></h1>
+          <div class="rag-steps">
+            <div><span class="n">1</span><b>Load</b><p>Get the content in</p><ul><li>PDF &amp; web parsing</li><li>Databases, APIs</li><li>OCR for scans &amp; images</li></ul></div>
+            <div><span class="n">2</span><b>Chunk</b><p>Split into passages</p><ul><li>Fixed size + overlap</li><li>By headings / structure</li><li>By meaning</li></ul></div>
+            <div><span class="n">3</span><b>Enrich</b><p>Add what helps find it</p><ul><li>Metadata: source, date, access</li><li>Summaries</li><li>Context per chunk</li></ul></div>
+            <div><span class="n">4</span><b>Embed</b><p>Turn meaning into numbers</p><ul><li>Text models</li><li>Multimodal (text + images)</li><li>Domain-tuned models</li></ul></div>
+            <div><span class="n">5</span><b>Store</b><p>Make it searchable</p><ul><li>Vector database</li><li>Keyword index</li><li>Both (hybrid)</li></ul></div>
+          </div>
+          <p class="rag-disc">Not exhaustive: common options, not a complete list. The best mix depends on your documents and questions, so measure it.</p>
+          <p class="source">Source: Anthropic, <i>Contextual Retrieval</i> (2024).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · five steps × strategies -->
+    <section class="page" data-type="slide" data-title="RAG · retrieval strategies">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>Retrieval: <em>every step is a design choice</em></h1>
+          <div class="rag-steps">
+            <div><span class="n">1</span><b>Rewrite</b><p>Improve the question</p><ul><li>Rephrase</li><li>Expand with synonyms</li><li>Split into sub-questions</li></ul></div>
+            <div><span class="n">2</span><b>Search</b><p>Find candidates</p><ul><li>Semantic (vectors)</li><li>Keyword</li><li>Hybrid: both</li></ul></div>
+            <div><span class="n">3</span><b>Filter</b><p>Keep only valid ones</p><ul><li>Metadata: date, product</li><li>Permissions</li></ul></div>
+            <div><span class="n">4</span><b>Rerank</b><p>Best ones first</p><ul><li>Reranker model</li><li>Recency, source quality</li></ul></div>
+            <div><span class="n">5</span><b>Assemble</b><p>Build the context</p><ul><li>Top-k, sensible order</li><li>Cite sources</li><li>“Say if not found”</li></ul></div>
+          </div>
+          <p class="rag-disc">Not exhaustive: common options, not a complete list. Each step trades quality against cost and speed.</p>
+          <p class="source">Source: Anthropic, <i>Contextual Retrieval</i> (2024): hybrid search + reranking cut failed retrievals by ~⅔.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · embedding space + keyword vs. semantic -->
+    <section class="page" data-type="slide" data-title="RAG · semantic search">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>Semantic search: <em>finding by meaning</em></h1>
+          <div class="rag-sem">
+            <svg class="rag-space" viewBox="0 0 640 440" role="img" aria-label="Embedding space: the question sits next to passages with similar meaning">
+              <rect x="1" y="1" width="638" height="438" rx="16" class="frame"/>
+              <circle cx="380" cy="200" r="100" class="near"/>
+              <g class="pt"><circle cx="90" cy="360" r="8"/><text x="106" y="366">Store opening hours</text></g>
+              <g class="pt"><circle cx="70" cy="90" r="8"/><text x="86" y="96">Jacket sizing guide</text></g>
+              <g class="pt"><circle cx="300" cy="400" r="8"/><text x="316" y="406">Loyalty points</text></g>
+              <g class="pt is-hit"><circle cx="420" cy="150" r="9"/><text x="290" y="82">Print a free return label…</text></g>
+              <g class="pt is-hit"><circle cx="330" cy="250" r="9"/><text x="100" y="250">Returns within 30 days…</text></g>
+              <g class="q"><circle cx="390" cy="210" r="11"/><text x="492" y="206">“How do I send</text><text x="492" y="228">back my jacket?”</text></g>
+            </svg>
+            <div class="rag-cmp">
+              <div class="is-bad"><span class="tag">Keyword search</span><b>“send back” → 0 results</b><p>No article contains those words.</p></div>
+              <div class="is-good"><span class="tag">Semantic search</span><b>“send back” → “return label”</b><p>Different words, same meaning: the passages sit close together in the embedding space.</p></div>
+              <p class="rag-note">Closeness is measured with <b>cosine similarity</b>: how much two meanings point the same way.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three cards -->
+    <section class="page" data-type="slide" data-title="RAG · metadata and hybrid search">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>Metadata and hybrid search: <em>precision and permissions</em></h1>
+          <div class="example-cards rag-meta">
+            <div><span class="tag">Metadata filters</span><b>The right version</b><p>Date, product, language, region. “Only the 2026 returns policy, Portugal.”</p></div>
+            <div><span class="tag">Access control</span><b>Only what you may see</b><p>A store clerk never retrieves HR files, even if they match the question.</p></div>
+            <div class="is-accent"><span class="tag">Hybrid search</span><b>Meaning + exact words</b><p>Codes, names and IDs that embeddings blur: order <code>#4512</code>, error <code>TS-999</code>.</p></div>
+          </div>
+          <p class="takeaway is-sm rag-take">Meaning finds the candidates; <em>metadata makes them the right ones</em>.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · example placeholder -->
+    <section class="page" data-type="slide" data-title="RAG · in action (example)">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>RAG <em>in action</em></h1>
+          <a class="notes-link" href="../../html/context.html#rag" target="_blank" rel="noopener">Open the RAG notes <span aria-hidden="true">↗</span></a>
+          <div class="rag-ph">
+            <span class="tag">Interactive example · html/rag.html · in preparation</span>
+            <b>Index a small set of documents, ask a question, and watch what is retrieved, and why.</b>
+            <ol>
+              <li>Chunk and embed the documents</li>
+              <li>Ask: see the top-k passages and their scores</li>
+              <li>Change chunking, filters or k, and compare the answers</li>
+            </ol>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
   </div>
 
   <!-- ============ UNIT 4 · TOOLS AND INTEGRATION ============ -->
