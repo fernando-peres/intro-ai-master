@@ -272,6 +272,7 @@ tr.hl td { background:var(--row); }
 .simsteps li.on { background:var(--nav-bg); color:var(--nav-ink); }
 /* step log: what happens under the hood, step by step; executed steps stay listed */
 .hood { margin-top:12px; }
+.lane-take { margin-top:10px; }
 .hood > .lbl { display:block; margin-bottom:6px; font:600 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); }
 .steplog { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
 .steplog > li { display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:start; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--page); }
@@ -1463,8 +1464,6 @@ function actCase(group) {
       <div class="msg user"><span class="who"><span class="dot"></span>${c.ask[0]}</span>${c.ask[1]}</div>
       <ol class="simsteps">${ACT_STEPS.map((s, i) => `<li data-k="${i}"><span class="badge">${i + 1}</span>${i === 2 ? `${c.block[0].toUpperCase() + c.block.slice(1)} adds its part` : s}</li>`).join("")}</ol>
       <div class="lanes"><div class="lane"></div><div class="lane is-rag"></div></div>
-      <div class="hood act-hood"></div>
-      <p class="keyidea act-how" hidden><b>How ${c.block} instructed the model ·</b><span>${c.how}</span></p>
       <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span class="act-n">1</span> of 4 · token counts are illustrative</span><span style="display:flex;gap:8px"><button class="btn act-prev">Back</button><button class="btn solid act-next">Next step</button></span></div>
     </div>
   </div>`;
@@ -1472,6 +1471,7 @@ function actCase(group) {
 function initAct(group) {
   const c = ACTIONS[group], root = $("#act-" + group);
   if (!root) return;
+  const blk = c.block[0].toUpperCase() + c.block.slice(1);
   let i = 0;
   const fill = (txt, fresh) => txt === "@POLICY"
     ? (fresh ? "Items worn outdoors once can be returned if undamaged and with tags. No cleaning fee (updated today)." : "Items worn outdoors once can be returned if undamaged and with tags; a €10 cleaning fee applies.")
@@ -1487,24 +1487,28 @@ function initAct(group) {
       </div>
       <div class="tokbar ${over ? "is-over" : ""}" title="${used} of ${cap} tokens"><span style="width:${Math.min(100, (used / cap) * 100)}%"></span></div>
       <span class="fict">${used.toLocaleString("en")} of ${cap.toLocaleString("en")} tokens${over ? " · over budget" : ""}</span>
-      ${step >= 3 ? `<div class="msg ${good ? "pass" : "fail"}"><span class="who"><span class="dot"></span>Model output</span>${fill(L.answer, fresh)}</div><div class="scorerow">${scores}</div>` : ""}`;
+      ${step >= 3 ? `<div class="msg ${good ? "pass" : "fail"}"><span class="who"><span class="dot"></span>Model output</span>${fill(L.answer, fresh)}</div><div class="scorerow">${scores}</div>` : ""}
+      <div class="hood">${hoodLog(ACT_STEPS.map((t, k) => (k === 2 ? (good ? `${blk} adds its part` : `No ${c.block}`) : t)), good ? [
+        "The app receives the request. Nothing has been sent to the model yet: the context window is empty.",
+        "Your code puts the request into the context window.",
+        `The difference: your code adds the context that ${c.block} provides (the highlighted segments).`,
+        "The model answers from the context it was given, so the answer can be checked against it.",
+      ] : [
+        "The app receives the request. Nothing has been sent to the model yet: the context window is empty.",
+        "Your code puts the request into the context window.",
+        `Without ${c.block}, your code has nothing relevant to add: the right information is missing, or buried in noise.`,
+        "The model can only use the request and what it learned in training, so it guesses.",
+      ], step)}</div>
+      ${step >= 3 ? `<p class="keyidea lane-take"><b>Main takeaway ·</b><span>${good ? c.how : `The model was never given what it needed. Without ${c.block}, even a strong model can only guess.`}</span></p>` : ""}`;
   };
   const render = () => {
     const fresh = !!$(".act-toggle", root)?.checked, lanes = $$(".lane", root);
     lanes[0].innerHTML = lane("without", i, fresh);
     lanes[1].innerHTML = lane("with", i, fresh);
     $$(".simsteps li", root).forEach((li, k) => { li.classList.toggle("on", k === i); li.classList.toggle("done", k < i); });
-    const blk = c.block[0].toUpperCase() + c.block.slice(1);
-    $(".act-hood", root).innerHTML = hoodLog(ACT_STEPS.map((t, k) => (k === 2 ? `${blk} adds its part` : t)), [
-      "The app receives the request. Nothing has been sent to the model yet, so both context windows are empty.",
-      "Your code puts the request into the context window. Up to here both sides are identical.",
-      `The only difference. With ${c.block}, your code adds the context it found (highlighted). Without it, nothing useful is added, or only noise.`,
-      "The model reads only its context window. Same model, same request: compare the two outputs and the scores.",
-    ], i);
     $(".act-n", root).textContent = i + 1;
     $(".act-prev", root).disabled = i === 0;
     $(".act-next", root).textContent = i === 3 ? "Start again" : "Next step";
-    $(".act-how", root).hidden = i < 3;
   };
   $(".act-next", root).onclick = () => { i = (i + 1) % 4; render(); };
   $(".act-prev", root).onclick = () => { if (i > 0) { i--; render(); } };

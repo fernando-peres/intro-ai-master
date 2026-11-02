@@ -1139,6 +1139,8 @@ function makeDuel(host, b, cfg) {
     sides().forEach(([c, sc]) => {
       const el = $(`[data-col="${c}"]`, root);
       $(".svgbox", el).innerHTML = seqSvg(sc, id + c);
+      const svg = $(".svgbox svg", el), vb = svg && svg.viewBox.baseVal;
+      if (vb && vb.width) { svg.style.maxWidth = `${vb.width}px`; svg.style.margin = "0 auto"; }
       $(".concl ul", el).innerHTML = conclusions(sc).map(x => `<li class="${x.tone}"><i>${TONE_ICON[x.tone] || "•"}</i><div><b>${esc(x.t)}</b>${x.v ? `<br><span>${esc(x.v)}</span>` : ""}</div></li>`).join("");
     });
     $$(".dcol.with .scene", root).forEach(bt => bt.classList.toggle("cur", +bt.dataset.i === P.wi));

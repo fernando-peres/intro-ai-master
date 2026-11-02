@@ -272,6 +272,7 @@ tr.hl td { background:var(--row); }
 .simsteps li.on { background:var(--nav-bg); color:var(--nav-ink); }
 /* step log: what happens under the hood, step by step; executed steps stay listed */
 .hood { margin-top:12px; }
+.lane-take { margin-top:10px; }
 .hood > .lbl { display:block; margin-bottom:6px; font:600 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); }
 .steplog { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
 .steplog > li { display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:start; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--page); }
@@ -612,12 +613,24 @@ const SCENES = {
     ask: "What is the latest released version of the <code>mcp</code> Python package on PyPI right now? PyPI publishes it at https://pypi.org/rss/project/mcp/releases.xml",
     server: "Fetch server",
     steps: ["Question arrives", "Host offers tools", "Model requests, server runs", "Answer, checked outside the model"],
-    hood: [
-      "The host app sends the question to the model with the same system prompt on both sides.",
-      "With MCP, the client calls tools/list on the Fetch server and passes the fetch tool's name, description and input schema to the model. Without MCP, no tools are offered.",
-      "The model can't open URLs itself: it replies with a tool request (structured output). The host forwards it to the server, which fetches the feed and returns its text; the host sends that back to the model.",
-      "The model writes its answer from the fetched text. Our own code then checks it against ground truth fetched outside the model and outside MCP.",
-    ],
+    hood: {
+      without: [
+        "The host app sends the question to the model with its system prompt.",
+        "No MCP client is connected, so no tools are offered. Having the URL in the question isn't the same as being able to open it.",
+        "There is nothing to call. The model has only what it learned in training, which stops at a cutoff date.",
+        "It answers from memory: an outdated version number that nobody can verify from the answer.",
+      ],
+      with: [
+        "The host app sends the question to the model with the same system prompt.",
+        "The client calls tools/list on the Fetch server and passes the fetch tool's name, description and input schema to the model.",
+        "The model can't open URLs itself: it replies with a tool request (structured output). The host forwards it to the server, which fetches the feed and returns its text; the host sends that back to the model.",
+        "The model writes its answer from the fetched text. Our own code then checks it against ground truth fetched outside the model and outside MCP.",
+      ],
+    },
+    take: {
+      without: "Knowing where the answer is doesn't help without the reach to get it. The model can only recall, and recall goes stale.",
+      with: "The tool gave reach, not intelligence: the same model, one fetch away from a current, checkable answer. It costs more tokens and time.",
+    },
     without: [
       `<p class="muted">Same model, same system prompt. No tools are offered.</p>`,
       `<div class="msg fail"><span class="who"><span class="dot"></span>Tools offered</span>None. Having the URL is not the same as being able to open it.</div>`,
@@ -638,12 +651,24 @@ const SCENES = {
     ask: "My team’s files are in <code>/sandbox</code>. What is our on-call escalation code word, and who owns the Friday deploy?",
     server: "Filesystem server",
     steps: ["Question arrives", "Host offers tools", "Model explores the folder", "Answer, checked against the files"],
-    hood: [
-      "The host app sends the question to the model. The answer exists only in two private files in /sandbox.",
-      "The client launches the Filesystem server (same client code, only the launch command changes) and lists its tools; they are offered to the model, scoped to /sandbox.",
-      "The model chains tool requests: list the folder, then read the files it needs. Each call runs in the server, never in the model.",
-      "The model answers from the file contents. Our code checks both facts against the files themselves.",
-    ],
+    hood: {
+      without: [
+        "The host app sends the question to the model. The answer exists only in two private files in /sandbox.",
+        "No server is connected, so no tools are offered.",
+        "No way to look: training data can't contain your private files.",
+        "The model honestly says it can't know. Honest, but not useful.",
+      ],
+      with: [
+        "The host app sends the question to the model. The answer exists only in two private files in /sandbox.",
+        "The client launches the Filesystem server (same client code, only the launch command changes) and lists its tools; they are offered to the model, scoped to /sandbox.",
+        "The model chains tool requests: list the folder, then read the files it needs. Each call runs in the server, never in the model.",
+        "The model answers from the file contents. Our code checks both facts against the files themselves.",
+      ],
+    },
+    take: {
+      without: "Private data was never in the training set. No connection means no answer, however capable the model is.",
+      with: "One standard client reached private files just by changing the server. Scope the server to the folder the task needs: here, /sandbox.",
+    },
     without: [
       `<p class="muted">The answer exists only in two private files the model has never seen.</p>`,
       `<div class="msg fail"><span class="who"><span class="dot"></span>Tools offered</span>None.</div>`,
@@ -680,7 +705,6 @@ function sceneCase(k, n) {
       <div class="msg user"><span class="who"><span class="dot"></span>Question</span>${c.ask}</div>
       <ol class="simsteps">${c.steps.map((s, i) => `<li data-k="${i}"><span class="badge">${i + 1}</span>${s}</li>`).join("")}</ol>
       <div class="lanes"><div class="lane"></div><div class="lane is-rag"></div></div>
-      <div class="hood sc-hood"></div>
       <div class="sc-end" hidden>
         <p class="msg done"><span class="who"><span class="dot"></span>Check outside the model</span>${c.truth}</p>
         <div class="tablewrap" style="margin-top:10px"><table>
@@ -706,13 +730,14 @@ function initScene(k) {
     const good = side === "with";
     const sc = c.scores[side].map((v, j) => pill(`${v ? "✓" : "✗"} ${SCORE_NAMES[j]}`, v ? "pass" : "fail")).join(" ");
     return `<div class="lane-head"><b>${good ? "With MCP" : "Without MCP"}</b>${pill(good ? "can reach" : "can’t reach", good ? "pass" : "fail")}</div>
-      <div class="stack">${c[side].slice(0, i + 1).join("")}</div>${i === 3 ? `<div class="scorerow">${sc}</div>` : ""}`;
+      <div class="stack">${c[side].slice(0, i + 1).join("")}</div>${i === 3 ? `<div class="scorerow">${sc}</div>` : ""}
+      <div class="hood">${hoodLog(c.steps, c.hood[side], i)}</div>
+      ${i === 3 ? `<p class="keyidea lane-take"><b>Main takeaway ·</b><span>${c.take[side]}</span></p>` : ""}`;
   };
   const render = () => {
     const L = $$(".lane", root);
     L[0].innerHTML = lane("without"); L[1].innerHTML = lane("with");
     $$(".simsteps li", root).forEach((li, j) => { li.classList.toggle("on", j === i); li.classList.toggle("done", j < i); });
-    $(".sc-hood", root).innerHTML = hoodLog(c.steps, c.hood, i);
     $(".sc-n", root).textContent = i + 1;
     $(".sc-prev", root).disabled = i === 0;
     $(".sc-next", root).textContent = i === 3 ? "Start again" : "Next step";

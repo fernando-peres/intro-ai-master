@@ -337,6 +337,39 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink3)
 .actor.tool text { fill:var(--done-ink); font:600 12.5px var(--mono); }
 .actor.tool .sub { fill:var(--done-ink); opacity:.75; }
 .actor.idle, .lifeline.idle { opacity:.35; }
+/* ---------- side by side: without vs. with tools ---------- */
+.tabs { position:static; }
+.duel-wrap { width:min(1520px, calc(100vw - 32px)); position:relative; left:50%; transform:translateX(-50%); }
+.duel-ctrl { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+.duel-ctrl .hint { margin-left:auto; font:500 12px var(--mono); color:var(--ink3); }
+.duel { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
+.dcol { padding:0; overflow:hidden; display:flex; flex-direction:column; }
+.dcol .dh { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--border); font-weight:650; }
+.dcol .dh .ico { width:24px; height:24px; border-radius:50%; display:grid; place-items:center; color:#fff; flex:none; }
+.dcol .dh .ico svg { width:14px; height:14px; }
+.dcol.without .dh { background:var(--fail-tint); color:var(--fail-ink); } .dcol.without .dh .ico { background:var(--fail-base); }
+.dcol.with .dh { background:var(--pass-tint); color:var(--pass-ink); } .dcol.with .dh .ico { background:var(--pass-base); }
+.dcol .dh .verdict { margin-left:0; }
+.dcol .dh .scenes { margin-left:auto; }
+.dcol .dh .cnt2 { font:600 11px var(--mono); opacity:.8; margin-left:auto; }
+.dcol .scenes + .cnt2 { margin-left:8px; }
+.dcol .svgbox { padding:10px 12px 0; }
+.dcol .svgbox svg { width:100%; height:auto; display:block; }
+.dcol .sl-wrap { margin:10px 12px 0; min-height:0; }
+.final { margin:12px; padding:12px 14px; border-radius:12px; border:2px dashed var(--border); background:var(--raised); }
+.final .fl, .concl .fl { display:flex; align-items:center; gap:8px; font:600 11px var(--mono); letter-spacing:.07em; text-transform:uppercase; color:var(--ink3); }
+.final .fb { margin-top:6px; font-size:14px; white-space:pre-wrap; max-height:180px; overflow:auto; color:var(--ink3); }
+.final.shown { border-style:solid; } .final.shown .fb { color:var(--text); }
+.final.shown.fail { border-color:var(--fail-base); background:var(--fail-tint); } .final.shown.fail .fl { color:var(--fail-ink); }
+.final.shown.warn { border-color:var(--warn-base); background:var(--warn-tint); } .final.shown.warn .fl { color:var(--warn-ink); }
+.final.shown.pass { border-color:var(--pass-base); background:var(--pass-tint); } .final.shown.pass .fl { color:var(--pass-ink); }
+.concl { margin:0 12px 14px; padding:12px 14px; border-radius:12px; background:var(--page); border:1px solid var(--border); }
+.concl ul { margin:6px 0 0; padding-left:18px; display:grid; gap:4px; font-size:13.5px; color:var(--ink2); }
+.concl li b { color:var(--text); }
+.duel-code { margin-top:14px; overflow:hidden; }
+.duel-code .loop-code { border-left:0; }
+.duel-code pre { max-height:360px; }
+@media (max-width: 980px) { .duel { grid-template-columns:1fr; } .duel-wrap { width:auto; left:0; transform:none; } }
 .expected-banner { font:500 12px var(--mono); padding:8px 12px; border-radius:8px; background:var(--warn-tint); color:var(--warn-ink); border:1px dashed var(--warn-base); }
 details.compare { margin-top:14px; overflow:hidden; }
 details.compare > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:14px 18px; font-weight:600; }
@@ -1040,6 +1073,119 @@ document.addEventListener("keydown", ev => {
   ev.preventDefault();
 });
 let PID = 0;
+/* Line numbers of a tool function inside its cell. */
+function toolRange(src, name) {
+  const ls = src.split("\n"), s = ls.findIndex(l => l.startsWith(`def ${name}(`)), r = [];
+  for (let i = s; i < ls.length; i++) { if (i > s && /^\S/.test(ls[i])) break; r.push(i + 1); }
+  while (r.length && !ls[r[r.length - 1] - 1].trim()) r.pop();
+  return r;
+}
+/* Every executed step 1..n stays listed, in order; the current one has its payload open. */
+function stepLog(sc, n) {
+  const items = sc.hops.slice(0, n).map((x, i) => {
+    const k = i + 1, cur = k === n, isJson = /^[[{]/.test(x.payload);
+    const color = x.kind === "run" ? "var(--done-base)" : x.kind === "mem" ? `var(--${x.tone}-base)` : "var(--accent)";
+    const lbl = x.kind === "run" ? "returned by the function" : x.final ? "text shown to the user" : "payload on this arrow";
+    return `<li class="${cur ? "cur" : ""}"><span class="sn2" style="background:${color}">${k}</span><div><div class="st">${esc(x.title)}</div><p class="sx">${md(x.text)}</p>${x.payload ? `<details${cur ? " open" : ""}><summary>${lbl}</summary><pre class="payload">${isJson ? hlJson(x.payload) : esc(x.payload)}</pre></details>` : ""}</div></li>`;
+  }).join("");
+  const more = sc.hops.length - n;
+  return `<ol class="steplog">${items}</ol><p class="sl-more${more ? "" : " done"}">${more ? `${more} more step${more === 1 ? "" : "s"} to run` : `All ${sc.hops.length} step${sc.hops.length === 1 ? "" : "s"} shown`}</p>`;
+}
+/* Main takeaways of one run, from its own hops. */
+function takeaways(sc, without, verdict) {
+  const fin = sc.hops.find(h => h.final), ans = fin && fin.payload && !sc.expected ? `“${esc(trunc(fin.payload, 110))}”` : "";
+  if (without) return [`1 model call, no tools offered`, `It answers from memory: <b>${esc(verdict)}</b>`, ans ? `The user gets: ${ans}` : "Run the notebook to see the answer"];
+  const runs = sc.hops.filter(h => h.kind === "run");
+  return [`${runs.length} tool call${runs.length === 1 ? "" : "s"}${runs.length > 1 ? ", chosen and ordered by the model" : ""}; your code runs each one`,
+    ...runs.map(h => `<code>${esc(h.tool)}</code> → ${esc(trunc(h.back || "", 48))}`),
+    ans ? `Grounded answer: ${ans}` : "Run the notebook to see the answer"];
+}
+/* Without (left) vs. with (right) tools, side by side, driven by one set of controls. */
+function makeDuel(host, cfg, e) {
+  const $$ = (sel, r = document) => [...r.querySelectorAll(sel)];
+  const id = "dl" + (++PID), [wo, ...wis] = cfg.scenes;
+  const col = (cls, title, scenes, verdict) => `<div class="panel dcol ${cls}" data-col="${cls}">
+    <div class="dh"><span class="ico">${cls === "without" ? ICON.x : ICON.check}</span>${esc(title)}<span class="verdict ${verdict[0]}">${esc(verdict[1])}</span>
+      ${scenes.length > 1 ? `<div class="scenes">${scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${esc(s.label.replace(/^With tools\s*·\s*/, ""))}</button>`).join("")}</div>` : ""}<span class="cnt2"></span></div>
+    <div class="svgbox loop static" data-step="0"></div>
+    <div class="caption sl-wrap"></div>
+    <div class="final"><div class="fl">${ICON.user.replace("<svg", '<svg width="14" height="14"')} What the user sees</div><div class="fb"></div></div>
+    <div class="concl"><div class="fl">Main takeaways</div><ul></ul></div></div>`;
+  host.innerHTML = `<div class="duel-wrap">
+    ${cfg.scenes.some(s => s.expected) ? `<div class="expected-banner" style="margin-bottom:10px">Expected flow, not a real run: run the notebook and rebuild to fill in the real values.</div>` : ""}
+    <div class="duel-ctrl"><button class="btn solid play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play both</span></button><button class="btn backb">← Back</button><button class="btn stepb">Step →</button><button class="btn resetb">Reset</button><span class="hint">Same question, same model: only the tools differ.</span></div>
+    <div class="duel">${col("without", "Without tools", [wo], e.verdictWithout)}${col("with", "With tools", wis, ["pass", e.verdictWith])}</div>
+    <div class="panel duel-code"><div class="loop-code"><div class="bar"></div><pre></pre></div></div></div>`;
+  const root = host.firstElementChild, P = { root, n: 0, wi: 0, timer: null, codeKey: "" };
+  const sides = () => [["without", wo], ["with", wis[P.wi]]];
+  function showCode(key, cell, src, label, lines) {
+    const pre = $(".duel-code pre", root);
+    if (P.codeKey !== key) {
+      P.codeKey = key;
+      $(".duel-code .bar", root).innerHTML = `<span style="font:500 11px var(--mono);color:var(--accent);background:var(--row);padding:2px 7px;border-radius:5px">In [${cell}]</span>${esc(label)} <span style="color:var(--ink3);font-size:12px">· follows the “With tools” column</span>`;
+      pre.innerHTML = hlPy(src).split("\n").map((l, i) => `<span class="ln" data-n="${i + 1}">${l || " "}</span>`).join("");
+    }
+    const set = new Set(lines);
+    pre.querySelectorAll(".ln").forEach(l => l.classList.toggle("hl", set.has(+l.dataset.n)));
+    $(".duel-code .loop-code", root).classList.toggle("dim", lines.length > 0);
+    const first = $(".ln.hl", pre);
+    if (first) pre.scrollTo({ top: first.offsetTop - pre.clientHeight / 3, behavior: "smooth" });
+  }
+  function draw() {
+    sides().forEach(([c, sc]) => {
+      const el = $(`[data-col="${c}"]`, root);
+      $(".svgbox", el).innerHTML = seqSvg(sc, id + c);
+      const svg = $(".svgbox svg", el), vb = svg && svg.viewBox.baseVal;
+      if (vb && vb.width) { svg.style.maxWidth = `${vb.width}px`; svg.style.margin = "0 auto"; }
+      $(".concl ul", el).innerHTML = takeaways(sc, c === "without", e.verdictWithout[1]).map(t => `<li>${t}</li>`).join("");
+    });
+    $$(".dcol.with .scene", root).forEach(bt => bt.classList.toggle("cur", +bt.dataset.i === P.wi));
+    set(P.n);
+  }
+  const maxLen = () => Math.max(wo.hops.length, wis[P.wi].hops.length);
+  function set(n) {
+    P.n = n;
+    sides().forEach(([c, sc]) => {
+      const el = $(`[data-col="${c}"]`, root), k = Math.min(n, sc.hops.length), box = $(".svgbox", el);
+      box.dataset.step = k;
+      $$(".hop", box).forEach(g => {
+        const s = +g.dataset.step, hop = sc.hops[s - 1];
+        g.classList.toggle("on", s === k); g.classList.toggle("past", k > 0 && s < k);
+        const mkr = s !== k ? "dim" : hop.kind === "run" ? "done" : hop.kind === "mem" ? (hop.tone === "fail" ? "bad" : "warn") : "on";
+        g.querySelectorAll("line").forEach(l => l.setAttribute("marker-end", `url(#${id + c}-${mkr})`));
+      });
+      $(".cnt2", el).textContent = n === 0 ? `${sc.hops.length} steps` : k >= sc.hops.length ? "done" : `${k}/${sc.hops.length}`;
+      $(".sl-wrap", el).innerHTML = k ? stepLog(sc, k) : `<p class="sx" style="margin:0">${esc(sc.label)}: ${sc.hops.length} steps. Press Play: each step is added here and stays.</p>`;
+      const fi = sc.hops.findIndex(h => h.final), fin = $(".final", el), shown = fi >= 0 && k > fi;
+      fin.className = `final${shown ? ` shown ${c === "without" ? (e.verdictWithout[0] === "pass" ? "pass" : e.verdictWithout[0]) : "pass"}` : ""}`;
+      $(".fb", fin).textContent = shown ? sc.hops[fi].payload : "Press Play: the final output appears here and stays.";
+    });
+    const sc = wis[P.wi], k = Math.min(n, sc.hops.length), h = sc.hops[k - 1];
+    if (h && h.kind === "run") { const c = TOOL_CELL[h.tool]; showCode("t" + c, c, NB.cells[c], `${h.tool}(): runs in your code`, toolRange(NB.cells[c], h.tool)); }
+    else showCode("loop", C.loop, LOOP_SRC, "ask_with_tools()", h ? h.lines : []);
+  }
+  P.stop = () => { clearInterval(P.timer); P.timer = null; $(".play span", root).textContent = "Play both"; };
+  P.play = () => {
+    if (P.timer) return P.stop();
+    if (P.n >= maxLen()) set(0);
+    $(".play span", root).textContent = "Pause";
+    set(P.n + 1);
+    P.timer = setInterval(() => { if (P.n >= maxLen()) return P.stop(); set(P.n + 1); if (P.n >= maxLen()) P.stop(); }, 2400);
+  };
+  P.fwd = () => { P.stop(); set(P.n >= maxLen() ? 0 : P.n + 1); };
+  P.back = () => { P.stop(); set(Math.max(0, P.n - 1)); };
+  P.scene_ = i => { if (i < wis.length && i !== P.wi) { P.stop(); P.wi = i; P.n = 0; draw(); } };
+  $(".play", root).addEventListener("click", P.play);
+  $(".stepb", root).addEventListener("click", P.fwd);
+  $(".backb", root).addEventListener("click", P.back);
+  $(".resetb", root).addEventListener("click", () => { P.stop(); set(0); });
+  $$(".dcol.with .scene", root).forEach(bt => bt.addEventListener("click", () => P.scene_(+bt.dataset.i)));
+  root.addEventListener("mouseenter", () => (hoverPlayer = P));
+  root.addEventListener("mouseleave", () => { if (hoverPlayer === P) hoverPlayer = null; });
+  players.add(P);
+  draw();
+  return P;
+}
 function stopPlayers() { players.forEach(p => { p.stop(); if (!p.root.isConnected) players.delete(p); }); }
 
 /* Lanes: Model | Your code | one lane per tool. */
@@ -1123,13 +1269,6 @@ function makePlayer(host, cfg) {
     const first = $(".ln.hl", pre);
     if (first) pre.scrollTo({ top: first.offsetTop - pre.clientHeight / 3, behavior: "smooth" });
   }
-  function toolRange(src, name) {
-    const ls = src.split("\n"), s = ls.findIndex(l => l.startsWith(`def ${name}(`)), r = [];
-    for (let i = s; i < ls.length; i++) { if (i > s && /^\S/.test(ls[i])) break; r.push(i + 1); }
-    while (r.length && !ls[r[r.length - 1] - 1].trim()) r.pop();
-    return r;
-  }
-
   function setScene(i) {
     P.scene = i;
     const sc = cfg.scenes[i];
@@ -1155,15 +1294,7 @@ function makePlayer(host, cfg) {
     if (!h) {
       cap.innerHTML = `<div class="t">${esc(sc.label)}: ${sc.hops.length} steps</div><p>Press Play to run <em>this</em> scene only, or step through it with the buttons or the ← → keys. Each scene keeps its own place, so you can switch back and forth while explaining. Every payload shown comes from the saved notebook run.</p>`;
     } else {
-      /* every executed step stays listed, in order; the current one has its payload open */
-      const items = sc.hops.slice(0, n).map((x, i) => {
-        const k = i + 1, cur = k === n, isJson = /^[[{]/.test(x.payload);
-        const color = x.kind === "run" ? "var(--done-base)" : x.kind === "mem" ? `var(--${x.tone}-base)` : "var(--accent)";
-        const lbl = x.kind === "run" ? "returned by the function" : x.final ? "text shown to the user" : "payload on this arrow";
-        return `<li class="${cur ? "cur" : ""}"><span class="sn2" style="background:${color}">${k}</span><div><div class="st">${esc(x.title)}</div><p class="sx">${md(x.text)}</p>${x.payload ? `<details${cur ? " open" : ""}><summary>${lbl}</summary><pre class="payload">${isJson ? hlJson(x.payload) : esc(x.payload)}</pre></details>` : ""}</div></li>`;
-      }).join("");
-      const more = sc.hops.length - n;
-      cap.innerHTML = `<ol class="steplog">${items}</ol><p class="sl-more${more ? "" : " done"}">${more ? `${more} more step${more === 1 ? "" : "s"} to run` : `All ${sc.hops.length} step${sc.hops.length === 1 ? "" : "s"} shown`}</p>`;
+      cap.innerHTML = stepLog(sc, n);
     }
     if (h && h.kind === "run") {
       const c = TOOL_CELL[h.tool];
@@ -1210,29 +1341,6 @@ function playerConfig(e) {
   return { scenes };
 }
 
-/* Collapsed comparison: both sequence diagrams, a few short bullets each. */
-let CMP = 0;
-function compareHtml(e, cfg) {
-  const wo = cfg.scenes[0], wi = cfg.scenes[1], [vCls, vTxt] = e.verdictWithout;
-  const woAns = wo.expected ? "" : out(e.without, "Without tools").body;
-  const wiAns = wi.expected ? "" : out(e.run, "With tools").body;
-  const runs = wi.hops.filter(h => h.kind === "run");
-  const li = s => `<li>${s}</li>`;
-  const bWo = [li("1 request, no tools"), li(`Answers from memory: <b>${esc(vTxt)}</b>`), woAns ? li(`“${esc(trunc(woAns, 90))}”`) : li("Run the notebook to see the answer")];
-  const bWi = [li(`${runs.length} tool call${runs.length === 1 ? "" : "s"}${runs.length > 1 ? ", in order" : ""}`),
-    ...runs.map(h => li(`<code>${esc(h.tool)}</code> → ${esc(trunc(h.back, 40))}`)),
-    wiAns ? li(`Grounded answer: “${esc(trunc(wiAns, 90))}”`) : li("Run the notebook to see the answer")];
-  return `<details class="compare panel">
-    <summary><span class="badge">⇆</span><span class="label">Compare: without tools vs with tools</span><span class="toggle">${ICON.chev}<span class="show-t">Show</span><span class="hide-t">Hide</span></span></summary>
-    <div class="cmp-grid">
-      <div class="cmp-col without"><div class="cmp-head"><span class="ico">${ICON.x}</span>Without tools<span class="verdict ${vCls}">${esc(vTxt)}</span></div>
-        <div class="loop static" data-step="0">${seqSvg(wo, "cmp" + (++CMP))}</div><ul>${bWo.join("")}</ul></div>
-      <div class="cmp-col with"><div class="cmp-head"><span class="ico">${ICON.check}</span>With tools<span class="verdict pass">${esc(e.verdictWith)}</span></div>
-        <div class="loop static" data-step="0">${seqSvg(wi, "cmp" + (++CMP))}</div><ul>${bWi.join("")}</ul></div>
-    </div>
-  </details>`;
-}
-
 function selectExample(i) {
   stopPlayers();
   const e = EXAMPLES[i];
@@ -1246,9 +1354,8 @@ function selectExample(i) {
     <p class="ex-intro">${e.intro}</p>
     <div class="panel question"><span class="q-ic">${ICON.user}</span><span>${esc(questionOf(e.q))}</span></div>
 
-    <div class="subhead">Run it step by step</div>
+    <div class="subhead">Without vs. with tools, step by step</div>
     <div id="exPlayer"></div>
-    ${compareHtml(e, cfg)}
     ${ran ? extraFor(e) : `
     <div class="panel pending">
       <span class="badge" style="background:var(--warn-base);color:#fff">!</span>
@@ -1263,7 +1370,7 @@ function selectExample(i) {
     <div class="subhead">Explain</div>
     <div class="explain">${bullets(e.explain).map((b, k) => `<div class="panel item"><span class="badge">${i + 1}${"abcdefghij"[k]}</span><p>${md(b)}</p></div>`).join("")}</div>
   </div>`;
-  makePlayer($("#exPlayer"), cfg);
+  makeDuel($("#exPlayer"), cfg, e);
   applyCodeAll();
   requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll(".bar-fill").forEach(b => (b.style.width = b.dataset.w + "%"))));
   history.replaceState(null, "", "#ex-" + e.key);
