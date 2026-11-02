@@ -560,6 +560,32 @@
       </div>
     </section>
 
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · Context">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Context</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">Understand what context is: everything the model sees when it answers. Know the building blocks that fill it (instructions, knowledge, memory, tools and their results), and what context engineering is: designing the system that selects, structures and delivers the right information at each step.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
     <!-- template: layout-dark-1 · context window bar + three points -->
     <section class="page" data-type="slide" data-title="What is context?">
       <div class="stage is-night">
@@ -633,6 +659,41 @@
             <p>“The delicate art and science of filling the context window with just the right information for the next step.” <span>Andrej Karpathy (2025)</span></p>
             <p>“Curating and maintaining the optimal set of tokens during LLM inference.” <span>Anthropic (2025)</span></p>
           </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · side-by-side text comparison -->
+    <section class="page" data-type="slide" data-title="Prompt engineering and context engineering, side by side">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Context</span>
+          <h1>Prompt engineering <em>and</em> context engineering, side by side</h1>
+          <div class="pe-ce">
+            <div class="pe-ce-col">
+              <h2>Prompt engineering</h2>
+              <p class="def">Writing and organising the <b>instructions</b> so the model responds well.</p>
+              <dl>
+                <dt>Question it answers</dt><dd>How should I <b>say</b> it?</dd>
+                <dt>Unit of work</dt><dd>One prompt: role, task, examples, format</dd>
+                <dt>When it happens</dt><dd>Written once, before the call</dd>
+                <dt>Typical failure</dt><dd>Vague or ambiguous wording</dd>
+              </dl>
+            </div>
+            <div class="pe-ce-col is-ce">
+              <h2>Context engineering</h2>
+              <p class="def">Curating <b>everything in the limited context window</b>: instructions, knowledge, memory, tools, history.</p>
+              <dl>
+                <dt>Question it answers</dt><dd>What should the model <b>see</b> right now?</dd>
+                <dt>Unit of work</dt><dd>The whole window, and the pipeline that fills it</dd>
+                <dt>When it happens</dt><dd>At runtime, every time the model is called</dd>
+                <dt>Typical failure</dt><dd>Missing, stale or too much information</dd>
+              </dl>
+            </div>
+          </div>
+          <p class="takeaway is-sm pe-ce-take">Context engineering is the <em>natural progression</em> of prompt engineering: the prompt is still there, now one part of the window.</p>
+          <p class="source">Source: Anthropic, <i>Effective context engineering for AI agents</i> (2025).</p>
         </div>
         <span class="page-num"></span>
       </div>
@@ -806,6 +867,33 @@
         <span class="page-num"></span>
       </div>
     </section>
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · RAG overview">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>RAG overview</h1>
+          <a class="notes-link" href="../../html/context.html#rag" target="_blank" rel="noopener">Open the interactive notes <span aria-hidden="true">↗</span></a>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">A gentle introduction to Retrieval-Augmented Generation. Instead of retraining the model, the system finds the passages of your documents closest in meaning to the question and places them in the context window, so answers are grounded, current and citable.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
   </div>
 
   <!-- ============ UNIT 4 · TOOLS AND INTEGRATION ============ -->
@@ -818,7 +906,7 @@
         <div class="unit-head">
           <h1>04. Tools and <b>Integration</b></h1>
           <p class="subtitle">The model decides what to call. Your code decides whether and how it runs.</p>
-          <div class="covers"><span>Why models need tools</span><span>The tool loop</span><span>Five examples</span><span>When not to use a tool</span></div>
+          <div class="covers"><span>Why models need tools</span><span>The tool loop</span><span>Five examples</span><span>MCP</span><span>Least privilege</span></div>
         </div>
         <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
         <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
@@ -994,6 +1082,186 @@ while True:
             <li><b>Arguments are untrusted input.</b> Validate them.</li>
             <li><b>Results are untrusted too.</b> They can carry instructions.</li>
             <li><b>Separate reads from writes.</b> Check permissions in code.</li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · MCP overview">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>MCP overview</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">MCP: one plug, many systems. The Model Context Protocol standardises where tools come from and who runs them. Understand how a host connects to a server, discovers what it offers, and uses it safely.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · N × M vs N + M -->
+    <section class="page" data-type="slide" data-title="From N × M to N + M">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP</span>
+          <h1>From <em>N × M</em> integrations to <em>N + M</em></h1>
+          <p class="subtitle is-wide">An open standard introduced by Anthropic in 2024, often called “USB-C for AI”.</p>
+          <div class="nm-split">
+            <div><p class="nm-cap"><b>Without a standard</b> · 4 apps × 5 systems = <b class="n">20</b> connectors</p><svg class="nm" viewBox="0 0 560 400" aria-hidden="true"><line x1="132" y1="80" x2="428" y2="72"/><line x1="132" y1="80" x2="428" y2="136"/><line x1="132" y1="80" x2="428" y2="200"/><line x1="132" y1="80" x2="428" y2="264"/><line x1="132" y1="80" x2="428" y2="328"/><line x1="132" y1="160" x2="428" y2="72"/><line x1="132" y1="160" x2="428" y2="136"/><line x1="132" y1="160" x2="428" y2="200"/><line x1="132" y1="160" x2="428" y2="264"/><line x1="132" y1="160" x2="428" y2="328"/><line x1="132" y1="240" x2="428" y2="72"/><line x1="132" y1="240" x2="428" y2="136"/><line x1="132" y1="240" x2="428" y2="200"/><line x1="132" y1="240" x2="428" y2="264"/><line x1="132" y1="240" x2="428" y2="328"/><line x1="132" y1="320" x2="428" y2="72"/><line x1="132" y1="320" x2="428" y2="136"/><line x1="132" y1="320" x2="428" y2="200"/><line x1="132" y1="320" x2="428" y2="264"/><line x1="132" y1="320" x2="428" y2="328"/><g class="a"><rect x="8" y="58" width="124" height="44" rx="10"/><text x="70" y="87">App A</text></g><g class="a"><rect x="8" y="138" width="124" height="44" rx="10"/><text x="70" y="167">App B</text></g><g class="a"><rect x="8" y="218" width="124" height="44" rx="10"/><text x="70" y="247">App C</text></g><g class="a"><rect x="8" y="298" width="124" height="44" rx="10"/><text x="70" y="327">App D</text></g><g class="s"><rect x="428" y="50" width="124" height="44" rx="10"/><text x="490" y="79">CRM</text></g><g class="s"><rect x="428" y="114" width="124" height="44" rx="10"/><text x="490" y="143">Files</text></g><g class="s"><rect x="428" y="178" width="124" height="44" rx="10"/><text x="490" y="207">Email</text></g><g class="s"><rect x="428" y="242" width="124" height="44" rx="10"/><text x="490" y="271">Database</text></g><g class="s"><rect x="428" y="306" width="124" height="44" rx="10"/><text x="490" y="335">Web</text></g></svg></div>
+            <div class="is-mcp"><p class="nm-cap"><b>With MCP</b> · 4 clients + 5 servers = <b class="n">9</b></p><svg class="nm" viewBox="0 0 560 400" aria-hidden="true"><line x1="132" y1="80" x2="280" y2="200"/><line x1="132" y1="160" x2="280" y2="200"/><line x1="132" y1="240" x2="280" y2="200"/><line x1="132" y1="320" x2="280" y2="200"/><line x1="280" y1="200" x2="428" y2="72"/><line x1="280" y1="200" x2="428" y2="136"/><line x1="280" y1="200" x2="428" y2="200"/><line x1="280" y1="200" x2="428" y2="264"/><line x1="280" y1="200" x2="428" y2="328"/><g class="a"><rect x="8" y="58" width="124" height="44" rx="10"/><text x="70" y="87">App A</text></g><g class="a"><rect x="8" y="138" width="124" height="44" rx="10"/><text x="70" y="167">App B</text></g><g class="a"><rect x="8" y="218" width="124" height="44" rx="10"/><text x="70" y="247">App C</text></g><g class="a"><rect x="8" y="298" width="124" height="44" rx="10"/><text x="70" y="327">App D</text></g><g class="s"><rect x="428" y="50" width="124" height="44" rx="10"/><text x="490" y="79">CRM</text></g><g class="s"><rect x="428" y="114" width="124" height="44" rx="10"/><text x="490" y="143">Files</text></g><g class="s"><rect x="428" y="178" width="124" height="44" rx="10"/><text x="490" y="207">Email</text></g><g class="s"><rect x="428" y="242" width="124" height="44" rx="10"/><text x="490" y="271">Database</text></g><g class="s"><rect x="428" y="306" width="124" height="44" rx="10"/><text x="490" y="335">Web</text></g><g class="h"><rect x="226" y="172" width="108" height="56" rx="14"/><text x="280" y="208">MCP</text></g></svg></div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · two tables + key idea + link -->
+    <section class="page" data-type="slide" data-title="MCP · the moving parts">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP</span>
+          <h1>The <em>moving parts</em></h1>
+          <a class="notes-link" href="../../html/mcp.html" target="_blank" rel="noopener">Open the interactive notes <span aria-hidden="true">↗</span></a>
+          <div class="mcp-tables">
+            <table class="dark-table is-mint">
+              <thead><tr><th>Role</th><th>What it is</th></tr></thead>
+              <tbody>
+                <tr><td>Host</td><td>The app the user works in: a chat app, an IDE, a notebook</td></tr>
+                <tr><td>Client</td><td>Inside the host; holds one connection to one server</td></tr>
+                <tr><td>Server</td><td>A program exposing capabilities: fetch a URL, read files, query a CRM</td></tr>
+              </tbody>
+            </table>
+            <table class="dark-table is-mint">
+              <thead><tr><th>A server offers</th><th>Who decides to use it</th></tr></thead>
+              <tbody>
+                <tr><td>Tools</td><td>The model · <code>fetch(url)</code></td></tr>
+                <tr><td>Resources</td><td>The application · a file or schema to attach as context</td></tr>
+                <tr><td>Prompts</td><td>The user · a reusable template, like a slash command</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="key-idea"><b>MCP does not replace function calling.</b> The model still makes ordinary tool calls. MCP standardises where the functions come from, and the host still runs them.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · discovery -->
+    <section class="page" data-type="slide" data-title="MCP · discovery is built in">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP</span>
+          <h1>Ask the server <em>what it can do</em></h1>
+          <p class="subtitle is-wide">Discovery is part of the protocol: a server must describe itself. No guessing, no trusting the README.</p>
+          <div class="gap-cards is-disc">
+            <div><span class="tag">initialize</span><b>Who are you?</b><p>Name, version and the capabilities it declares.</p></div>
+            <div><span class="tag">tools/list</span><b>What can the model do?</b><p>Each tool’s name, description and input schema.</p></div>
+            <div><span class="tag">resources/list</span><b>What data can I attach?</b><p>Files, records, schemas the app can read.</p></div>
+            <div><span class="tag">prompts/list</span><b>Which templates?</b><p>Reusable prompts the user can pick.</p></div>
+          </div>
+          <p class="key-idea"><b>Declared does not mean available.</b> Run the list query and handle error <code>-32601</code> (“method not found”). The model’s own summary of its tools can be wrong; <code>tools/list</code> is the source of truth.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · least privilege -->
+    <section class="page" data-type="slide" data-title="MCP · least privilege in three layers">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP</span>
+          <h1>Least privilege, in <em>three layers</em></h1>
+          <p class="subtitle is-wide">A server that can read your files can often write them too. Give the model only what the task needs.</p>
+          <div class="example-cards is-layers">
+            <div><span class="tag">Layer 1 · Server</span><b>Scope it</b><p>The server enforces its allowed folder or account, whatever the client asks.</p></div>
+            <div class="is-accent"><span class="tag">Layer 2 · Client</span><b>Filter the tools</b><p>Your code chooses which tools the model sees. The layer you control.</p></div>
+            <div><span class="tag">Layer 3 · Annotations</span><b>Read the hints</b><p>Labels like <code>read_only</code> help you choose. Trust them only from trusted servers.</p></div>
+          </div>
+          <div class="lp-result">
+            <div class="is-good"><b>Read-only tools offered</b><span>“Create notes.txt” → <em>disk unchanged</em></span></div>
+            <div class="is-bad"><b>All tools offered</b><span>“Create notes.txt” → <em>file was created</em></span></div>
+          </div>
+          <p class="flow-note lp-note">Enforced by code, not by asking the model to behave: a tool it cannot see cannot be misused.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · when to use / when to skip -->
+    <section class="page" data-type="slide" data-title="When to use MCP">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP</span>
+          <h1>When to use it, and <em>when not to</em></h1>
+          <div class="use-skip">
+            <div class="is-use">
+              <h2>Use MCP when</h2>
+              <ol class="points">
+                <li>Several apps or agents need <b>the same integration</b></li>
+                <li>You want <b>existing servers</b> instead of writing connectors</li>
+                <li>Tools should be <b>discoverable at runtime</b></li>
+              </ol>
+            </div>
+            <div class="is-skip">
+              <h2>Skip it when</h2>
+              <ol class="points">
+                <li>One script needs one function: <b>plain function calling</b> is simpler</li>
+                <li>A <b>fixed API call</b> is enough and no model has to choose</li>
+                <li>Each extra tool schema adds <b>cost you can’t justify</b></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · four-step checklist -->
+    <section class="page" data-type="slide" data-title="Before you connect a server">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP · Checklist</span>
+          <h1>Before you connect a <em>new server</em></h1>
+          <p class="subtitle is-wide">It runs with your permissions, and the model will read whatever it returns.</p>
+          <div class="gap-cards is-check">
+            <div><span class="num">1</span><b>Trust</b><p>Do you trust who wrote it?</p></div>
+            <div><span class="num">2</span><b>Discover</b><p>List its tools, resources and prompts. Don’t trust the README.</p></div>
+            <div><span class="num">3</span><b>Restrict</b><p>Offer the model only the tools it needs. Scope folders and accounts.</p></div>
+            <div><span class="num">4</span><b>Test</b><p>Try it with the MCP Inspector before a model uses it.</p></div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · six takeaways in two columns -->
+    <section class="page" data-type="slide" data-title="MCP · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP · Takeaways</span>
+          <h1>One plug, many systems. <em>Your code keeps control.</em></h1>
+          <ol class="points is-cols">
+            <li><b>MCP changes reach, not intelligence.</b> Same weights, new abilities.</li>
+            <li><b>A standard, not a tool.</b> One client, any server.</li>
+            <li><b>The model requests, the host executes.</b></li>
+            <li><b>Verify outside the model.</b> Check facts and disk, not claims.</li>
+            <li><b>Grant the least privilege.</b> Scope servers, filter tools.</li>
+            <li><b>Every connection has a price:</b> tokens, time, prompt injection.</li>
           </ol>
         </div>
         <span class="page-num"></span>

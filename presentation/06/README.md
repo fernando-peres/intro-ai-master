@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 39-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 50-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -24,7 +24,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 
 | # | Slide | Template |
 |---|---|---|
-| 1 | Cover | |
+| 1 | Cover |  |
 | 2 | Table of Contents | `layout-index` |
 | 3 | Unit 1 · What is a harness? | `layout-unit-v2` |
 | 4 | Unit 1 · One idea to keep | `layout-statement-dark` |
@@ -48,21 +48,32 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 22 | Main takeaways · continuous improvement | `layout-dark-1` |
 | 23 | Unit 3 · Context | `layout-unit-v2` |
 | 24 | Unit 3 · One idea to keep | `layout-statement-dark` |
-| 25 | What is context? | `layout-dark-1` |
-| 26 | What is context engineering? | `layout-dark-1` |
-| 27 | Context engineering vs. prompt engineering | `layout-dark-1` |
-| 28 | Context engineering in the harness | `layout-dark-1` |
-| 29 | Building blocks of context | `doc · doc-dark-bg-1` |
-| 30 | Main takeaways · context | `layout-dark-1` |
-| 31 | The right information, at the right time | `layout-dark-1` |
-| 32 | Unit 4 · Tools and Integration | `layout-unit-v2` |
-| 33 | Unit 4 · One idea to keep | `layout-statement-dark` |
-| 34 | Four gaps of a frozen model | `layout-dark-1` |
-| 35 | The tool loop | `layout-dark-1` |
-| 36 | Descriptions are prompts | `layout-dark-1` |
-| 37 | Five examples, one loop | `layout-dark-1` |
-| 38 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
-| 39 | Tools · takeaways | `layout-dark-1` |
+| 25 | Lesson · Context | `layout-lesson` |
+| 26 | What is context? | `layout-dark-1` |
+| 27 | What is context engineering? | `layout-dark-1` |
+| 28 | Prompt engineering and context engineering, side by side | `layout-dark-1` |
+| 29 | Context engineering vs. prompt engineering | `layout-dark-1` |
+| 30 | Context engineering in the harness | `layout-dark-1` |
+| 31 | Building blocks of context | `doc · doc-dark-bg-1` |
+| 32 | Main takeaways · context | `layout-dark-1` |
+| 33 | The right information, at the right time | `layout-dark-1` |
+| 34 | Lesson · RAG overview | `layout-lesson` |
+| 35 | Unit 4 · Tools and Integration | `layout-unit-v2` |
+| 36 | Unit 4 · One idea to keep | `layout-statement-dark` |
+| 37 | Four gaps of a frozen model | `layout-dark-1` |
+| 38 | The tool loop | `layout-dark-1` |
+| 39 | Descriptions are prompts | `layout-dark-1` |
+| 40 | Five examples, one loop | `layout-dark-1` |
+| 41 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
+| 42 | Tools · takeaways | `layout-dark-1` |
+| 43 | Lesson · MCP overview | `layout-lesson` |
+| 44 | From N × M to N + M | `layout-dark-1` |
+| 45 | MCP · the moving parts | `layout-dark-1` |
+| 46 | MCP · discovery is built in | `layout-dark-1` |
+| 47 | MCP · least privilege in three layers | `layout-dark-1` |
+| 48 | When to use MCP | `layout-dark-1` |
+| 49 | Before you connect a server | `layout-dark-1` |
+| 50 | MCP · takeaways | `layout-dark-1` |
 
 ## Templates: what changes in each instance
 

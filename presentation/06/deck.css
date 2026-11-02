@@ -681,3 +681,70 @@ body.toc-open #toc {
 .cw-seg.n { background: #4a4a44; }
 .is-bad .cw-seg.key { background: #6f8a7a; }
 .takeaway.rit-take { bottom: 104px; }
+
+/* Prompt engineering vs. context engineering: side-by-side text. */
+.pe-ce { position: absolute; left: 94px; right: 94px; top: 172px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.pe-ce-col { padding: 22px 32px 24px; border-top: 2px solid #4a4a44; background: #161614; }
+.pe-ce-col.is-ce { border-top-color: var(--mint); background: #13261d; }
+.pe-ce h2 { margin: 0; font-family: var(--font-title); font-weight: 700; font-size: 36px; letter-spacing: -0.01em; color: #fff; }
+.pe-ce .is-ce h2 { color: var(--mint); }
+.pe-ce .def { margin: 8px 0 0; min-height: 2.8em; font-family: var(--font-serif); font-size: 24px; line-height: 1.4; color: #e4e9e6; }
+.pe-ce .def b { font-family: var(--font-title); color: #fff; }
+.pe-ce dl { margin: 6px 0 0; display: grid; gap: 0; }
+.pe-ce dt { margin-top: 12px; padding-top: 10px; border-top: 1px solid #34342e; font-family: var(--font-text); font-weight: 600; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: #9fb0a7; }
+.pe-ce .is-ce dt { color: var(--mint); border-top-color: #2f6d4f; }
+.pe-ce dd { margin: 4px 0 0; font-size: 23px; line-height: 1.35; color: #e4e9e6; }
+.pe-ce dd b { color: #fff; }
+.takeaway.pe-ce-take { bottom: 72px; padding-top: 16px; font-size: 27px; }
+
+/* Lesson slide with a link to the notes. */
+.layout-lesson .notes-link { top: 76px; right: 156px; z-index: 5; }
+
+/* MCP: N × M vs N + M. */
+.nm-split { position: absolute; left: 94px; right: 94px; top: 236px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
+.nm-cap { margin: 0 0 14px; font-size: 24px; color: #b9c2bd; }
+.nm-cap b { color: #fff; font-family: var(--font-title); }
+.nm-cap b.n { font-size: 32px; color: #f08a7e; }
+.is-mcp .nm-cap b.n { color: var(--mint); }
+.nm { display: block; width: 100%; height: auto; }
+.nm line { stroke: #5c5c56; stroke-width: 1.6; }
+.is-mcp .nm line { stroke: var(--mint); stroke-opacity: 0.7; }
+.nm text { font: 500 18px var(--font-text); text-anchor: middle; fill: #e4e9e6; }
+.nm .a rect { fill: #161614; stroke: #4a4a44; stroke-width: 2; }
+.nm .s rect { fill: #13261d; stroke: #2f6d4f; stroke-width: 2; }
+.nm .s text { fill: #cdf3df; }
+.nm .h rect { fill: var(--mint); }
+.nm .h text { fill: #0d1a12; font-family: var(--font-title); font-weight: 700; font-size: 22px; }
+
+/* MCP: moving parts. */
+.mcp-tables { position: absolute; left: 94px; right: 94px; top: 210px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+.layout-dark-1 .mcp-tables .dark-table { position: static; font-size: 24px; }
+.mcp-tables { top: 236px; }
+.mcp-tables th { white-space: nowrap; }
+
+/* MCP: discovery, checklist, layers. */
+.gap-cards.is-disc { top: 250px; }
+.gap-cards.is-disc > div { min-height: 0; }
+.gap-cards.is-disc .tag { font-family: var(--font-code); text-transform: none; letter-spacing: 0; font-size: 19px; }
+.gap-cards.is-check { top: 270px; }
+.gap-cards.is-check > div { min-height: 320px; }
+.gap-cards .num { font-family: var(--font-title); font-weight: 700; font-size: 64px; line-height: 0.9; color: var(--mint); }
+.example-cards.is-layers { top: 250px; }
+.example-cards.is-layers > div { min-height: 0; }
+.lp-result { position: absolute; left: 94px; right: 94px; top: 560px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.lp-result > div { display: flex; flex-direction: column; gap: 6px; padding: 18px 24px; border-radius: 12px; border: 2px solid #3a3a34; background: #161614; font-size: 23px; }
+.lp-result b { font-family: var(--font-title); }
+.lp-result span { color: #cfd8d3; }
+.lp-result em { font-style: normal; font-weight: 600; }
+.lp-result .is-good { border-color: var(--mint); }
+.lp-result .is-good em { color: var(--mint); }
+.lp-result .is-bad em { color: #f08a7e; }
+.flow-note.lp-note { top: auto; bottom: 90px; }
+
+/* MCP: when to use / skip. */
+.use-skip { position: absolute; left: 94px; right: 94px; top: 220px; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.use-skip > div { padding: 30px 34px 36px; border-top: 2px solid var(--mint); background: #13261d; }
+.use-skip > .is-skip { border-top-color: #4a4a44; background: #161614; }
+.use-skip h2 { margin: 0 0 28px; font-family: var(--font-text); font-weight: 600; font-size: 19px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); }
+.use-skip .is-skip h2 { color: #b9c2bd; }
+.use-skip .is-skip .points li::before { background: #4a4a44; color: #fff; }
