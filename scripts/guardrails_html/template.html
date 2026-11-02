@@ -1130,7 +1130,7 @@ function makeDuel(host, b, cfg) {
     <div class="final"><div class="fl">${ICON.user.replace("<svg", '<svg width="14" height="14"')} What the user sees</div><div class="fb">Press Play: the final output appears here and stays.</div></div>
     <div class="concl"><div class="fl">Main conclusions</div><ul></ul></div></div>`;
   host.innerHTML = `<div class="duel-wrap"><div class="duel-ctrl">
-      <button class="btn solid play">${ICON.play}<span>Play both</span></button><button class="btn backb">← Back</button><button class="btn stepb">Step →</button><button class="btn resetb">Reset</button>
+      <button class="btn solid play">${ICON.play}<span>Play both</span></button><button class="btn backb">← Back</button><button class="btn stepb">Step →</button><button class="btn lastb" title="Jump to the last step">Last step ⇥</button><button class="btn resetb">Reset</button>
       <span class="hint">Same request, same model: only the guardrail differs.</span></div>
     <div class="duel">${col("without", wo.label, [wo])}${col("with", wis.length > 1 ? "With guardrail" : wis[0].label, wis)}</div></div>`;
   const root = host.firstElementChild, P = { root, n: 0, timer: null, wi: 0 };
@@ -1180,6 +1180,7 @@ function makeDuel(host, b, cfg) {
   $(".stepb", root).addEventListener("click", P.fwd);
   $(".backb", root).addEventListener("click", P.back);
   $(".resetb", root).addEventListener("click", () => { P.stop(); set(0); });
+  $(".lastb", root).addEventListener("click", () => { P.stop(); set(maxLen()); });
   $$(".dcol.with .scene", root).forEach(bt => bt.addEventListener("click", () => P.scene_(+bt.dataset.i)));
   root.addEventListener("mouseenter", () => (hoverPlayer = P));
   root.addEventListener("mouseleave", () => { if (hoverPlayer === P) hoverPlayer = null; });

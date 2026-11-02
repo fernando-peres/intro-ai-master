@@ -1464,7 +1464,7 @@ function actCase(group) {
       <div class="msg user"><span class="who"><span class="dot"></span>${c.ask[0]}</span>${c.ask[1]}</div>
       <ol class="simsteps">${ACT_STEPS.map((s, i) => `<li data-k="${i}"><span class="badge">${i + 1}</span>${i === 2 ? `${c.block[0].toUpperCase() + c.block.slice(1)} adds its part` : s}</li>`).join("")}</ol>
       <div class="lanes"><div class="lane"></div><div class="lane is-rag"></div></div>
-      <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span class="act-n">1</span> of 4 · token counts are illustrative</span><span style="display:flex;gap:8px"><button class="btn act-prev">Back</button><button class="btn solid act-next">Next step</button></span></div>
+      <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span class="act-n">1</span> of 4 · token counts are illustrative</span><span style="display:flex;gap:8px"><button class="btn solid act-play">▶ Play</button><button class="btn act-prev">Back</button><button class="btn act-next">Next step</button><button class="btn act-last" title="Jump to the last step">Last step ⇥</button></span></div>
     </div>
   </div>`;
 }
@@ -1508,12 +1508,22 @@ function initAct(group) {
     $$(".simsteps li", root).forEach((li, k) => { li.classList.toggle("on", k === i); li.classList.toggle("done", k < i); });
     $(".act-n", root).textContent = i + 1;
     $(".act-prev", root).disabled = i === 0;
+    $(".act-last", root).disabled = i === 3;
     $(".act-next", root).textContent = i === 3 ? "Start again" : "Next step";
   };
-  $(".act-next", root).onclick = () => { i = (i + 1) % 4; render(); };
-  $(".act-prev", root).onclick = () => { if (i > 0) { i--; render(); } };
-  $(".simsteps", root).onclick = (e) => { const li = e.target.closest("li"); if (li) { i = +li.dataset.k; render(); } };
-  $(".act-toggle", root)?.addEventListener("change", () => { i = 3; render(); });
+  let timer = null;
+  const stop = () => { clearInterval(timer); timer = null; $(".act-play", root).textContent = "▶ Play"; };
+  $(".act-play", root).onclick = () => {
+    if (timer) return stop();
+    if (i >= 3) { i = 0; render(); }
+    $(".act-play", root).textContent = "❚❚ Pause";
+    timer = setInterval(() => { if (!root.isConnected || root.offsetParent === null || i >= 3) return stop(); i++; render(); if (i >= 3) stop(); }, 2200);
+  };
+  $(".act-next", root).onclick = () => { stop(); i = (i + 1) % 4; render(); };
+  $(".act-prev", root).onclick = () => { stop(); if (i > 0) { i--; render(); } };
+  $(".act-last", root).onclick = () => { stop(); i = 3; render(); };
+  $(".simsteps", root).onclick = (e) => { const li = e.target.closest("li"); if (li) { stop(); i = +li.dataset.k; render(); } };
+  $(".act-toggle", root)?.addEventListener("change", () => { stop(); i = 3; render(); });
   render();
 }
 

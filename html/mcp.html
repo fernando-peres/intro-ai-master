@@ -713,7 +713,7 @@ function sceneCase(k, n) {
           <tr class="hl"><td><b>With MCP</b></td>${c.cost.with.map((x) => `<td class="mono">${x}</td>`).join("")}</tr></tbody>
         </table></div>
       </div>
-      <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span class="sc-n">1</span> of 4</span><span style="display:flex;gap:8px"><button class="btn sc-prev">Back</button><button class="btn solid sc-next">Next step</button></span></div>
+      <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span class="sc-n">1</span> of 4</span><span style="display:flex;gap:8px"><button class="btn solid sc-play">▶ Play</button><button class="btn sc-prev">Back</button><button class="btn sc-next">Next step</button><button class="btn sc-last" title="Jump to the last step">Last step ⇥</button></span></div>
     </div>
   </div>`;
 }
@@ -740,12 +740,22 @@ function initScene(k) {
     $$(".simsteps li", root).forEach((li, j) => { li.classList.toggle("on", j === i); li.classList.toggle("done", j < i); });
     $(".sc-n", root).textContent = i + 1;
     $(".sc-prev", root).disabled = i === 0;
+    $(".sc-last", root).disabled = i === 3;
     $(".sc-next", root).textContent = i === 3 ? "Start again" : "Next step";
     $(".sc-end", root).hidden = i < 3;
   };
-  $(".sc-next", root).onclick = () => { i = (i + 1) % 4; render(); };
-  $(".sc-prev", root).onclick = () => { if (i > 0) { i--; render(); } };
-  $(".simsteps", root).onclick = (e) => { const li = e.target.closest("li"); if (li) { i = +li.dataset.k; render(); } };
+  let timer = null;
+  const stop = () => { clearInterval(timer); timer = null; $(".sc-play", root).textContent = "▶ Play"; };
+  $(".sc-play", root).onclick = () => {
+    if (timer) return stop();
+    if (i >= 3) { i = 0; render(); }
+    $(".sc-play", root).textContent = "❚❚ Pause";
+    timer = setInterval(() => { if (!root.isConnected || root.offsetParent === null || i >= 3) return stop(); i++; render(); if (i >= 3) stop(); }, 2200);
+  };
+  $(".sc-next", root).onclick = () => { stop(); i = (i + 1) % 4; render(); };
+  $(".sc-prev", root).onclick = () => { stop(); if (i > 0) { i--; render(); } };
+  $(".sc-last", root).onclick = () => { stop(); i = 3; render(); };
+  $(".simsteps", root).onclick = (e) => { const li = e.target.closest("li"); if (li) { stop(); i = +li.dataset.k; render(); } };
   render();
 }
 

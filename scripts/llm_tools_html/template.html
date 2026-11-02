@@ -1113,7 +1113,7 @@ function makeDuel(host, cfg, e) {
     <div class="concl"><div class="fl">Main takeaways</div><ul></ul></div></div>`;
   host.innerHTML = `<div class="duel-wrap">
     ${cfg.scenes.some(s => s.expected) ? `<div class="expected-banner" style="margin-bottom:10px">Expected flow, not a real run: run the notebook and rebuild to fill in the real values.</div>` : ""}
-    <div class="duel-ctrl"><button class="btn solid play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play both</span></button><button class="btn backb">← Back</button><button class="btn stepb">Step →</button><button class="btn resetb">Reset</button><span class="hint">Same question, same model: only the tools differ.</span></div>
+    <div class="duel-ctrl"><button class="btn solid play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg><span>Play both</span></button><button class="btn backb">← Back</button><button class="btn stepb">Step →</button><button class="btn lastb" title="Jump to the last step">Last step ⇥</button><button class="btn resetb">Reset</button><span class="hint">Same question, same model: only the tools differ.</span></div>
     <div class="duel">${col("without", "Without tools", [wo], e.verdictWithout)}${col("with", "With tools", wis, ["pass", e.verdictWith])}</div>
     <div class="panel duel-code"><div class="loop-code"><div class="bar"></div><pre></pre></div></div></div>`;
   const root = host.firstElementChild, P = { root, n: 0, wi: 0, timer: null, codeKey: "" };
@@ -1179,6 +1179,7 @@ function makeDuel(host, cfg, e) {
   $(".stepb", root).addEventListener("click", P.fwd);
   $(".backb", root).addEventListener("click", P.back);
   $(".resetb", root).addEventListener("click", () => { P.stop(); set(0); });
+  $(".lastb", root).addEventListener("click", () => { P.stop(); set(maxLen()); });
   $$(".dcol.with .scene", root).forEach(bt => bt.addEventListener("click", () => P.scene_(+bt.dataset.i)));
   root.addEventListener("mouseenter", () => (hoverPlayer = P));
   root.addEventListener("mouseleave", () => { if (hoverPlayer === P) hoverPlayer = null; });
