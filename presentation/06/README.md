@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 79-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 81-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -35,74 +35,76 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 9 | Model, harness, context: three roles | `layout-dark-1` |
 | 10 | Implemented harnesses · assistants | `layout-dark-1` |
 | 11 | Implemented harnesses · coding and app building | `layout-dark-1` |
-| 12 | Harness development frameworks | `doc · doc-dark-bg-1` |
-| 13 | Implemented harnesses vs. frameworks | `doc · doc-dark-bg-1` |
-| 14 | Unit 2 · The mindset for GenAI systems | `layout-unit-v2` |
-| 15 | Unit 2 · One idea to keep | `layout-statement-dark` |
-| 16 | Improving the performance of GenAI systems | `layout-dark-1` |
-| 17 | Four dimensions of continuous improvement | `layout-dark-1` |
-| 18 | An interconnected improvement system | `layout-dark-1` |
-| 19 | Why model optimization alone is not enough | `layout-dark-1` |
-| 20 | Where to invest: training vs. the system | `layout-dark-1` |
-| 21 | The rising cost of training frontier models | `layout-dark-1` |
-| 22 | Main takeaways · continuous improvement | `layout-dark-1` |
-| 23 | Unit 3 · Context & context engineering | `layout-unit-v2` |
-| 24 | Unit 3 · One idea to keep | `layout-statement-dark` |
-| 25 | Lesson · Context | `layout-lesson` |
-| 26 | What is context? | `layout-dark-1` |
-| 27 | What is context engineering? | `layout-dark-1` |
-| 28 | Prompt engineering and context engineering, side by side | `layout-dark-1` |
-| 29 | Context engineering vs. prompt engineering | `layout-dark-1` |
-| 30 | Context engineering in the harness | `layout-dark-1` |
-| 31 | Building blocks of context | `doc · doc-dark-bg-1` |
-| 32 | Main takeaways · context | `layout-dark-1` |
-| 33 | The right information, at the right time | `layout-dark-1` |
-| 34 | Lesson · RAG overview | `layout-lesson` |
-| 35 | RAG · what it is and why | `layout-dark-1` |
-| 36 | RAG · indexing and retrieval | `layout-dark-1` |
-| 37 | RAG · indexing strategies | `layout-dark-1` |
-| 38 | RAG · retrieval strategies | `layout-dark-1` |
-| 39 | RAG · semantic search | `layout-dark-1` |
-| 40 | RAG · metadata and hybrid search | `layout-dark-1` |
-| 41 | RAG · in action (links to `apps/rag-in-action`) | `layout-dark-1` |
-| 42 | RAG · other types | `layout-dark-1` |
-| 43 | RAG · takeaways | `layout-dark-1` |
-| 44 | Unit 4 · Tools and Integration | `layout-unit-v2` |
-| 45 | Unit 4 · One idea to keep | `layout-statement-dark` |
-| 46 | Four gaps of a frozen model | `layout-dark-1` |
-| 47 | The tool loop | `layout-dark-1` |
-| 48 | Descriptions are prompts | `layout-dark-1` |
-| 49 | Five examples, one loop | `layout-dark-1` |
-| 50 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
-| 51 | Tools · takeaways | `layout-dark-1` |
-| 52 | Lesson · MCP overview | `layout-lesson` |
-| 53 | From N × M to N + M | `layout-dark-1` |
-| 54 | MCP · client and server | `layout-dark-1` |
-| 55 | MCP · the moving parts | `layout-dark-1` |
-| 56 | MCP · discovery is built in | `layout-dark-1` |
-| 57 | MCP · least privilege in three layers | `layout-dark-1` |
-| 58 | When to use MCP | `layout-dark-1` |
-| 59 | Before you connect a server | `layout-dark-1` |
-| 60 | MCP · takeaways | `layout-dark-1` |
-| 61 | Alert · using third-party tools and MCP servers | `layout-alert` |
-| 62 | Alert · building tools and MCP servers | `layout-alert` |
-| 63 | Unit 6 · Guardrails and Evals | `layout-unit-v2` |
-| 64 | Unit 6 · One idea to keep | `layout-statement-dark` |
-| 65 | Lesson · Guardrails overview | `layout-lesson` |
-| 66 | Guardrails · what and why | `layout-dark-1` |
-| 67 | Guardrails · types | `layout-dark-1` |
-| 68 | Guardrails · in action (links to `html/guardrails.html`) | `layout-dark-1` |
-| 69 | Guardrails · accelerators | `doc · doc-dark-bg-1` |
-| 70 | Guardrails · takeaways | `layout-dark-1` |
-| 71 | Lesson · Evals overview | `layout-lesson` |
-| 72 | Evals · what and why | `layout-dark-1` |
-| 73 | Evals · types | `layout-dark-1` |
-| 74 | Evals · in action (links to `html/evals.html`) | `layout-dark-1` |
-| 75 | Evals · accelerators | `doc · doc-dark-bg-1` |
-| 76 | Evals · takeaways | `layout-dark-1` |
-| 77 | Next · Observability | `layout-statement-dark` |
-| 78 | Unit 7 · Observability | `layout-unit-v2` |
-| 79 | Unit 8 · Experiments | `layout-unit-v2` |
+| 12 | In practice · chat vs. coding harness | `layout-dark-1` |
+| 13 | In practice · what a coding harness adds | `layout-dark-1` |
+| 14 | Harness development frameworks | `doc · doc-dark-bg-1` |
+| 15 | Implemented harnesses vs. frameworks | `doc · doc-dark-bg-1` |
+| 16 | Unit 2 · The mindset for GenAI systems | `layout-unit-v2` |
+| 17 | Unit 2 · One idea to keep | `layout-statement-dark` |
+| 18 | Improving the performance of GenAI systems | `layout-dark-1` |
+| 19 | Four dimensions of continuous improvement | `layout-dark-1` |
+| 20 | An interconnected improvement system | `layout-dark-1` |
+| 21 | Why model optimization alone is not enough | `layout-dark-1` |
+| 22 | Where to invest: training vs. the system | `layout-dark-1` |
+| 23 | The rising cost of training frontier models | `layout-dark-1` |
+| 24 | Main takeaways · continuous improvement | `layout-dark-1` |
+| 25 | Unit 3 · Context & context engineering | `layout-unit-v2` |
+| 26 | Unit 3 · One idea to keep | `layout-statement-dark` |
+| 27 | Lesson · Context | `layout-lesson` |
+| 28 | What is context? | `layout-dark-1` |
+| 29 | What is context engineering? | `layout-dark-1` |
+| 30 | Prompt engineering and context engineering, side by side | `layout-dark-1` |
+| 31 | Context engineering vs. prompt engineering | `layout-dark-1` |
+| 32 | Context engineering in the harness | `layout-dark-1` |
+| 33 | Building blocks of context | `doc · doc-dark-bg-1` |
+| 34 | Main takeaways · context | `layout-dark-1` |
+| 35 | The right information, at the right time | `layout-dark-1` |
+| 36 | Lesson · RAG overview | `layout-lesson` |
+| 37 | RAG · what it is and why | `layout-dark-1` |
+| 38 | RAG · indexing and retrieval | `layout-dark-1` |
+| 39 | RAG · indexing strategies | `layout-dark-1` |
+| 40 | RAG · retrieval strategies | `layout-dark-1` |
+| 41 | RAG · semantic search | `layout-dark-1` |
+| 42 | RAG · metadata and hybrid search | `layout-dark-1` |
+| 43 | RAG · in action (links to `apps/rag-in-action`) | `layout-dark-1` |
+| 44 | RAG · other types | `layout-dark-1` |
+| 45 | RAG · takeaways | `layout-dark-1` |
+| 46 | Unit 4 · Tools and Integration | `layout-unit-v2` |
+| 47 | Unit 4 · One idea to keep | `layout-statement-dark` |
+| 48 | Four gaps of a frozen model | `layout-dark-1` |
+| 49 | The tool loop | `layout-dark-1` |
+| 50 | Descriptions are prompts | `layout-dark-1` |
+| 51 | Five examples, one loop | `layout-dark-1` |
+| 52 | Hands-on · llm_tools_01 | `doc · doc-dark-bg-1` |
+| 53 | Tools · takeaways | `layout-dark-1` |
+| 54 | Lesson · MCP overview | `layout-lesson` |
+| 55 | From N × M to N + M | `layout-dark-1` |
+| 56 | MCP · client and server | `layout-dark-1` |
+| 57 | MCP · the moving parts | `layout-dark-1` |
+| 58 | MCP · discovery is built in | `layout-dark-1` |
+| 59 | MCP · least privilege in three layers | `layout-dark-1` |
+| 60 | When to use MCP | `layout-dark-1` |
+| 61 | Before you connect a server | `layout-dark-1` |
+| 62 | MCP · takeaways | `layout-dark-1` |
+| 63 | Alert · using third-party tools and MCP servers | `layout-alert` |
+| 64 | Alert · building tools and MCP servers | `layout-alert` |
+| 65 | Unit 6 · Guardrails and Evals | `layout-unit-v2` |
+| 66 | Unit 6 · One idea to keep | `layout-statement-dark` |
+| 67 | Lesson · Guardrails overview | `layout-lesson` |
+| 68 | Guardrails · what and why | `layout-dark-1` |
+| 69 | Guardrails · types | `layout-dark-1` |
+| 70 | Guardrails · in action (links to `html/guardrails.html`) | `layout-dark-1` |
+| 71 | Guardrails · accelerators | `doc · doc-dark-bg-1` |
+| 72 | Guardrails · takeaways | `layout-dark-1` |
+| 73 | Lesson · Evals overview | `layout-lesson` |
+| 74 | Evals · what and why | `layout-dark-1` |
+| 75 | Evals · types | `layout-dark-1` |
+| 76 | Evals · in action (links to `html/evals.html`) | `layout-dark-1` |
+| 77 | Evals · accelerators | `doc · doc-dark-bg-1` |
+| 78 | Evals · takeaways | `layout-dark-1` |
+| 79 | Next · Observability | `layout-statement-dark` |
+| 80 | Unit 7 · Observability | `layout-unit-v2` |
+| 81 | Unit 8 · Experiments | `layout-unit-v2` |
 
 ## Templates: what changes in each instance
 

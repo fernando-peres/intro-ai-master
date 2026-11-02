@@ -287,6 +287,68 @@
     </section>
 
     <!-- template: doc-dark-bg-1 · scrolling document page (pink accent) -->
+    <!-- template: layout-dark-1 · before / after workflow -->
+    <section class="page" data-type="slide" data-title="In practice · chat vs. coding harness">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Harness in practice</span>
+          <h1>ChatGPT is a harness, but <em>not a harness for coding</em></h1>
+          <div class="hp-cols">
+            <div class="hp-col is-before">
+              <h2><b>Before</b> · a chat harness used for code <small>ChatGPT in a browser tab</small></h2>
+              <ol class="hp-flow">
+                <li><span class="who is-you">You</span>Describe the problem, paste code and errors into the chat</li>
+                <li><span class="who is-model">Model</span>Writes code as text in the chat</li>
+                <li><span class="who is-you">You</span>Read it, understand it, copy it into VS Code</li>
+                <li><span class="who is-you">You</span>Adapt it to your files, run it, test it</li>
+                <li class="is-loop"><span class="who is-you">You</span>Copy the error back into the chat, and repeat</li>
+              </ol>
+              <p class="hp-note">The model never sees your project. <b>You</b> are its file system, terminal and test runner.</p>
+            </div>
+            <div class="hp-col is-after">
+              <h2><b>Now</b> · a coding harness <small>Claude Code, Codex, Copilot agent mode</small></h2>
+              <ol class="hp-flow">
+                <li><span class="who is-you">You</span>Give the task, or point to a spec</li>
+                <li><span class="who is-harness">Harness</span>Plans, reads and searches the repository</li>
+                <li><span class="who is-harness">Harness</span>Creates and edits files, shows the diff</li>
+                <li class="is-loop"><span class="who is-harness">Harness</span>Runs commands and tests, reads errors, fixes, repeats</li>
+                <li><span class="who is-you">You</span>Review the diff or pull request, approve</li>
+              </ol>
+              <p class="hp-note">Same kind of model. The harness gives it <b>eyes and hands in your project</b>; you review instead of relaying.</p>
+            </div>
+          </div>
+          <p class="source">Sources: Anthropic, Claude Code documentation; VS Code blog, <i>Introducing GitHub Copilot agent mode</i> (Feb 2025); OpenAI, Codex launch (May 2025).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · hub diagram: model + harness capabilities -->
+    <section class="page" data-type="slide" data-title="In practice · what a coding harness adds">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Harness in practice</span>
+          <h1>What a coding harness builds <em>around the model</em></h1>
+          <svg class="hub-lines" viewBox="0 0 1600 900" aria-hidden="true">
+            <circle class="ring" cx="800" cy="530" r="150"/>
+            <path d="M572 290 L700 430 M572 450 L652 490 M572 610 L652 570 M572 770 L700 630 M1028 290 L900 430 M1028 450 L948 490 M1028 610 L948 570 M1028 770 L900 630"/>
+          </svg>
+          <div class="hub-core"><span>HARNESS</span><div class="hub-model">Model</div></div>
+          <div class="hub-cards">
+            <div style="left:94px;top:240px"><b>Read &amp; search the repo</b><span>was: paste code into the chat</span></div>
+            <div style="left:94px;top:400px"><b>Create &amp; edit files</b><span>was: copy, paste and adapt</span></div>
+            <div style="left:94px;top:560px"><b>Run terminal, tests, linters</b><span>was: run it yourself, paste errors back</span></div>
+            <div style="left:94px;top:720px"><b>Plan before acting</b><span>plan mode, to-do lists · was: in your head</span></div>
+            <div class="is-r" style="left:1028px;top:240px"><b>Project instructions &amp; specs</b><span>AGENTS.md, CLAUDE.md · was: repeat it yourself</span></div>
+            <div class="is-r" style="left:1028px;top:400px"><b>Permissions &amp; sandbox</b><span>approve edits and commands · was: only you</span></div>
+            <div class="is-r" style="left:1028px;top:560px"><b>Integrations</b><span>MCP, web search, git, pull requests</span></div>
+            <div class="is-r" style="left:1028px;top:720px"><b>Where you work</b><span>terminal, IDE, desktop app, cloud</span></div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
     <section class="page is-night" data-type="doc" data-title="Harness development frameworks">
       <article class="doc-dark-1 is-pink">
         <span class="eyebrow">Harness · Frameworks</span>
