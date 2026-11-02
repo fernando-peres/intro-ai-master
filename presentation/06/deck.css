@@ -651,3 +651,7 @@ body.toc-open #toc {
 .context-diagram .d-label.is-output.is-on { display: grid !important; animation: out-pop .4s ease-out; }
 @keyframes out-pop { from { transform: translate(-50%, -50%) scale(.85); } to { transform: translate(-50%, -50%) scale(1); } }
 .context-diagram .d-label.is-output b { font-family: var(--font-text); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: #f2c94c; }
+.context-diagram .d-label.is-zone.is-harness { color: #fff; font-size: 19px; z-index: 1500 !important; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+.context-diagram .d-label.is-output { position: absolute; top: 10px; right: 30px; left: auto; transform: none !important; }
+.context-diagram .d-label.is-output.is-on { animation: out-pop2 .4s ease-out; }
+@keyframes out-pop2 { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }

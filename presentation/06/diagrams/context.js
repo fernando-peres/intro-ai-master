@@ -64,9 +64,8 @@ export function mount(el) {
   ring(2.23, 2.27, 0xffffff, 0.75, 0.18); // frontier between harness and context
   const ctrl = ring(1.15, 1.18, 0x9be3bc, 0.9, 0.18); // adaptive control (thin)
   const onRing = (r, deg) => { const a = (deg * Math.PI) / 180, z = Math.sin(a) * r; return P.clone().add(new THREE.Vector3(Math.cos(a) * r, -z * Math.sin(0.18), z * Math.cos(0.18))); };
-  addLabel("HARNESS", anchor(onRing(1.8, 80)), { className: "is-ring is-zone" });
+  addLabel("HARNESS", anchor(onRing(1.9, 90).add(new THREE.Vector3(0, 0.05, 0.1))), { className: "is-ring is-zone is-harness" });
   addLabel("CONTEXT", anchor(onRing(3.1, 60)), { className: "is-ring is-zone is-pale" });
-  addLabel("frontier", anchor(onRing(2.25, 4).add(new THREE.Vector3(0.42, 0, 0))), { className: "is-ring is-frontier" });
 
   // ---------- Moons (sources) ----------
   const moons = MOONS.map((m) => {
@@ -102,18 +101,19 @@ export function mount(el) {
   const feed = new THREE.QuadraticBezierCurve3(WIN.clone().add(new THREE.Vector3(1.3, 0.1, 0)), new THREE.Vector3(0.6, 0.4, 1.4), P.clone().add(new THREE.Vector3(-0.85, 0.05, 0.45)));
   root.add(new THREE.Mesh(new THREE.TubeGeometry(feed, 48, 0.07, 12), new THREE.MeshBasicMaterial({ color: 0x6ee7a0, transparent: true, opacity: 0.35 })));
   root.add(new THREE.Mesh(new THREE.TubeGeometry(feed, 48, 0.025, 8), new THREE.MeshBasicMaterial({ color: 0xcdf3df })));
-  addLabel("feeds the model", anchor(feed.getPoint(0.3).add(new THREE.Vector3(0, -0.4, 0.2))), { className: "is-feed" });
   for (let j = 0; j < 3; j++) { const m = new THREE.Mesh(pGeo, white); root.add(m); lanes.push({ curve: feed, m, phase: j / 3, speed: 0.0006 }); }
 
   // ---------- Output: after every source has delivered, the model generates an answer ----------
-  const OUT = P.clone().add(new THREE.Vector3(1.05, -1.4, 2.35));
-  const outCurve = new THREE.QuadraticBezierCurve3(P.clone().add(new THREE.Vector3(0.7, -0.3, 0.6)), P.clone().add(new THREE.Vector3(1.6, -1.0, 2.2)), OUT);
+  const OUT = P.clone().add(new THREE.Vector3(2.7, 2.1, -0.6));
+  const outCurve = new THREE.QuadraticBezierCurve3(P.clone().add(new THREE.Vector3(0.6, 0.6, 0.3)), P.clone().add(new THREE.Vector3(2.2, 1.2, 0.2)), OUT);
   const outLine = new THREE.Mesh(new THREE.TubeGeometry(outCurve, 40, 0.025, 8), new THREE.MeshBasicMaterial({ color: 0xf2c94c, transparent: true, opacity: 0 }));
   root.add(outLine);
   const outBall = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), material(0xf2c94c, { emissive: 0xf2c94c, emissiveIntensity: 1 }));
   outBall.visible = false;
   root.add(outBall);
-  const outLabel = addLabel("", anchor(OUT), { className: "is-output" });
+  const outLabel = document.createElement("div"); // fixed in the top-right corner of the diagram
+  outLabel.className = "d-label is-output";
+  el.append(outLabel);
   const ANSWERS = [
     "“Yes, you can return it until 11 Nov. I’ve emailed you a free return label.”",
     "“Your Trail Shell isn’t affected by recall R-17. Re-proof it once a season.”",
@@ -161,7 +161,7 @@ export function mount(el) {
         outLabel.classList.add("is-on");
       }
     }
-    if (phase === "show" && t - phaseT > 4500) {
+    if (phase === "show" && t - phaseT > 9000) {
       phase = "collect"; answerN++; nextLaunch = t + 400;
       outLabel.classList.remove("is-on"); outLine.material.opacity = 0;
       ITEMS.length = 1; renderWin(false);
