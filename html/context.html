@@ -245,6 +245,13 @@ tr.hl td { background:var(--row); }
 .slider { display:flex; align-items:center; gap:10px; font-size:13px; }
 .slider input { flex:1; accent-color:var(--primary); }
 
+.cmp { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+.cmp > div { padding:12px 14px; border-radius:10px; background:var(--sunken); border:1px solid var(--border); }
+.cmp b { display:block; font-size:14px; }
+.cmp p { margin-top:4px; font-size:13px; color:var(--ink2); }
+.cmp .formula { margin-top:8px; background:var(--page); }
+.moved { font:600 10.5px var(--mono); color:var(--warn-ink); background:var(--warn-tint); padding:1px 6px; border-radius:999px; white-space:nowrap; }
+.vec { stroke-width:3; stroke-linecap:round; }
 footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2); font-size:12.5px; }
 
 @media (max-width: 980px) {
@@ -293,6 +300,8 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const fmt = (x, d = 2) => (Math.round(x * 10 ** d) / 10 ** d).toFixed(d);
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+const norm = (v) => Math.hypot(v[0], v[1]);
+const cos = (a, b) => dot(a, b) / (norm(a) * norm(b));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 /* ---------- theme ---------- */
@@ -656,7 +665,7 @@ const SNIPS = [
   ["R3", "Refunds reach your card in 5–7 days", [0.8, 0.08], "returns"],
   ["S1", "Standard delivery takes 2–4 working days", [0.3, 0.92], "shipping"],
   ["S2", "Express orders before 2 pm ship today", [0.12, 0.97], "shipping"],
-  ["S3", "Track your parcel from the email link", [0.48, 0.8], "shipping"],
+  ["S3", "Track your parcel from the email link (long FAQ page)", [0.9, 1.4], "shipping"],
   ["Z1", "Our jackets run small: size up", [-0.55, 0.76], "sizing"],
   ["Z2", "Find your size on each product page", [-0.76, 0.55], "sizing"],
   ["W1", "Trail Shell is rated 20,000 mm waterproof", [-0.86, -0.4], "waterproofing"],
@@ -696,10 +705,10 @@ const SHAPES = {
 const IMGQ = ["“red rain jacket”", [0.9, 0.84]];
 
 function plotSVG(points, q, topIds, outIds = new Set(), size = 420) {
-  const pad = 30, s = (size - 2 * pad) / 2.3, cx = size / 2, cy = size / 2;
+  const pad = 30, s = (size - 2 * pad) / 3.4, cx = size / 2, cy = size / 2;
   const X = (x) => cx + x * s, Y = (y) => cy - y * s;
   let g = `<line class="axis" x1="${pad}" y1="${cy}" x2="${size - pad}" y2="${cy}"/><line class="axis" x1="${cx}" y1="${pad}" x2="${cx}" y2="${size - pad}"/>`;
-  for (const t of [-1, -0.5, 0.5, 1]) g += `<line class="grid-l" x1="${X(t)}" y1="${pad}" x2="${X(t)}" y2="${size - pad}"/><line class="grid-l" x1="${pad}" y1="${Y(t)}" x2="${size - pad}" y2="${Y(t)}"/>`;
+  for (const t of [-1.5, -1, -0.5, 0.5, 1, 1.5]) g += `<line class="grid-l" x1="${X(t)}" y1="${pad}" x2="${X(t)}" y2="${size - pad}"/><line class="grid-l" x1="${pad}" y1="${Y(t)}" x2="${size - pad}" y2="${Y(t)}"/>`;
   g += `<text class="ptlabel" x="${size - pad}" y="${cy - 6}" text-anchor="end">dim 1</text><text class="ptlabel" x="${cx + 6}" y="${pad + 8}">dim 2</text>`;
   if (q) points.filter((p) => topIds.has(p.id)).forEach((p) => (g += `<line class="ray" x1="${X(q[0])}" y1="${Y(q[1])}" x2="${X(p.v[0])}" y2="${Y(p.v[1])}"/>`));
   points.forEach((p) => {
@@ -714,7 +723,7 @@ function embedPanel() {
   return `${topicHead(TOPICS[4], "Meaning, turned into coordinates",
     "An embedding turns a sentence or an image into a list of numbers so that similar meanings land close together. Search becomes: find the nearest points.",
     [["The idea", "Each text gets a position. “Send back my jacket” lands near “Print a return label”, even with no words in common."],
-     ["How similarity is scored", "The <b>dot product</b>: multiply the matching coordinates and add them up. Pointing the same way gives a high score."],
+     ["How similarity is scored", "<b>Cosine similarity</b> compares direction only (−1 to 1). The <b>dot product</b> also grows with a vector’s length, so long, “loud” items can win without being more relevant."],
      ["Retrieval", "Score the question against every item and keep the <b>top k</b> (here k = 5). Those go into the context."]])}
   ${subtabs("embed", [["text", "Text retrieval"], ["images", "Images + metadata"]])}
   <div class="case" data-group="embed" data-sub="text" role="tabpanel">
@@ -724,8 +733,11 @@ function embedPanel() {
       <div class="plotwrap">
         <div class="plot" id="embPlot"></div>
         <div class="stack">
-          <p class="formula">score = q · d = q₁·d₁ + q₂·d₂</p>
-          <div class="tablewrap"><table class="rank"><thead><tr><th>#</th><th>Snippet</th><th class="num">q · d</th><th class="num">score</th></tr></thead><tbody id="embRank"></tbody></table></div>
+          <div class="cmp">
+            <div><b>Dot product</b><p>Direction <i>and</i> length.</p><p class="formula">q · d = q₁d₁ + q₂d₂</p></div>
+            <div><b>Cosine similarity</b><p>Direction only. Used for ranking here.</p><p class="formula">cos = q · d / (‖q‖ ‖d‖)</p></div>
+          </div>
+          <div class="tablewrap"><table class="rank"><thead><tr><th>#</th><th>Snippet</th><th class="num">‖d‖</th><th class="num">dot</th><th class="num">cosine</th></tr></thead><tbody id="embRank"></tbody></table></div>
           <p class="muted" id="embNote"></p>
         </div>
       </div>
@@ -733,7 +745,7 @@ function embedPanel() {
   </div>
   <div class="case" data-group="embed" data-sub="images" role="tabpanel" hidden>
     <div class="panel pad stack">
-      <div class="case-head"><span class="label">Catalogue images in the same space as text · query ${IMGQ[0]}</span><span class="fict">filter first, then rank · k = 5</span></div>
+      <div class="case-head"><span class="label">Catalogue images in the same space as text · query ${IMGQ[0]}</span><span class="fict">filter first, then rank by cosine · k = 5</span></div>
       <div class="filters">
         <label>Max price <input type="range" id="fPrice" min="60" max="300" step="10" value="300"/> <b class="mono" id="fPriceV">€300</b></label>
         <label><input type="checkbox" id="fStock"/> In stock only</label>
@@ -752,13 +764,17 @@ function initEmbed() {
   const show = (k) => {
     const q = QUERIES[k][1];
     $$("#embQ .btn").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.k === k)));
-    const ranked = pts.map((p) => ({ ...p, s: dot(q, p.v) })).sort((a, b) => b.s - a.s);
-    const top = new Set(ranked.slice(0, 5).map((p) => p.id));
+    const scored = pts.map((p) => ({ ...p, d: dot(q, p.v), c: cos(q, p.v) }));
+    const byCos = [...scored].sort((a, b) => b.c - a.c), byDot = [...scored].sort((a, b) => b.d - a.d);
+    const dotRank = Object.fromEntries(byDot.map((p, i) => [p.id, i + 1]));
+    const top = new Set(byCos.slice(0, 5).map((p) => p.id));
     $("#embPlot").innerHTML = plotSVG(pts, q, top);
-    $("#embRank").innerHTML = ranked.slice(0, 5).map((p, i) =>
-      `<tr><td>${i + 1}</td><td><b>${p.id}</b> · ${p.t}</td><td class="num">${fmt(q[0])}×${fmt(p.v[0])} + ${fmt(q[1])}×${fmt(p.v[1])}</td><td class="num"><b>${fmt(p.s)}</b></td></tr>`).join("");
-    const worst = ranked[ranked.length - 1];
-    $("#embNote").innerHTML = `Lowest score: <b>${worst.id}</b> “${worst.t}” (${fmt(worst.s)}), pointing the opposite way. The top 5 go into the context window; the rest stay out.`;
+    $("#embRank").innerHTML = byCos.slice(0, 5).map((p, i) =>
+      `<tr><td>${i + 1}</td><td><b>${p.id}</b> · ${p.t}${dotRank[p.id] !== i + 1 ? ` <span class="moved">dot rank #${dotRank[p.id]}</span>` : ""}</td><td class="num">${fmt(norm(p.v))}</td><td class="num">${fmt(p.d)}</td><td class="num"><b>${fmt(p.c)}</b></td></tr>`).join("");
+    const lead = byDot[0];
+    $("#embNote").innerHTML = dotRank[byCos[0].id] === 1
+      ? `Here both measures agree on the best match. Vectors of similar length rank the same either way.`
+      : `By <b>dot product</b>, <b>${lead.id}</b> would be #1 (${fmt(lead.d)}) only because its vector is long (‖d‖ = ${fmt(norm(lead.v))}): a long, general page. <b>Cosine</b> ignores length and ranks it #${byCos.findIndex((p) => p.id === lead.id) + 1}. That’s why most search systems rank by cosine, or normalise vectors so both give the same answer.`;
   };
   $$("#embQ .btn").forEach((b) => b.addEventListener("click", () => show(+b.dataset.k)));
   show(0);
@@ -769,14 +785,14 @@ function initEmbed() {
     $("#fPriceV").textContent = "€" + max;
     const why = (p) => (p.price > max ? `over €${max}` : stock && !p.stock ? "out of stock" : cat !== "all" && p.cat !== cat ? `not ${cat}` : "");
     const allowed = prods.filter((p) => !why(p));
-    const ranked = allowed.map((p) => ({ ...p, s: dot(IMGQ[1], p.v) })).sort((a, b) => b.s - a.s);
+    const ranked = allowed.map((p) => ({ ...p, s: cos(IMGQ[1], p.v) })).sort((a, b) => b.s - a.s);
     const top = new Set(ranked.slice(0, 5).map((p) => p.id));
     const rank = Object.fromEntries(ranked.map((p, i) => [p.id, i + 1]));
     const order = [...prods].sort((a, b) => (rank[a.id] || 99) - (rank[b.id] || 99));
     $("#imgGrid").innerHTML = order.map((p) => {
-      const w = why(p), s = dot(IMGQ[1], p.v);
+      const w = why(p), s = cos(IMGQ[1], p.v), dp = dot(IMGQ[1], p.v);
       return `<div class="prod ${top.has(p.id) ? "top" : ""} ${w ? "out" : ""}">
-        ${top.has(p.id) ? `<span class="pill acc score">#${rank[p.id]} · ${fmt(s)}</span>` : ""}
+        ${top.has(p.id) ? `<span class="pill acc score" title="cosine ${fmt(s)} · dot product ${fmt(dp)}">#${rank[p.id]} · cos ${fmt(s, 3)}</span>` : ""}
         <svg viewBox="0 0 120 72" aria-hidden="true">${SHAPES[p.cat](p.col)}</svg>
         <b>${p.n}</b><small>${p.id} · ${p.cat} · €${p.price} · ${p.stock ? "in stock" : "out of stock"}</small>
         ${w ? `<span class="why">filtered: ${w}</span>` : ""}</div>`;
@@ -797,7 +813,7 @@ const CHUNKS = [
   { id: "C4", src: "Returns policy (old)", t: "Worn items cannot be returned.", v: [0.82, -0.3], lang: "en", upd: "2023-03" },
   { id: "C5", src: "Product care guide", t: "Clean your shell after muddy hikes; machine wash at 30°.", v: [-0.55, -0.75], lang: "en", upd: "2025-06" },
   { id: "C6", src: "Warranty", t: "Seams and zips are repaired free for 2 years.", v: [0.25, -0.92], lang: "en", upd: "2025-06" },
-  { id: "C7", src: "Shipping FAQ", t: "Return labels are free within Portugal.", v: [0.7, 0.55], lang: "en", upd: "2025-08" },
+  { id: "C7", src: "Shipping FAQ (long, generic)", t: "Everything about shipping and labels: return labels are free within Portugal, plus 40 more lines.", v: [1.25, 0.95], lang: "en", upd: "2025-08" },
   { id: "C8", src: "Shipping FAQ", t: "Standard delivery takes 2–4 working days.", v: [0.25, 0.95], lang: "en", upd: "2025-08" },
 ];
 const RQ = { t: "Can I return a jacket I wore once on a hike?", v: [0.85, -0.3] };
@@ -805,7 +821,7 @@ function ragPanel() {
   return `${topicHead(TOPICS[5], "Look it up, then answer",
     "Retrieval-augmented generation (RAG) prepares your documents once (indexing), then for each question fetches the few passages that matter and puts them in front of the model.",
     [["Indexing (once)", "Split documents into short chunks, embed each one, store it with metadata like source, language and date."],
-     ["Retrieval (every question)", "Embed the question, filter by metadata, score by dot product, keep the top k (here k = 4)."],
+     ["Retrieval (every question)", "Embed the question, filter by metadata, score each chunk (cosine similarity), keep the top k (here k = 4)."],
      ["Generation", "The model answers from those passages and cites them, so answers stay current without retraining."]])}
   ${subtabs("rag", [["index", "1 · Indexing"], ["retrieve", "2 · Retrieval"]])}
   <div class="case" data-group="rag" data-sub="index" role="tabpanel">
@@ -816,8 +832,8 @@ function ragPanel() {
       <div class="panel"><span class="badge">4</span><h3>Store + metadata</h3><p>Saved in a vector store with source, language and last-updated date.</p></div>
     </div>
     <div class="panel pad" style="margin-top:14px"><span class="label">The index · vector store contents</span>
-      <div class="tablewrap" style="margin-top:8px"><table><thead><tr><th>Chunk</th><th>Text</th><th>Vector</th><th>Source</th><th>Lang</th><th>Updated</th></tr></thead>
-      <tbody>${CHUNKS.map((c) => `<tr><td class="mono"><b>${c.id}</b></td><td>${c.t}</td><td class="mono">[${fmt(c.v[0])}, ${fmt(c.v[1])}]</td><td>${c.src}</td><td><span class="pill">${c.lang}</span></td><td class="mono">${c.upd}</td></tr>`).join("")}</tbody></table></div>
+      <div class="tablewrap" style="margin-top:8px"><table><thead><tr><th>Chunk</th><th>Text</th><th>Vector</th><th class="num">‖v‖</th><th>Source</th><th>Lang</th><th>Updated</th></tr></thead>
+      <tbody>${CHUNKS.map((c) => `<tr><td class="mono"><b>${c.id}</b></td><td>${c.t}</td><td class="mono">[${fmt(c.v[0])}, ${fmt(c.v[1])}]</td><td class="num">${fmt(norm(c.v))}</td><td>${c.src}</td><td><span class="pill">${c.lang}</span></td><td class="mono">${c.upd}</td></tr>`).join("")}</tbody></table></div>
     </div>
   </div>
   <div class="case" data-group="rag" data-sub="retrieve" role="tabpanel" hidden>
@@ -826,15 +842,18 @@ function ragPanel() {
       <div class="grid2">
         <div class="stack">
           <span class="label">Step 1 · metadata filter: language = en, updated ≥ 2025</span>
-          <div class="bars" id="ragBars"></div>
-          <p class="muted">Step 2 · <b>dot product</b> for each remaining chunk; the <b>top k = 4</b> (purple) are kept. C3 (Portuguese) and C4 (outdated policy) never compete: the old rule “worn items cannot be returned” would have produced a wrong answer.</p>
+          <div class="bars" id="ragFilter"></div>
+          <p class="muted">C3 (Portuguese) and C4 (outdated policy) never compete: the old rule “worn items cannot be returned” would have produced a wrong answer.</p>
+          <span class="label">Why cosine? The angle between two meanings</span>
+          <div class="plot" id="ragAngle"></div>
         </div>
         <div class="stack">
-          <span class="label">Step 3 · how confident was the retriever? softmax → log loss</span>
-          <div class="slider"><span>Sharpness</span><input type="range" id="ragTemp" min="1" max="20" step="1" value="10"/><b class="mono" id="ragTempV">×10</b></div>
-          <div class="bars" id="ragProb"></div>
-          <div class="plot" id="ragLoss"></div>
-          <p class="muted" id="ragLossNote"></p>
+          <span class="label">Step 2 · score the remaining chunks: dot product vs. cosine</span>
+          <div class="cmp">
+            <div><b>Dot product</b><p>Direction × length</p><div class="bars" id="ragDot" style="margin-top:8px"></div></div>
+            <div><b>Cosine similarity</b><p>Direction only (−1 to 1)</p><div class="bars" id="ragCos" style="margin-top:8px"></div></div>
+          </div>
+          <p class="muted" id="ragNote"></p>
         </div>
       </div>
     </div>
@@ -853,43 +872,48 @@ function ragPanel() {
 }
 function initRag() {
   const ok = (c) => c.lang === "en" && c.upd >= "2025";
-  const scored = CHUNKS.map((c) => ({ ...c, s: dot(RQ.v, c.v), ok: ok(c) }));
-  const kept = scored.filter((c) => c.ok).sort((a, b) => b.s - a.s);
-  const top = new Set(kept.slice(0, 4).map((c) => c.id));
-  const maxS = Math.max(...scored.map((c) => c.s));
-  $("#ragBars").innerHTML = [...scored].sort((a, b) => b.s - a.s).map((c) => {
-    const w = Math.max(0, c.s) / maxS * 100;
-    return `<div class="bar ${!c.ok ? "out" : top.has(c.id) ? "top" : ""}"><span><b>${c.id}</b> ${c.src}${!c.ok ? ` <span class="pill fail">${c.lang !== "en" ? "lang" : "old"}</span>` : ""}</span><span class="track"><span class="fill" style="width:${w}%"></span></span><span class="v">${fmt(c.s)}</span></div>`;
+  const all = CHUNKS.map((c) => ({ ...c, d: dot(RQ.v, c.v), c: cos(RQ.v, c.v), ok: ok(c) }));
+  const kept = all.filter((c) => c.ok);
+  const byCos = [...kept].sort((a, b) => b.c - a.c), byDot = [...kept].sort((a, b) => b.d - a.d);
+  const top = new Set(byCos.slice(0, 4).map((c) => c.id));
+  const cosRank = Object.fromEntries(byCos.map((c, i) => [c.id, i + 1]));
+  const dotRank = Object.fromEntries(byDot.map((c, i) => [c.id, i + 1]));
+
+  // step 1: which chunks pass the metadata filter
+  $("#ragFilter").innerHTML = all.map((c) => `<div class="bar ${c.ok ? "" : "out"}" style="grid-template-columns:1fr auto"><span><b>${c.id}</b> ${c.src}</span><span>${c.ok ? '<span class="pill pass">kept</span>' : `<span class="pill fail">${c.lang !== "en" ? "language" : "outdated"}</span>`}</span></div>`).join("");
+
+  // step 2: two ranked bar charts, same chunks
+  const bars = (list, key, max, rankOther, otherName) => list.map((c, i) => {
+    const w = Math.max(0, c[key]) / max * 100, moved = rankOther[c.id] !== i + 1;
+    return `<div class="bar ${top.has(c.id) && key === "c" ? "top" : ""} ${c.rel ? "rel" : ""}" style="grid-template-columns:96px 1fr 44px"><span><b>${i + 1}. ${c.id}</b>${moved && key === "d" ? ` <span class="moved">cos #${rankOther[c.id]}</span>` : ""}</span><span class="track"><span class="fill" style="width:${w}%"></span></span><span class="v">${fmt(c[key])}</span></div>`;
   }).join("");
+  $("#ragDot").innerHTML = bars(byDot, "d", Math.max(...byDot.map((c) => c.d)), cosRank);
+  $("#ragCos").innerHTML = bars(byCos, "c", 1, dotRank);
+  const loud = byDot[1];
+  $("#ragNote").innerHTML = `By dot product, <b>${loud.id}</b> (${loud.src}) ranks #2, ahead of the actual policy C1, because its vector is long (‖v‖ = ${fmt(norm(loud.v))}): a long page that mentions everything. Cosine looks only at direction, so C2 (the answer, green) and C1 lead, and ${loud.id} drops to #${cosRank[loud.id]}. The <b>top k = 4 by cosine</b> (purple) go into the context. Same chunks, but order matters: models pay most attention to what comes first.`;
+
+  // angle diagram: question vs. C2 and C7
+  (() => {
+    const W = 380, H = 230, ox = 40, oy = 130, s = 120;
+    const P = (v) => [ox + v[0] * s, oy - v[1] * s];
+    const arrow = (v, col, label, dx = 6, dy = -6) => { const [x, y] = P(v); return `<line class="vec" x1="${ox}" y1="${oy}" x2="${x}" y2="${y}" stroke="${col}"/><circle cx="${x}" cy="${y}" r="4" fill="${col}"/><text class="ptlabel" x="${x + dx}" y="${y + dy}" style="fill:${col};font-weight:600">${label}</text>`; };
+    const c2 = CHUNKS.find((c) => c.id === "C2").v, c7 = CHUNKS.find((c) => c.id === "C7").v;
+    const ang = (v) => Math.atan2(v[1], v[0]);
+    const arc = (a1, a2, r) => `<path d="M${ox + Math.cos(a1) * r} ${oy - Math.sin(a1) * r} A${r} ${r} 0 0 ${a2 > a1 ? 0 : 1} ${ox + Math.cos(a2) * r} ${oy - Math.sin(a2) * r}" fill="none" stroke="var(--ink3)" stroke-width="1.5"/>`;
+    const deg = (a, b) => Math.round(Math.acos(cos(a, b)) * 180 / Math.PI);
+    let g = `<line class="axis" x1="${ox}" y1="${oy}" x2="${W - 10}" y2="${oy}"/><line class="axis" x1="${ox}" y1="20" x2="${ox}" y2="${H - 10}"/>`;
+    g += arc(ang(RQ.v), ang(c2), 46) + arc(ang(RQ.v), ang(c7), 70);
+    g += `<text class="ptlabel" x="${ox + 52}" y="${oy + 22}">θ ${deg(RQ.v, c2)}° → cos ${fmt(cos(RQ.v, c2))}</text>`;
+    g += `<text class="ptlabel" x="${ox + 78}" y="${oy - 46}">θ ${deg(RQ.v, c7)}° → cos ${fmt(cos(RQ.v, c7))}</text>`;
+    g += arrow(c7, "var(--warn-base)", "C7 · long", 6, 4) + arrow(c2, "var(--pass-base)", "C2", 6, 14) + arrow(RQ.v, "var(--fail-base)", "question", 8, 4);
+    $("#ragAngle").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Angle between the question vector and two chunk vectors">${g}</svg>
+      <p class="muted">Cosine = cos θ, the angle between the arrows. C7’s arrow is much longer, which inflates its dot product, but it points in a different direction, so its cosine is lower.</p>`;
+  })();
+
   $("#ragWindow").innerHTML = `<span class="label">Context window sent to the model</span><ul>
     <li><b>Instructions:</b> answer only from the passages; cite sources; say if unsure.</li>
-    ${kept.slice(0, 4).map((c) => `<li><span class="pill acc">${c.id}</span> [${c.src}] ${c.t}</li>`).join("")}
+    ${byCos.slice(0, 4).map((c) => `<li><span class="pill acc">${c.id}</span> [${c.src}] ${c.t}</li>`).join("")}
     <li><b>Question:</b> ${RQ.t}</li></ul>`;
-
-  const renderLoss = () => {
-    const T = +$("#ragTemp").value;
-    $("#ragTempV").textContent = "×" + T;
-    const ex = kept.map((c) => Math.exp(c.s * T)), Z = ex.reduce((a, b) => a + b, 0);
-    const probs = kept.map((c, i) => ({ ...c, p: ex[i] / Z }));
-    $("#ragProb").innerHTML = probs.map((c) => `<div class="bar ${c.rel ? "rel" : top.has(c.id) ? "top" : ""}"><span><b>${c.id}</b> ${c.rel ? "✓ relevant" : c.src}</span><span class="track"><span class="fill" style="width:${c.p * 100}%"></span></span><span class="v">${fmt(c.p * 100, 1)}%</span></div>`).join("");
-    const pRel = probs.find((c) => c.rel).p, loss = -Math.log(pRel);
-    // −ln(p) curve, p in (0.02, 1]
-    const W = 380, H = 190, pl = 40, pb = 28, pt = 12, pr = 12, ymax = 4;
-    const X = (p) => pl + p * (W - pl - pr), Y = (l) => pt + (1 - Math.min(l, ymax) / ymax) * (H - pt - pb);
-    let d = "";
-    for (let i = 2; i <= 100; i++) { const p = i / 100; d += `${i === 2 ? "M" : "L"}${X(p).toFixed(1)} ${Y(-Math.log(p)).toFixed(1)} `; }
-    let g = `<line class="axis" x1="${pl}" y1="${H - pb}" x2="${W - pr}" y2="${H - pb}"/><line class="axis" x1="${pl}" y1="${pt}" x2="${pl}" y2="${H - pb}"/>`;
-    [0, 0.25, 0.5, 0.75, 1].forEach((p) => (g += `<text class="ptlabel" x="${X(p)}" y="${H - 10}" text-anchor="middle">${p}</text>`));
-    [0, 1, 2, 3, 4].forEach((l) => (g += `<text class="ptlabel" x="${pl - 8}" y="${Y(l) + 3}" text-anchor="end">${l}</text><line class="grid-l" x1="${pl}" y1="${Y(l)}" x2="${W - pr}" y2="${Y(l)}"/>`));
-    g += `<path d="${d}" fill="none" stroke="var(--ink2)" stroke-width="2"/>`;
-    g += `<line class="ray" x1="${X(pRel)}" y1="${H - pb}" x2="${X(pRel)}" y2="${Y(loss)}"/><circle class="qpt" cx="${X(pRel)}" cy="${Y(loss)}" r="6"/>`;
-    g += `<text class="qlabel" x="${X(pRel) + (pRel > 0.7 ? -10 : 10)}" y="${Y(loss) - 10}" text-anchor="${pRel > 0.7 ? "end" : "start"}">C2: loss ${fmt(loss)}</text>`;
-    g += `<text class="ptlabel" x="${W - pr}" y="${pt + 10}" text-anchor="end">log loss = −ln(p)</text><text class="ptlabel" x="${(pl + W) / 2}" y="${H}" text-anchor="middle">p given to the relevant chunk</text>`;
-    $("#ragLoss").innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" role="img" aria-label="Log loss curve">${g}</svg>`;
-    $("#ragLossNote").innerHTML = `The retriever gives the truly relevant chunk (C2) <b>${fmt(pRel * 100, 1)}%</b> of the probability, a log loss of <b>${fmt(loss)}</b>. Lower is better: 0 means fully confident and right. Teams track this on test questions to tune and compare retrievers.`;
-  };
-  $("#ragTemp").addEventListener("input", renderLoss);
-  renderLoss();
 }
 
 /* ---------- mount ---------- */
