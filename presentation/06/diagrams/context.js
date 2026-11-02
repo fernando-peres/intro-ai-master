@@ -12,13 +12,13 @@ const PROMPT = new THREE.Vector3(-3.35, -0.6, 1.6);
 // harness (green) = agents, workflows · frontier = tools, MCP · context (pale) = memory, RAG, knowledge.
 const PLANE = -0.18; // same tilt as the rings
 const MOONS = [
-  { name: "Agents", col: 0xf08a7e, r: 1.55, speed: 0.16, phase: 0.6, add: "+ agent output", zone: "harness" },
-  { name: "Workflows", col: 0xffb86b, r: 1.55, speed: 0.16, phase: 3.74, add: "+ workflow step", zone: "harness" },
-  { name: "Tools", col: 0xf2c94c, r: 1.95, speed: 0.11, phase: 1.9, add: "+ tool result", zone: "frontier" },
-  { name: "MCP", col: 0x7fe0e8, r: 1.95, speed: 0.11, phase: 5.04, add: "+ MCP data", zone: "frontier" },
-  { name: "Memory", col: 0x7fb3ff, r: 2.45, speed: 0.075, phase: 0.2, add: "+ memory", zone: "context" },
-  { name: "RAG", col: 0x6ee7a0, r: 2.45, speed: 0.075, phase: 2.3, add: "+ 4 chunks", zone: "context" },
-  { name: "Knowledge", col: 0xc3b6ff, r: 2.45, speed: 0.075, phase: 4.4, add: "+ graph facts", zone: "context" },
+  { name: "Agents", col: 0xf08a7e, r: 1.75, speed: 0.16, phase: 0.6, add: "+ agent output", zone: "harness" },
+  { name: "Workflows", col: 0xffb86b, r: 1.75, speed: 0.16, phase: 3.74, add: "+ workflow step", zone: "harness" },
+  { name: "Tools", col: 0xf2c94c, r: 2.25, speed: 0.11, phase: 1.9, add: "+ tool result", zone: "frontier" },
+  { name: "MCP", col: 0x7fe0e8, r: 2.25, speed: 0.11, phase: 5.04, add: "+ MCP data", zone: "frontier" },
+  { name: "Memory", col: 0x7fb3ff, r: 2.9, speed: 0.075, phase: 0.2, add: "+ memory", zone: "context" },
+  { name: "RAG", col: 0x6ee7a0, r: 2.9, speed: 0.075, phase: 2.3, add: "+ 4 chunks", zone: "context" },
+  { name: "Knowledge", col: 0xc3b6ff, r: 2.9, speed: 0.075, phase: 4.4, add: "+ graph facts", zone: "context" },
 ];
 
 function dashed(points, color, dash = 0.1, gap = 0.08, opacity = 1) {
@@ -59,14 +59,14 @@ export function mount(el) {
     root.add(m);
     return m;
   };
-  ring(1.25, 1.85, 0x5fca9b, 0.5, 0.18); // harness
-  ring(2.05, 2.8, 0xcdf3df, 0.26, 0.18); // context
-  ring(1.93, 1.97, 0xffffff, 0.85, 0.18); // frontier between harness and context
+  ring(1.3, 2.15, 0x5fca9b, 0.22, 0.18); // harness
+  ring(2.35, 3.35, 0xcdf3df, 0.07, 0.18); // context
+  ring(2.23, 2.27, 0xffffff, 0.75, 0.18); // frontier between harness and context
   const ctrl = ring(1.15, 1.18, 0x9be3bc, 0.9, 0.18); // adaptive control (thin)
   const onRing = (r, deg) => { const a = (deg * Math.PI) / 180, z = Math.sin(a) * r; return P.clone().add(new THREE.Vector3(Math.cos(a) * r, -z * Math.sin(0.18), z * Math.cos(0.18))); };
-  addLabel("HARNESS", anchor(onRing(1.55, 78)), { className: "is-ring is-zone" });
-  addLabel("CONTEXT", anchor(onRing(2.55, 58)), { className: "is-ring is-zone is-pale" });
-  addLabel("frontier", anchor(onRing(1.95, 4).add(new THREE.Vector3(0.42, 0, 0))), { className: "is-ring is-frontier" });
+  addLabel("HARNESS", anchor(onRing(1.8, 80)), { className: "is-ring is-zone" });
+  addLabel("CONTEXT", anchor(onRing(3.1, 60)), { className: "is-ring is-zone is-pale" });
+  addLabel("frontier", anchor(onRing(2.25, 4).add(new THREE.Vector3(0.42, 0, 0))), { className: "is-ring is-frontier" });
 
   // ---------- Moons (sources) ----------
   const moons = MOONS.map((m) => {
@@ -84,7 +84,7 @@ export function mount(el) {
   const win = addLabel("", station, { className: "is-window" });
   const ITEMS = ["Instructions (prompt)"];
   const renderWin = (flash) => {
-    win.innerHTML = `<b>Context window</b>${ITEMS.slice(-6).map((t, i, a) => `<span class="${flash && i === a.length - 1 ? "is-new" : ""}">${t}</span>`).join("")}`;
+    win.innerHTML = `<b>Context window</b>${ITEMS.slice(-8).map((t, i, a) => `<span class="${flash && i === a.length - 1 ? "is-new" : ""}">${t}</span>`).join("")}`;
   };
   renderWin(false);
 
@@ -104,6 +104,22 @@ export function mount(el) {
   root.add(new THREE.Mesh(new THREE.TubeGeometry(feed, 48, 0.025, 8), new THREE.MeshBasicMaterial({ color: 0xcdf3df })));
   addLabel("feeds the model", anchor(feed.getPoint(0.3).add(new THREE.Vector3(0, -0.4, 0.2))), { className: "is-feed" });
   for (let j = 0; j < 3; j++) { const m = new THREE.Mesh(pGeo, white); root.add(m); lanes.push({ curve: feed, m, phase: j / 3, speed: 0.0006 }); }
+
+  // ---------- Output: after every source has delivered, the model generates an answer ----------
+  const OUT = P.clone().add(new THREE.Vector3(1.05, -1.4, 2.35));
+  const outCurve = new THREE.QuadraticBezierCurve3(P.clone().add(new THREE.Vector3(0.7, -0.3, 0.6)), P.clone().add(new THREE.Vector3(1.6, -1.0, 2.2)), OUT);
+  const outLine = new THREE.Mesh(new THREE.TubeGeometry(outCurve, 40, 0.025, 8), new THREE.MeshBasicMaterial({ color: 0xf2c94c, transparent: true, opacity: 0 }));
+  root.add(outLine);
+  const outBall = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), material(0xf2c94c, { emissive: 0xf2c94c, emissiveIntensity: 1 }));
+  outBall.visible = false;
+  root.add(outBall);
+  const outLabel = addLabel("", anchor(OUT), { className: "is-output" });
+  const ANSWERS = [
+    "“Yes, you can return it until 11 Nov. I’ve emailed you a free return label.”",
+    "“Your Trail Shell isn’t affected by recall R-17. Re-proof it once a season.”",
+    "“Booked: pickup Thursday 10–12h. Refund of €189 within 5 days.”",
+  ];
+  let phase = "collect", phaseT = 0, answerN = 0;
 
   // ---------- Packets: moon → window, one moon at a time ----------
   const packetGeo = new THREE.SphereGeometry(0.11, 16, 12);
@@ -133,13 +149,28 @@ export function mount(el) {
       l.m.position.copy(l.curve.getPoint(u));
       l.m.scale.setScalar(0.5 + Math.sin(u * Math.PI) * 0.8);
     }
-    if (t > nextLaunch) { launch(t); nextLaunch = t + 1600; }
+    if (phase === "collect" && t > nextLaunch && turn < moons.length * (answerN + 1)) { launch(t); nextLaunch = t + 1300; }
+    if (phase === "collect" && turn >= moons.length * (answerN + 1) && !flights.length) { phase = "generate"; phaseT = t; outBall.visible = true; }
+    if (phase === "generate") {
+      const u = Math.min(1, (t - phaseT) / 1600);
+      outBall.position.copy(outCurve.getPoint(u));
+      outLine.material.opacity = 0.7 * u;
+      if (u >= 1) {
+        phase = "show"; phaseT = t; outBall.visible = false;
+        outLabel.innerHTML = `<b>Model output</b>${ANSWERS[answerN % ANSWERS.length]}`;
+        outLabel.classList.add("is-on");
+      }
+    }
+    if (phase === "show" && t - phaseT > 4500) {
+      phase = "collect"; answerN++; nextLaunch = t + 400;
+      outLabel.classList.remove("is-on"); outLine.material.opacity = 0;
+      ITEMS.length = 1; renderWin(false);
+    }
     for (let i = flights.length - 1; i >= 0; i--) {
       const f = flights[i], u = (t - f.t0) / 1400;
       if (u >= 1) {
         root.remove(f.mesh, f.trail);
         ITEMS.push(f.m.add);
-        if (ITEMS.length > 12) ITEMS.splice(1, 1);
         renderWin(true);
         flights.splice(i, 1);
       } else {

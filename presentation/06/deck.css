@@ -646,3 +646,8 @@ body.toc-open #toc {
 .context-diagram .d-label.is-frontier { font-family: var(--font-hand); font-size: 18px; color: #fff; letter-spacing: 0; font-weight: 400; }
 .context-diagram .d-label.is-feed { font-family: var(--font-hand); font-size: 20px; color: var(--mint); }
 .context-diagram .d-label.is-model { font-size: 15px; color: #cdf3df; opacity: .9; }
+.layout-dark-1 .notes-link { z-index: 5; }
+.context-diagram .d-label.is-output { display: grid; gap: 4px; width: 250px; padding: 12px 14px; border: 2px solid #f2c94c; border-radius: 12px; background: #1f1a0b; white-space: normal; font-size: 16px; line-height: 1.35; color: #fbe9a8; display: none !important; z-index: 2000 !important; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+.context-diagram .d-label.is-output.is-on { display: grid !important; animation: out-pop .4s ease-out; }
+@keyframes out-pop { from { transform: translate(-50%, -50%) scale(.85); } to { transform: translate(-50%, -50%) scale(1); } }
+.context-diagram .d-label.is-output b { font-family: var(--font-text); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: #f2c94c; }
