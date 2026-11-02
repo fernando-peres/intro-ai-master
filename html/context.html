@@ -252,6 +252,67 @@ tr.hl td { background:var(--row); }
 .cmp .formula { margin-top:8px; background:var(--page); }
 .moved { font:600 10.5px var(--mono); color:var(--warn-ink); background:var(--warn-tint); padding:1px 6px; border-radius:999px; white-space:nowrap; }
 .vec { stroke-width:3; stroke-linecap:round; }
+
+/* flow diagrams */
+.flowstrip { margin-top:14px; padding:14px 16px; display:grid; gap:10px; }
+.flowrow { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+.flowlbl { font:600 11px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--accent); min-width:112px; }
+.fstep { display:inline-flex; flex-direction:column; padding:7px 12px; border-radius:10px; background:var(--row); border:1px solid var(--border); font-size:13px; line-height:1.25; }
+.fstep b { font-weight:600; }
+.fstep small { font-size:11.5px; color:var(--ink2); }
+.flowrow .fstep:last-child { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+.flowrow .fstep:last-child small { color:var(--nav-ink); opacity:.8; }
+.fa { width:22px; height:12px; color:var(--ink3); flex:none; }
+/* without vs with RAG */
+.toggle { display:inline-flex; align-items:center; gap:8px; font-size:13px; padding:6px 12px; border-radius:999px; border:1px solid var(--border); background:var(--raised); cursor:pointer; }
+.toggle input { accent-color:var(--primary); }
+.simsteps { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px; }
+.simsteps li { display:flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; font-size:13px; color:var(--ink2); background:var(--sunken); cursor:pointer; }
+.simsteps li .badge { background:var(--page); color:var(--ink2); border:1px solid var(--border); }
+.simsteps li.on { background:var(--nav-bg); color:var(--nav-ink); }
+.simsteps li.on .badge, .simsteps li.done .badge { background:var(--primary); color:var(--on-solid); border-color:transparent; }
+.lanes { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.lane { display:grid; gap:10px; align-content:start; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--raised); }
+.lane.is-rag { border-color:var(--accent); }
+.lane-head { display:flex; justify-content:space-between; align-items:center; }
+.window.sim { display:grid; gap:6px; min-height:170px; align-content:start; }
+.seg { padding:7px 10px; border-radius:8px; border-left:0; font-size:12.5px; background:var(--page); border:1px solid var(--border); }
+.seg span { display:flex; justify-content:space-between; font:600 11px var(--mono); letter-spacing:.04em; color:var(--ink2); text-transform:uppercase; }
+.seg small { font-weight:500; }
+.seg p { margin-top:2px; }
+.seg.s-rag { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
+.seg.s-rag span { color:var(--pass-ink); }
+.seg.s-q { background:var(--done-tint); color:var(--done-ink); border-color:transparent; }
+.seg.s-q span { color:var(--done-ink); }
+.seg.s-miss { background:var(--fail-tint); color:var(--fail-ink); border-color:transparent; }
+.seg.s-miss span { color:var(--fail-ink); }
+.tokbar { display:block; height:10px; border-radius:6px; background:var(--sunken); border:1px solid var(--border); overflow:hidden; }
+.tokbar span { display:block; height:100%; background:var(--accent); transition:width .35s; }
+/* beyond basic RAG */
+.caps { display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; }
+.cap { padding:16px 18px; display:grid; gap:8px; align-content:start; }
+.cap.is-wide { grid-column:1 / -1; }
+.capdemo { padding:10px 12px; border-radius:10px; background:var(--sunken); font-size:13.5px; }
+.scores { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:6px; }
+.scores > div { display:grid; gap:4px; padding:10px 12px; border-radius:10px; background:var(--raised); border:1px solid var(--border); }
+.scores b { font-size:24px; font-variant-numeric:tabular-nums; }
+/* topics & search */
+.topicchips { display:grid; gap:6px; }
+.tchip { display:grid; grid-template-columns:12px 1fr 64px auto; gap:10px; align-items:center; text-align:left; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--raised); color:var(--text); font:inherit; cursor:pointer; }
+.tchip:hover, .tchip.on { border-color:var(--accent); background:var(--row); }
+.tchip i { width:12px; height:12px; border-radius:50%; }
+.tchip b { display:block; font-size:13.5px; }
+.tchip small { font-size:11.5px; color:var(--ink2); }
+.spark { width:60px; height:18px; }
+.posts { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:10px; }
+.post { display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:start; padding:8px; border-radius:12px; border:1px solid var(--border); background:var(--raised); }
+.post svg { width:110px; height:66px; display:block; }
+.post b { font-size:13px; line-height:1.3; display:block; }
+.post small { display:block; font-size:11.5px; color:var(--ink2); margin-top:3px; }
+.post .speech { font-style:italic; }
+.post.is-res { border-color:var(--accent); }
+.post .pill { margin:0 4px 4px 0; }
+@media (max-width: 980px) { .lanes, .caps, .scores { grid-template-columns:1fr; } .flowlbl { min-width:0; width:100%; } }
 footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2); font-size:12.5px; }
 
 @media (max-width: 980px) {
@@ -280,7 +341,7 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2)
   <section class="panel hero">
     <span class="kicker">Interactive notes · for decision makers</span>
     <h1>The model only knows what you put in front of it. <em>Here is how that gets built.</em></h1>
-    <p class="lede">Six building blocks of context engineering, each explained in two sentences and shown on one running case. Click through: every example is live.</p>
+    <p class="lede">Seven building blocks of context engineering, each explained in two sentences and shown on one running case. Click through: every example is live.</p>
     <div class="world">
       <span class="chip"><b>Northbay Outdoor</b> · outdoor-gear retailer</span>
       <span class="chip">Customer: Maria Costa</span>
@@ -293,7 +354,7 @@ footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2)
   <div id="panels"></div>
 </main>
 
-<footer>Context engineering · interactive notes · Build &amp; Improving GenAI systems. Fictional data for teaching. Embeddings are shown in 2D for intuition; real ones have hundreds of dimensions.</footer>
+<footer>Context engineering · interactive notes · Build &amp; Improving GenAI systems. Fictional data for teaching. Embeddings are shown in 2D for intuition; real ones have hundreds of dimensions. Background: CLIP-style multimodal RAG (Zilliz/Milvus tutorial; arXiv 2511.16654), BERTopic multimodal topic modeling (UMAP + HDBSCAN; arXiv 2410.08642).</footer>
 
 <script>
 const $ = (s, el = document) => el.querySelector(s);
@@ -320,6 +381,7 @@ const TOPICS = [
   { id: "pack", n: 4, name: "Context pack", hint: "the task briefing" },
   { id: "embed", n: 5, name: "Embeddings", hint: "meaning as numbers" },
   { id: "rag", n: 6, name: "RAG", hint: "index, then retrieve" },
+  { id: "topics", n: 7, name: "Topics & search", hint: "videos & photos" },
 ];
 
 function topicHead(t, title, oneLine, ideas) {
@@ -327,7 +389,8 @@ function topicHead(t, title, oneLine, ideas) {
     <div><span class="kicker">${t.n} · ${t.name}</span><h2>${title}</h2></div>
     <p class="oneline"><b>In one line</b>${oneLine}</p>
   </div>
-  <div class="idea">${ideas.map(([h, p]) => `<div class="panel"><h3>${h}</h3><p>${p}</p></div>`).join("")}</div>`;
+  <div class="idea">${ideas.map(([h, p]) => `<div class="panel"><h3>${h}</h3><p>${p}</p></div>`).join("")}</div>
+  ${flow(t.id)}`;
 }
 const why = (text) => `<p class="keyidea"><b>Why it matters ·</b><span>${text}</span></p>`;
 const subtabs = (group, list) =>
@@ -823,7 +886,7 @@ function ragPanel() {
     [["Indexing (once)", "Split documents into short chunks, embed each one, store it with metadata like source, language and date."],
      ["Retrieval (every question)", "Embed the question, filter by metadata, score each chunk (cosine similarity), keep the top k (here k = 4)."],
      ["Generation", "The model answers from those passages and cites them, so answers stay current without retraining."]])}
-  ${subtabs("rag", [["index", "1 · Indexing"], ["retrieve", "2 · Retrieval"]])}
+  ${subtabs("rag", [["index", "1 · Indexing"], ["retrieve", "2 · Retrieval"], ["compare", "3 · Without vs. with RAG"], ["images", "4 · Image RAG"], ["beyond", "5 · Beyond basic RAG"]])}
   <div class="case" data-group="rag" data-sub="index" role="tabpanel">
     <div class="pipe">
       <div class="panel"><span class="badge">1</span><h3>Documents</h3><p>Returns policy (EN, PT, old 2023 version), shipping FAQ, care guide, warranty.</p></div>
@@ -868,6 +931,7 @@ function ragPanel() {
       </div>
     </div>
   </div>
+  ${ragComparePanel()}${imgRagPanel()}${beyondPanel()}
   ${why("Your documents, not the model’s memory: answers are current, cited and auditable, and updating the knowledge means updating a document, not training a model.")}`;
 }
 function initRag() {
@@ -916,9 +980,352 @@ function initRag() {
     <li><b>Question:</b> ${RQ.t}</li></ul>`;
 }
 
+/* =====================================================================
+   FLOW DIAGRAMS (one per section)
+   ===================================================================== */
+const FLOWS = {
+  memory: [{ steps: [["Conversation", "Maria writes"], ["Extract", "fill the schema"], ["Validate", "rules & types"], ["Store", "memory store"], ["Read back", "next session"], ["Context window", "model sees it"]] }],
+  graph: [{ steps: [["Question", "from the customer"], ["Find entities", "Maria, order #4512"], ["Walk relations", "follow the links"], ["Collect facts", "only the path"], ["Context window", "facts + path"]] }],
+  entity: [{ steps: [["Free text", "email, chat"], ["Extract", "into the schema"], ["Validate", "pass / reject"], ["Model decides", "in a fixed format"], ["System acts", "refund, label"]] }],
+  pack: [{ steps: [["Task", "handle a return"], ["Assemble", "instructions, facts, tools"], ["Check budget", "tokens"], ["Context window", "the briefing"], ["Model", "does the task"]] }],
+  embed: [{ steps: [["Item", "text or image"], ["Embed", "→ vector"], ["Vector space", "similar = close"], ["Compare", "cosine"], ["Top k", "best matches"]] }],
+  rag: [
+    { label: "Once", steps: [["Documents", "policies, FAQs, images"], ["Chunk", "short passages"], ["Embed", "→ vectors"], ["Store", "+ metadata"]] },
+    { label: "Every question", steps: [["Question", ""], ["Embed", "→ vector"], ["Filter", "metadata, access"], ["Rank", "cosine, top k"], ["Context window", "passages + question"], ["Answer", "with citations"]] },
+  ],
+  topics: [
+    { label: "Indexing", steps: [["Posts", "videos & photos"], ["Embed", "frames, caption, speech"], ["Reduce", "to a map"], ["Cluster", "groups of meaning"], ["Label topics", "keywords → name"]] },
+    { label: "Search", steps: [["Query", "in plain words"], ["Embed", "same space"], ["Rank", "cosine"], ["Filter", "type, recency, topic"], ["Results", "+ why it matched"]] },
+  ],
+};
+const ARROW = `<svg class="fa" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6h19M15 1l6 5-6 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function flow(id) {
+  const rows = FLOWS[id];
+  if (!rows) return "";
+  return `<div class="flowstrip panel" aria-label="Basic flow">
+    <span class="label">Basic flow</span>
+    ${rows.map((r) => `<div class="flowrow">${r.label ? `<span class="flowlbl">${r.label}</span>` : ""}
+      ${r.steps.map(([a, b], i) => `${i ? ARROW : ""}<span class="fstep"><b>${a}</b>${b ? `<small>${b}</small>` : ""}</span>`).join("")}</div>`).join("")}
+  </div>`;
+}
+
+/* =====================================================================
+   RAG · 3 WITHOUT vs WITH RAG (context-window simulation)
+   ===================================================================== */
+const SIM_STEPS = ["Question arrives", "Context window is assembled", "Retrieval adds passages", "The model answers"];
+function ragComparePanel() {
+  return `<div class="case" data-group="rag" data-sub="compare" role="tabpanel" hidden>
+    <div class="panel pad stack">
+      <div class="case-head"><span class="label">Same model, same question · the only difference is what reaches its context window</span>
+        <label class="toggle"><input type="checkbox" id="simPolicy"/> Policy changed today: no cleaning fee</label></div>
+      <div class="msg user"><span class="who"><span class="dot"></span>Maria asks</span>“${RQ.t}”</div>
+      <ol class="simsteps" id="simSteps">${SIM_STEPS.map((s, i) => `<li data-k="${i}"><span class="badge">${i + 1}</span>${s}</li>`).join("")}</ol>
+      <div class="lanes">
+        <div class="lane" id="laneNo"></div>
+        <div class="lane is-rag" id="laneRag"></div>
+      </div>
+      <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span id="simN">1</span> of 4 · token counts are illustrative</span><span style="display:flex;gap:8px"><button class="btn" id="simPrev">Back</button><button class="btn solid" id="simNext">Next step</button></span></div>
+    </div>
+  </div>`;
+}
+function initRagCompare() {
+  let i = 0;
+  const seg = (cls, label, tok, text) => ({ cls, label, tok, text });
+  const lane = (rag, step, fresh) => {
+    const c2 = fresh ? "Items worn outdoors once can be returned if undamaged and with tags. No cleaning fee (updated today)." : CHUNKS.find((c) => c.id === "C2").t;
+    const c1 = CHUNKS.find((c) => c.id === "C1").t;
+    const segs = [];
+    if (step >= 1) segs.push(seg("s-sys", "System instructions", 120, "You are Northbay’s assistant. Answer only from the passages provided; cite sources; say if unsure."));
+    if (rag && step >= 2) { segs.push(seg("s-rag", "Retrieved · C2 [Returns policy §2]", 60, c2)); segs.push(seg("s-rag", "Retrieved · C1 [Returns policy §1]", 40, c1)); }
+    if (step >= 1) segs.push(seg("s-q", "Question", 20, RQ.t));
+    const used = segs.reduce((s, x) => s + x.tok, 0), cap = 400;
+    let answer = "";
+    if (step >= 3) answer = rag
+      ? `<div class="msg pass"><span class="who"><span class="dot"></span>Answer · grounded, cited</span>“Yes. A jacket worn once outdoors can be returned if it is undamaged and has its tags${fresh ? ", and there is no cleaning fee" : "; a €10 cleaning fee applies"} [Returns policy §2].”</div>`
+      : `<div class="msg fail"><span class="who"><span class="dot"></span>Answer · from training memory, no source</span>“Usually, worn items can’t be returned. Please check the store’s policy.”<br/><small>Generic and wrong for Northbay: the model never saw today’s policy${fresh ? ", or today’s change" : ""}.</small></div>`;
+    return `<div class="lane-head"><b>${rag ? "With RAG" : "Without RAG"}</b><span class="pill ${rag ? "pass" : "fail"}">${rag ? "looks it up" : "memory only"}</span></div>
+      <div class="window sim"><span class="label">Context window</span>
+        ${segs.length ? segs.map((x) => `<div class="seg ${x.cls}"><span>${x.label}<small>${x.tok} tok</small></span><p>${x.text}</p></div>`).join("") : `<p class="muted">Empty: nothing has been sent yet.</p>`}
+        ${!rag && step >= 2 ? `<div class="seg s-miss"><span>No retrieval</span><p>Nothing about Northbay’s policy reaches the model.</p></div>` : ""}
+      </div>
+      <div class="tokbar" title="${used} of ${cap} tokens"><span style="width:${(used / cap) * 100}%"></span></div>
+      <span class="fict">${used} of ${cap} tokens used</span>
+      ${answer}`;
+  };
+  const render = () => {
+    const fresh = $("#simPolicy").checked;
+    $("#laneNo").innerHTML = lane(false, i, fresh);
+    $("#laneRag").innerHTML = lane(true, i, fresh);
+    $$("#simSteps li").forEach((li, k) => { li.classList.toggle("on", k === i); li.classList.toggle("done", k < i); });
+    $("#simN").textContent = i + 1;
+    $("#simPrev").disabled = i === 0;
+    $("#simNext").textContent = i === 3 ? "Start again" : "Next step";
+  };
+  $("#simNext").onclick = () => { i = (i + 1) % 4; render(); };
+  $("#simPrev").onclick = () => { if (i > 0) { i--; render(); } };
+  $("#simSteps").onclick = (e) => { const li = e.target.closest("li"); if (li) { i = +li.dataset.k; render(); } };
+  $("#simPolicy").addEventListener("change", () => { i = 3; render(); });
+  render();
+}
+
+/* =====================================================================
+   RAG · 4 IMAGE RAG
+   ===================================================================== */
+const CARE = [
+  { id: "L1", n: "Care label · Trail Shell", v: [0.9, 0.74], lines: ["30°", "no bleach", "re-proof yearly"] },
+  { id: "L2", n: "Care label · Storm Pro", v: [0.82, 0.9], lines: ["40°", "tumble low", "no iron"] },
+  { id: "L3", n: "Care label · Dome tent", v: [-0.86, 0.48], lines: ["hand wash", "dry open", "no machine"] },
+];
+const IMG_INDEX = () => [
+  ...[0, 1, 2, 3, 6, 9].map((k) => ({ id: "P" + (k + 1), kind: "photo", ...PRODUCTS[k] })),
+  ...CARE.map((c) => ({ ...c, kind: "label" })),
+];
+const IQ = {
+  photo: { v: [0.92, 0.79], label: "Customer photo", text: "📷 photo of a red jacket, sent in chat" },
+  text: { v: [0.84, 0.86], label: "Text question", text: "“How do I wash my red rain jacket?”" },
+};
+const labelSVG = (lines) => `<svg viewBox="0 0 120 72" aria-hidden="true"><rect x="22" y="6" width="76" height="60" rx="6" fill="var(--page)" stroke="var(--ink3)" stroke-width="1.5"/><path d="M30 18h14l-2 9H32z" fill="none" stroke="var(--ink2)" stroke-width="1.5"/><text x="37" y="25" font-size="6" text-anchor="middle" fill="var(--ink2)">${lines[0].replace("°", "")}</text><circle cx="58" cy="22" r="6" fill="none" stroke="var(--ink2)" stroke-width="1.5"/><path d="M70 16l12 12M82 16L70 28" stroke="var(--ink2)" stroke-width="1.5"/>${lines.map((l, i) => `<text x="60" y="${42 + i * 9}" font-size="7" text-anchor="middle" fill="var(--ink2)">${l}</text>`).join("")}</svg>`;
+function imgRagPanel() {
+  return `<div class="case" data-group="rag" data-sub="images" role="tabpanel" hidden>
+    <div class="panel pad stack">
+      <div class="case-head"><span class="label">Index: product photos + care-label images, embedded in the same space as text</span>
+        <span class="subtabs" style="margin:0"><button class="subtab" data-iq="photo" aria-selected="true">Photo query</button><button class="subtab" data-iq="text" aria-selected="false">Text query</button></span></div>
+      <div class="msg user" id="iqMsg"></div>
+      <div class="plotwrap">
+        <div class="products" id="irGrid"></div>
+        <div class="stack">
+          <div class="plot" id="irPlot"></div>
+          <div class="window" id="irWindow"></div>
+          <div class="msg done" id="irAnswer"></div>
+        </div>
+      </div>
+      <p class="muted">A vision-language model can read images directly, so the retrieved <b>pictures</b> (not just their captions) go into the context window. Research finds native image embeddings retrieve better than describing images in text first.</p>
+    </div>
+  </div>`;
+}
+function initImgRag() {
+  const items = IMG_INDEX();
+  const show = (mode) => {
+    const q = IQ[mode];
+    $$("[data-iq]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.iq === mode)));
+    $("#iqMsg").innerHTML = `<span class="who"><span class="dot"></span>${q.label}</span>${q.text}${mode === "photo" ? `<svg viewBox="0 0 120 72" style="width:120px;height:72px;display:block;margin-top:6px" aria-hidden="true"><rect x="0" y="0" width="120" height="72" rx="8" fill="var(--sunken)"/>${SHAPES.jackets("#C9473B")}</svg>` : ""}`;
+    const ranked = items.map((it) => ({ ...it, s: cos(q.v, it.v) })).sort((a, b) => b.s - a.s);
+    const top = ranked.slice(0, 3), topIds = new Set(top.map((t) => t.id));
+    const rank = Object.fromEntries(ranked.map((t, i) => [t.id, i + 1]));
+    $("#irGrid").innerHTML = [...items].sort((a, b) => rank[a.id] - rank[b.id]).map((it) => `<div class="prod ${topIds.has(it.id) ? "top" : ""}">
+        ${topIds.has(it.id) ? `<span class="pill acc score">#${rank[it.id]} · cos ${fmt(cos(q.v, it.v), 3)}</span>` : ""}
+        ${it.kind === "label" ? labelSVG(it.lines) : `<svg viewBox="0 0 120 72" aria-hidden="true">${SHAPES[it.cat](it.col)}</svg>`}
+        <b>${it.n}</b><small>${it.id} · ${it.kind === "label" ? "care label image" : "product photo"}</small></div>`).join("");
+    $("#irPlot").innerHTML = plotSVG(items.map((it) => ({ id: it.id, v: it.v })), q.v, topIds, new Set(), 300);
+    $("#irWindow").innerHTML = `<span class="label">Context window · vision-language model</span><ul>
+      <li><b>Instructions:</b> identify the product and give care advice from the images only.</li>
+      ${top.map((t) => `<li><span class="pill acc">${t.id}</span> [image] ${t.n}</li>`).join("")}
+      <li><b>${mode === "photo" ? "User photo" : "Question"}:</b> ${mode === "photo" ? "red jacket, attached" : "How do I wash my red rain jacket?"}</li></ul>`;
+    const hasLabel = top.find((t) => t.kind === "label");
+    $("#irAnswer").innerHTML = `<span class="who"><span class="dot"></span>Assistant</span>“${mode === "photo" ? "That looks like our <b>Trail Shell (red)</b>. " : ""}${hasLabel ? `Machine wash at ${hasLabel.lines[0]}, ${hasLabel.lines[1]}, and ${hasLabel.lines[2]} [${hasLabel.id}].` : "I couldn’t find its care label."}”`;
+  };
+  $$("[data-iq]").forEach((b) => b.addEventListener("click", () => show(b.dataset.iq)));
+  show("photo");
+}
+
+/* =====================================================================
+   RAG · 5 BEYOND BASIC RAG (capabilities + an evaluation computed on toy data)
+   ===================================================================== */
+const CAPS = [
+  { t: "Hybrid search", what: "Combine meaning (vectors) with exact keywords.", why: "Product codes, names and IDs are found reliably.",
+    basic: `<b>Vectors only</b> · query “TS-2026 jacket”: codes carry little meaning, so the top results are generic jacket pages. <span class="pill fail">code missed</span>`,
+    better: `<b>Vectors + keywords</b> · the keyword index matches “TS-2026” exactly: <i>Trail Shell, model TS-2026</i> ranks #1. <span class="pill pass">found</span>` },
+  { t: "Re-ranking", what: "A second, more careful model re-orders the top results.", why: "The best passage comes first, where models pay most attention.",
+    basic: `<b>First pass</b> · 1. C1 general returns · 2. C7 shipping FAQ · 3. <b>C2 worn items</b>`,
+    better: `<b>After re-ranking</b> · 1. <b>C2 worn items</b> · 2. C1 general returns · 3. C6 warranty <span class="pill pass">best first</span>` },
+  { t: "Query rewriting", what: "Turn short follow-ups into complete questions using the chat.", why: "Natural conversations still retrieve the right passages.",
+    basic: `<b>Raw follow-up</b> · “and the fee?”: on its own it matches shipping fees and membership fees. <span class="pill fail">off-topic</span>`,
+    better: `<b>Rewritten</b> · “What is the fee to return a jacket worn once?” → C2 retrieved. <span class="pill pass">on-topic</span>` },
+  { t: "Access control", what: "Filter passages by who is asking.", why: "Staff see internal data; customers never do.",
+    basic: `<b>No filter</b> · the internal doc “Return margins by product” is retrieved for a customer. <span class="pill fail">data leak</span>`,
+    better: `<b>Role filter</b> · customers: public docs only; staff: + internal docs. <span class="pill pass">safe</span>` },
+  { t: "Multi-hop (agentic) RAG", what: "Retrieve, reason, then retrieve again.", why: "Answers questions that need several facts combined.",
+    basic: `<b>One lookup</b> · “Until when can Maria return it?” → policy found, but no order date, so no deadline. <span class="pill warn">incomplete</span>`,
+    better: `<b>Two hops</b> · policy (30 days) + order #4512 (delivered 12 Oct) → <b>until 11 Nov</b>. <span class="pill pass">complete</span>` },
+];
+const EVAL_QS = [
+  { q: "Can I return a jacket I wore once?", v: [0.85, -0.3], gold: "C2", faithful: true, cited: true },
+  { q: "How long do I have to return unworn items?", v: [0.96, 0.22], gold: "C1", faithful: true, cited: true },
+  { q: "Are zips covered by warranty?", v: [0.3, -0.9], gold: "C6", faithful: true, cited: true },
+  { q: "How fast is standard delivery?", v: [0.2, 0.96], gold: "C8", faithful: true, cited: false },
+  { q: "How do I clean a muddy shell?", v: [-0.5, -0.8], gold: "C5", faithful: false, cited: true },
+];
+function beyondPanel() {
+  return `<div class="case" data-group="rag" data-sub="beyond" role="tabpanel" hidden>
+    <div class="caps">${CAPS.map((c, i) => `<div class="panel cap">
+      <div class="case-head"><h3>${c.t}</h3><span class="subtabs" style="margin:0"><button class="subtab" data-cap="${i}" data-v="basic" aria-selected="true">Basic</button><button class="subtab" data-cap="${i}" data-v="better" aria-selected="false">Improved</button></span></div>
+      <p class="muted">${c.what} <b>Benefit:</b> ${c.why}</p>
+      <div class="capdemo" id="cap${i}">${c.basic}</div></div>`).join("")}
+      <div class="panel cap is-wide">
+        <div class="case-head"><h3>Evaluation · measure it, don’t guess</h3><span class="fict">5 test questions · computed live on this page’s toy data</span></div>
+        <p class="muted">A small set of questions with known right answers, re-run after every change to the index, prompts or model.</p>
+        <div class="tablewrap"><table><thead><tr><th>Test question</th><th>Right passage</th><th>Retrieved (top 4, cosine)</th><th>Hit?</th><th>Faithful</th><th>Cited</th></tr></thead><tbody id="evalRows"></tbody></table></div>
+        <div class="scores" id="evalScores"></div>
+      </div>
+    </div>
+  </div>`;
+}
+function initBeyond() {
+  $$("[data-cap]").forEach((b) => b.addEventListener("click", () => {
+    const i = +b.dataset.cap;
+    $$(`[data-cap="${i}"]`).forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+    $("#cap" + i).innerHTML = CAPS[i][b.dataset.v];
+  }));
+  const pool = CHUNKS.filter((c) => c.lang === "en" && c.upd >= "2025");
+  const rows = EVAL_QS.map((e) => {
+    const top = pool.map((c) => ({ id: c.id, s: cos(e.v, c.v) })).sort((a, b) => b.s - a.s).slice(0, 4).map((c) => c.id);
+    return { ...e, top, hit: top.includes(e.gold) };
+  });
+  const yes = (b) => `<span class="pill ${b ? "pass" : "fail"}">${b ? "yes" : "no"}</span>`;
+  $("#evalRows").innerHTML = rows.map((r) => `<tr><td>${r.q}</td><td class="mono">${r.gold}</td><td class="mono">${r.top.join(", ")}</td><td>${yes(r.hit)}</td><td>${yes(r.faithful)}</td><td>${yes(r.cited)}</td></tr>`).join("");
+  const pct = (k) => Math.round((rows.filter((r) => r[k]).length / rows.length) * 100);
+  $("#evalScores").innerHTML = [["Retrieval hit rate @4", "hit"], ["Answer faithfulness", "faithful"], ["Citation present", "cited"]]
+    .map(([l, k]) => `<div><span class="label">${l}</span><b>${pct(k)}%</b><span class="tokbar"><span style="width:${pct(k)}%"></span></span></div>`).join("");
+}
+
+/* =====================================================================
+   7 · TOPICS & SEARCH (social media, videos + photos)
+   ===================================================================== */
+const TOPIC_DEF = [
+  { id: "hike", name: "Mountain hiking trails", kw: ["trail", "summit", "views"], c: [0.85, 0.75], col: "#4F8F52", scene: "hike", trend: [3, 4, 4, 6, 7, 9] },
+  { id: "rain", name: "Rainy-day outfits", kw: ["rain", "outfit", "cosy"], c: [-0.2, 1.0], col: "#4C8FD6", scene: "rain", trend: [2, 2, 3, 5, 8, 12] },
+  { id: "camp", name: "Campsite cooking", kw: ["recipe", "campfire", "dinner"], c: [-0.95, 0.35], col: "#D1763C", scene: "camp", trend: [6, 5, 5, 4, 4, 3] },
+  { id: "run", name: "Trail running", kw: ["run", "pace", "race"], c: [1.0, -0.15], col: "#C2614F", scene: "run", trend: [4, 4, 5, 5, 6, 6] },
+  { id: "fix", name: "Gear repair & care", kw: ["fix", "zip", "wash"], c: [-0.75, -0.75], col: "#6D5BD0", scene: "fix", trend: [1, 2, 2, 3, 5, 7] },
+  { id: "bike", name: "City cycling", kw: ["bike", "commute", "city"], c: [0.25, -1.0], col: "#C2A52B", scene: "bike", trend: [5, 5, 6, 6, 5, 5] },
+];
+const POST_SEED = [
+  ["hike", "video", "0:42", "Sunrise at Pico Alto: the last 2 km of the trail", "you can see three valleys from the summit", 2],
+  ["hike", "photo", "", "Views worth every step #trail", "", 5],
+  ["hike", "video", "1:15", "Beginner trail guide: what to pack", "bring water, a shell jacket and snacks", 9],
+  ["hike", "photo", "", "Summit selfie, 1,820 m", "", 14],
+  ["rain", "video", "0:28", "3 cosy rainy-day outfits for the city", "layer a fleece under your rain shell", 1],
+  ["rain", "photo", "", "Yellow coat, grey sky #raindays", "", 3],
+  ["rain", "video", "0:51", "Staying dry on a rainy commute", "waterproof shoes are the real secret", 6],
+  ["rain", "photo", "", "Puddle-proof boots haul", "", 12],
+  ["camp", "video", "2:10", "One-pot campfire pasta for four", "boil the water first, then add the pasta", 4],
+  ["camp", "photo", "", "Dinner with a view #campfood", "", 8],
+  ["camp", "video", "1:40", "Breakfast burritos at the campsite", "wrap them in foil and heat on the fire", 20],
+  ["camp", "photo", "", "Marshmallow o’clock", "", 25],
+  ["run", "video", "0:36", "Downhill technique on loose gravel", "short steps, lean slightly forward", 2],
+  ["run", "photo", "", "New PB at the forest 10k race", "", 7],
+  ["run", "video", "1:05", "Finding your easy pace on trails", "you should be able to talk while running", 15],
+  ["fix", "video", "1:22", "How to fix a broken zip in 5 minutes", "pliers, a new slider, and patience", 1],
+  ["fix", "photo", "", "Patched my tent with tenacious tape", "", 4],
+  ["fix", "video", "0:58", "Washing and re-proofing a rain shell", "wash at thirty degrees then spray evenly", 10],
+  ["bike", "video", "0:45", "My 12 km bike commute through Lisbon", "the hills are hard but the views help", 3],
+  ["bike", "photo", "", "Bike parking at the office #citycycling", "", 11],
+  ["bike", "photo", "", "Rain cape test on two wheels", "", 6],
+  // ambiguous posts: between topics
+  ["rain", "video", "0:33", "Hiking in the rain: what I wear on the trail", "a light shell and quick-dry layers", 2, [0.35, 0.92]],
+  ["fix", "photo", "", "Cleaning muddy trail shoes after a race", "", 5, [0.15, -0.45]],
+  ["camp", "video", "1:12", "Rainy campsite dinner under the tarp", "keep the stove out of the wind", 7, [-0.65, 0.75]],
+];
+const OFFS = [[0.06, 0.05], [-0.07, 0.04], [0.04, -0.07], [-0.05, -0.05]];
+const POSTS = (() => {
+  const count = {};
+  return POST_SEED.map(([tp, type, dur, cap, speech, days, v], i) => {
+    const T = TOPIC_DEF.find((t) => t.id === tp), k = (count[tp] = (count[tp] || 0) + 1) - 1, o = OFFS[k % 4];
+    return { id: "L" + (i + 1), tp, type, dur, cap, speech, days, v: v || [T.c[0] + o[0], T.c[1] + o[1]] };
+  });
+})();
+// "clustering": each post joins the nearest topic centre (stand-in for UMAP + HDBSCAN)
+POSTS.forEach((p) => { p.cl = [...TOPIC_DEF].sort((a, b) => Math.hypot(p.v[0] - a.c[0], p.v[1] - a.c[1]) - Math.hypot(p.v[0] - b.c[0], p.v[1] - b.c[1]))[0].id; });
+const SCENES = {
+  hike: (c) => `<path d="M0 72 L38 22 L60 48 L82 14 L120 72Z" fill="${c}"/><circle cx="96" cy="16" r="7" fill="#F5C64A"/>`,
+  rain: (c) => `<path d="M50 70 V40 Q60 24 70 40 V70Z" fill="${c}"/><circle cx="60" cy="22" r="7" fill="${c}"/>${[12, 30, 88, 104, 20, 96].map((x, i) => `<path d="M${x} ${8 + (i % 3) * 18}l-3 8" stroke="#A7CCEE" stroke-width="2"/>`).join("")}`,
+  camp: (c) => `<path d="M40 70 L60 50 L80 70Z" fill="#F5C64A"/><path d="M48 70 L60 56 L72 70Z" fill="${c}"/><rect x="44" y="28" width="32" height="16" rx="3" fill="#71717A"/><path d="M40 28h40" stroke="#52525B" stroke-width="3"/>`,
+  run: (c) => `<path d="M0 66 Q60 44 120 62" stroke="#A1A1AA" stroke-width="3" fill="none"/><circle cx="62" cy="18" r="6" fill="${c}"/><path d="M62 24 L58 40 L48 50 M58 40 L68 52 M60 30 L72 34 M60 30 L50 28" stroke="${c}" stroke-width="4" stroke-linecap="round" fill="none"/>`,
+  fix: (c) => `<rect x="54" y="6" width="12" height="60" rx="2" fill="#A1A1AA"/>${[12, 22, 32, 42, 52].map((y) => `<path d="M52 ${y}h-6M68 ${y}h6" stroke="#71717A" stroke-width="3"/>`).join("")}<rect x="52" y="30" width="16" height="14" rx="3" fill="${c}"/>`,
+  bike: (c) => `<rect x="6" y="14" width="18" height="40" fill="#D4D4D8"/><rect x="96" y="20" width="18" height="34" fill="#D4D4D8"/><circle cx="42" cy="56" r="12" fill="none" stroke="${c}" stroke-width="4"/><circle cx="80" cy="56" r="12" fill="none" stroke="${c}" stroke-width="4"/><path d="M42 56 L56 36 L74 36 L80 56 M56 36 L62 56" stroke="${c}" stroke-width="3" fill="none"/>`,
+};
+const thumb = (p) => { const T = TOPIC_DEF.find((t) => t.id === p.tp); return `<svg viewBox="0 0 120 72" aria-hidden="true"><rect width="120" height="72" rx="8" fill="color-mix(in srgb, ${T.col} 14%, var(--sunken))"/>${SCENES[T.scene](T.col)}${p.type === "video" ? `<circle cx="16" cy="16" r="9" fill="rgba(0,0,0,.55)"/><path d="M13 11l8 5-8 5z" fill="#fff"/><rect x="84" y="56" width="30" height="12" rx="3" fill="rgba(0,0,0,.6)"/><text x="99" y="65" font-size="8" text-anchor="middle" fill="#fff" font-family="monospace">${p.dur}</text>` : ""}</svg>`; };
+const SQ = [
+  { q: "cosy rainy day looks", v: [-0.12, 0.99], match: { caption: ["cosy", "rain", "outfit"], speech: ["rain", "layer"] } },
+  { q: "how to fix a broken zip", v: [-0.7, -0.72], match: { caption: ["fix", "zip"], speech: ["slider", "pliers"] } },
+  { q: "dinner at the campsite", v: [-0.88, 0.5], match: { caption: ["dinner", "campsite", "campfire"], speech: ["stove", "pasta"] } },
+];
+function topicsPanel() {
+  return `${topicHead(TOPICS[6], "Find meaning in millions of posts",
+    "A social platform embeds every video and photo (frames, caption, speech) so it can discover topics automatically and let people search by meaning, not hashtags.",
+    [["The idea", "Each post becomes one point that blends what is <i>seen</i>, <i>written</i> and <i>said</i>. Similar posts form clusters."],
+     ["Topic modeling", "Clusters are found automatically and named from their top keywords, so new trends appear without anyone defining them."],
+     ["Semantic search", "A query lands in the same space; the nearest posts come back, even if they never use the query’s words."]])}
+  ${subtabs("topics", [["map", "Topic map"], ["search", "Semantic search"]])}
+  <div class="case" data-group="topics" data-sub="map" role="tabpanel">
+    <div class="panel pad stack">
+      <div class="case-head"><span class="label">“Loop” · ${POSTS.length} posts (videos + photos) · topics found by clustering</span><span class="fict">fictional app and posts</span></div>
+      <div class="plotwrap">
+        <div class="plot" id="tmPlot"></div>
+        <div class="stack"><div class="topicchips" id="tmChips"></div><p class="muted" id="tmNote"></p></div>
+      </div>
+      <div class="posts" id="tmPosts"></div>
+    </div>
+  </div>
+  <div class="case" data-group="topics" data-sub="search" role="tabpanel" hidden>
+    <div class="panel pad stack">
+      <div class="qbtns" id="ssQ">${SQ.map((s, k) => `<button class="btn" data-k="${k}" aria-pressed="false">🔎 ${s.q}</button>`).join("")}</div>
+      <div class="filters">
+        <label>Type <select id="ssType"><option value="all">Videos & photos</option><option value="video">Videos</option><option value="photo">Photos</option></select></label>
+        <label>Posted <select id="ssDays"><option value="99">Any time</option><option value="7">Last 7 days</option></select></label>
+        <label><input type="checkbox" id="ssTopic"/> Same topic as the best match only</label>
+      </div>
+      <div class="posts" id="ssRes"></div>
+      <p class="muted">Platforms use the same index for <b>discovery</b> (search), <b>recommendations</b> (“more like this”), <b>trend spotting</b> (fast-growing topics) and <b>moderation</b> (find posts close to known harmful examples).</p>
+    </div>
+  </div>
+  ${why("Your media becomes searchable and measurable: you see what people talk about as it emerges, and customers find content in their own words.")}`;
+}
+function initTopics() {
+  const T = Object.fromEntries(TOPIC_DEF.map((t) => [t.id, t]));
+  let sel = null;
+  const card = (p, extra = "") => `<div class="post ${extra}">${thumb(p)}<div><b>${p.cap}</b>
+    <small>${p.id} · ${p.type}${p.dur ? " " + p.dur : ""} · ${p.days}d ago · <span style="color:${T[p.cl].col}">● ${T[p.cl].name}</span></small>
+    ${p.speech ? `<small class="speech">🗣 “${p.speech}”</small>` : ""}</div></div>`;
+  const map = () => {
+    const size = 400, pad = 28, s = (size - 2 * pad) / 2.6, cx = size / 2, cy = size / 2, X = (x) => cx + x * s, Y = (y) => cy - y * s;
+    let g = `<line class="axis" x1="${pad}" y1="${cy}" x2="${size - pad}" y2="${cy}"/><line class="axis" x1="${cx}" y1="${pad}" x2="${cx}" y2="${size - pad}"/>`;
+    TOPIC_DEF.forEach((t) => (g += `<circle cx="${X(t.c[0])}" cy="${Y(t.c[1])}" r="${sel === t.id ? 34 : 28}" fill="${t.col}" opacity="${sel && sel !== t.id ? 0.05 : 0.14}"/>`));
+    POSTS.forEach((p) => (g += `<circle cx="${X(p.v[0])}" cy="${Y(p.v[1])}" r="${p.type === "video" ? 6 : 5}" fill="${T[p.cl].col}" opacity="${sel && sel !== p.cl ? 0.25 : 1}" ${p.type === "photo" ? 'stroke="var(--page)" stroke-width="2"' : ""}/>`));
+    $("#tmPlot").innerHTML = `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Topic map of posts">${g}<text class="ptlabel" x="${pad}" y="${size - 8}">● video  ○ photo · position = meaning (2D for intuition)</text></svg>`;
+    const spark = (a, col) => { const m = Math.max(...a); return `<svg viewBox="0 0 60 18" class="spark"><polyline fill="none" stroke="${col}" stroke-width="2" points="${a.map((v, i) => `${i * 12},${16 - (v / m) * 14}`).join(" ")}"/></svg>`; };
+    $("#tmChips").innerHTML = TOPIC_DEF.map((t) => { const n = POSTS.filter((p) => p.cl === t.id).length, g2 = t.trend[5] / t.trend[0];
+      return `<button class="tchip ${sel === t.id ? "on" : ""}" data-t="${t.id}"><i style="background:${t.col}"></i><span><b>${t.name}</b><small>${n} posts · top words: ${t.kw.join(", ")}</small></span>${spark(t.trend, t.col)}${g2 >= 2.5 ? '<span class="pill warn">rising</span>' : ""}</button>`; }).join("");
+    const list = POSTS.filter((p) => !sel || p.cl === sel);
+    $("#tmPosts").innerHTML = list.map((p) => card(p)).join("");
+    $("#tmNote").innerHTML = sel ? `<b>${T[sel].name}</b>: ${list.length} posts. Note the ambiguous posts (e.g. “hiking in the rain”) that sit between topics: the cluster picks the closest one.` : `Click a topic to see its posts. Names come from each cluster’s most frequent words, then are tidied by an LLM.`;
+    $$("#tmChips .tchip").forEach((b) => b.addEventListener("click", () => { sel = sel === b.dataset.t ? null : b.dataset.t; map(); }));
+  };
+  map();
+  let cur = 0;
+  const search = (k = cur) => {
+    cur = k;
+    const Q = SQ[k], type = $("#ssType").value, days = +$("#ssDays").value, same = $("#ssTopic").checked;
+    $$("#ssQ .btn").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.k === k)));
+    let ranked = POSTS.map((p) => ({ ...p, s: cos(Q.v, p.v) })).sort((a, b) => b.s - a.s);
+    const best = ranked[0];
+    ranked = ranked.filter((p) => (type === "all" || p.type === type) && p.days <= days && (!same || p.cl === best.cl));
+    const why = (p) => {
+      const low = (x) => x.toLowerCase();
+      if (Q.match.speech.some((w) => low(p.speech).includes(w))) return "matched on speech";
+      if (Q.match.caption.some((w) => low(p.cap).includes(w))) return "matched on caption";
+      return "matched on visuals";
+    };
+    $("#ssRes").innerHTML = ranked.slice(0, 6).map((p, i) => card(p, "is-res").replace("<div><b>", `<div><span class="pill acc">#${i + 1} · cos ${fmt(p.s, 3)}</span> <span class="pill">${why(p)}</span><br/><b>`)).join("") || `<p class="muted">No posts match these filters.</p>`;
+  };
+  $$("#ssQ .btn").forEach((b) => b.addEventListener("click", () => search(+b.dataset.k)));
+  ["#ssType", "#ssDays", "#ssTopic"].forEach((s) => $(s).addEventListener("change", () => search()));
+  search(0);
+}
+
 /* ---------- mount ---------- */
-const BUILD = { memory: memoryPanel, graph: graphPanel, entity: entityPanel, pack: packPanel, embed: embedPanel, rag: ragPanel };
-const INIT = { memory: initMemory, graph: initGraph, entity: initEntity, pack: initPack, embed: initEmbed, rag: initRag };
+const BUILD = { memory: memoryPanel, graph: graphPanel, entity: entityPanel, pack: packPanel, embed: embedPanel, rag: ragPanel, topics: topicsPanel };
+const INIT = { memory: initMemory, graph: initGraph, entity: initEntity, pack: initPack, embed: initEmbed, rag: () => { initRag(); initRagCompare(); initImgRag(); initBeyond(); }, topics: initTopics };
 $("#panels").innerHTML = TOPICS.map((t) => `<section class="topic" role="tabpanel" id="panel-${t.id}" aria-labelledby="tab-${t.id}" hidden>${BUILD[t.id]()}</section>`).join("");
 TOPICS.forEach((t) => INIT[t.id]());
 

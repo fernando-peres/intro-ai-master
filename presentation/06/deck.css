@@ -626,3 +626,9 @@ body.toc-open #toc {
 .doc-dark-1 .try { margin: 1.6em 0; padding: 1em 1.3em; border-radius: 12px; background: #13261d; border: 1.5px solid var(--accent); }
 .doc-dark-1 .try::before { content: "Try it"; display: block; font-family: var(--font-text); font-weight: 600; font-size: 0.7em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
 .doc-dark-1 .try ol { margin: 0.5em 0 0; }
+
+/* Slide 28 planet diagram: moon labels take their moon's colour; new context items flash in. */
+.context-diagram .d-label.is-src { border-color: var(--moon, var(--mint)); color: var(--moon, var(--mint)); }
+.context-diagram .d-label.is-window span { transition: color .4s; }
+.context-diagram .d-label.is-window span.is-new { color: var(--mint); font-weight: 600; }
+.context-diagram .d-label.is-ring { color: #e4e9e6; }

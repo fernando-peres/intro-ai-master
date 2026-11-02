@@ -1,18 +1,20 @@
-// Context engineering inside the harness (slide 25), seen front-on.
-// Rings, outer to inner: context (pale), capabilities (mint), adaptive control (dashed), model (sphere).
-// A pale band carries the request: Users → Prompt → context window (HTML panel on the rings' left edge) → model.
-// Four sources spread around the left half of the rings (tools, retrieval, memory, agents) feed the window.
+// Context engineering as a planet system (slide 28).
+// The model is the planet; the harness layers are tilted rings around it. Five sources (Tools, Memory,
+// Agents, RAG, Knowledge) are moons on their own orbits. Each moon periodically sends a glowing packet to
+// the context window (a station on the near side), which then streams into the model. The user prompt
+// arrives along a lane from the left. Camera looks down ~25° and sways slowly so the scene reads as 3D.
 import { THREE, createStage, material } from "./lib.js";
 
-const CX = 2.75; // ring centre (x)
-const R = { model: 0.88, halo: 1.0, adaptive: 1.5, capIn: 1.04, capOut: 2.2, ctxOut: 2.78 };
-const WIN = new THREE.Vector3(-0.55, 0, 0.3); // context window anchor, overlapping the context ring
-const WIN_HALF = 1.32; // half width of the panel in world units (panel is ~232 px)
-const USERS = new THREE.Vector3(-4.95, 0, 0.1);
-const PROMPT = new THREE.Vector3(-3.25, 0, 0.1);
-
-const at = (x, y, z = 0) => new THREE.Vector3(x, y, z);
-const polar = (r, deg, z = 0) => at(CX + Math.cos((deg * Math.PI) / 180) * r, Math.sin((deg * Math.PI) / 180) * r, z);
+const P = new THREE.Vector3(1.6, -0.15, 0); // planet centre
+const WIN = new THREE.Vector3(-1.4, -0.6, 1.6); // context window station (near side)
+const PROMPT = new THREE.Vector3(-3.35, -0.6, 1.6);
+const MOONS = [
+  { name: "Tools", col: 0xf2c94c, r: 2.55, tilt: 0.32, speed: 0.11, phase: 0.4, add: "+ tool result" },
+  { name: "Memory", col: 0x7fb3ff, r: 2.85, tilt: -0.22, speed: 0.085, phase: 2.1, add: "+ memory" },
+  { name: "Agents", col: 0xf08a7e, r: 2.35, tilt: 0.55, speed: 0.13, phase: 3.6, add: "+ agent output" },
+  { name: "RAG", col: 0x6ee7a0, r: 3.1, tilt: 0.12, speed: 0.07, phase: 5.0, add: "+ 4 chunks" },
+  { name: "Knowledge", col: 0xc3b6ff, r: 2.7, tilt: -0.48, speed: 0.095, phase: 1.2, add: "+ graph facts" },
+];
 
 function dashed(points, color, dash = 0.1, gap = 0.08, opacity = 1) {
   const line = new THREE.Line(
@@ -22,146 +24,122 @@ function dashed(points, color, dash = 0.1, gap = 0.08, opacity = 1) {
   line.computeLineDistances();
   return line;
 }
+const orbitPoint = (m, a) => {
+  // circle in XZ, tilted around X by m.tilt
+  const x = Math.cos(a) * m.r, z = Math.sin(a) * m.r;
+  return new THREE.Vector3(P.x + x, P.y + z * Math.sin(m.tilt), P.z + z * Math.cos(m.tilt));
+};
 
 export function mount(el) {
-  const { root, tick, addLabel, controls } = createStage(el, { fov: 35, position: [0, 0, 12.3], spin: false });
-  const anchor = (v) => {
-    const o = new THREE.Object3D();
-    o.position.copy(v);
-    root.add(o);
-    return o;
-  };
+  const { root, tick, addLabel, controls } = createStage(el, { fov: 34, position: [0.5, 3.7, 10.9], target: [0.3, -0.25, 0], spin: false });
+  const anchor = (v) => { const o = new THREE.Object3D(); o.position.copy(v); root.add(o); return o; };
 
-  // ---------- Request band (behind everything) ----------
-  const band = new THREE.Mesh(
-    new THREE.PlaneGeometry(CX + 5.55, 1.25),
-    new THREE.MeshBasicMaterial({ color: 0x1b1b18, transparent: true, opacity: 0.9 }),
+  // ---------- Planet (model) ----------
+  const planet = new THREE.Mesh(
+    new THREE.SphereGeometry(0.95, 64, 48),
+    new THREE.MeshPhysicalMaterial({ color: 0x0f4a35, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.12, metalness: 0.1, emissive: 0x06261b, emissiveIntensity: 0.4 }),
   );
-  band.position.set((CX - 5.55) / 2, 0, -0.2);
-  root.add(band);
+  planet.position.copy(P);
+  root.add(planet);
+  const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.1, 48, 32), new THREE.MeshBasicMaterial({ color: 0x6ee7a0, transparent: true, opacity: 0.12, side: THREE.BackSide }));
+  atmo.position.copy(P);
+  root.add(atmo);
+  addLabel("MODEL", anchor(P.clone().add(new THREE.Vector3(0, 1.3, -0.2))), { className: "is-ring" });
 
-  // ---------- Rings ----------
-  const ring = (rIn, rOut, color, emissive, z) => {
-    const m = new THREE.Mesh(
-      new THREE.RingGeometry(rIn, rOut, 160),
-      material(color, { roughness: 0.65, emissive, emissiveIntensity: 0.22, side: THREE.DoubleSide }),
-    );
-    m.position.set(CX, 0, z);
+  // Harness layers as planetary rings (tilted discs).
+  const ring = (rIn, rOut, color, opacity, tiltX) => {
+    const m = new THREE.Mesh(new THREE.RingGeometry(rIn, rOut, 160), new THREE.MeshBasicMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide }));
+    m.position.copy(P);
+    m.rotation.x = -Math.PI / 2 + tiltX;
     root.add(m);
+    return m;
   };
-  ring(R.capOut, R.ctxOut, 0xcdf3df, 0x8fd9b2, -0.03);
-  ring(R.capIn, R.capOut, 0x5fca9b, 0x2f9c6b, -0.02);
-  for (const r of [R.capOut, R.ctxOut]) {
-    const rim = new THREE.Mesh(new THREE.TorusGeometry(r, 0.02, 12, 160), material(0xe9fbf1, { roughness: 0.4 }));
-    rim.position.x = CX;
-    root.add(rim);
-  }
+  ring(1.3, 1.75, 0x5fca9b, 0.55, 0.18); // capabilities
+  ring(1.85, 2.1, 0xcdf3df, 0.35, 0.18); // context
+  const ctrl = ring(1.18, 1.22, 0x9be3bc, 0.9, 0.18); // adaptive control (thin)
+  const onRing = (r, deg) => { const a = (deg * Math.PI) / 180, z = Math.sin(a) * r; return P.clone().add(new THREE.Vector3(Math.cos(a) * r, -z * Math.sin(0.18), z * Math.cos(0.18))); };
+  addLabel("CAPABILITIES", anchor(onRing(1.52, 62)), { className: "is-ring is-sm is-dark" });
+  addLabel("CONTEXT", anchor(onRing(1.98, 35)), { className: "is-ring is-sm is-dark" });
 
-  // Adaptive control: a dashed ring that turns slowly.
-  const pts = [];
-  for (let i = 0; i <= 200; i++) {
-    const a = (i / 200) * Math.PI * 2;
-    pts.push(at(Math.cos(a) * R.adaptive, Math.sin(a) * R.adaptive, 0.01));
-  }
-  const adaptive = dashed(pts, 0x1d5e43, 0.09, 0.07);
-  adaptive.position.x = CX;
-  root.add(adaptive);
-
-  // Model at the centre.
-  const model = new THREE.Mesh(
-    new THREE.SphereGeometry(R.model, 64, 48),
-    new THREE.MeshPhysicalMaterial({ color: 0x0f4a35, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.15, metalness: 0.1 }),
-  );
-  model.position.x = CX;
-  root.add(model);
-  const halo = new THREE.Mesh(new THREE.TorusGeometry(R.halo, 0.045, 16, 120), material(0x9be3bc, { transparent: true, opacity: 0.85 }));
-  halo.position.x = CX;
-  root.add(halo);
-  addLabel("MODEL", anchor(at(CX, -R.model - 0.32, 0.2)), { className: "is-ring is-dark" });
-
-  // Ring names on the right side of each band, clear of the flows on the left.
-  addLabel("CONTEXT", anchor(polar((R.capOut + R.ctxOut) / 2, 72, 0.1)), { className: "is-ring is-dark" });
-  addLabel("CAPABILITIES", anchor(polar((R.adaptive + R.capOut) / 2 + 0.08, 68, 0.1)), { className: "is-ring is-dark" });
-  addLabel("ADAPTIVE CONTROL", anchor(polar(R.adaptive - 0.24, 90, 0.1)), { className: "is-ring is-dark is-sm" });
-
-  // Layer callouts with leader lines (as on slide 5).
-  const leader = (from, to) => {
-    root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([from, to]), new THREE.LineBasicMaterial({ color: 0xbfc8c3 })));
-    const dot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 10), material(0xffffff));
-    dot.position.copy(to);
-    root.add(dot);
-  };
-  const ctxPoint = polar(R.ctxOut, 128, 0.05);
-  const ctxLabel = at(ctxPoint.x - 0.75, 3.3, 0.05); // right-aligned: text extends left of this point
-  leader(at(ctxLabel.x - 0.5, ctxLabel.y - 0.36, 0.05), ctxPoint);
-  addLabel("CONTEXTUAL LAYER", anchor(ctxLabel), { className: "is-layer is-left" });
-  const capPoint = polar(R.capOut, 48, 0.05);
-  const capLabel = at(5.6, 3.3, 0.05); // right-aligned against the diagram's right edge
-  leader(at(capLabel.x - 1.0, capLabel.y - 0.36, 0.05), capPoint);
-  addLabel("OPERATIONAL LAYER", anchor(capLabel), { className: "is-layer is-left" });
-
-  // ---------- Request flow: Users → Prompt → context window → model ----------
-  addLabel("Users", anchor(USERS), { className: "is-chip" });
-  addLabel("Prompt", anchor(PROMPT), { className: "is-chip" });
-  const win = addLabel("", anchor(WIN), { className: "is-window" });
-  win.innerHTML =
-    "<b>Context window</b><span>Instructions (prompts)</span><span>Contextual knowledge</span><span>Tool results</span><span>Chat history</span><span>Working memory</span>";
-
-  const flows = [];
-  const pGeo = new THREE.SphereGeometry(0.055, 12, 10);
-  const pMat = material(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.6 });
-  const arrowGeo = new THREE.ConeGeometry(0.08, 0.2, 16);
-  const addFlow = (curve, color, n, speed, offset = 0, arrow = true) => {
-    root.add(dashed(curve.getPoints(48), color));
-    if (arrow) {
-      const cone = new THREE.Mesh(arrowGeo, material(color));
-      cone.position.copy(curve.getPoint(1));
-      cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), curve.getTangent(1).normalize());
-      root.add(cone);
-    }
-    for (let j = 0; j < n; j++) {
-      const mesh = new THREE.Mesh(pGeo, pMat);
-      root.add(mesh);
-      flows.push({ curve, mesh, phase: j / n + offset, speed });
-    }
-  };
-  addFlow(new THREE.LineCurve3(at(USERS.x + 0.55, 0, 0.1), at(PROMPT.x - 0.68, 0, 0.1)), 0xffffff, 1, 0.0005);
-  addFlow(new THREE.LineCurve3(at(PROMPT.x + 0.68, 0, 0.1), at(WIN.x - WIN_HALF - 0.12, 0, 0.1)), 0xffffff, 1, 0.0005, 0.5);
-  addFlow(new THREE.LineCurve3(at(WIN.x + WIN_HALF + 0.08, 0, 0.12), at(CX - R.halo - 0.1, 0, 0.12)), 0xffffff, 2, 0.00045);
-
-  // Sources, spread around the left half of the rings, each feeding the window from above or below.
-  const SOURCES = [
-    ["Tools", R.capOut - 0.38, 140],
-    ["Agents", R.capOut - 0.38, 118],
-    ["Retrieval", R.capOut - 0.38, 220],
-    ["Memory", R.capOut - 0.38, 242],
-  ];
-  const nodeGeo = new THREE.SphereGeometry(0.1, 20, 14);
-  const nodeMat = material(0xffffff, { roughness: 0.3, emissive: 0xffffff, emissiveIntensity: 0.25 });
-  SOURCES.forEach(([name, r, deg], k) => {
-    const p = polar(r, deg, 0.08);
-    const node = new THREE.Mesh(nodeGeo, nodeMat);
-    node.position.copy(p);
-    root.add(node);
-    const up = p.y > 0;
-    const out = p.clone().sub(at(CX, 0, p.z)).normalize().multiplyScalar(0.42); // label sits radially outward
-    addLabel(name, anchor(p.clone().add(out)), { className: "is-src" });
-    // Ends on the panel's top or bottom edge, spaced so the curves don't overlap.
-    const end = at(WIN.x + 0.35 + (k % 2) * 0.55, up ? 1.18 : -1.18, 0.2);
-    const mid = at((p.x + end.x) / 2, up ? Math.max(p.y, end.y) + 0.35 : Math.min(p.y, end.y) - 0.35, 0.15);
-    addFlow(new THREE.QuadraticBezierCurve3(p, mid, end), 0x1d5e43, 1, 0.0005, k * 0.25);
+  // ---------- Moons (sources) ----------
+  const moons = MOONS.map((m) => {
+    const pts = [];
+    for (let i = 0; i <= 160; i++) pts.push(orbitPoint(m, (i / 160) * Math.PI * 2));
+    root.add(dashed(pts, m.col, 0.08, 0.1, 0.45));
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.22, 32, 24), material(m.col, { roughness: 0.35, emissive: m.col, emissiveIntensity: 0.35 }));
+    root.add(mesh);
+    const lab = addLabel(m.name, mesh, { className: "is-src", offset: [0, 0.42, 0] });
+    lab.style.setProperty("--moon", "#" + m.col.toString(16).padStart(6, "0"));
+    return { ...m, mesh, packets: [] };
   });
+
+  // ---------- Context window station + request lane ----------
+  const station = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), material(0x6ee7a0, { emissive: 0x2f9c6b, emissiveIntensity: 0.5, transparent: true, opacity: 0.0 }));
+  station.position.copy(WIN);
+  root.add(station);
+  const win = addLabel("", station, { className: "is-window" });
+  const ITEMS = ["Instructions (prompt)"];
+  const renderWin = (flash) => {
+    win.innerHTML = `<b>Context window</b>${ITEMS.slice(-6).map((t, i, a) => `<span class="${flash && i === a.length - 1 ? "is-new" : ""}">${t}</span>`).join("")}`;
+  };
+  renderWin(false);
+
+  addLabel("User prompt", anchor(PROMPT), { className: "is-chip" });
+  const pGeo = new THREE.SphereGeometry(0.06, 12, 10);
+  const white = material(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.7 });
+  const lanes = [];
+  const lane = (a, b, n, speed) => {
+    const curve = new THREE.LineCurve3(a, b);
+    root.add(dashed(curve.getPoints(30), 0xffffff, 0.12, 0.1, 0.6));
+    for (let j = 0; j < n; j++) { const m = new THREE.Mesh(pGeo, white); root.add(m); lanes.push({ curve, m, phase: j / n, speed }); }
+  };
+  lane(PROMPT.clone().add(new THREE.Vector3(0.8, 0, 0)), WIN.clone().add(new THREE.Vector3(-1.3, 0, 0)), 1, 0.0005);
+  // window → planet stream
+  const feed = new THREE.QuadraticBezierCurve3(WIN.clone().add(new THREE.Vector3(1.3, 0.1, 0)), new THREE.Vector3(0.6, 0.4, 1.4), P.clone().add(new THREE.Vector3(-0.85, 0.05, 0.45)));
+  root.add(dashed(feed.getPoints(40), 0x6ee7a0, 0.12, 0.08, 0.9));
+  for (let j = 0; j < 3; j++) { const m = new THREE.Mesh(pGeo, white); root.add(m); lanes.push({ curve: feed, m, phase: j / 3, speed: 0.0006 }); }
+
+  // ---------- Packets: moon → window, one moon at a time ----------
+  const packetGeo = new THREE.SphereGeometry(0.11, 16, 12);
+  const flights = [];
+  let nextLaunch = 0, turn = 0;
+  const launch = (t) => {
+    const m = moons[turn++ % moons.length];
+    const from = m.mesh.position.clone(), to = WIN.clone().add(new THREE.Vector3(0.9, 0.15, 0));
+    const mid = from.clone().lerp(to, 0.5).add(new THREE.Vector3(0, 1.4, 0.4));
+    const curve = new THREE.QuadraticBezierCurve3(from, mid, to);
+    const mesh = new THREE.Mesh(packetGeo, material(m.col, { emissive: m.col, emissiveIntensity: 0.9 }));
+    const trail = dashed(curve.getPoints(40), m.col, 0.06, 0.06, 0.7);
+    root.add(mesh, trail);
+    flights.push({ m, curve, mesh, trail, t0: t });
+  };
 
   // ---------- Animation ----------
   tick((t) => {
-    const s = 1 + Math.sin(t * 0.0018) * 0.025;
-    model.scale.setScalar(s);
-    halo.material.opacity = 0.65 + Math.sin(t * 0.0018) * 0.2;
-    adaptive.rotation.z = t * 0.0001;
-    for (const f of flows) {
-      const u = (t * f.speed + f.phase) % 1;
-      f.mesh.position.copy(f.curve.getPoint(u));
-      f.mesh.scale.setScalar(0.4 + Math.sin(u * Math.PI) * 0.8);
+    const s = t * 0.001;
+    root.rotation.y = Math.sin(s * 0.25) * 0.12; // gentle orbit sway
+    planet.rotation.y = s * 0.2;
+    planet.scale.setScalar(1 + Math.sin(s * 1.8) * 0.02);
+    ctrl.rotation.z = s * 0.15;
+    for (const m of moons) m.mesh.position.copy(orbitPoint(m, m.phase + s * m.speed));
+    for (const l of lanes) {
+      const u = (t * l.speed + l.phase) % 1;
+      l.m.position.copy(l.curve.getPoint(u));
+      l.m.scale.setScalar(0.5 + Math.sin(u * Math.PI) * 0.8);
+    }
+    if (t > nextLaunch) { launch(t); nextLaunch = t + 1600; }
+    for (let i = flights.length - 1; i >= 0; i--) {
+      const f = flights[i], u = (t - f.t0) / 1400;
+      if (u >= 1) {
+        root.remove(f.mesh, f.trail);
+        ITEMS.push(f.m.add);
+        if (ITEMS.length > 12) ITEMS.splice(1, 1);
+        renderWin(true);
+        flights.splice(i, 1);
+      } else {
+        f.mesh.position.copy(f.curve.getPoint(u));
+        f.trail.material.opacity = 0.7 * (1 - u);
+      }
     }
   });
 
