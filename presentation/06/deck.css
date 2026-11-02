@@ -748,3 +748,31 @@ body.toc-open #toc {
 .use-skip h2 { margin: 0 0 28px; font-family: var(--font-text); font-weight: 600; font-size: 19px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); }
 .use-skip .is-skip h2 { color: #b9c2bd; }
 .use-skip .is-skip .points li::before { background: #4a4a44; color: #fff; }
+
+/* MCP: client ↔ server diagram. */
+.cs { position: absolute; left: 94px; right: 94px; top: 214px; display: grid; grid-template-columns: 470px 1fr 470px; gap: 0; align-items: stretch; }
+.cs-box { display: flex; flex-direction: column; padding: 24px 28px 22px; border-radius: 16px; border: 2px solid #3a3a34; background: #161614; }
+.cs-box.is-client { border-color: #2f6d4f; background: #13261d; }
+.cs-box.is-server { border-color: var(--mint); }
+.cs-box .tag { font-family: var(--font-text); font-weight: 600; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: #9fb0a7; }
+.cs-box > b { margin-top: 6px; font-family: var(--font-title); font-weight: 700; font-size: 36px; letter-spacing: -0.01em; color: var(--mint); }
+.cs-box ol { margin: 14px 0 18px; padding: 0 0 0 26px; display: grid; gap: 10px; font-size: 21px; line-height: 1.35; color: #d6ddd8; }
+.cs-box ol li::marker { color: var(--mint); font-weight: 700; }
+.cs-box strong { color: #fff; }
+.cs-model, .cs-sys { margin-top: auto; align-self: flex-start; padding: 7px 16px; border-radius: 999px; font-size: 18px; font-weight: 600; }
+.cs-model { background: var(--mint); color: #0d1a12; }
+.cs-sys { background: #1f3a2d; color: #cdf3df; }
+.cs-wire { display: flex; flex-direction: column; justify-content: center; padding: 0 18px; }
+.cs-proto { text-align: center; font-family: var(--font-hand); font-size: 22px; color: var(--hand); }
+.cs-wire ol { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.cs-wire li { display: grid; gap: 2px; }
+.cs-wire li span { font-family: var(--font-code); font-size: 16px; color: #b9c2bd; text-align: center; white-space: nowrap; }
+.cs-wire li b { color: #fff; font-weight: 600; }
+.cs-wire li.is-l b { color: var(--mint); }
+.cs-wire svg { width: 100%; height: 14px; fill: none; stroke: #8a948e; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cs-wire li.is-l svg { stroke: var(--mint); }
+.cs-transport { position: absolute; left: 94px; right: 94px; top: 676px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.cs-transport > div { display: grid; gap: 4px; padding: 14px 22px; border-top: 2px solid #4a4a44; background: #161614; }
+.cs-transport b { font-family: var(--font-title); font-size: 22px; }
+.cs-transport span { font-size: 19px; line-height: 1.35; color: #cfd8d3; }
+.flow-note.cs-note { top: auto; bottom: 40px; }

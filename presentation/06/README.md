@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 50-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 51-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -68,12 +68,13 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 42 | Tools · takeaways | `layout-dark-1` |
 | 43 | Lesson · MCP overview | `layout-lesson` |
 | 44 | From N × M to N + M | `layout-dark-1` |
-| 45 | MCP · the moving parts | `layout-dark-1` |
-| 46 | MCP · discovery is built in | `layout-dark-1` |
-| 47 | MCP · least privilege in three layers | `layout-dark-1` |
-| 48 | When to use MCP | `layout-dark-1` |
-| 49 | Before you connect a server | `layout-dark-1` |
-| 50 | MCP · takeaways | `layout-dark-1` |
+| 45 | MCP · client and server | `layout-dark-1` |
+| 46 | MCP · the moving parts | `layout-dark-1` |
+| 47 | MCP · discovery is built in | `layout-dark-1` |
+| 48 | MCP · least privilege in three layers | `layout-dark-1` |
+| 49 | When to use MCP | `layout-dark-1` |
+| 50 | Before you connect a server | `layout-dark-1` |
+| 51 | MCP · takeaways | `layout-dark-1` |
 
 ## Templates: what changes in each instance
 

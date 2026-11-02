@@ -1130,6 +1130,49 @@ while True:
       </div>
     </section>
 
+    <!-- template: layout-dark-1 · client ↔ server diagram -->
+    <section class="page" data-type="slide" data-title="MCP · client and server">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">MCP</span>
+          <h1>The <em>MCP client</em> and the <em>MCP server</em></h1>
+          <p class="subtitle is-wide">Two small programs that speak the same protocol. The client lives in your app; the server wraps a system.</p>
+          <div class="cs">
+            <div class="cs-box is-client">
+              <span class="tag">Inside the host · your app</span>
+              <b>MCP client</b>
+              <ol>
+                <li><strong>Connects</strong> to one server and does the handshake</li>
+                <li><strong>Translates</strong> its tools into function calls the model understands</li>
+                <li><strong>Runs the loop:</strong> the model asks, the client calls, the result goes back</li>
+              </ol>
+              <span class="cs-model">Model · requests, never runs</span>
+            </div>
+            <div class="cs-wire">
+              <span class="cs-proto">JSON-RPC messages</span>
+              <ol><li class="is-r"><span><b>initialize</b> · hello, which protocol?</span><svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7H292M284 1l8 6-8 6"/></svg></li><li class="is-l"><span><b>capabilities</b> · tools, prompts…</span><svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M298 7H8M16 1L8 7l8 6"/></svg></li><li class="is-r"><span><b>tools/list</b></span><svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7H292M284 1l8 6-8 6"/></svg></li><li class="is-l"><span><b>fetch(url) + description</b></span><svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M298 7H8M16 1L8 7l8 6"/></svg></li><li class="is-r"><span><b>tools/call</b> · fetch(url=…)</span><svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7H292M284 1l8 6-8 6"/></svg></li><li class="is-l"><span><b>result</b> · page text</span><svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M298 7H8M16 1L8 7l8 6"/></svg></li></ol>
+            </div>
+            <div class="cs-box is-server">
+              <span class="tag">A separate program</span>
+              <b>MCP server</b>
+              <ol>
+                <li><strong>Describes itself:</strong> its tools, resources and prompts</li>
+                <li><strong>Runs each call</strong> on its own system</li>
+                <li><strong>Enforces its limits:</strong> a folder, an account, read-only</li>
+              </ol>
+              <span class="cs-sys">→ the web · your files · a CRM</span>
+            </div>
+          </div>
+          <div class="cs-transport">
+            <div><b>Local server</b><span>The client starts it from a command line, e.g. <code>uvx mcp-server-fetch</code>, and talks over stdin/stdout (stdio).</span></div>
+            <div><b>Remote server</b><span>It runs elsewhere, as a web service. The client connects over Streamable HTTP.</span></div>
+          </div>
+          <p class="flow-note cs-note">Same client code, different server: in the notebook, only the launch command changes.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
     <!-- template: layout-dark-1 · two tables + key idea + link -->
     <section class="page" data-type="slide" data-title="MCP · the moving parts">
       <div class="stage is-night">
