@@ -90,12 +90,13 @@
       <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
       <ol>
         <li>01. What is a Harness?</li>
-        <li>02. The Mindset for Building and Continuously Improving GenAI Systems</li>
-        <li>03. Context</li>
+        <li>02. The Mindset for GenAI Systems</li>
+        <li>03. Context &amp; Context Engineering</li>
         <li>04. Tools and Integration</li>
         <li>05. Workflows and Agents</li>
-        <li>06. Observability</li>
-        <li>07. Experiments</li>
+        <li>06. Guardrails and Evals</li>
+        <li>07. Observability</li>
+        <li>08. Experiments</li>
       </ol>
       <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
       <span class="page-num"></span>
@@ -331,14 +332,14 @@
   </div>
 
   <!-- ============ UNIT 2 · MINDSET ============ -->
-  <div class="unit" data-title="02 · The mindset for building GenAI systems">
+  <div class="unit" data-title="02 · The mindset for GenAI systems">
 
     <!-- template: layout-unit-v2 · change the number and title -->
     <section class="page" data-type="slide" data-title="Unit 2 · The mindset">
       <div class="stage is-brand layout-unit-v2">
         <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
         <div class="unit-head">
-          <h1>02. The Mindset for Building and <b>Continuously Improving</b> GenAI Systems</h1>
+          <h1>02. The Mindset for <b>GenAI Systems</b></h1>
           <p class="subtitle">Improve the whole system, continuously and with evidence.</p>
           <div class="covers"><span>Four dimensions</span><span>Limits of model optimization</span><span>The cost of training</span><span>Takeaways</span></div>
         </div>
@@ -531,14 +532,14 @@
   </div>
 
   <!-- ============ UNIT 3 · CONTEXT ============ -->
-  <div class="unit" data-title="03 · Context">
+  <div class="unit" data-title="03 · Context &amp; context engineering">
 
     <!-- template: layout-unit-v2 · change the number and title -->
-    <section class="page" data-type="slide" data-title="Unit 3 · Context">
+    <section class="page" data-type="slide" data-title="Unit 3 · Context &amp; context engineering">
       <div class="stage is-brand layout-unit-v2">
         <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
         <div class="unit-head">
-          <h1>03. <b>Context</b></h1>
+          <h1>03. Context &amp; <b>Context Engineering</b></h1>
           <p class="subtitle">The model only knows what reaches its window. Engineer what goes in.</p>
           <div class="covers"><span>What context is</span><span>Context engineering</span><span>vs. prompt engineering</span><span>Building blocks</span></div>
         </div>
@@ -1211,7 +1212,7 @@
       <article class="doc-dark-1">
         <span class="eyebrow">Tools · Hands-on</span>
         <h1>How LLMs use tools</h1>
-        <p class="lead">Notebook <code>notebooks/llm_tools_01.ipynb</code> asks the same question twice: once to a model on its own, once to a model with tools.</p>
+        <a class="notes-link doc-link" href="../../html/tools.html" target="_blank" rel="noopener">Open the interactive notes <span aria-hidden="true">↗</span></a>
         <div class="meta"><span>OPENAI_API_KEY</span><span>TAVILY_API_KEY for example 2</span><span>~70 cells</span></div>
 
         <h2>The whole mechanism</h2>
@@ -1498,6 +1499,383 @@ while True:
             <li><b>Every connection has a price:</b> tokens, time, prompt injection.</li>
           </ol>
         </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-alert · security warning for executives -->
+    <section class="page" data-type="slide" data-title="Alert · using third-party tools and MCP servers">
+      <div class="stage is-night">
+        <div class="layout-dark-1 layout-alert">
+          <span class="alert-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18v.01"/></svg>Security alert · Using third-party tools</span>
+          <h1>Third-party tools and MCP servers <em>run with your permissions</em></h1>
+          <div class="alert-rows">
+            <div class="alert-hd"><span>Risk</span><span>What can happen</span><span>What to do</span></div>
+            <div><b>Hidden instructions</b><p>A tool’s description can carry orders the model follows and users never see (“tool poisoning”).</p><p class="do">Use vetted sources only. Review what each tool tells the model.</p></div>
+            <div><b>Poisoned content</b><p>Web pages, emails and files returned by a tool can instruct the model to leak data or act.</p><p class="do">Treat every tool result as untrusted. Require human approval before actions.</p></div>
+            <div><b>Fake or changing packages</b><p>A look-alike “postmark-mcp” package copied users’ emails to an attacker (2025). Approved servers can change after install.</p><p class="do">Install from the vendor’s official source. Pin versions; re-review on every update.</p></div>
+            <div><b>Too much access</b><p>A server that can read your files or mailbox can often change or send them too.</p><p class="do">Least privilege: scoped accounts, read-only by default, only the tools the task needs.</p></div>
+            <div><b>Vulnerable connectors</b><p>A flaw in <i>mcp-remote</i> let a malicious server run code on the user’s computer (CVE-2025-6514, severity 9.6/10).</p><p class="do">Keep an inventory, patch fast, connect only to trusted servers over HTTPS.</p></div>
+          </div>
+          <p class="source">Sources: OWASP Top 10 for LLM Applications 2025 (LLM01 Prompt injection, LLM06 Excessive agency); Invariant Labs, <i>tool poisoning</i> (Apr 2025); postmark-mcp incident reports (Sep 2025); JFrog, CVE-2025-6514 (Jul 2025).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-alert · security warning for executives -->
+    <section class="page" data-type="slide" data-title="Alert · building tools and MCP servers">
+      <div class="stage is-night">
+        <div class="layout-dark-1 layout-alert">
+          <span class="alert-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18v.01"/></svg>Security alert · Building your own tools</span>
+          <h1>Building tools and MCP servers: <em>security is part of the design</em></h1>
+          <div class="alert-rows">
+            <div class="alert-hd"><span>Practice</span><span>Why it matters</span><span>What to require</span></div>
+            <div><b>Validate every input</b><p>Arguments are written by a model, and the model can be steered by an attacker.</p><p class="do">Strict schemas and allow-lists. Never pass arguments straight to code, a shell or a database query.</p></div>
+            <div><b>Authenticate every call</b><p>The server must know who is asking and what they may do, not trust the model’s word.</p><p class="do">Scoped, short-lived credentials. Never accept or forward tokens not issued to your server.</p></div>
+            <div><b>Least privilege by design</b><p>One broad tool is one big risk. Reads and writes carry very different stakes.</p><p class="do">Small, focused tools. Confirmation or approval for anything destructive or costly, enforced in code.</p></div>
+            <div><b>Honest descriptions</b><p>The description is a prompt: it steers the model, and other people’s agents will read it.</p><p class="do">Say exactly what the tool does. Label read-only and destructive tools. No secrets in error messages.</p></div>
+            <div><b>Limit, log and test</b><p>A model can call a tool thousands of times, and every call must be traceable afterwards.</p><p class="do">Rate limits and budgets, audit logs, dependency scans and security testing before release.</p></div>
+          </div>
+          <p class="source">Sources: Model Context Protocol specification, <i>Security Best Practices</i> (2025-11-25); OWASP Top 10 for LLM Applications 2025 (LLM01 Prompt injection, LLM05 Improper output handling, LLM06 Excessive agency).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ UNIT 5 · WORKFLOWS AND AGENTS: to come ============ -->
+
+  <!-- ============ UNIT 6 · GUARDRAILS AND EVALS ============ -->
+  <div class="unit" data-title="06 · Guardrails and Evals">
+
+    <!-- template: layout-unit-v2 · change the number, title, subtitle and covers -->
+    <section class="page" data-type="slide" data-title="Unit 6 · Guardrails and Evals">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="unit-head">
+          <h1>06. Guardrails and <b>Evals</b></h1>
+          <p class="subtitle">Guardrails keep it safe on every request. Evals prove that it works.</p>
+          <div class="covers"><span>What and why</span><span>Types of guardrails</span><span>Types of evals</span><span>LLM as a judge</span><span>Accelerators</span><span>Takeaways</span></div>
+        </div>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-statement-dark · one idea to keep -->
+    <section class="page" data-type="slide" data-title="Unit 6 · One idea to keep">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">One idea to keep</span>
+          <p class="statement">You can’t trust what you don’t check: <em>guardrails on every request, evals on every change</em>.</p>
+          <p class="statement-source">Safe by design, proven by evidence.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · Guardrails overview">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Guardrails overview</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">A model can be wrong, manipulated or over-eager, and now it can act. Understand what guardrails are, where they sit around the model, the main types, and the ready-made tools that implement them.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · definition + four reasons -->
+    <section class="page" data-type="slide" data-title="Guardrails · what and why">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Guardrails</span>
+          <h1>Guardrails: <em>checks in code</em> around the model</h1>
+          <p class="subtitle is-wide">Rules that run on every request, before, during and after the model, and decide what is allowed through.</p>
+          <div class="gap-cards is-why">
+            <div><span class="tag">Why</span><b>Models are probabilistic</b><p>The same question can get a different, and sometimes wrong, answer.</p><span class="chip">An invented refund rule</span></div>
+            <div><span class="tag">Why</span><b>Models can be manipulated</b><p>Users, documents and web pages can carry instructions.</p><span class="chip">“Ignore your rules…”</span></div>
+            <div><span class="tag">Why</span><b>Models now act</b><p>With tools, a mistake is no longer just text.</p><span class="chip">Refunds, emails, deletions</span></div>
+            <div><span class="tag">Why</span><b>Mistakes are costly</b><p>Data leaks, false promises and harmful content have legal and brand impact.</p><span class="chip">Privacy, regulation, trust</span></div>
+          </div>
+          <p class="key-idea"><b>Asking the model to behave is not a control.</b> Instructions in the prompt guide it; guardrails in code enforce the rule, whatever the model does.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three stages, types per stage -->
+    <section class="page" data-type="slide" data-title="Guardrails · types">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Guardrails · Types</span>
+          <h1>Three places to check: <em>input, actions, output</em></h1>
+          <div class="stage-cols">
+            <div><span class="tag">Before the model</span><b>Input</b><p>What is allowed in.</p>
+              <ul><li>Validation: size and format</li><li>Personal data redaction</li><li>Prompt-injection detection</li><li>Topic scope</li><li>Harmful-content moderation</li></ul></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="is-accent"><span class="tag">While it acts</span><b>Execution</b><p>What it is allowed to do.</p>
+              <ul><li>Tool access by role</li><li>Argument and policy checks</li><li>Approval thresholds: a human in the loop</li><li>Budgets: steps, time, cost</li></ul></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><span class="tag">Before the user</span><b>Output</b><p>What is allowed out.</p>
+              <ul><li>Format and schema</li><li>Secret and data-leak filter</li><li>Groundedness: claims match sources</li><li>No promises outside policy</li><li>Safe fallback message</li></ul></div>
+          </div>
+          <p class="rag-disc stage-disc">Not exhaustive: a teaching map of common types. Real systems combine several, chosen by risk.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · four example cards + link to the interactive notes -->
+    <section class="page" data-type="slide" data-title="Guardrails · in action">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Guardrails · notebooks guardrails_01–04</span>
+          <h1>Guardrails <em>in action</em></h1>
+          <a class="notes-link" href="../../html/guardrails.html" target="_blank" rel="noopener">Open the interactive notes <span aria-hidden="true">↗</span></a>
+          <p class="subtitle">A support assistant for a fake shop. Each case runs twice: without the guardrail, then with it.</p>
+          <div class="example-cards is-four">
+            <div><span class="tag">01 · Overview</span><b>One loop, three guards</b><p>Personal data, a refund rule and a secret filter, in one assistant.</p></div>
+            <div><span class="tag">02 · Input</span><b>Stopped at the door</b><p>Huge messages, card numbers, injection attempts, off-topic requests and threats.</p></div>
+            <div class="is-accent"><span class="tag">03 · Execution</span><b>Limits on actions</b><p>Roles that can’t delete, refunds on others’ orders, large refunds sent for approval, loops cut by a budget.</p></div>
+            <div><span class="tag">04 · Output</span><b>Checked before sending</b><p>Broken formats, leaked secrets, invented numbers and false promises, with a safe fallback.</p></div>
+          </div>
+          <p class="flow-note ga-note">Watch where each check sits, and what reaches the customer with and without it.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: doc-dark-bg-1 · accelerators table -->
+    <section class="page is-night" data-type="doc" data-title="Guardrails · accelerators">
+      <article class="doc-dark-1">
+        <span class="eyebrow">Guardrails · Accelerators</span>
+        <h1>You don’t have to build every guardrail yourself</h1>
+        <p class="lead">Open-source libraries and cloud services cover the common checks. Your business rules still need your own code.</p>
+        <table class="dark-table">
+          <colgroup><col style="width:30%" /><col style="width:18%" /><col /></colgroup>
+          <thead><tr><th>Accelerator</th><th>Type</th><th>What it gives you</th></tr></thead>
+          <tbody>
+            <tr><td>NVIDIA NeMo Guardrails</td><td>Open source</td><td>Programmable rails for topics, dialogue flows, input and output checks</td></tr>
+            <tr><td>Guardrails AI</td><td>Open source</td><td>A hub of ready-made validators: personal data, toxicity, format, competitors…</td></tr>
+            <tr><td>Meta Llama Guard · Prompt Guard</td><td>Open models</td><td>Classifiers for unsafe content and for injection and jailbreak attempts</td></tr>
+            <tr><td>LLM Guard (Protect AI)</td><td>Open source</td><td>Input and output scanners: injection, secrets, personal data, toxicity</td></tr>
+            <tr><td>Microsoft Presidio</td><td>Open source</td><td>Detects and anonymises personal data in text and images</td></tr>
+            <tr><td>OpenAI Moderation · Agents SDK guardrails</td><td>API · framework</td><td>Harmful-content classification; input and output guardrails around agents</td></tr>
+            <tr><td>Azure AI Content Safety · Amazon Bedrock Guardrails · Google Model Armor</td><td>Cloud services</td><td>Managed filters: harmful content, prompt attacks, personal data, denied topics</td></tr>
+          </tbody>
+        </table>
+        <p class="disclaimer"><b>Examples, not endorsements.</b> Check fit, cost, latency and where your data is processed.</p>
+      </article>
+    </section>
+
+    <!-- template: layout-dark-1 · three takeaways -->
+    <section class="page" data-type="slide" data-title="Guardrails · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Guardrails · Takeaways</span>
+          <h1>Main <em>takeaways</em></h1>
+          <ol class="points rag-tk">
+            <li><b>Guardrails are code, not requests.</b> The prompt guides the model; checks around it enforce the rules.</li>
+            <li><b>Layer them: input, actions, output.</b> No single check catches everything, and the riskiest moment is when the model acts.</li>
+            <li><b>Every guardrail has a cost.</b> Latency, false alarms and upkeep: test guardrails like the rest of the system.</li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · Evals overview">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Evals overview</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">How do you know the system is good, and still good after a change? Understand what evals are, the main types, how a model can act as a judge, and how evals turn opinions into evidence.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · definition + four reasons -->
+    <section class="page" data-type="slide" data-title="Evals · what and why">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Evals</span>
+          <h1>Evals: <em>repeatable tests</em> of what the model produces</h1>
+          <p class="subtitle is-wide">An eval takes an output, applies a check, and returns a result you can record and compare over time.</p>
+          <div class="gap-cards is-why">
+            <div><span class="tag">Why</span><b>Reading doesn’t scale</b><p>You can read ten answers, not ten thousand, and not after every change.</p><span class="chip">Thousands of conversations</span></div>
+            <div><span class="tag">Why</span><b>Fixes break other things</b><p>A new instruction fixes refunds and quietly breaks returns.</p><span class="chip">Regressions</span></div>
+            <div><span class="tag">Why</span><b>“Better” needs a number</b><p>Without a baseline, improvement is an impression.</p><span class="chip">Pass rate: 72% → 91%</span></div>
+            <div><span class="tag">Why</span><b>Everything keeps changing</b><p>New models, prompts, tools and data: each one needs re-testing.</p><span class="chip">Model upgrade</span></div>
+          </div>
+          <p class="key-idea"><b>No eval, no evidence.</b> Evals decide whether a change ships, which model to use, and whether a guardrail works.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three methods, types per method, when they run -->
+    <section class="page" data-type="slide" data-title="Evals · types">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Evals · Types</span>
+          <h1>Three ways to check: <em>code, a judge, people</em></h1>
+          <div class="stage-cols is-evals">
+            <div><span class="tag">Fast and exact</span><b>Code checks</b><p>Rules a program can verify.</p>
+              <ul><li>Exact match, keywords</li><li>Format and schema</li><li>Tool-call rules</li><li>Cost and latency</li></ul></div>
+            <div class="is-accent"><span class="tag">Reads like a person</span><b>LLM as a judge</b><p>A second model grades against a rubric.</p>
+              <ul class="is-two"><li>Groundedness</li><li>Correctness</li><li>Completeness</li><li>Policy compliance</li><li>Tone</li><li>Refusal</li><li>Agent steps</li><li>A vs. B</li></ul></div>
+            <div><span class="tag">The reference</span><b>Human review</b><p>Experts set what “good” means.</p>
+              <ul><li>Expert labels</li><li>Checking the judge</li><li>Spot checks in production</li></ul></div>
+          </div>
+          <div class="eval-when"><span>When they run</span><div><b>Before release</b><i>experiments, regression tests</i></div><div><b>Inside the system</b><i>judge, then retry or fall back</i></div><div><b>In production</b><i>samples of live traffic</i></div></div>
+          <p class="rag-disc stage-disc is-evals">Not exhaustive: a teaching map. Use code where code works; a judge for what needs reading.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · four example cards + link to the interactive notes -->
+    <section class="page" data-type="slide" data-title="Evals · in action">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Evals · notebooks evals_01–04</span>
+          <h1>Evals <em>in action</em></h1>
+          <a class="notes-link" href="../../html/evals.html" target="_blank" rel="noopener">Open the interactive notes <span aria-hidden="true">↗</span></a>
+          <p class="subtitle">The same fake bike shop, from one judged answer to a full experiment.</p>
+          <div class="example-cards is-four">
+            <div><span class="tag">01 · LLM as a judge</span><b>From opinion to a verdict</b><p>Keyword checks fail; a judge with a rubric gives a pass or fail, with the reason.</p></div>
+            <div><span class="tag">02 · What judges check</span><b>And where they fail</b><p>Eight checks, and four traps: position, length, injection and noise. Then the judge is checked against people.</p></div>
+            <div class="is-accent"><span class="tag">03 · Judge in the loop</span><b>Fail, then fix</b><p>Rewrite with the critique, switch to a stronger model, or stop with a safe answer.</p></div>
+            <div><span class="tag">04 · Experiment</span><b>Which prompt is better?</b><p>Same cases, several variants, and statistics that show how much of the difference is real.</p></div>
+          </div>
+          <p class="flow-note ga-note">Look at the numbers, then read the failures: they show what to change.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: doc-dark-bg-1 · accelerators table -->
+    <section class="page is-night" data-type="doc" data-title="Evals · accelerators">
+      <article class="doc-dark-1">
+        <span class="eyebrow">Evals · Accelerators</span>
+        <h1>Tools for evals and LLM judges</h1>
+        <p class="lead">They run your test cases, call the judge, store the results and compare versions. The dataset and the rubric are still yours to write.</p>
+        <table class="dark-table">
+          <colgroup><col style="width:26%" /><col style="width:20%" /><col /></colgroup>
+          <thead><tr><th>Accelerator</th><th>Type</th><th>What it gives you</th></tr></thead>
+          <tbody>
+            <tr><td>promptfoo</td><td>Open source</td><td>Test cases in a config file; compare prompts and models; red-teaming</td></tr>
+            <tr><td>DeepEval</td><td>Open source</td><td>Unit-test style evals with ready-made LLM-judge metrics</td></tr>
+            <tr><td>Ragas</td><td>Open source</td><td>Metrics for RAG: faithfulness, relevance, context quality</td></tr>
+            <tr><td>Inspect AI (UK AI Security Institute)</td><td>Open source</td><td>A framework for rigorous evals, including agents and safety</td></tr>
+            <tr><td>OpenAI Evals</td><td>Open source · API</td><td>Eval templates and graders for OpenAI models</td></tr>
+            <tr><td>MLflow</td><td>Open source</td><td>Evaluation and LLM judges inside experiment tracking</td></tr>
+            <tr><td>LangSmith · Langfuse · Arize Phoenix · Braintrust</td><td>Platforms</td><td>Datasets, judges, experiments and production traces in one place</td></tr>
+          </tbody>
+        </table>
+        <p class="disclaimer"><b>Examples, not endorsements.</b> Many also cover observability, the next unit.</p>
+      </article>
+    </section>
+
+    <!-- template: layout-dark-1 · three takeaways -->
+    <section class="page" data-type="slide" data-title="Evals · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Evals · Takeaways</span>
+          <h1>Main <em>takeaways</em></h1>
+          <ol class="points rag-tk">
+            <li><b>An eval turns “it seems better” into evidence.</b> Fixed cases, fixed checks, and a baseline to compare against.</li>
+            <li><b>Code first, a judge second, people to calibrate.</b> A judge is a model too: measure it against human labels.</li>
+            <li><b>Test the cases that matter, segment by segment.</b> An average can hide failures in the hard and adversarial cases.</li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-statement-dark · bridge to the next unit -->
+    <section class="page" data-type="slide" data-title="Next · Observability">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">Next · Observability</span>
+          <p class="statement">Evals tell you it works <em>before release</em>. Observability shows what happens <em>in production</em>.</p>
+          <p class="statement-source">Unit 07: traces, metrics and feedback from real users.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ UNIT 7 · OBSERVABILITY ============ -->
+  <div class="unit" data-title="07 · Observability">
+
+    <!-- template: layout-unit-v2 · change the number, title, subtitle and covers -->
+    <section class="page" data-type="slide" data-title="Unit 7 · Observability">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="unit-head">
+          <h1>07. <b>Observability</b></h1>
+          <p class="subtitle">You can’t improve what you can’t see: what the system did, why, and at what cost.</p>
+          <div class="covers"><span>Traces</span><span>Metrics</span><span>Cost and latency</span><span>User feedback</span><span>Evals in production</span></div>
+        </div>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ UNIT 8 · EXPERIMENTS ============ -->
+  <div class="unit" data-title="08 · Experiments">
+
+    <!-- template: layout-unit-v2 · change the number, title, subtitle and covers -->
+    <section class="page" data-type="slide" data-title="Unit 8 · Experiments">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="unit-head">
+          <h1>08. <b>Experiments</b></h1>
+          <p class="subtitle">Change one thing, measure it, and decide with evidence.</p>
+          <div class="covers"><span>Hypotheses</span><span>Datasets and variants</span><span>A/B tests</span><span>Statistics</span><span>Decisions</span></div>
+        </div>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
         <span class="page-num"></span>
       </div>
     </section>

@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 60-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 79-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -37,7 +37,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 11 | Implemented harnesses · coding and app building | `layout-dark-1` |
 | 12 | Harness development frameworks | `doc · doc-dark-bg-1` |
 | 13 | Implemented harnesses vs. frameworks | `doc · doc-dark-bg-1` |
-| 14 | Unit 2 · The mindset | `layout-unit-v2` |
+| 14 | Unit 2 · The mindset for GenAI systems | `layout-unit-v2` |
 | 15 | Unit 2 · One idea to keep | `layout-statement-dark` |
 | 16 | Improving the performance of GenAI systems | `layout-dark-1` |
 | 17 | Four dimensions of continuous improvement | `layout-dark-1` |
@@ -46,7 +46,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 20 | Where to invest: training vs. the system | `layout-dark-1` |
 | 21 | The rising cost of training frontier models | `layout-dark-1` |
 | 22 | Main takeaways · continuous improvement | `layout-dark-1` |
-| 23 | Unit 3 · Context | `layout-unit-v2` |
+| 23 | Unit 3 · Context & context engineering | `layout-unit-v2` |
 | 24 | Unit 3 · One idea to keep | `layout-statement-dark` |
 | 25 | Lesson · Context | `layout-lesson` |
 | 26 | What is context? | `layout-dark-1` |
@@ -84,6 +84,25 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 58 | When to use MCP | `layout-dark-1` |
 | 59 | Before you connect a server | `layout-dark-1` |
 | 60 | MCP · takeaways | `layout-dark-1` |
+| 61 | Alert · using third-party tools and MCP servers | `layout-alert` |
+| 62 | Alert · building tools and MCP servers | `layout-alert` |
+| 63 | Unit 6 · Guardrails and Evals | `layout-unit-v2` |
+| 64 | Unit 6 · One idea to keep | `layout-statement-dark` |
+| 65 | Lesson · Guardrails overview | `layout-lesson` |
+| 66 | Guardrails · what and why | `layout-dark-1` |
+| 67 | Guardrails · types | `layout-dark-1` |
+| 68 | Guardrails · in action (links to `html/guardrails.html`) | `layout-dark-1` |
+| 69 | Guardrails · accelerators | `doc · doc-dark-bg-1` |
+| 70 | Guardrails · takeaways | `layout-dark-1` |
+| 71 | Lesson · Evals overview | `layout-lesson` |
+| 72 | Evals · what and why | `layout-dark-1` |
+| 73 | Evals · types | `layout-dark-1` |
+| 74 | Evals · in action (links to `html/evals.html`) | `layout-dark-1` |
+| 75 | Evals · accelerators | `doc · doc-dark-bg-1` |
+| 76 | Evals · takeaways | `layout-dark-1` |
+| 77 | Next · Observability | `layout-statement-dark` |
+| 78 | Unit 7 · Observability | `layout-unit-v2` |
+| 79 | Unit 8 · Experiments | `layout-unit-v2` |
 
 ## Templates: what changes in each instance
 
@@ -95,6 +114,8 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 - **Dark content 1** (`.stage.is-night` > `.layout-dark-1`): `.eyebrow` small title (optional), `h1` title (`<em>` = mint highlight), `.subtitle` (optional, `<em>` = mint highlight), and `.content`.
 
 - **Doc dark 1** (`<section class="page is-night" data-type="doc">` > `<article class="doc-dark-1">`): a scrolling document page. Slots: `.eyebrow`, `h1`, `.lead` (optional), paragraphs and `.dark-table`. Accent colour: `.is-mint` (default), `.is-pink` or `.is-lime` on the article. Space / ↓ scroll the page first, then advance.
+- **Alert** (`.stage.is-night` > `.layout-dark-1.layout-alert`): a security warning for executives, amber accent. Slots: `.alert-chip` (label with a warning icon), `h1` (`<em>` = amber), `.alert-rows` (one `.alert-hd` header row, then one row per risk: `b` name, `p` what can happen, `p.do` what to do) and `.source`.
+
 - **Dark table** (`table.dark-table`): uppercase column headers, first column in the accent colour. Works inside `.layout-dark-1` (absolutely placed under the title) and inside `.doc-dark-1`. Add `.is-compare` for bold sentence-case headers.
 
 - **Bar chart** (`.cost-chart`): one `.row` per bar; set the value on the bar as `style="--v:191"` (the track spans 0–500). Put the sources in `.source` under the chart.
