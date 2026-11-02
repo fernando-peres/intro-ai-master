@@ -39,11 +39,14 @@ def page() -> None:
             f'</div><div class="row">{stages}</div></div>'
         )
     st.html(f'<div class="hero-flow">{"".join(groups)}</div>')
-    c1, c2 = st.columns([1, 2.4], vertical_alignment="center")
+    c1, c2, c3 = st.columns([1, 0.9, 2.2], vertical_alignment="center")
     with c1:
         if st.button("Start with step 1 · Load", type="primary", icon=":material/arrow_forward:"):
             st.switch_page(PAGES["load"])
     with c2:
+        if st.button("Jump to Analytics", icon=":material/insights:"):
+            st.switch_page(PAGES["analytics"])
+    with c3:
         key = "found" if state.api_key() else "missing: chat answers are disabled"
         st.caption(
             f"Chat model `{state.chat_model()}` · OPENAI_API_KEY {key}. "

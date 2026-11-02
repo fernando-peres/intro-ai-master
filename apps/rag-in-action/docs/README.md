@@ -9,7 +9,7 @@ Show every stage of RAG on real intermediate data, so a class can watch how chun
 
 ## Behavior
 
-Each stage is a page. The stepper rail locks a page until every earlier stage is done, and finishing a stage again clears every later one (and the chat).
+Each stage is a page. The stepper rail locks a page until every earlier stage is done (Analytics excepted), and finishing a stage again clears every later one (and the chat).
 
 1. **Load.** Parses `corpus/*.md` into documents: frontmatter, body, and links (`related:` plus inline `[text](id.md)`). Shows the documents table, the rendered and raw file, a link graph, and the keyword index.
 2. **Chunk.** Six strategies, each returning chunks whose `text == body[start:end]`:
@@ -33,7 +33,7 @@ Each stage is a page. The stepper rail locks a page until every earlier stage is
    - **Answers:** RAG, no RAG, or both side by side. The RAG prompt asks for answers from the context only, with `[doc#n]` citations.
    - **Trace:** retrieved chunks with their cosine, BM25 score and matched terms; the exact prompt; the question placed on the PCA map; and the time each stage took.
    - **Source modal:** a **Sources** row under a RAG answer has one button per cited chunk, and every retrieved-chunk card has **Open doc.md**. Either opens the whole document, rendered as Markdown, in a modal: metadata chips, the cited passage at the top, and buttons that open its related documents in the same modal. Corpus links can't navigate inside a modal, so they show as bold text plus the target id.
-7. **Analytics.** Topic modeling over `corpus/support/questions.csv`: 254 invented support questions (UTC `asked`, channel, customer tier) spread over 12 weeks, plus any question asked in this session's chat.
+7. **Analytics.** Opens anytime, without the steps before it. It uses the step-5 index when one exists, otherwise a default index built once per server (Markdown chunks, MiniLM, all enrichments). Topic modeling over `corpus/support/questions.csv`: 254 invented support questions (UTC `asked`, channel, customer tier) spread over 12 weeks, plus any question asked in this session's chat.
    - **Method:** embed every question with the index's model, cluster with KMeans (4–14 topics, default 10, fixed seed), and name each topic by its top c-TF-IDF terms. Centroids are fit on the authored log only, so chat questions are placed into existing topics instead of reshuffling them.
    - **Coverage:** each question's best cosine against the FAISS index. Below the gap threshold (default 0.40) the knowledge base can't answer it.
    - **Verdicts** (in order): *knowledge gap*, when at least half a topic's questions are unanswered; *process unclear*, when it covers at least 10% of the questions and at least 25% start "How do I / Can I…"; *high demand*, when it covers at least 10%; otherwise *covered*.

@@ -40,3 +40,13 @@ def test_full_pipeline_flow(monkeypatch):
     _button(at, "7 · Analytics").click().run()
     assert not at.exception, at.exception
     assert any("topic-card" in h.proto.body for h in at.get("html"))
+
+
+@pytest.mark.slow
+def test_analytics_opens_without_running_the_pipeline(monkeypatch):
+    monkeypatch.setattr("rag_in_action.ui.state.api_key", lambda: None)
+    at = AppTest.from_file(APP, default_timeout=180).run()
+    _button(at, "Jump to Analytics").click().run()
+    assert not at.exception, at.exception
+    assert any("default index" in c.value for c in at.caption)
+    assert any("topic-card" in h.proto.body for h in at.get("html"))

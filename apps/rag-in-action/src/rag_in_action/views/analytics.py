@@ -194,7 +194,8 @@ def page() -> None:
         ("Support questions", "embed → KMeans → c-TF-IDF names", "Topics and insights"),
     )
     df = _log()
-    model = state.get("store")["model"]
+    store, model, index_label = state.analytics_index()
+    st.caption(f"Coverage is measured against {index_label}.")
     with st.sidebar:
         st.header("Topics")
         k = st.slider("Number of topics", 4, 14, 10)
@@ -220,7 +221,7 @@ def page() -> None:
         vectors = _vectors(texts, model)
     live = (df["channel"] == "this session").to_numpy()
     labels = tm.cluster(vectors, k, fit=~live if (~live).sum() >= k else None)
-    scores = tm.best_scores(vectors, state.get("store")["store"])
+    scores = tm.best_scores(vectors, store)
     found = tm.topics(texts, labels, scores, gap)
     verdicts = {t.id: tm.verdict(t, total=len(texts)) for t in found}
     kinds = {i: v[0] for i, v in verdicts.items()}

@@ -19,6 +19,7 @@ APIs
 MCPs
 ...
 
+- [ ]
 
 # in slide 48:
 remove the text "Notebook notebooks/llm_tools_01.ipynb asks the same question twice: once to a model on its own, once to a model with tools."
@@ -86,10 +87,46 @@ Structure:
 07. Observability
 08. Experiments
 
+---
+- [ ]
+in unit 01. What is harness, add in the proper place a slide to explain n practice what is harness. For example before claude code, codex, we use tools like chatgpt to generate the code and we need to read/understand and copy/paste adapt the code in vscode. Althouth chatGPT is harness it was not a harness for coding. with calude code/code/copilot they create several capacities aroun d the models that enabled they create file, read file, make plan, see spec, ui [search the web and validate and create the content 1-2 slides, make a diagram if it is possible]
 
 
+---
 
+- [x] Workflows and Agents
+  
+  
+Objective: Talk about orchestrators , brief description of agents and workflows (their role in genai systems)
+Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
 
+# review slide Unit 06. Workflows and Agents
+rename? "Orchestrators: Workflows and Agents" [review and update table of contents]
+## lesson : Overview: workflows and agents
+prompt->model (manual/not dynamic)
+What is an Agent and a workflow
+When use one and another
+compare prompt->model, workflow, agent
+
+## lesson: Agents (go a little deeper)
+
+difference among chatbot, agents, and agentic system
+compare to harness (where agents are components of system)
+
+types of agents
+types of agentic systems 
+
+[where add approaches: agent loop, agen graph etc. [search in the web and review/validate and write content]]
+
+one slide to conect agentic RAG
+
+## unit main takeways   [search in the web and review/validate and write content]
+1. each one has its space (depens the problem/solution and stage)
+2. agent important, but the context is the fuel
+
+---
+
+Create an app to show the concepts of agents
 
 
 
