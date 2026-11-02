@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observability · Interactive notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Graphite Console tokens: same set as tools.html and guardrails.html */
+:root {
+  --shell:#F2F1F3; --page:#FFFFFF; --raised:#FAFAFA; --sunken:#F4F4F5;
+  --border:#E4E4E7; --divider:#EDEDEF;
+  --text:#18181B; --ink2:#52525B; --ink3:#8A8A93;
+  --nav-bg:#EDE9F8; --nav-ink:#3B2E80; --row:#F4F1FC;
+  --primary:#3A3263; --accent:#6D5BD0; --on-solid:#FFFFFF;
+  --fail-tint:#F7DAD4; --fail-base:#C2614F; --fail-ink:#7C2D1C;
+  --warn-tint:#F5EDC8; --warn-base:#C2A52B; --warn-ink:#6B5A10;
+  --pass-tint:#D8EDD5; --pass-base:#4F9F52; --pass-ink:#22552B;
+  --done-tint:#D8E7F7; --done-base:#4C8FD6; --done-ink:#1E4C83;
+  --syn-kw:#5B48C2; --syn-str:#22552B; --syn-num:#9A4A16; --syn-key:#3B2E80; --syn-com:#8A8A93;
+  --shadow:0 1px 2px rgba(24,24,27,.04), 0 4px 16px rgba(24,24,27,.05);
+  --ui:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  --shell:#0C0C0E; --page:#121214; --raised:#171719; --sunken:#1C1C20;
+  --border:#2A2A2F; --divider:#232327;
+  --text:#FAFAFA; --ink2:#A1A1AA; --ink3:#71717A;
+  --nav-bg:#4A3C7D; --nav-ink:#FFFFFF; --row:#241F38;
+  --primary:#6D5BD0; --accent:#8B7FD4; --on-solid:#FFFFFF;
+  --fail-tint:#40201A; --fail-base:#D97A66; --fail-ink:#F0BDB2;
+  --warn-tint:#3B3313; --warn-base:#BFA33A; --warn-ink:#EADFA6;
+  --pass-tint:#16331B; --pass-base:#4CA050; --pass-ink:#A9D9AC;
+  --done-tint:#122844; --done-base:#4C8FD6; --done-ink:#A7CCEE;
+  --syn-kw:#B9B1DC; --syn-str:#A9D9AC; --syn-num:#F2C7A3; --syn-key:#C3BCDC; --syn-com:#71717A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin:0; background:var(--shell); color:var(--text); font:15px/1.6 var(--ui); -webkit-font-smoothing:antialiased; }
+code, pre, .mono { font-family: var(--mono); }
+::selection { background: var(--nav-bg); color: var(--nav-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { margin:0; letter-spacing:-.015em; }
+h2 { font-size:28px; font-weight:650; }
+h3 { font-size:16px; font-weight:600; }
+p { margin:0; }
+
+/* ---------- top bar ---------- */
+.topbar { position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--page) 86%, transparent); backdrop-filter:saturate(1.4) blur(10px); border-bottom:1px solid var(--border); }
+.topbar-inner { max-width:1200px; margin:0 auto; padding:10px 24px; display:flex; align-items:center; gap:18px; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:14px; white-space:nowrap; }
+.badge { font:500 10px/1 var(--mono); min-width:20px; height:20px; padding:0 5px; border-radius:5px; display:inline-flex; align-items:center; justify-content:center; background:var(--text); color:var(--page); }
+.spacer { flex:1; }
+.btn { font:500 13px var(--ui); color:var(--text); background:var(--page); border:1px solid var(--border); border-radius:8px; padding:6px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s, border-color .15s, color .15s; }
+.btn:hover { background:var(--sunken); }
+.btn.solid { background:var(--primary); border-color:var(--primary); color:var(--on-solid); }
+.btn.solid:hover { filter:brightness(1.12); }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
+.btn svg { width:15px; height:15px; }
+.btn[aria-pressed="true"] { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+
+/* ---------- layout ---------- */
+main { max-width:1200px; margin:0 auto; padding:28px 24px 80px; }
+.panel { background:var(--page); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); }
+.pad { padding:22px; }
+.lede { color:var(--ink2); max-width:760px; font-size:16px; }
+.kicker { font:500 12px var(--mono); color:var(--ink2); text-transform:uppercase; letter-spacing:.08em; }
+.fict { font:500 12px var(--mono); color:var(--ink2); letter-spacing:.04em; }
+
+/* ---------- hero ---------- */
+.hero { padding:34px 36px; background: radial-gradient(900px 300px at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%), var(--page); }
+.hero h1 { font-size:42px; line-height:1.08; font-weight:700; max-width:760px; }
+.hero h1 em { font-style:normal; color:var(--accent); }
+.hero .lede { margin-top:14px; }
+.hero .world { margin-top:18px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.chip { display:inline-flex; align-items:center; gap:8px; font-size:13px; padding:5px 12px; border-radius:999px; background:var(--row); color:var(--text); border:1px solid var(--border); }
+
+/* ---------- tabs ---------- */
+.tabs { display:flex; gap:6px; padding:6px; margin-top:22px; background:var(--page); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); position:sticky; top:52px; z-index:10; overflow-x:auto; scrollbar-width:none; }
+.tab { flex:1; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; border:0; background:transparent; color:var(--ink2); font:500 14px var(--ui); cursor:pointer; text-align:left; min-width:150px; }
+.tab:hover { background:var(--sunken); color:var(--text); }
+.tab .badge { background:var(--sunken); color:var(--ink2); border:1px solid var(--border); }
+.tab small { display:block; font:500 11px var(--mono); color:var(--ink3); }
+.tab[aria-selected="true"] { background:var(--nav-bg); color:var(--nav-ink); }
+.tab[aria-selected="true"] .badge { background:var(--primary); color:var(--on-solid); border-color:transparent; }
+.tab[aria-selected="true"] small { color:var(--nav-ink); opacity:.8; }
+.subtabs { display:inline-flex; gap:4px; padding:4px; background:var(--sunken); border:1px solid var(--border); border-radius:10px; margin:18px 0 0; }
+.subtab { border:0; background:transparent; color:var(--ink2); font:500 13px var(--ui); padding:6px 14px; border-radius:7px; cursor:pointer; }
+.subtab[aria-selected="true"] { background:var(--page); color:var(--text); box-shadow:var(--shadow); }
+[role="tabpanel"][hidden] { display:none; }
+
+/* ---------- concept blocks ---------- */
+.topic { margin-top:26px; }
+.topic-head { display:grid; grid-template-columns: 1fr minmax(260px, 380px); gap:24px; align-items:end; }
+.topic-head h2 { margin-top:6px; }
+.oneline { padding:14px 16px; border-radius:12px; background:var(--raised); border:1px solid var(--border); font-size:14px; color:var(--ink2); }
+.oneline b { display:block; font:600 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+.idea { margin-top:16px; display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+.idea .panel { padding:16px 18px; }
+.idea h3 { font-size:14px; }
+.idea p { margin-top:6px; font-size:14px; color:var(--ink2); }
+.case { margin-top:16px; }
+.case-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.keyidea { margin-top:16px; display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:12px; background:var(--nav-bg); color:var(--nav-ink); font-size:15px; }
+.keyidea b { white-space:nowrap; }
+.grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.grid2 > * { min-width:0; }
+.label { font:600 11.5px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink2); }
+.big { font-size:20px; font-weight:650; margin:6px 0 4px; }
+.big em { font-style:normal; color:var(--accent); }
+.muted { color:var(--ink2); font-size:14px; }
+
+/* ---------- tables, code ---------- */
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { text-align:left; font:600 11px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--ink3); padding:8px 10px; border-bottom:1px solid var(--border); }
+td { padding:8px 10px; border-bottom:1px solid var(--divider); vertical-align:top; }
+tr:last-child td { border-bottom:0; }
+td.num, th.num { text-align:right; font-variant-numeric: tabular-nums; font-family:var(--mono); }
+.tablewrap { overflow-x:auto; }
+pre.code { margin:0; padding:14px 16px; border-radius:10px; background:var(--sunken); border:1px solid var(--border); font-size:12.5px; line-height:1.6; overflow-x:auto; white-space:pre; }
+.k { color:var(--syn-key); } .s { color:var(--syn-str); } .n { color:var(--syn-num); } .c { color:var(--syn-com); } .kw { color:var(--syn-kw); }
+.pill { display:inline-block; font:500 11px var(--mono); padding:2px 8px; border-radius:999px; background:var(--sunken); color:var(--ink2); border:1px solid var(--border); white-space:nowrap; }
+.pill.pass { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
+.pill.fail { background:var(--fail-tint); color:var(--fail-ink); border-color:transparent; }
+.pill.warn { background:var(--warn-tint); color:var(--warn-ink); border-color:transparent; }
+.pill.done { background:var(--done-tint); color:var(--done-ink); border-color:transparent; }
+.pill.acc { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+
+/* ---------- messages, states ---------- */
+.msg { border-radius:12px; padding:10px 14px; font-size:14px; border:1px solid transparent; }
+.msg .who { display:flex; align-items:center; gap:6px; font:600 11px var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.msg.user { background:var(--sunken); border-color:var(--border); }
+.msg.user .who { color:var(--ink2); }
+.msg.pass { background:var(--pass-tint); color:var(--pass-ink); }
+.msg.fail { background:var(--fail-tint); color:var(--fail-ink); }
+.msg.warn { background:var(--warn-tint); color:var(--warn-ink); }
+.msg.done { background:var(--done-tint); color:var(--done-ink); }
+.dot { width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block; }
+.stack { display:grid; gap:10px; align-content:start; }
+.flowstrip { margin-top:14px; padding:14px 16px; display:grid; gap:10px; }
+.flowrow { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+.flowlbl { font:600 11px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--accent); min-width:112px; }
+.fstep { display:inline-flex; flex-direction:column; padding:7px 12px; border-radius:10px; background:var(--row); border:1px solid var(--border); font-size:13px; line-height:1.25; }
+.fstep b { font-weight:600; }
+.fstep small { font-size:11.5px; color:var(--ink2); }
+.flowrow .fstep:last-child { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+.flowrow .fstep:last-child small { color:var(--nav-ink); opacity:.8; }
+.fa { width:22px; height:12px; color:var(--ink3); flex:none; }
+footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2); font-size:12.5px; }
+
+@media (max-width: 980px) {
+  .topic-head, .idea, .grid2, .player, .kg, .pack, .plotwrap, .pipe { grid-template-columns: 1fr; }
+  .steps { border-right:0; border-bottom:1px solid var(--border); }
+  .kg .side { border-left:0; border-top:1px solid var(--border); }
+  .bar { grid-template-columns: 110px 1fr 50px; }
+  .hero h1 { font-size:32px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; scroll-behavior:auto !important; } }
+/* ---------- Observability page extras ---------- */
+.topic-head h2 em { font-style:normal; color:var(--accent); }
+tr.hl td { background:var(--row); }
+.gloss { display:grid; grid-template-columns: repeat(2, 1fr); gap:8px 16px; margin:0; }
+.gloss div { display:grid; grid-template-columns: 150px 1fr; gap:12px; padding:10px 12px; border-radius:10px; background:var(--raised); border:1px solid var(--border); font-size:14px; }
+.gloss dt { font-weight:600; }
+.gloss dd { margin:0; color:var(--ink2); }
+.gloss small { display:block; font:500 11px var(--mono); color:var(--accent); text-transform:uppercase; letter-spacing:.06em; }
+
+/* trace viewer */
+.tv { display:grid; grid-template-columns: 1.25fr 1fr; overflow:hidden; }
+.tv-meta { grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--raised); font-size:13px; color:var(--ink2); }
+.tv-meta b { color:var(--text); font-weight:600; }
+.tv-meta code { font-size:12px; }
+.tv-list { list-style:none; margin:0; padding:10px; display:grid; gap:4px; align-content:start; border-right:1px solid var(--border); }
+.span { display:grid; grid-template-columns: 230px 1fr 56px; gap:10px; align-items:center; padding:8px 10px; border-radius:10px; cursor:pointer; font-size:13.5px; border:1px solid transparent; }
+.span:hover { background:var(--sunken); }
+.span.on { background:var(--nav-bg); color:var(--nav-ink); border-color:color-mix(in srgb, var(--accent) 40%, transparent); }
+.span .nm { display:flex; align-items:center; gap:8px; white-space:nowrap; overflow:hidden; }
+.span .nm i { width:9px; height:9px; border-radius:3px; flex:none; background:var(--ink3); }
+.span.child .nm { padding-left:16px; }
+.span .tr { position:relative; height:12px; border-radius:4px; background:var(--sunken); }
+.span .tr span { position:absolute; top:0; bottom:0; border-radius:4px; }
+.span .ms { font:500 12px var(--mono); text-align:right; color:var(--ink2); }
+.span.on .ms { color:var(--nav-ink); }
+.span.k-root .nm i, .k-root .tr span { background:var(--primary); }
+.span.k-guard .nm i, .k-guard .tr span { background:var(--ink3); }
+.span.k-search .nm i, .k-search .tr span { background:var(--warn-base); }
+.span.k-model .nm i, .k-model .tr span { background:var(--accent); }
+.span.k-tool .nm i, .k-tool .tr span { background:var(--done-base); }
+.span .flag { font:600 10px var(--mono); padding:1px 6px; border-radius:999px; background:var(--fail-tint); color:var(--fail-ink); margin-left:4px; }
+.tv-detail { padding:16px 18px; display:grid; gap:12px; align-content:start; }
+.tv-detail h3 { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.kv { display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; }
+.kv div { padding:8px 10px; border-radius:10px; background:var(--raised); border:1px solid var(--border); }
+.kv small { display:block; font:500 10.5px var(--mono); text-transform:uppercase; letter-spacing:.06em; color:var(--ink3); }
+.kv b { font:600 15px var(--mono); }
+.io { margin:0; padding:10px 12px; border-radius:10px; background:var(--sunken); border:1px solid var(--border); font:12.5px/1.55 var(--mono); white-space:pre-wrap; }
+.note { padding:10px 12px; border-radius:10px; font-size:13.5px; }
+.note.bad { background:var(--fail-tint); color:var(--fail-ink); }
+.note.ok { background:var(--pass-tint); color:var(--pass-ink); }
+.note.info { background:var(--done-tint); color:var(--done-ink); }
+pre.logs { margin:0; padding:14px 16px; border-radius:10px; background:var(--sunken); border:1px solid var(--border); font:12px/1.7 var(--mono); overflow-x:auto; white-space:pre; color:var(--ink3); }
+pre.logs b { color:var(--text); font-weight:500; }
+
+/* KPI tiles and charts */
+.kpis { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
+.kpi { padding:14px 16px; display:grid; gap:4px; }
+.kpi b { font-size:28px; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+.kpi small { font-size:12.5px; color:var(--ink2); }
+.kpi .delta { font:600 12px var(--mono); }
+.kpi .up { color:var(--fail-base); } .kpi .flat { color:var(--pass-base); }
+.chart svg { width:100%; height:auto; display:block; }
+.chart .ax { stroke:var(--border); }
+.chart .lbl { font:500 10.5px var(--mono); fill:var(--ink3); }
+.chart .bar { fill:color-mix(in srgb, var(--accent) 55%, transparent); }
+.chart .bar.after { fill:var(--accent); }
+.chart .budget { stroke:var(--fail-base); stroke-width:1.5; stroke-dasharray:5 4; }
+.chart .budget-t { font:600 10.5px var(--mono); fill:var(--fail-base); }
+.chart .deploy { stroke:var(--text); stroke-width:1.2; stroke-dasharray:3 3; }
+.chart .deploy-t { font:600 10.5px var(--mono); fill:var(--text); }
+.chart .l1 { fill:none; stroke:var(--accent); stroke-width:2.5; }
+.chart .l2 { fill:none; stroke:var(--done-base); stroke-width:2.5; stroke-dasharray:6 4; }
+.hbars { display:grid; gap:8px; }
+.hbar { display:grid; grid-template-columns: 210px 1fr 64px; gap:10px; align-items:center; font-size:13.5px; }
+.hbar .t { height:14px; border-radius:4px; background:var(--sunken); overflow:hidden; }
+.hbar .t i { display:block; height:100%; background:var(--accent); border-radius:4px; }
+.hbar.hot .t i { background:var(--fail-base); }
+.hbar .v { font:500 12.5px var(--mono); text-align:right; }
+.legend2 { display:flex; gap:16px; font-size:12.5px; color:var(--ink2); }
+.legend2 i { display:inline-block; width:18px; height:3px; margin-right:6px; vertical-align:3px; background:var(--accent); }
+.legend2 i.d { background:var(--done-base); }
+.loopflow .fstep:last-child { background:var(--nav-bg); }
+@media (max-width: 980px) { .tv, .kpis, .gloss { grid-template-columns:1fr; } .tv-list { border-right:0; border-bottom:1px solid var(--border); } .kv { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="badge">07</span><span>Observability by Example</span></div>
+    <div class="spacer"></div>
+    <button class="btn" id="theme" title="Toggle light/dark theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="panel hero">
+    <span class="kicker">Interactive notes · for decision makers · unit 07</span>
+    <h1>Complaints are feelings. <em>Traces, costs and scores are evidence.</em></h1>
+    <p class="lede">A made-up bike shop runs an AI support assistant. This week three people complain: it is <b>slow</b>, it gave a <b>wrong warranty answer</b>, and the <b>AI bill doubled</b>. The servers look healthy. Each tab uses one part of observability to find a cause, and the last one fixes them and measures the result.</p>
+    <div class="world">
+      <span class="chip"><b>Assistant</b> · answers questions, looks up orders</span>
+      <span class="chip"><b>Search</b> · shop policies and guides</span>
+      <span class="chip"><b>Tool</b> · get_order</span>
+      <span class="chip"><b>Release</b> · prompt v12, 2026-10-27-16-00-00 UTC</span>
+      <span class="fict">All data is illustrative.</span>
+    </div>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Topics" id="tabs"></nav>
+  <div id="panels"></div>
+</main>
+
+<footer>Observability · interactive notes · Build &amp; Improving GenAI systems. Illustrative data for teaching; the views are modelled on tools such as Langfuse and LangSmith. Learn more: langfuse.com/docs, docs.smith.langchain.com, opentelemetry.io.</footer>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- theme ---------- */
+try { const t = localStorage.getItem("obs-notes-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+$("#theme").addEventListener("click", () => {
+  const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem("obs-notes-theme", t); } catch {}
+});
+
+/* ---------- shell helpers (same as mcp.html) ---------- */
+const TOPICS = [
+  { id: "why", n: 1, name: "Feeling vs. data", hint: "what, why, how much" },
+  { id: "trace", n: 2, name: "One trace", hint: "the wrong answer" },
+  { id: "cost", n: 3, name: "Speed and cost", hint: "FinOps" },
+  { id: "quality", n: 4, name: "Quality", hint: "evals and judges live" },
+  { id: "improve", n: 5, name: "The fix, measured", hint: "close the loop" },
+];
+const ARROW = `<svg class="fa" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6h19M15 1l6 5-6 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const FLOWS = {
+  why: [{ label: "Without", steps: [["Complaint", "“it feels worse”"], ["Guess", "change the prompt?"], ["Hope", "no way to tell"]] },
+        { label: "With", steps: [["Complaint", "“it feels worse”"], ["Evidence", "traces, cost, scores"], ["Cause", "this step, this version"]] }],
+  trace: [{ steps: [["Question", ""], ["Input check", "guardrail"], ["Search", "documents"], ["Model", "plans"], ["Tool", "get_order"], ["Model", "answers"], ["Output check", "guardrail"]] }],
+  cost: [{ steps: [["Every request", "tokens × price"], ["Group it", "by step, model, question type"], ["Compare", "to budget and last week"], ["Act", "the biggest, cheapest fix"]] }],
+  quality: [{ steps: [["Live traffic", "all traced"], ["Sample", "5% + every 👎"], ["Score", "code checks + LLM judge"], ["Dashboard", "by day and version"], ["Review queue", "people check"]] }],
+  improve: [{ steps: [["Observe", ""], ["Diagnose", ""], ["Hypothesis", ""], ["Experiment", ""], ["Validate", ""], ["Deploy", "and keep watching"]] }],
+};
+function flow(id) {
+  const rows = FLOWS[id];
+  return `<div class="flowstrip panel" aria-label="Basic flow">
+    <span class="label">Basic flow</span>
+    ${rows.map((r) => `<div class="flowrow">${r.label ? `<span class="flowlbl">${r.label}</span>` : ""}
+      ${r.steps.map(([a, b], i) => `${i ? ARROW : ""}<span class="fstep"><b>${a}</b>${b ? `<small>${b}</small>` : ""}</span>`).join("")}</div>`).join("")}
+  </div>`;
+}
+function topicHead(t, title, oneLine, ideas) {
+  return `<div class="topic-head">
+    <div><span class="kicker">${t.n} · ${t.name}</span><h2>${title}</h2></div>
+    <p class="oneline"><b>In one line</b>${oneLine}</p>
+  </div>
+  <div class="idea">${ideas.map(([h, p]) => `<div class="panel"><h3>${h}</h3><p>${p}</p></div>`).join("")}</div>
+  ${flow(t.id)}`;
+}
+const why = (text) => `<p class="keyidea"><b>Why it matters ·</b><span>${text}</span></p>`;
+const subtabs = (group, list) =>
+  `<div class="subtabs" role="tablist" aria-label="${group}">${list.map((s, i) => `<button class="subtab" role="tab" aria-selected="${i === 0}" data-group="${group}" data-sub="${s[0]}">${s[1]}</button>`).join("")}</div>`;
+const pill = (txt, k) => `<span class="pill ${k}">${txt}</span>`;
+const T = (id) => TOPICS.find((t) => t.id === id);
+
+$("#tabs").innerHTML = TOPICS.map((t) =>
+  `<button class="tab" role="tab" id="tab-${t.id}" aria-controls="panel-${t.id}" aria-selected="false" data-topic="${t.id}"><span class="badge">${t.n}</span><span>${t.name}<small>${t.hint}</small></span></button>`).join("");
+
+/* ---------- 1 · feeling vs. data ---------- */
+const COMPLAINTS = [
+  ["Support lead", "“The assistant feels slow lately.”", "Response time (p95) is 6.8 s, up from 3.2 s before the release of 2026-10-27-16-00-00."],
+  ["Store manager", "“It told a customer their battery isn’t covered. It is.”", "In 31% of warranty questions, search returned the 2023 policy, which was replaced in 2026."],
+  ["Finance", "“Our AI bill doubled this week.”", "Cost per conversation is $0.041, up from $0.019. 38% of it is repeated get_order calls."],
+];
+const GLOSS = [
+  ["Observability", "Concept", "Being able to see what the system did, step by step, from the data it records."],
+  ["Traceability", "Concept", "Following any answer back to its question, sources, tools, prompt and model version."],
+  ["Trace", "Unit of data", "The full story of one request: every step, linked, with time, tokens and cost."],
+  ["Span", "Unit of data", "One step inside a trace: a search, a model call, a tool call, a check."],
+  ["Session", "Unit of data", "All the traces of one conversation or one user visit."],
+  ["Log", "Unit of data", "One line about one event. Useful, but not linked to the rest of the request."],
+  ["Metric", "Signal", "A number over time: response time, error rate, requests per minute."],
+  ["FinOps", "Signal", "Managing AI spend: cost per request, user and feature; budgets; the right model for each job."],
+  ["Eval", "Signal", "A repeatable check of an answer that returns a score you can compare (Unit 06)."],
+  ["LLM as a judge", "Signal", "A second model that scores answers against a written rubric, e.g. “grounded in the policy?”."],
+  ["User feedback", "Signal", "👍 / 👎 and comments from real users: noisy, but close to what matters."],
+  ["Online eval", "Practice", "Evals run on a sample of live traffic, so quality is tracked like speed and cost."],
+];
+function whyPanel() {
+  const t = T("why");
+  return `${topicHead(t, "From “it feels worse” to <em>this step, this version, this cost</em>",
+    "Observability records what the system actually did, so a complaint becomes a question with an answer.",
+    [["What happened?", "Traces show every step of a request: what went in, what came out, and how long it took."],
+     ["What did it cost?", "Tokens and price per step add up to cost per conversation, per feature, per customer."],
+     ["Was it right?", "Running is not the same as right: evals, LLM judges and user feedback score the answers."]])}
+  <div class="case panel pad stack">
+    <span class="label">This week · what people say, and what the data says</span>
+    ${COMPLAINTS.map(([who, said, data]) => `<div class="grid2">
+      <div class="msg warn"><span class="who"><span class="dot"></span>${who} · a feeling</span>${said}</div>
+      <div class="msg done"><span class="who"><span class="dot"></span>Observability · a fact</span>${data}</div></div>`).join("")}
+    <p class="muted">Meanwhile the IT dashboard is green: 0.4% errors, servers up. <b>Nothing crashed</b>; the answers were slow, expensive or wrong.</p>
+  </div>
+  <div class="case panel pad stack">
+    <span class="label">The words, in plain language</span>
+    <dl class="gloss">${GLOSS.map(([w, k, d]) => `<div><dt><small>${k}</small>${w}</dt><dd>${d}</dd></div>`).join("")}</dl>
+  </div>
+  ${why("Without data, every team argues from its own anecdote. With traces and metrics, everyone sees the same evidence and fixes the cause, not the symptom.")}`;
+}
+
+/* ---------- 2 · one trace ---------- */
+const TOTAL = 4.2;
+const SPANS = [
+  { id: "root", kind: "root", name: "support-chat", start: 0, dur: 4.2, tok: "2,140", cost: "$0.012",
+    title: "Trace · the whole request", input: "Is my e-bike battery still under warranty? Order 4471.",
+    output: "Your battery was bought 20 months ago. Batteries are covered for 1 year, so it is no longer under warranty.",
+    note: ["bad", "The customer pressed 👎: “Wrong, my manual says 2 years.” Which step caused it? Click the steps."] },
+  { id: "in", kind: "guard", name: "input check", start: 0, dur: 0.1, tok: "–", cost: "$0",
+    title: "Input check · guardrail", input: "Is my e-bike battery still under warranty? Order 4471.", output: "pass · on topic · no card numbers · no injection",
+    note: ["ok", "Working as designed."] },
+  { id: "search", kind: "search", name: "search documents", start: 0.1, dur: 0.4, tok: "–", cost: "$0.0001", flag: "root cause",
+    title: "Search · shop documents", input: "query: “e-bike battery warranty”",
+    output: "1. warranty_policy_2023.md   score 0.82   “batteries: 1 year”\n2. warranty_policy_2026.md   score 0.79   “batteries: 2 years”\n3. care_guide.md             score 0.41",
+    note: ["bad", "Root cause. The 2023 policy was never removed from the index and ranks first. The model was given an outdated rule."] },
+  { id: "plan", kind: "model", name: "model · plan", start: 0.5, dur: 1.1, tok: "820", cost: "$0.004",
+    title: "Model call · plan the answer", input: "system prompt v12 + question + 3 documents\nmodel: large · 760 tokens in, 60 out",
+    output: "I need the purchase date. Call get_order(4471).",
+    note: ["info", "A large model for a lookup. Fine here, but costly at scale (see Speed and cost)."] },
+  { id: "tool", kind: "tool", name: "tool · get_order", start: 1.6, dur: 0.6, tok: "–", cost: "$0",
+    title: "Tool call · get_order(4471)", input: "{ \"order_id\": 4471 }",
+    output: "{ \"bike\": \"E-City 500\", \"purchased\": \"2025-03-14-10-22-05\", \"battery_claims\": 0 }",
+    note: ["ok", "Correct data. The tool did its job."] },
+  { id: "answer", kind: "model", name: "model · answer", start: 2.2, dur: 1.8, tok: "1,320", cost: "$0.008", flag: "wrong",
+    title: "Model call · write the answer", input: "documents (2023 policy first) + order data\nmodel: large · 1,180 tokens in, 140 out",
+    output: "Your battery was bought 20 months ago. Batteries are covered for 1 year, so it is no longer under warranty.",
+    note: ["info", "The model followed the document it was given. Changing the prompt or the model would not fix this."] },
+  { id: "out", kind: "guard", name: "output check", start: 4.0, dur: 0.2, tok: "–", cost: "$0",
+    title: "Output check · guardrail", input: "draft answer", output: "pass · format ok · no secrets · no promises outside policy",
+    note: ["bad", "It passed: the guardrail checks format and secrets, not which policy is current. Plausible, polite and wrong."] },
+];
+const LOGS = `<b>2026-11-02-09-14-01 INFO  api      req=a91f POST /chat 200</b>
+2026-11-02-09-14-01 INFO  api      req=a920 POST /chat 200
+<b>2026-11-02-09-14-01 INFO  search   req=a91f hits=3 0.4s</b>
+2026-11-02-09-14-02 INFO  search   req=a920 hits=3 0.3s
+2026-11-02-09-14-02 INFO  llm      req=a920 model=large ok 0.9s
+<b>2026-11-02-09-14-02 INFO  llm      req=a91f model=large ok 1.1s</b>
+2026-11-02-09-14-02 WARN  api      req=a921 slow client
+<b>2026-11-02-09-14-03 INFO  tools    req=a91f get_order ok 0.6s</b>
+2026-11-02-09-14-03 INFO  llm      req=a921 model=large ok 2.4s
+<b>2026-11-02-09-14-05 INFO  llm      req=a91f model=large ok 1.8s</b>
+<b>2026-11-02-09-14-05 INFO  api      req=a91f 200 OK 4.2s</b>
+2026-11-02-09-14-05 INFO  api      req=a922 POST /chat 200`;
+function tracePanel() {
+  const t = T("trace");
+  return `${topicHead(t, "One trace: <em>follow the wrong answer</em> back to its cause",
+    "A trace links every step of one request, so you can see where a wrong answer came from.",
+    [["Spans", "Each step is a span with its input, output, time, tokens and cost."],
+     ["Tags", "Session, user, prompt version and model version: filter and compare later."],
+     ["Feedback attached", "The user’s 👎 lives on the trace, next to the steps that caused it."]])}
+  ${subtabs("trace", [["view", "Trace view"], ["logs", "The same request as logs"]])}
+  <div class="case" data-group="trace" data-sub="view" role="tabpanel">
+    <div class="panel tv">
+      <div class="tv-meta"><span><b>trace</b> <code>tr_7f3a9c</code></span><span><b>session</b> <code>s_2291</code></span><span><b>user</b> <code>u_5512</code></span><span><b>tags</b> ${pill("prompt v12", "acc")} ${pill("model: large", "")}</span><span><b>time</b> 2026-11-02-09-14-01 UTC</span><span><b>total</b> 4.2 s · 2,140 tok · $0.012</span><span>${pill("👎 user feedback", "fail")}</span></div>
+      <ul class="tv-list" id="spans">${SPANS.map((s) => `<li class="span k-${s.kind} ${s.kind === "root" ? "" : "child"}" data-span="${s.id}" tabindex="0">
+        <span class="nm"><i></i>${s.name}${s.flag ? `<span class="flag">${s.flag}</span>` : ""}</span>
+        <span class="tr"><span style="left:${(s.start / TOTAL) * 100}%;width:${Math.max(1.5, (s.dur / TOTAL) * 100)}%"></span></span>
+        <span class="ms">${s.dur.toFixed(1)} s</span></li>`).join("")}</ul>
+      <div class="tv-detail" id="spanDetail"></div>
+    </div>
+  </div>
+  <div class="case" data-group="trace" data-sub="logs" role="tabpanel" hidden>
+    <div class="panel pad stack">
+      <span class="label">Logs · request a91f in bold, among other users’ requests</span>
+      <pre class="logs">${LOGS}</pre>
+      <p class="muted">Every line says <b>ok</b> and the request returns <b>200 OK</b>. The logs show <i>that</i> things ran, not <i>what</i> the search returned or why the answer was wrong. At 40 requests per second, even finding these lines is hard.</p>
+    </div>
+  </div>
+  ${why("The model was not the problem: an outdated document in search was. Without a trace, the team would have rewritten the prompt or switched models, and the wrong answers would have continued.")}`;
+}
+function showSpan(id) {
+  const s = SPANS.find((x) => x.id === id);
+  $$("#spans .span").forEach((li) => li.classList.toggle("on", li.dataset.span === id));
+  $("#spanDetail").innerHTML = `<h3>${esc(s.title)} ${s.flag ? pill(s.flag, "fail") : ""}</h3>
+    <div class="kv"><div><small>Start</small><b>${s.start.toFixed(1)} s</b></div><div><small>Duration</small><b>${s.dur.toFixed(1)} s</b></div><div><small>Tokens</small><b>${s.tok}</b></div><div><small>Cost</small><b>${s.cost}</b></div></div>
+    <span class="label">Input</span><pre class="io">${esc(s.input)}</pre>
+    <span class="label">Output</span><pre class="io">${esc(s.output)}</pre>
+    <div class="note ${s.note[0]}">${s.note[1]}</div>`;
+}
+function initTrace() {
+  $$("#spans .span").forEach((li) => {
+    li.onclick = () => showSpan(li.dataset.span);
+    li.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); showSpan(li.dataset.span); } };
+  });
+  showSpan("root");
+}
+
+/* ---------- 3 · speed and cost ---------- */
+const DAILY = [196, 201, 188, 205, 199, 192, 203, 398, 412, 405, 421, 409, 415, 412]; // $ per day; release after day 7
+function costChart() {
+  const W = 1080, H = 260, L = 44, B = 30, top = 18, max = 480, bw = (W - L - 10) / DAILY.length;
+  const y = (v) => H - B - (v / max) * (H - B - top);
+  const bars = DAILY.map((v, i) => `<rect class="bar ${i >= 7 ? "after" : ""}" x="${L + i * bw + 4}" y="${y(v)}" width="${bw - 8}" height="${H - B - y(v)}" rx="3"><title>$${v}</title></rect>
+    <text class="lbl" x="${L + i * bw + bw / 2}" y="${H - 12}" text-anchor="middle">${i === 13 ? "today" : "D-" + (13 - i)}</text>`).join("");
+  const ticks = [0, 100, 200, 300, 400].map((v) => `<text class="lbl" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">$${v}</text>`).join("");
+  const dx = L + 7 * bw;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Daily AI cost: about $200 a day, then about $410 a day after the prompt v12 release, above the $300 budget.">
+    <line class="ax" x1="${L}" y1="${H - B}" x2="${W - 10}" y2="${H - B}"/>${ticks}${bars}
+    <line class="budget" x1="${L}" y1="${y(300)}" x2="${W - 10}" y2="${y(300)}"/><text class="budget-t" x="${L + 6}" y="${y(300) - 6}">budget $300/day</text>
+    <line class="deploy" x1="${dx}" y1="${top}" x2="${dx}" y2="${H - B}"/><text class="deploy-t" x="${dx + 6}" y="${top + 10}">prompt v12 released</text>
+  </svg>`;
+}
+const BY_STEP = [["Model · answer", 31, ""], ["Repeated get_order loops", 38, "hot"], ["Model · plan", 22, ""], ["Search", 5, ""], ["Guardrails", 4, ""]];
+const LOOPS = [["1 call", 71, ""], ["2 calls", 12, ""], ["3–5 calls", 9, ""], ["6 or more calls", 8, "hot"]];
+const MODEL_MIX = [["Simple questions · hours, sizes, stock", 62], ["Orders and returns", 26], ["Warranty and repairs", 12]];
+function costPanel() {
+  const t = T("cost");
+  return `${topicHead(t, "Speed and cost: <em>where the time and money go</em>",
+    "FinOps for AI: know the cost of each conversation, step and model, set budgets, and spend where it pays.",
+    [["Speed", "Response time per step. p95 = the time 95% of answers beat: what slow users feel."],
+     ["Cost", "Tokens × price, per span. Add it up per conversation, feature or customer."],
+     ["Budgets and alerts", "A daily budget and an alert when it is crossed, before the monthly invoice."]])}
+  <div class="case stack">
+    <div class="kpis">
+      <div class="panel kpi"><small>Response time · p95</small><b>6.8 s</b><span class="delta up">▲ from 3.2 s</span></div>
+      <div class="panel kpi"><small>Error rate</small><b>0.4%</b><span class="delta flat">● unchanged</span></div>
+      <div class="panel kpi"><small>Cost per day</small><b>$412</b><span class="delta up">▲ from $198 · budget $300</span></div>
+      <div class="panel kpi"><small>Cost per conversation</small><b>$0.041</b><span class="delta up">▲ from $0.019</span></div>
+    </div>
+    <div class="panel pad stack chart"><span class="label">Daily AI cost, last 14 days</span>${costChart()}</div>
+    <div class="grid2">
+      <div class="panel pad stack"><span class="label">Cost by step · this week</span>
+        <div class="hbars">${BY_STEP.map(([n, v, k]) => `<div class="hbar ${k}"><span>${n}</span><span class="t"><i style="width:${v / 0.4}%"></i></span><span class="v">${v}%</span></div>`).join("")}</div>
+        <p class="muted">An agent loop: when an order has several bikes, the model calls get_order again and again.</p></div>
+      <div class="panel pad stack"><span class="label">get_order calls per conversation</span>
+        <div class="hbars">${LOOPS.map(([n, v, k]) => `<div class="hbar ${k}"><span>${n}</span><span class="t"><i style="width:${v / 0.75}%"></i></span><span class="v">${v}%</span></div>`).join("")}</div>
+        <p class="muted"><b>8% of conversations make 38% of the cost.</b> An average would hide them.</p></div>
+    </div>
+    <div class="panel pad stack"><span class="label">Traffic by question type · all answered by the large model</span>
+      <div class="hbars">${MODEL_MIX.map(([n, v]) => `<div class="hbar"><span>${n}</span><span class="t"><i style="width:${v / 0.65}%"></i></span><span class="v">${v}%</span></div>`).join("")}</div>
+      <p class="muted">Most questions are simple. A smaller, cheaper and faster model may answer them just as well: a hypothesis to test, not to assume.</p></div>
+  </div>
+  ${why("Cost problems hide in averages. Breaking cost down by step, model and question type shows where money goes, and which change is worth testing first.")}`;
+}
+
+/* ---------- 4 · quality ---------- */
+const GROUND = [92, 91, 93, 90, 92, 91, 92, 79, 77, 78, 76, 79, 78, 78];
+const THUMBS = [84, 85, 83, 84, 86, 84, 85, 72, 70, 71, 69, 72, 70, 71];
+function qualityChart() {
+  const W = 1080, H = 240, L = 44, B = 30, top = 18, lo = 50, hi = 100, step = (W - L - 50) / (GROUND.length - 1);
+  const y = (v) => H - B - ((v - lo) / (hi - lo)) * (H - B - top);
+  const path = (arr) => arr.map((v, i) => `${i ? "L" : "M"}${L + 10 + i * step} ${y(v)}`).join(" ");
+  const ticks = [50, 75, 100].map((v) => `<text class="lbl" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}%</text><line class="ax" x1="${L}" y1="${y(v)}" x2="${W - 10}" y2="${y(v)}" opacity=".5"/>`).join("");
+  const days = GROUND.map((_, i) => `<text class="lbl" x="${L + 10 + i * step}" y="${H - 10}" text-anchor="middle">${i === 13 ? "today" : "D-" + (13 - i)}</text>`).join("");
+  const dx = L + 10 + 6.5 * step;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Groundedness and thumbs-up rate both drop after the prompt v12 release: groundedness from about 92% to 78%.">
+    ${ticks}${days}<path class="l1" d="${path(GROUND)}"/><path class="l2" d="${path(THUMBS)}"/>
+    <line class="deploy" x1="${dx}" y1="${top}" x2="${dx}" y2="${H - B}"/><text class="deploy-t" x="${dx + 6}" y="${top + 10}">prompt v12 released</text>
+  </svg>`;
+}
+const SAMPLES = [
+  ["tr_7f3a9c", "Is my e-bike battery under warranty?", "fail", "pass", "pass", "👎", "Says 1 year; the current policy says 2 years.", "agree"],
+  ["tr_80b1d2", "Can I return a helmet after 20 days?", "pass", "pass", "pass", "👍", "Matches the 30-day return rule.", "agree"],
+  ["tr_81c7e0", "Do you repair carbon frames?", "fail", "fail", "pass", "–", "Promises a repair the policy excludes.", "agree"],
+  ["tr_82a4f9", "What are your opening hours on Sunday?", "pass", "pass", "pass", "👍", "Correct and short.", "agree"],
+  ["tr_83d215", "Warranty on a 2024 cargo bike frame?", "fail", "pass", "pass", "👎", "Cites the 2023 policy.", "agree"],
+  ["tr_84e3aa", "My order 5120 hasn’t arrived, help!", "pass", "pass", "fail", "👎", "Grounded, but cold and long.", "disagree · reviewer: tone is fine; the delay itself caused the 👎"],
+];
+function qualityPanel() {
+  const t = T("quality");
+  const pf = (v) => pill(v, v === "pass" ? "pass" : "fail");
+  return `${topicHead(t, "Quality signals: <em>is it right</em>, not just running",
+    "Score a sample of live answers with code checks and an LLM judge, add user feedback, and let people review the worst.",
+    [["Online evals", "The same checks as Unit 06, run on live samples instead of fixed test cases."],
+     ["LLM as a judge", "A second model with a rubric: “Is every claim supported by the documents?” Pass or fail, with a reason."],
+     ["Human review", "People check the lowest scores and the judge itself. Their labels become test cases."]])}
+  <div class="case stack">
+    <div class="panel pad stack chart"><span class="label">Daily quality, last 14 days</span>
+      <div class="legend2"><span><i></i>Groundedness · LLM judge, 5% sample</span><span><i class="d"></i>👍 rate · users</span></div>
+      ${qualityChart()}
+      <p class="muted">Both drop on the day of the release. Speed and error dashboards would not show this.</p></div>
+    <div class="panel pad stack"><span class="label">Sampled answers, scored · review queue</span>
+      <div class="tablewrap"><table><thead><tr><th>Trace</th><th>Question</th><th>Grounded</th><th>Correct</th><th>Tone</th><th>User</th><th>Judge’s reason</th><th>Human review</th></tr></thead>
+      <tbody>${SAMPLES.map((r) => `<tr class="${r[2] === "fail" ? "hl" : ""}"><td><code>${r[0]}</code></td><td>${r[1]}</td><td>${pf(r[2])}</td><td>${pf(r[3])}</td><td>${pf(r[4])}</td><td>${r[5]}</td><td>${r[6]}</td><td>${pill(r[7].split(" · ")[0], r[7].startsWith("agree") ? "pass" : "warn")}${r[7].includes(" · ") ? `<br><small class="muted">${r[7].split(" · ")[1]}</small>` : ""}</td></tr>`).join("")}</tbody></table></div>
+      <p class="muted">Two of the four flagged answers cite the 2023 policy: the same root cause as the trace. People agree with the judge in 5 of 6 cases, so its scores can be trusted, with spot checks.</p></div>
+  </div>
+  ${why("A green IT dashboard can hide wrong answers. Quality scores on live traffic, user feedback and human review tell you whether the system is right, not just running.")}`;
+}
+
+/* ---------- 5 · the fix, measured ---------- */
+const FIXES = [
+  ["Wrong warranty answers", "Search ranks the outdated 2023 policy first", "Remove old files from the index; filter by “valid from” date"],
+  ["Cost per conversation doubled", "Agent loops on get_order", "A budget of 3 tool calls; get_order returns all bikes at once"],
+  ["Slow and costly simple answers", "Large model for every question", "Route simple questions to a small model"],
+];
+const RESULTS = [
+  ["Groundedness · LLM judge", "78%", "93%"],
+  ["Correct warranty answers", "64%", "97%"],
+  ["Response time · p95", "6.8 s", "3.1 s"],
+  ["Cost per conversation", "$0.041", "$0.019"],
+  ["Average tool calls", "2.9", "1.2"],
+];
+function improvePanel() {
+  const t = T("improve");
+  return `${topicHead(t, "The fix, measured: <em>observe, test, then ship</em>",
+    "Observability says what to change; an experiment proves the change works before it reaches customers.",
+    [["Failures become test cases", "40 failing live traces + 80 normal questions = a 120-case eval dataset."],
+     ["One hypothesis per cause", "Each fix targets the step the evidence pointed to, not the model by default."],
+     ["Compare, then decide", "Run v12 and v13 on the same cases with the same judge. Ship only if v13 wins."]])}
+  <div class="case stack">
+    <div class="panel pad stack"><span class="label">From evidence to hypotheses</span>
+      <div class="tablewrap"><table><thead><tr><th>Symptom</th><th>Cause found by observability</th><th>Change in v13</th></tr></thead>
+      <tbody>${FIXES.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td><b>${r[2]}</b></td></tr>`).join("")}</tbody></table></div></div>
+    <div class="panel pad stack"><span class="label">Experiment · 120 cases, same judge · v12 vs. v13</span>
+      <div class="tablewrap"><table><thead><tr><th>Measure</th><th class="num">v12 · today</th><th class="num">v13 · candidate</th><th></th></tr></thead>
+      <tbody>${RESULTS.map((r) => `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num"><b>${r[2]}</b></td><td>${pill("better", "pass")}</td></tr>`).join("")}</tbody></table></div>
+      <p class="muted">v13 wins on quality, speed and cost, so it ships. After release, the same dashboards keep watching: 👍 rate back to 86% within a week.</p></div>
+  </div>
+  ${why("Observability finds the problem; an experiment proves the fix. Ship only changes that win on the evals, then keep watching. That loop is continuous improvement, and Unit 08 covers the experiment step.")}`;
+}
+
+/* ---------- mount ---------- */
+const BUILD = { why: whyPanel, trace: tracePanel, cost: costPanel, quality: qualityPanel, improve: improvePanel };
+const INIT = { trace: initTrace };
+$("#panels").innerHTML = TOPICS.map((t) => `<section class="topic" role="tabpanel" id="panel-${t.id}" aria-labelledby="tab-${t.id}" hidden>${BUILD[t.id]()}</section>`).join("");
+Object.values(INIT).forEach((f) => f());
+
+document.addEventListener("click", (e) => {
+  const b = e.target.closest(".subtab[data-group]");
+  if (!b) return;
+  const g = b.dataset.group, root = b.closest(".topic");
+  $$(`.subtab[data-group="${g}"]`, root).forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+  $$(`.case[data-group="${g}"]`, root).forEach((c) => (c.hidden = c.dataset.sub !== b.dataset.sub));
+});
+
+const showTopic = (id) => {
+  if (!BUILD[id]) id = "why";
+  $$("#tabs .tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.topic === id)));
+  $$(".topic").forEach((p) => (p.hidden = p.id !== "panel-" + id));
+  if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+};
+$("#tabs").addEventListener("click", (e) => { const t = e.target.closest(".tab"); if (t) showTopic(t.dataset.topic); });
+$("#tabs").addEventListener("keydown", (e) => {
+  if (!["ArrowRight", "ArrowLeft"].includes(e.key)) return;
+  const tabs = $$("#tabs .tab"), i = tabs.findIndex((t) => t.getAttribute("aria-selected") === "true");
+  const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+  n.focus(); showTopic(n.dataset.topic);
+});
+addEventListener("hashchange", () => showTopic(location.hash.slice(1)));
+showTopic(location.hash.slice(1));
+</script>
+</body>
+</html>

@@ -97,6 +97,8 @@
         <li>06. Guardrails and Evals</li>
         <li>07. Observability</li>
         <li>08. Experiments</li>
+        <li>09. Bonus: Cycles of Improvement</li>
+        <li>10. Project: Your GenAI System</li>
       </ol>
       <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
       <span class="page-num"></span>
@@ -2414,10 +2416,263 @@ while True:
         <div class="unit-head">
           <h1>07. <b>Observability</b></h1>
           <p class="subtitle">You can’t improve what you can’t see: what the system did, why, and at what cost.</p>
-          <div class="covers"><span>Traces</span><span>Metrics</span><span>Cost and latency</span><span>User feedback</span><span>Evals in production</span></div>
+          <div class="covers"><span>What and why</span><span>Traces</span><span>Metrics and cost</span><span>Quality signals</span><span>Improvement loop</span><span>Tools</span><span>Takeaways</span></div>
         </div>
         <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
         <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+
+    <!-- template: layout-statement-dark · one idea to keep -->
+    <section class="page" data-type="slide" data-title="Unit 7 · One idea to keep">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">One idea to keep</span>
+          <p class="statement">Measure what the system does, <em>not how it feels</em>.</p>
+          <p class="statement-source">Data, not impressions: in testing and in production.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · Observability and continuous improvement">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Observability and continuous improvement</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">A GenAI system can look fine and still be wrong, slow or expensive. Understand traces, metrics, cost and quality signals, how they show what to fix, and how they feed a loop of continuous improvement.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · definition + four reasons -->
+    <section class="page" data-type="slide" data-title="Observability · what and why">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Observability</span>
+          <h1>Observability: <em>see what the system did</em>, and why</h1>
+          <p class="subtitle is-wide"><em>Observability</em>: see every step, its time and its cost. <em>Traceability</em>: follow any answer back to its question, sources, tools and version.</p>
+          <div class="gap-cards is-why ob-why">
+            <div><span class="tag">Why</span><b>Wrong answers look right</b><p>A failed answer is fluent and confident. No error is raised.</p><span class="chip">No error, wrong policy</span></div>
+            <div><span class="tag">Why</span><b>Many moving parts</b><p>Model, prompt, search, tools, agent: any of them can be the cause.</p><span class="chip">Where did it go wrong?</span></div>
+            <div><span class="tag">Why</span><b>Cost and speed drift</b><p>Tokens, retries and loops add up, request by request.</p><span class="chip">The bill doubled in a week</span></div>
+            <div><span class="tag">Why</span><b>Everything changes</b><p>New models, prompts, documents and users, all the time.</p><span class="chip">Since the last release…</span></div>
+          </div>
+          <p class="key-idea"><b>A healthy server can still give a wrong answer.</b> Observability shows what happened; evals and people say whether it was right.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · trace waterfall + logs vs. traces -->
+    <section class="page" data-type="slide" data-title="Observability · traces">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Observability · Traces</span>
+          <h1>A trace: <em>the story of one request</em></h1>
+          <p class="subtitle is-wide">Every step of one answer, in order, with its time, tokens and cost.</p>
+          <div class="ob-trace" role="img" aria-label="Trace of one request: input check, search, model, tool, model, output check. The search returned last year's policy.">
+            <div class="row is-root"><span class="name"><b>Trace</b> “Is my e-bike battery covered?”</span><span class="track"><i style="--s:0;--w:100"></i></span><span class="meta">4.2 s · 2,140 tok · $0.012</span></div>
+            <div class="row is-guard"><span class="name">Input check <small>guardrail</small></span><span class="track"><i style="--s:0;--w:2.4"></i></span><span class="meta">0.1 s</span></div>
+            <div class="row is-search is-flag"><span class="name">Search <small>warranty documents</small></span><span class="track"><i style="--s:2.4;--w:9.5"></i><em>found: warranty policy 2023 (outdated)</em></span><span class="meta">0.4 s</span></div>
+            <div class="row is-model"><span class="name">Model <small>plan the answer</small></span><span class="track"><i style="--s:11.9;--w:26.2"></i></span><span class="meta">1.1 s · 820 tok · $0.004</span></div>
+            <div class="row is-tool"><span class="name">Tool <small>get_order(4471)</small></span><span class="track"><i style="--s:38.1;--w:14.3"></i></span><span class="meta">0.6 s</span></div>
+            <div class="row is-model"><span class="name">Model <small>write the answer</small></span><span class="track"><i style="--s:52.4;--w:42.8"></i></span><span class="meta">1.8 s · 1,320 tok · $0.008</span></div>
+            <div class="row is-guard"><span class="name">Output check <small>guardrail</small></span><span class="track"><i style="--s:95.2;--w:4.8"></i></span><span class="meta">0.2 s</span></div>
+          </div>
+          <div class="ob-logs">
+            <div><span class="tag">A log</span><code>2026-11-02-09-14-03 INFO model call ok 1.8s</code><p>One event, on its own. Fine for one server; blind to the whole answer.</p></div>
+            <div class="is-accent"><span class="tag">A trace</span><code>trace → search → model → tool → model</code><p>Every step of one request, linked: what went in, what came out, how long, how much.</p></div>
+          </div>
+          <p class="ob-terms"><b>Trace</b> one request · <b>Span</b> one step · <b>Session</b> one conversation · <b>Tags</b> user, prompt and model version</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · four signals + flow -->
+    <section class="page" data-type="slide" data-title="Observability · four signals">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Observability · Signals</span>
+          <h1>Four signals to watch: <em>steps, speed, cost, quality</em></h1>
+          <div class="ob-signals">
+            <div><span class="tag">What happened?</span><b>Traces</b>
+              <ul><li>Steps, in order</li><li>Inputs and outputs</li><li>Sources and tools used</li><li>Prompt and model version</li></ul></div>
+            <div><span class="tag">Is it working?</span><b>Speed and errors</b>
+              <ul><li>Response time</li><li>Errors and timeouts</li><li>Tool failures</li><li>Volume of requests</li></ul></div>
+            <div><span class="tag">What does it cost?</span><b>Cost · FinOps</b>
+              <ul><li>Tokens per request</li><li>Cost per user and feature</li><li>Which model, for what</li><li>Budgets and alerts</li></ul></div>
+            <div class="is-accent"><span class="tag">Is it right?</span><b>Quality</b>
+              <ul><li>Eval scores</li><li>LLM-as-a-judge scores</li><li>User feedback 👍 👎</li><li>Human review</li></ul></div>
+          </div>
+          <div class="ob-flow">
+            <span><b>The system</b>every request</span>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <span><b>Signals</b>collected automatically</span>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <span><b>Dashboards</b>trends and alerts</span>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <span class="is-accent"><b>People decide</b>what to fix next</span>
+          </div>
+          <p class="flow-note ob-note">The first three show the system is <em>running</em>. Only the fourth shows it is <em>right</em>.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · online evals flow + before vs. in production -->
+    <section class="page" data-type="slide" data-title="Observability · quality in production">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Observability · Evals, metrics, LLM as a judge</span>
+          <h1>Quality in production: <em>score real answers</em></h1>
+          <div class="ob-online">
+            <div><b>Live traffic</b><p>Every conversation is traced</p></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Sample</b><p>e.g. 5% of answers, plus all 👎</p></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="is-accent"><b>Score</b><p>Code checks and an LLM judge</p></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Dashboard</b><p>Scores over time, by version</p></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Review queue</b><p>People check the worst cases</p></div>
+          </div>
+          <div class="ob-compare">
+            <div><span class="tag">Before release · Unit 06</span><b>Evals on fixed test cases</b><p>Known questions, known good answers. Decides whether a change ships.</p></div>
+            <div class="is-accent"><span class="tag">In production · this unit</span><b>Evals on live samples</b><p>Real questions, no answer key: judge scores and user feedback. Finds drift and new failures.</p></div>
+          </div>
+          <div class="ob-metrics"><span>What gets measured</span><i>Groundedness</i><i>Correctness</i><i>Task completed</i><i>Tone</i><i>Safety</i><i>Response time</i><i>Cost</i></div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · improvement loop + link to experiments -->
+    <section class="page" data-type="slide" data-title="Observability · continuous improvement">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Continuous improvement</span>
+          <h1>From observing to <em>improving</em></h1>
+          <div class="ob-loop" aria-hidden="true">
+            <svg viewBox="0 0 560 560">
+              <defs><marker id="ob-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6ee7a0" /></marker></defs>
+              <circle class="ring" cx="280" cy="280" r="210" />
+              <g class="arcs">
+                <path d="M330.8 76.2 A210 210 0 0 1 431.1 134.1" />
+                <path d="M481.9 222.1 A210 210 0 0 1 481.9 337.9" />
+                <path d="M431.1 425.9 A210 210 0 0 1 330.8 483.8" />
+                <path d="M229.2 483.8 A210 210 0 0 1 128.9 425.9" />
+                <path d="M78.1 337.9 A210 210 0 0 1 78.1 222.1" />
+                <path d="M128.9 134.1 A210 210 0 0 1 229.2 76.2" />
+              </g>
+            </svg>
+            <span class="node" style="left:280px;top:70px"><b>Observe</b>traces, cost, scores</span>
+            <span class="node" style="left:462px;top:175px"><b>Diagnose</b>find the cause</span>
+            <span class="node" style="left:462px;top:385px"><b>Hypothesis</b>what to change</span>
+            <span class="node is-exp" style="left:280px;top:490px"><b>Experiment</b>variants vs. evals</span>
+            <span class="node is-exp" style="left:98px;top:385px"><b>Validate</b>proven better</span>
+            <span class="node" style="left:98px;top:175px"><b>Deploy</b>and keep watching</span>
+            <p class="core">Continuous<br /><em>improvement</em></p>
+          </div>
+          <ol class="ob-loop-points">
+            <li><b>Every failure becomes a test case.</b> Production traces feed the eval dataset.</li>
+            <li><b>Fix the right part.</b> Prompt, context, search, tools, agent or model: rarely retraining.</li>
+            <li><b>Ship what is proven.</b> Each change goes through an experiment first.</li>
+          </ol>
+          <span class="ob-next">Experiment and validate · <b>Unit 08</b></span>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · four example cards + link to the interactive notes -->
+    <section class="page" data-type="slide" data-title="Observability · in action">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Observability · interactive notes</span>
+          <h1>Observability <em>in action</em></h1>
+          <a class="notes-link" href="../../html/observability.html" target="_blank" rel="noopener">Open the interactive notes <span aria-hidden="true">↗</span></a>
+          <p class="subtitle">The fake bike shop again: slow answers, a wrong reply, a doubled bill.</p>
+          <div class="example-cards is-four">
+            <div><span class="tag">01 · One trace</span><b>Find the wrong answer</b><p>Follow one reply step by step: the search returned last year’s warranty policy.</p></div>
+            <div><span class="tag">02 · Speed and cost</span><b>Where the money goes</b><p>An agent loop and a large model for simple questions double the cost per conversation.</p></div>
+            <div><span class="tag">03 · Quality</span><b>Scores drop after a release</b><p>A judge scores live answers; groundedness falls right after prompt v12.</p></div>
+            <div class="is-accent"><span class="tag">04 · The fix, measured</span><b>Change, test, compare</b><p>Failures become test cases; v13 wins on quality, cost and speed.</p></div>
+          </div>
+          <p class="flow-note ga-note">Each tab starts from a complaint and ends with evidence.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: doc-dark-bg-1 · accelerators table -->
+    <section class="page is-night" data-type="doc" data-title="Observability · tools">
+      <article class="doc-dark-1">
+        <span class="eyebrow">Observability · Tools</span>
+        <h1>Tools for AI observability</h1>
+        <p class="lead">They collect traces, add up tokens and cost, run judges on live answers and put it all on dashboards. Deciding what “good” means is still your job.</p>
+        <table class="dark-table">
+          <colgroup><col style="width:28%" /><col style="width:20%" /><col /></colgroup>
+          <thead><tr><th>Tool</th><th>Type</th><th>What it gives you</th></tr></thead>
+          <tbody>
+            <tr><td>Langfuse</td><td>Open source · cloud</td><td>Traces, cost, prompts, evals and user feedback; can run on your own servers. Part of ClickHouse since 2026</td></tr>
+            <tr><td>LangSmith (LangChain)</td><td>Platform</td><td>Tracing, monitoring and evals; the natural fit for LangChain and LangGraph</td></tr>
+            <tr><td>Arize Phoenix</td><td>Source-available</td><td>Tracing and evals built on OpenTelemetry; strong on RAG</td></tr>
+            <tr><td>Braintrust</td><td>Platform</td><td>Eval-first: experiments, datasets and production logs side by side</td></tr>
+            <tr><td>Opik (Comet)</td><td>Open source</td><td>Tracing, LLM judges and evaluation of live traffic</td></tr>
+            <tr><td>MLflow Tracing</td><td>Open source</td><td>Traces and LLM judges inside the MLflow experiment tracker</td></tr>
+            <tr><td>W&amp;B Weave</td><td>Platform</td><td>Tracing and evals for teams already on Weights &amp; Biases</td></tr>
+            <tr><td>Datadog LLM Observability</td><td>Monitoring platform</td><td>LLM traces, cost and quality next to the rest of your IT monitoring</td></tr>
+            <tr><td>OpenTelemetry · GenAI conventions</td><td>Open standard</td><td>A shared format for AI traces, so you can switch tools later; still maturing</td></tr>
+          </tbody>
+        </table>
+        <p class="disclaimer"><b>Examples, not endorsements.</b> Most also run evals and experiments. Check cost, and where your data is stored.</p>
+      </article>
+    </section>
+
+    <!-- template: layout-dark-1 · three takeaways -->
+    <section class="page" data-type="slide" data-title="Observability · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Observability · Takeaways</span>
+          <h1>Main <em>takeaways</em></h1>
+          <ol class="points rag-tk">
+            <li><b>Measure, don’t guess.</b> Decide with data, not feelings: in testing and in production.</li>
+            <li><b>Running is not the same as right.</b> Combine traces, speed and cost with evals, judges and human feedback.</li>
+            <li><b>Close the loop.</b> Failures become test cases, then experiments, then proven changes: continuous improvement.</li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-statement-dark · bridge to the next unit -->
+    <section class="page" data-type="slide" data-title="Next · Experiments">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">Next · Experiments</span>
+          <p class="statement">Observability tells you <em>what to change</em>. Experiments prove <em>that the change works</em>.</p>
+          <p class="statement-source">Unit 08: hypotheses, variants, A/B tests and decisions.</p>
+        </div>
         <span class="page-num"></span>
       </div>
     </section>
@@ -2434,10 +2689,548 @@ while True:
         <div class="unit-head">
           <h1>08. <b>Experiments</b></h1>
           <p class="subtitle">Change one thing, measure it, and decide with evidence.</p>
-          <div class="covers"><span>Hypotheses</span><span>Datasets and variants</span><span>A/B tests</span><span>Statistics</span><span>Decisions</span></div>
+          <div class="covers"><span>What and why</span><span>What to test</span><span>Offline to online</span><span>Datasets and evals</span><span>Results to insight</span><span>Tools</span><span>Takeaways</span></div>
         </div>
         <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
         <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+
+    <!-- template: layout-statement-dark · one idea to keep -->
+    <section class="page" data-type="slide" data-title="Unit 8 · One idea to keep">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">One idea to keep</span>
+          <p class="statement">Every change is a <em>hypothesis</em> until the data says otherwise.</p>
+          <p class="statement-source">Test before production; decide with evidence, not with a demo.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-lesson -->
+    <section class="page" data-type="slide" data-title="Lesson · Experiments: test before production">
+      <div class="stage is-forest">
+        <div class="layout-lesson">
+          <span class="eyebrow">Lesson</span>
+          <h1>Experiments: test before production</h1>
+          <div class="cols">
+            <div>
+              <span class="eyebrow">Depth</span>
+              <ol class="depth">
+                <li class="is-current">Overview</li>
+                <li>Conceptual</li>
+                <li>Technical</li>
+                <li>Deep dive</li>
+              </ol>
+            </div>
+            <div>
+              <span class="eyebrow">Objective</span>
+              <p class="objective">A new prompt, model, tool or agent can make things better, or quietly worse. Understand how to compare versions on the same cases and checks, what you can test, and how to turn results into a decision.</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · definition + four reasons -->
+    <section class="page" data-type="slide" data-title="Experiments · what and why">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments</span>
+          <h1>Experiments: <em>compare before you ship</em></h1>
+          <p class="subtitle is-wide">Run two or more versions on the <em>same test cases</em>, score them with the <em>same evals</em>, and compare.</p>
+          <div class="gap-cards is-why ob-why">
+            <div><span class="tag">Why</span><b>Small changes, big effects</b><p>One sentence in a prompt can change thousands of answers.</p><span class="chip">Missing facts</span></div>
+            <div><span class="tag">Why</span><b>Fixes break other things</b><p>Better refunds, worse returns: you only see it if you test both.</p><span class="chip">Regressions</span></div>
+            <div><span class="tag">Why</span><b>Every gain has a price</b><p>Better answers can cost more or take longer.</p><span class="chip">+8% quality, +40% cost</span></div>
+            <div><span class="tag">Why</span><b>Demos mislead</b><p>Three good examples prove nothing about the next thousand.</p><span class="chip">“It worked when I tried it”</span></div>
+          </div>
+          <p class="key-idea"><b>Change one thing, keep the rest fixed, decide with numbers.</b> That is all an experiment is.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · experiment flow, fixed parts bracketed -->
+    <section class="page" data-type="slide" data-title="Experiments · anatomy">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments · Anatomy</span>
+          <h1>Six steps, <em>the same every time</em></h1>
+          <div class="ex-flow">
+            <div><span class="tag">1</span><b>Hypothesis</b><p>What should improve, and how you will measure it.</p><i>“v13 answers warranty questions better”</i></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><span class="tag">2</span><b>Dataset</b><p>Test cases with the expected outcome.</p><i>120 cases, 5 segments</i></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="is-accent"><span class="tag">3</span><b>Variants</b><p>The baseline and the change.</p><i>A = prompt v12 · B = prompt v13</i></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><span class="tag">4</span><b>Run</b><p>Every case through every variant.</p><i>240 answers</i></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><span class="tag">5</span><b>Evals</b><p>Code checks, an LLM judge, people.</p><i>pass rate, groundedness, cost</i></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="is-decide"><span class="tag">6</span><b>Decide</b><p>Ship, iterate or drop.</p><i>B wins: ship it</i></div>
+            <span class="ex-fixed">Kept fixed: cases, settings, judge and metrics, chosen <b>before</b> the run</span>
+          </div>
+          <p class="key-idea"><b>Write the hypothesis and the metric first.</b> Choosing them after seeing the results turns an experiment into a story.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · six components that can be tested -->
+    <section class="page" data-type="slide" data-title="Experiments · what you can test">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments · What to test</span>
+          <h1>Test the system, <em>not just the model</em></h1>
+          <div class="ex-grid">
+            <div><span class="tag">Prompts</span><b>Instructions</b><ul><li>Which wording gets more right answers?</li><li>Do examples help?</li></ul></div>
+            <div><span class="tag">Models</span><b>Model and settings</b><ul><li>Can a smaller model do this job?</li><li>Which provider, which settings?</li></ul></div>
+            <div><span class="tag">Context</span><b>Context and RAG</b><ul><li>Which chunks, how many sources?</li><li>Does reranking help?</li></ul></div>
+            <div><span class="tag">Tools</span><b>Tools</b><ul><li>Does a better description stop wrong calls?</li><li>One tool or three?</li></ul></div>
+            <div class="is-accent"><span class="tag">Orchestration</span><b>Agents and workflows</b><ul><li>Fixed workflow or agent?</li><li>How many steps, what budget?</li></ul></div>
+            <div><span class="tag">Safety</span><b>Guardrails</b><ul><li>How many attacks are stopped?</li><li>How many good requests are blocked?</li></ul></div>
+          </div>
+          <p class="flow-note ob-note">Each card is a <em>variant</em> you can put against the baseline, on the same dataset.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · ladder from offline to online -->
+    <section class="page" data-type="slide" data-title="Experiments · offline to online">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments · Offline to online</span>
+          <h1>From the lab to real users, <em>one step at a time</em></h1>
+          <div class="ex-ladder">
+            <div style="--h:200px"><span class="tag">Offline</span><b>Comparison</b><p>A vs. B on the dataset</p><i>Users: none</i></div>
+            <div style="--h:250px"><span class="tag">Offline</span><b>Regression and stress</b><p>Every release: old cases and attacks</p><i>Users: none</i></div>
+            <div style="--h:300px"><span class="tag">Online</span><b>Shadow</b><p>Real questions, answers not shown</p><i>Users: none</i></div>
+            <div style="--h:350px" class="is-accent"><span class="tag">Online</span><b>Canary</b><p>A small share of users, watched closely</p><i>Users: 5–10%</i></div>
+            <div style="--h:400px"><span class="tag">Online</span><b>A/B test</b><p>Split users, compare business results</p><i>Users: 50 / 50</i></div>
+            <span class="ex-roll">Full rollout</span>
+          </div>
+          <div class="ex-axis"><span>Safer and cheaper</span><span>More realistic, more risk</span></div>
+          <p class="ex-also"><b>Also:</b> an <em>ablation</em> removes one part, e.g. the reranker. If quality doesn’t drop, you may not need it.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · dataset sources → dataset → scorers → scoreboard -->
+    <section class="page" data-type="slide" data-title="Experiments · datasets and evals">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments · Datasets and evals</span>
+          <h1>The dataset is the <em>yardstick</em></h1>
+          <div class="ex-data">
+            <div class="ex-src">
+              <span class="ex-lbl">Where cases come from</span>
+              <span><b>Experts</b>the questions that matter</span>
+              <span><b>Production failures</b>from observability, Unit 07</span>
+              <span><b>Synthetic</b>generated by an LLM, checked by people</span>
+              <span><b>Adversarial</b>red-team and edge cases</span>
+            </div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="ex-set">
+              <span class="ex-lbl">Dataset · v4</span>
+              <b>Question → expected outcome</b>
+              <p>“Return a helmet after 20 days?” → <em>refuse: 14-day limit</em></p>
+              <div class="ex-seg"><i style="--w:30">Easy</i><i style="--w:24">Policy</i><i style="--w:20">Hard</i><i style="--w:26">Adversarial</i></div>
+              <small>Segments, so an average can’t hide a weak spot</small>
+            </div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="ex-src is-score">
+              <span class="ex-lbl">How answers are scored</span>
+              <span><b>Code checks</b>format, required facts, tool calls</span>
+              <span><b>LLM as a judge</b>grounded, correct, right action</span>
+              <span><b>People</b>calibrate the judge</span>
+              <span class="is-accent"><b>Scoreboard</b>per variant, per segment</span>
+            </div>
+          </div>
+          <p class="flow-note ob-note">A good dataset is small, versioned, and <em>grows with every failure</em>.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · five questions + decision -->
+    <section class="page" data-type="slide" data-title="Experiments · from results to insight">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments · Insight</span>
+          <h1>From results to <em>a decision</em></h1>
+          <ol class="ex-questions">
+            <li><b>Better than the baseline?</b> On the metric chosen before the run.</li>
+            <li><b>In every segment?</b> An average can hide a drop in the hard cases.</li>
+            <li><b>Is the difference real?</b> Enough cases, repeated runs, a judge checked by people.</li>
+            <li><b>At what cost and speed?</b> Quality, cost and response time together.</li>
+            <li><b>What do the failures say?</b> Read them: they point to the next change.</li>
+          </ol>
+          <div class="ex-decide">
+            <span class="ex-lbl">Then decide</span>
+            <div class="is-ship"><b>Ship</b>Wins on the main metric; no segment worse; cost acceptable</div>
+            <div class="is-iter"><b>Iterate</b>Promising, but fails a segment or costs too much</div>
+            <div class="is-drop"><b>Drop</b>No real difference: keep the simpler, cheaper version</div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · four example cards + link to the interactive notes -->
+    <section class="page" data-type="slide" data-title="Experiments · in action">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments · interactive notes</span>
+          <h1>Experiments <em>in action</em></h1>
+          <a class="notes-link" href="../../html/experiments.html" target="_blank" rel="noopener">Open the interactive notes <span aria-hidden="true">↗</span></a>
+          <p class="subtitle">Harbor Cycles tests a new prompt, a smaller model and an agent before release.</p>
+          <div class="example-cards is-four">
+            <div><span class="tag">01 · Dataset and evals</span><b>The yardstick</b><p>Cases by segment and source, with the checks that score them.</p></div>
+            <div><span class="tag">02 · Prompts and models</span><b>Which version wins?</b><p>Three variants; the small model is cheap but fails the attacks.</p></div>
+            <div><span class="tag">03 · Agent and tools</span><b>Offline, then canary</b><p>A step budget stops loops; 10% of users confirm it.</p></div>
+            <div class="is-accent"><span class="tag">04 · Insights</span><b>What to look at</b><p>Segments, real differences, trade-offs, failures, decision.</p></div>
+          </div>
+          <p class="flow-note ga-note">Press “Run experiment”, then read the Insights tab.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: doc-dark-bg-1 · tools table -->
+    <section class="page is-night" data-type="doc" data-title="Experiments · tools">
+      <article class="doc-dark-1">
+        <span class="eyebrow">Experiments · Tools</span>
+        <h1>Tools for experiments</h1>
+        <p class="lead">They store datasets, run every variant, call the judges and show the results side by side. The hypothesis, the cases and the decision are still yours.</p>
+        <table class="dark-table">
+          <colgroup><col style="width:28%" /><col style="width:20%" /><col /></colgroup>
+          <thead><tr><th>Tool</th><th>Type</th><th>What it gives you</th></tr></thead>
+          <tbody>
+            <tr><td>Braintrust</td><td>Platform</td><td>Datasets, experiments and side-by-side diffs; can block a release that scores worse</td></tr>
+            <tr><td>LangSmith (LangChain)</td><td>Platform</td><td>Datasets, experiments and LLM judges; natural fit for LangChain and LangGraph</td></tr>
+            <tr><td>Langfuse</td><td>Open source · cloud</td><td>Datasets and experiment runs, linked to production traces</td></tr>
+            <tr><td>promptfoo</td><td>Open source</td><td>Test cases in a config file; compare prompts and models; red-teaming. OpenAI announced its acquisition in 2026</td></tr>
+            <tr><td>DeepEval · Ragas</td><td>Open source</td><td>Ready-made metrics; Ragas focuses on RAG</td></tr>
+            <tr><td>Inspect AI (UK AI Security Institute)</td><td>Open source</td><td>Rigorous evals of agents and safety</td></tr>
+            <tr><td>MLflow · W&amp;B Weave · Arize Phoenix</td><td>Open source · platforms</td><td>Experiments and evals inside ML tooling</td></tr>
+            <tr><td>GrowthBook · LaunchDarkly</td><td>Feature flags · A/B tests</td><td>Canary and A/B rollouts with real users</td></tr>
+          </tbody>
+        </table>
+        <p class="disclaimer"><b>Examples, not endorsements.</b> Most also cover evals and observability.</p>
+      </article>
+    </section>
+
+    <!-- template: layout-dark-1 · three takeaways -->
+    <section class="page" data-type="slide" data-title="Experiments · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Experiments · Takeaways</span>
+          <h1>Main <em>takeaways</em></h1>
+          <ol class="points rag-tk">
+            <li><b>Test before production.</b> Every change to prompts, models, tools or agents is a hypothesis.</li>
+            <li><b>Fix the dataset and the evals; change one thing.</b> Look at segments and read the failures: an average hides them.</li>
+            <li><b>Decide on trade-offs, then keep watching.</b> Quality, cost and speed together; experiments and observability make continuous improvement.</li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ UNIT 9 · BONUS · CYCLES OF IMPROVEMENT ============ -->
+  <div class="unit" data-title="09 · Bonus · Cycles of improvement">
+
+    <!-- template: layout-unit-v2 · change the number, title, subtitle and covers -->
+    <section class="page" data-type="slide" data-title="Unit 9 · Bonus · Cycles of improvement">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="unit-head">
+          <h1>09. Bonus: <b>Cycles of Improvement</b></h1>
+          <p class="subtitle">Improvement is not a project; it is three loops running at once.</p>
+          <div class="covers"><span>The four dimensions</span><span>Three cycles</span><span>How they connect</span><span>Takeaways</span><span>Levels of AI adoption</span></div>
+        </div>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-statement-dark · one idea to keep -->
+    <section class="page" data-type="slide" data-title="Unit 9 · One idea to keep">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">One idea to keep</span>
+          <p class="statement">A GenAI system improves through <em>loops, not launches</em>.</p>
+          <p class="statement-source">Each loop turns evidence into the next change.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · recap of the four-part framework (SVG ids suffixed -b) -->
+    <section class="page" data-type="slide" data-title="Recap · the four dimensions">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Recap · Unit 02</span>
+          <h1>Improving the <em>Performance</em> of GenAI Systems</h1>
+          <p class="subtitle is-wide">The four dimensions don’t work alone: they connect through <em>three feedback cycles</em>.</p>
+          <div class="framework is-copy">
+            <div class="quad is-tl"><h2><span>1</span>Model Training and Adaptation</h2><ul><li>Pre-training <small>(and continued pre-training)</small></li><li>Post-training <small>(RLHF and other post-training techniques)</small></li></ul><p class="tag">Parametric memory</p></div>
+            <div class="quad is-tr"><h2><span>2</span>Harness and Capability Extension</h2><ul><li>Memory systems and artifacts</li><li>Context and knowledge integration</li><li>Capabilities and tools</li><li>Orchestration and control</li><li>Execution and evaluation</li></ul></div>
+            <div class="quad is-bl"><h2><span>3</span>Experiments and Validation <small>(offline)</small></h2><ul><li>Benchmarks</li><li>Datasets</li><li>Test cases</li><li>Metrics</li><li>Evaluations</li></ul></div>
+            <div class="quad is-br"><h2><span>4</span>Observability and Continuous Improvement</h2><ul><li>Telemetry</li><li>Traces</li><li>Metrics and evaluators</li><li>User feedback</li></ul></div>
+            <div class="cycle" aria-hidden="true">
+              <svg viewBox="0 0 340 340">
+                <defs>
+                  <marker id="cyc-arrow-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6ee7a0" /></marker>
+                  <radialGradient id="cyc-disc-b" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#1d4a37"/><stop offset=".55" stop-color="#11281e"/><stop offset="1" stop-color="#0b1510"/></radialGradient>
+                  <radialGradient id="cyc-core-b" cx="50%" cy="38%" r="60%"><stop offset="0" stop-color="#2f7d5f"/><stop offset="1" stop-color="#0f4a35"/></radialGradient>
+                  <filter id="cyc-glow-b" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
+                </defs>
+                <circle class="glow" cx="170" cy="170" r="160" filter="url(#cyc-glow-b)" />
+                <circle class="disc" cx="170" cy="170" r="164" />
+                <circle class="track" cx="170" cy="170" r="128" />
+                <circle class="comet" cx="170" cy="170" r="128" />
+                <g class="arcs">
+                  <path d="M113.9 55.0 A128 128 0 0 1 222.1 53.1" />
+                  <path d="M285.0 113.9 A128 128 0 0 1 286.9 222.1" />
+                  <path d="M226.1 285.0 A128 128 0 0 1 117.9 286.9" />
+                  <path d="M55.0 226.1 A128 128 0 0 1 53.1 117.9" />
+                </g>
+                <circle class="core" cx="170" cy="170" r="94" />
+                <g class="ticks"><line x1="170" y1="62" x2="170" y2="70" transform="rotate(0 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(30 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(60 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(90 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(120 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(150 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(180 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(210 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(240 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(270 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(300 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(330 170 170)"/></g>
+                <path class="loop" d="M152 128 c-10 -12 -26 -12 -26 0 s16 12 26 0 l12 -12 c10 -12 26 -12 26 0 s-16 12 -26 0 z" transform="translate(14 0)" />
+                <g class="nodes">
+                  <circle cx="79.5" cy="79.5" r="27" /><text x="79.5" y="80">1</text>
+                  <circle cx="260.5" cy="79.5" r="27" /><text x="260.5" y="80">2</text>
+                  <circle cx="260.5" cy="260.5" r="27" /><text x="260.5" y="261">4</text>
+                  <circle cx="79.5" cy="260.5" r="27" /><text x="79.5" y="261">3</text>
+                </g>
+              </svg>
+              <p>Continuous<br />improvement</p>
+            </div>
+          </div>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three nested cycles + legend -->
+    <section class="page" data-type="slide" data-title="Cycles · three cycles, one system">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Cycles of improvement</span>
+          <h1>Three cycles, <em>one system</em></h1>
+          <div class="cy-rings" aria-hidden="true">
+            <svg viewBox="0 0 620 620">
+              <defs>
+                <marker id="cy-arr-w" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#e8ece9" /></marker>
+                <marker id="cy-arr-l" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#e6f57a" /></marker>
+                <marker id="cy-arr-m" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6ee7a0" /></marker>
+              </defs>
+              <circle class="ring is-ops" cx="310" cy="310" r="290" />
+              <circle class="ring is-exp" cx="310" cy="310" r="205" />
+              <circle class="ring is-run" cx="310" cy="310" r="120" />
+              <circle class="core" cx="310" cy="310" r="66" />
+              <path class="link is-ops" d="M570 401 L507 378" />
+              <path class="link is-exp" d="M455 455 L364 364" />
+              <path class="link is-run" d="M207 238 L80 149" />
+            </svg>
+            <span class="pill is-ops" style="top:20px">3 · Operational learning</span>
+            <span class="pill is-exp" style="top:105px">2 · Experimental learning</span>
+            <span class="pill is-run" style="top:190px">1 · Runtime feedback</span>
+            <p class="core-txt">Model<br /><em>+ harness</em></p>
+            <i class="note" style="left:560px;top:430px">ideas to test</i>
+            <i class="note" style="left:430px;top:500px">proven changes</i>
+            <i class="note" style="left:-10px;top:200px">real-world evidence</i>
+          </div>
+          <ol class="cy-legend">
+            <li class="is-run"><b>Runtime feedback</b><span>One task · seconds</span><p>Checks and corrects the work <em>while it runs</em>.</p></li>
+            <li class="is-exp"><b>Experimental learning</b><span>One change · days</span><p>Tests a change and keeps it <em>only if it is better</em>.</p></li>
+            <li class="is-ops"><b>Operational learning</b><span>Whole system · weeks</span><p>Finds patterns in real use and <em>sets what to fix next</em>.</p></li>
+          </ol>
+          <p class="cy-flow">Real use → <b>ideas to test</b> → experiments → <b>proven changes</b> → model or harness → new evidence → …</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three cycle cards (mini loop, question, example) -->
+    <section class="page" data-type="slide" data-title="Cycles · at a glance">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Cycles of improvement</span>
+          <h1>The three cycles <em>at a glance</em></h1>
+          <div class="cy-cards">
+            <div class="is-run">
+              <span class="tag">Cycle 1 · one task · seconds</span>
+              <b>Runtime feedback</b>
+              <div class="cy-mini"><span>Act</span><span>Check</span><span>Adjust</span></div>
+              <p class="q">“Is this task on track?”</p>
+              <p>Retry, search again, ask a person for approval, or stop: within set limits.</p>
+              <i>A tool fails → the system recovers instead of giving up.</i>
+            </div>
+            <div class="is-exp">
+              <span class="tag">Cycle 2 · one change · days</span>
+              <b>Experimental learning</b>
+              <div class="cy-mini"><span>Idea</span><span>Test</span><span>Decide</span></div>
+              <p class="q">“Is this change really better?”</p>
+              <p>Benchmarks, side-by-side tests, regression checks and human review, then adopt, reject or dig deeper.</p>
+              <i>Search misses answers → compare two search strategies.</i>
+            </div>
+            <div class="is-ops">
+              <span class="tag">Cycle 3 · whole system · weeks</span>
+              <b>Operational learning</b>
+              <div class="cy-mini"><span>Collect</span><span>Patterns</span><span>Prioritize</span></div>
+              <p class="q">“Where should we improve next?”</p>
+              <p>Traces, user feedback, quality scores, cost and speed, across many runs and versions.</p>
+              <i>Quality drops after a prompt change → open an experiment.</i>
+            </div>
+          </div>
+          <p class="source">Sources: inner agent loop and outer improvement loops (Anthropic, <i>Building effective agents</i>, 2024); data flywheel from production traces to evals (H. Husain &amp; S. Shankar, AI evals guidance, 2025–26).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three takeaways -->
+    <section class="page" data-type="slide" data-title="Cycles · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Cycles of improvement · Summary</span>
+          <h1>Main <em>takeaways</em></h1>
+          <ol class="takeaways">
+            <li><svg class="tk-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M48 22a18 18 0 1 0 2 14"/><path d="M50 12v10H40"/><path d="M25 32l5 5 9-10"/></svg><b>Correct inside every task</b><p>A good system checks its own work as it goes: it retries, searches again or asks a person, within limits you set.</p><small>Seconds · one task</small></li>
+            <li><svg class="tk-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M26 8h12M28 8v16L14 50a4 4 0 0 0 3.5 6h29a4 4 0 0 0 3.5-6L36 24V8"/><path d="M20 42h24"/></svg><b>Test every change before it ships</b><p>Experiments turn opinions into evidence. Keep a change only when it proves better on the same cases.</p><small>Days · one change</small></li>
+            <li><svg class="tk-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M10 54h44"/><path d="M14 44l12-12 9 7 17-19"/><circle cx="26" cy="32" r="3"/><circle cx="35" cy="39" r="3"/><path d="M44 20h8v8"/></svg><b>Let real use set the priorities</b><p>Production evidence shows where to improve next. Improving one part alone doesn’t guarantee a better system.</p><small>Weeks · the whole system</small></li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-statement-dark · closing -->
+    <section class="page" data-type="slide" data-title="Closing · the improvement loop">
+      <div class="stage is-night">
+        <div class="layout-statement-dark">
+          <span class="label">To close</span>
+          <p class="statement">Observe in production, experiment before release: <em>that loop is how GenAI systems improve</em>.</p>
+          <p class="statement-source">Evidence in, validated change out, again and again.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · six levels in two groups -->
+    <section class="page" data-type="slide" data-title="Levels of AI adoption · L0 to L5">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Cycles of improvement · Where you are</span>
+          <h1>Six levels, <em>L0 to L5</em></h1>
+          <p class="subtitle is-wide">AI adoption isn’t binary. Like self-driving cars, it moves in levels, and the higher you go, the more the <em>improvement cycles</em> must run on their own.</p>
+          <div class="lv-grid">
+            <span class="lv-group" style="grid-column:1 / 4">Automating workflows</span>
+            <span class="lv-group" style="grid-column:4 / 7">Agents in your org</span>
+            <div style="--c:#8f96a3"><b>L0</b><h2>AI as a Tool</h2><p>Personal convenience; nothing reorganizes.</p></div>
+            <div style="--c:#7fbf9a"><b>L1</b><h2>Individual Automation</h2><p>One person automates their own work.</p></div>
+            <div style="--c:#5fd48f"><b>L2</b><h2>Team Automation</h2><p>A team shares the workflow.</p></div>
+            <div class="is-agents" style="--c:var(--mint)"><b>L3</b><h2>Directed Autonomy</h2><p>You point an agent across the company.</p></div>
+            <div style="--c:#b6f2cf"><b>L4</b><h2>Self-Directed Autonomy</h2><p>The agent notices and proposes.</p></div>
+            <div style="--c:#fff"><b>L5</b><h2>Self-Driving Enterprise</h2><p>The agent acts; humans govern.</p></div>
+          </div>
+          <p class="lv-note">No fully self-driving organization <em>exists yet</em>.</p>
+          <p class="source">Adapted from Ann Miura-Ko (Floodgate), six levels of enterprise AI adoption, modelled on the SAE levels of driving automation.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ UNIT 10 · PROJECT ============ -->
+  <div class="unit" data-title="10 · Project">
+
+    <!-- template: layout-unit-v2 · change the number, title, subtitle and covers -->
+    <section class="page" data-type="slide" data-title="Unit 10 · Project">
+      <div class="stage is-brand layout-unit-v2">
+        <svg class="pixels-left" viewBox="0 0 220 540" aria-hidden="true"><use href="#pixels"/></svg>
+        <div class="unit-head">
+          <h1>10. Project: <b>Your GenAI System</b></h1>
+          <p class="subtitle">One real problem, designed as a system, not a prompt.</p>
+          <div class="covers"><span>The brief</span><span>Five limits</span><span>Checklist</span><span>Deliverables</span><span>Next class</span></div>
+        </div>
+        <img class="slide-logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+        <span class="slide-footer">Build &amp; Improving - GenAI systems</span>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · the brief + five limitation areas, each mapped to the mindset -->
+    <section class="page" data-type="slide" data-title="Project · the brief and five limits">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Project · The brief</span>
+          <h1>Design a <em>GenAI system</em> for a real problem</h1>
+          <p class="subtitle is-wide">Pick <em>one</em> bounded process or set of tasks, one user group and one measurable outcome. Show what changes, where GenAI fails, and how your system copes.</p>
+          <div class="pj-limits">
+            <div><b>1</b><h2>Data &amp; Knowledge</h2><p>Does the model have the right, current and proprietary knowledge?</p><span>Context</span></div>
+            <div><b>2</b><h2>Context &amp; Memory</h2><p>What is available and kept during a run?</p><span>Context · Harness</span></div>
+            <div><b>3</b><h2>Processing &amp; Reasoning</h2><p>Can it interpret, plan, use tools and execute?</p><span>Harness</span></div>
+            <div><b>4</b><h2>Security, Safety &amp; Control</h2><p>Does it stay inside authorized boundaries?</p><span>Guards</span></div>
+            <div><b>5</b><h2>Evaluation, Observability &amp; Explainability</h2><p>Can we measure, detect and diagnose failures?</p><span>Evals · Observability</span></div>
+          </div>
+          <p class="hand-note">GenAI fails, often silently: outputs can look right and still be wrong. Design for that.</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · checklist, deliverables, next class -->
+    <section class="page" data-type="slide" data-title="Project · checklist, deliverables, next class">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">Project · What to show</span>
+          <h1>Checklist, <em>deliverables</em> and next class</h1>
+          <div class="pj-cols">
+            <div>
+              <h2>Checklist</h2>
+              <ul>
+                <li><b>Problem &amp; baseline</b>No starting point, no proof of improvement.</li>
+                <li><b>Why GenAI</b>A rule or process change may be simpler.</li>
+                <li><b>Context</b>What the model must know, and from where.</li>
+                <li><b>Harness</b>Workflow or agent, tools, where a human decides.</li>
+                <li><b>Guards</b>What the system must never do or say.</li>
+                <li><b>Evals &amp; observability</b>Metrics, test cases, what you log.</li>
+              </ul>
+            </div>
+            <div>
+              <h2>Deliverables</h2>
+              <ol>
+                <li><b>System dossier</b>6–10 pages.</li>
+                <li><b>Pitch</b>5 slides, 7 minutes.</li>
+                <li><b>One-page system card</b>Problem, KPIs, top risks and guards, next decision.</li>
+                <li><b>Small prototype</b>A toy that shows a few key concepts, not every spec or use case.</li>
+              </ol>
+            </div>
+            <div class="is-next">
+              <h2>For next class</h2>
+              <ol>
+                <li><b>A problem</b>Who, which task, why it matters.</li>
+                <li><b>Main GenAI blocks</b>e.g. RAG, tools, workflow or agent, guards.</li>
+                <li><b>Context, high level</b>Sources and data the system needs.</li>
+              </ol>
+            </div>
+          </div>
+          <p class="hand-note">Full rules in the project PDF.</p>
+        </div>
         <span class="page-num"></span>
       </div>
     </section>

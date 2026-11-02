@@ -246,7 +246,7 @@ body.toc-open #toc {
 
 /* Template: index (table of contents). Slots: the <ol> items. */
 .layout-index h1 { position: absolute; left: 52px; top: 70px; margin: 0; font-size: 56px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.02; white-space: nowrap; }
-.layout-index ol { position: absolute; left: 574px; top: 196px; right: 160px; margin: 0; padding: 0; list-style: none; display: grid; gap: 40px; }
+.layout-index ol { position: absolute; left: 574px; top: 180px; right: 160px; margin: 0; padding: 0; list-style: none; display: grid; gap: 32px; }
 .layout-index li { font-size: 28px; line-height: 1.35; font-weight: 400; }
 
 /* Template: unit. Slots: number + title (<span> light part, <b> key word). */
@@ -1143,3 +1143,249 @@ body.toc-open #toc {
 .wa-steps .is-wf { border-color: var(--wf); color: var(--wf); background: #1b1d0c; }
 .wa-steps .is-model { border-color: #2f6d4f; background: #13261d; color: #cdf3df; }
 .wa-steps .is-tool { border-style: dashed; border-color: #8f8f8f; }
+
+/* ---------- Unit 7 · Observability (.ob-*) ---------- */
+.gap-cards.ob-why > div { min-height: 330px; }
+
+/* Trace waterfall: one row per span; bar start and width in % of the trace (--s, --w). */
+.ob-trace { position: absolute; left: 94px; right: 94px; top: 222px; display: grid; gap: 8px; }
+.ob-trace .row { display: grid; grid-template-columns: 400px 1fr 250px; align-items: center; gap: 22px; height: 44px; }
+.ob-trace .name { padding-left: 26px; font-size: 20px; color: #e4e9e6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ob-trace .name small { margin-left: 8px; font-size: 16px; color: #9fb0a7; }
+.ob-trace .is-root .name { padding-left: 0; font-weight: 500; }
+.ob-trace .is-root .name b { margin-right: 8px; color: var(--mint); }
+.ob-trace .track { position: relative; height: 100%; border-left: 1px dashed #34342e; border-right: 1px dashed #34342e; }
+.ob-trace .track i { position: absolute; top: 9px; bottom: 9px; left: calc(var(--s) * 1%); width: max(6px, calc(var(--w) * 1%)); border-radius: 5px; background: #2f6d4f; }
+.ob-trace .is-root .track i { background: #1f3a2d; border: 1.5px solid var(--mint); }
+.ob-trace .is-model .track i { background: var(--mint); }
+.ob-trace .is-tool .track i { background: transparent; border: 2px dashed #8f8f8f; }
+.ob-trace .is-guard .track i { background: #5a6b62; }
+.ob-trace .is-flag .track i { background: var(--hand); }
+.ob-trace .is-flag .name { color: var(--hand); }
+.ob-trace .track em { position: absolute; left: 13%; top: 50%; transform: translateY(-50%); font-style: normal; font-family: var(--font-hand); font-size: 21px; color: var(--hand); white-space: nowrap; }
+.ob-trace .meta { font-family: var(--font-code); font-size: 16px; color: #b9c2bd; text-align: right; }
+.ob-trace .is-root .meta { color: var(--mint); }
+.ob-logs { position: absolute; left: 94px; right: 94px; top: 600px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.ob-logs > div { padding: 18px 24px 20px; border-top: 2px solid #3a3a34; background: #161614; }
+.ob-logs > .is-accent { border-top-color: var(--mint); background: #13261d; }
+.ob-logs .tag { font-weight: 600; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: #9fb0a7; }
+.ob-logs .is-accent .tag { color: var(--mint); }
+.ob-logs code { display: block; margin-top: 10px; font-size: 17px; color: #e4e9e6; }
+.ob-logs p { margin: 10px 0 0; font-family: var(--font-serif); font-size: 22px; line-height: 1.35; color: #d6ddd8; }
+.ob-terms { position: absolute; left: 94px; right: 94px; bottom: 56px; margin: 0; font-size: 20px; color: #b9c2bd; }
+.ob-terms b { color: var(--mint); font-weight: 600; }
+
+/* Four signals + flow strip. */
+.ob-signals { position: absolute; left: 94px; right: 94px; top: 190px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.ob-signals > div { padding: 22px 24px 24px; border-top: 2px solid #2f6d4f; background: #161614; }
+.ob-signals > .is-accent { border-top-color: var(--mint); background: #13261d; }
+.ob-signals .tag { font-weight: 600; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); }
+.ob-signals b { display: block; margin-top: 8px; font-family: var(--font-title); font-weight: 700; font-size: 34px; line-height: 1.1; }
+.ob-signals ul { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.ob-signals li { padding: 9px 14px; border-radius: 10px; background: #1f3a2d; color: #cdf3df; font-size: 20px; line-height: 1.25; }
+.ob-flow { position: absolute; left: 94px; right: 94px; top: 600px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ob-flow > span { flex: 1; display: grid; gap: 2px; padding: 14px 18px; border: 2px solid #3a3a34; border-radius: 12px; text-align: center; font-family: var(--font-serif); font-style: italic; font-size: 19px; color: #b9c2bd; }
+.ob-flow > span b { font-family: var(--font-title); font-style: normal; font-size: 24px; color: #fff; }
+.ob-flow > span.is-accent { border-color: var(--mint); background: #13261d; }
+.ob-flow > span.is-accent b { color: var(--mint); }
+.ob-flow .ce-arrow { width: 52px; }
+.flow-note.ob-note { top: auto; bottom: 80px; font-size: 27px; }
+.flow-note.ob-note em { font-style: normal; color: var(--mint); }
+
+/* Quality in production: online evals flow, before vs. production, metric chips. */
+.ob-online { position: absolute; left: 94px; right: 94px; top: 200px; display: flex; align-items: stretch; gap: 10px; }
+.ob-online > div { flex: 1; padding: 18px 20px; border-top: 2px solid #2f6d4f; background: #161614; }
+.ob-online > .is-accent { border-top-color: var(--mint); background: #13261d; }
+.ob-online b { display: block; font-family: var(--font-title); font-weight: 700; font-size: 27px; line-height: 1.1; }
+.ob-online .is-accent b { color: var(--mint); }
+.ob-online p { margin: 8px 0 0; font-family: var(--font-serif); font-size: 20px; line-height: 1.35; color: #d6ddd8; }
+.ob-online .ce-arrow { align-self: center; width: 44px; }
+.ob-compare { position: absolute; left: 94px; right: 94px; top: 420px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.ob-compare > div { padding: 22px 26px 24px; border: 1.5px dashed #3f7a5c; border-radius: 14px; }
+.ob-compare > .is-accent { border: 2px solid var(--mint); background: #13261d; }
+.ob-compare .tag { font-weight: 600; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: #9fb0a7; }
+.ob-compare .is-accent .tag { color: var(--mint); }
+.ob-compare b { display: block; margin-top: 8px; font-family: var(--font-title); font-weight: 700; font-size: 31px; line-height: 1.1; }
+.ob-compare p { margin: 10px 0 0; font-family: var(--font-serif); font-size: 23px; line-height: 1.4; color: #d6ddd8; }
+.ob-metrics { position: absolute; left: 94px; right: 94px; top: 690px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.ob-metrics span { margin-right: 10px; font-weight: 600; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #9fb0a7; }
+.ob-metrics i { padding: 7px 16px; border-radius: 999px; background: #1f3a2d; color: #cdf3df; font-style: normal; font-size: 20px; }
+
+/* Improvement loop: six nodes on a ring (centres are inline, in px of the 560 box). */
+.ob-loop { position: absolute; left: 110px; top: 200px; width: 560px; height: 560px; }
+.ob-loop svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ob-loop .ring { fill: #11201a; stroke: #2b4a3b; stroke-width: 10; opacity: .7; }
+.ob-loop .arcs path { fill: none; stroke: var(--mint); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 10 9; marker-end: url(#ob-arrow); animation: cycle-flow 1.6s linear infinite; }
+.ob-loop .node { position: absolute; transform: translate(-50%, -50%); display: grid; gap: 2px; width: 190px; padding: 10px 12px; border: 2px solid #2f6d4f; border-radius: 12px; background: var(--night); text-align: center; font-family: var(--font-serif); font-style: italic; font-size: 17px; line-height: 1.25; color: #b9c2bd; }
+.ob-loop .node b { font-family: var(--font-title); font-style: normal; font-size: 24px; color: #fff; }
+.ob-loop .node.is-exp { border-color: var(--wf); }
+.ob-loop .node.is-exp b { color: var(--wf); }
+.ob-loop .core { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; text-align: center; font-family: var(--font-title); font-weight: 700; font-size: 34px; line-height: 1.1; color: #fff; }
+.ob-loop .core em { font-style: normal; color: var(--mint); }
+.ob-loop-points { position: absolute; left: 760px; right: 94px; top: 250px; margin: 0; padding: 0; list-style: none; counter-reset: lp; display: grid; gap: 34px; }
+.ob-loop-points li { counter-increment: lp; position: relative; padding-left: 66px; font-family: var(--font-serif); font-size: 27px; line-height: 1.4; color: #d6ddd8; }
+.ob-loop-points li::before { content: counter(lp); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--mint); color: #0d1a12; font-family: var(--font-title); font-weight: 700; font-size: 22px; }
+.ob-loop-points b { display: block; font-family: var(--font-title); font-size: 33px; line-height: 1.15; color: #fff; }
+.ob-next { position: absolute; left: 760px; bottom: 110px; padding: 10px 20px; border: 2px solid var(--wf); border-radius: 999px; font-size: 21px; color: var(--wf); }
+.ob-next b { font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .ob-loop .arcs path { animation: none; } }
+
+/* ---------- Unit 8 · Experiments (.ex-*) ---------- */
+.ex-lbl { display: block; font-weight: 600; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #9fb0a7; }
+
+/* Anatomy: six steps; the bracket under steps 2–5 marks what stays fixed. */
+.ex-flow { position: absolute; left: 94px; right: 94px; top: 200px; display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr; row-gap: 18px; }
+.ex-flow > div { display: flex; flex-direction: column; padding: 18px 18px 20px; border-top: 2px solid #2f6d4f; background: #161614; min-height: 300px; }
+.ex-flow > .is-accent { border-top-color: var(--mint); background: #13261d; }
+.ex-flow > .is-decide { border-top-color: var(--wf); }
+.ex-flow .tag { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--mint); color: #0d1a12; font-family: var(--font-title); font-weight: 700; font-size: 18px; }
+.ex-flow .is-decide .tag { background: var(--wf); }
+.ex-flow b { margin-top: 12px; font-family: var(--font-title); font-weight: 700; font-size: 27px; line-height: 1.1; }
+.ex-flow .is-decide b { color: var(--wf); }
+.ex-flow p { margin: 8px 0 0; font-family: var(--font-serif); font-size: 20px; line-height: 1.35; color: #d6ddd8; }
+.ex-flow i { margin-top: auto; padding-top: 14px; font-style: normal; font-family: var(--font-hand); font-size: 19px; line-height: 1.3; color: var(--hand); }
+.ex-flow .ce-arrow { align-self: center; width: 36px; justify-self: center; }
+.ex-fixed { grid-column: 3 / 10; padding: 12px 18px; border: 2px dashed #3f7a5c; border-top: 0; border-radius: 0 0 14px 14px; text-align: center; font-size: 20px; color: #cdf3df; }
+.ex-fixed b { color: var(--mint); }
+
+/* What to test: six component cards. */
+.ex-grid { position: absolute; left: 94px; right: 94px; top: 200px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.ex-grid > div { padding: 20px 24px 22px; border-top: 2px solid #2f6d4f; background: #161614; }
+.ex-grid > .is-accent { border-top-color: var(--mint); background: #13261d; }
+.ex-grid .tag { font-weight: 600; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); }
+.ex-grid b { display: block; margin-top: 6px; font-family: var(--font-title); font-weight: 700; font-size: 30px; line-height: 1.1; }
+.ex-grid ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.ex-grid li { padding: 8px 14px; border-radius: 10px; background: #1f3a2d; color: #cdf3df; font-size: 19px; line-height: 1.3; }
+
+/* Offline to online: a staircase; each rung sets its height with --h. */
+.ex-ladder { position: absolute; left: 94px; right: 94px; top: 190px; height: 420px; display: grid; grid-template-columns: repeat(5, 1fr) 150px; align-items: end; gap: 16px; }
+.ex-ladder > div { height: var(--h); display: flex; flex-direction: column; padding: 18px 20px; border-top: 2px solid #2f6d4f; background: #161614; }
+.ex-ladder > .is-accent { border-top-color: var(--mint); background: #13261d; }
+.ex-ladder .tag { font-weight: 600; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: #9fb0a7; }
+.ex-ladder b { margin-top: 6px; font-family: var(--font-title); font-weight: 700; font-size: 26px; line-height: 1.1; }
+.ex-ladder p { margin: 8px 0 0; font-family: var(--font-serif); font-size: 20px; line-height: 1.35; color: #d6ddd8; }
+.ex-ladder i { margin-top: auto; align-self: flex-start; padding: 5px 12px; border-radius: 999px; background: #1f3a2d; color: #cdf3df; font-style: normal; font-size: 17px; }
+.ex-roll { align-self: end; padding: 14px 16px; border: 2px solid var(--wf); border-radius: 12px; text-align: center; font-family: var(--font-title); font-weight: 700; font-size: 22px; color: var(--wf); }
+.ex-axis { position: absolute; left: 94px; right: 94px; top: 632px; display: flex; justify-content: space-between; padding-top: 10px; border-top: 2px solid #3f7a5c; font-family: var(--font-hand); font-size: 22px; color: var(--hand); }
+.ex-axis span:last-child::after { content: " →"; }
+.ex-axis span:first-child::before { content: "← "; }
+.ex-also { position: absolute; left: 94px; right: 94px; bottom: 80px; margin: 0; padding: 16px 22px; border-radius: 12px; border: 1.5px dashed #3f7a5c; font-family: var(--font-serif); font-size: 24px; color: #d6ddd8; }
+.ex-also b { font-family: var(--font-title); color: var(--mint); }
+.ex-also em { font-style: normal; color: var(--mint); }
+
+/* Datasets and evals: sources → dataset → scorers. */
+.ex-data { position: absolute; left: 94px; right: 94px; top: 215px; display: grid; grid-template-columns: 1fr 60px 1.15fr 60px 1fr; align-items: center; }
+.ex-data .ce-arrow { width: 48px; justify-self: center; }
+.ex-src { display: grid; gap: 10px; }
+.ex-src > span:not(.ex-lbl) { display: grid; gap: 2px; padding: 10px 16px; border: 2px solid #3a3a34; border-radius: 12px; font-family: var(--font-serif); font-style: italic; font-size: 18px; color: #b9c2bd; }
+.ex-src > span b { font-family: var(--font-title); font-style: normal; font-size: 22px; color: #fff; }
+.ex-src > span.is-accent { border-color: var(--mint); background: #13261d; }
+.ex-src > span.is-accent b { color: var(--mint); }
+.ex-set { display: grid; gap: 12px; padding: 24px 26px; border: 2px solid var(--mint); border-radius: 16px; background: #13261d; }
+.ex-set > b { font-family: var(--font-title); font-weight: 700; font-size: 28px; color: var(--mint); }
+.ex-set p { margin: 0; font-family: var(--font-serif); font-size: 21px; line-height: 1.4; color: #e4e9e6; }
+.ex-set p em { font-style: normal; color: var(--wf); }
+.ex-seg { display: flex; height: 40px; border-radius: 8px; overflow: hidden; }
+.ex-seg i { flex: var(--w); display: grid; place-items: center; font-style: normal; font-size: 16px; font-weight: 600; color: #0d1a12; background: var(--mint); }
+.ex-seg i:nth-child(2) { background: #4fc283; }
+.ex-seg i:nth-child(3) { background: #2f9a63; color: #fff; }
+.ex-seg i:nth-child(4) { background: var(--wf); }
+.ex-set small { font-family: var(--font-hand); font-size: 19px; color: var(--hand); }
+
+/* Results to insight: five questions + decision. */
+.ex-questions { position: absolute; left: 94px; width: 860px; top: 220px; margin: 0; padding: 0; list-style: none; counter-reset: q; display: grid; gap: 22px; }
+.ex-questions li { counter-increment: q; position: relative; padding-left: 64px; font-family: var(--font-serif); font-size: 24px; line-height: 1.35; color: #d6ddd8; }
+.ex-questions li::before { content: counter(q); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--mint); color: #0d1a12; font-family: var(--font-title); font-weight: 700; font-size: 22px; }
+.ex-questions b { display: block; font-family: var(--font-title); font-size: 30px; line-height: 1.15; color: #fff; }
+.ex-decide { position: absolute; right: 94px; width: 480px; top: 220px; display: grid; gap: 14px; }
+.ex-decide > div { display: grid; gap: 4px; padding: 16px 20px; border-radius: 12px; border: 2px solid #3a3a34; font-family: var(--font-serif); font-size: 20px; line-height: 1.35; color: #d6ddd8; }
+.ex-decide b { font-family: var(--font-title); font-size: 28px; }
+.ex-decide .is-ship { border-color: var(--mint); background: #13261d; }
+.ex-decide .is-ship b { color: var(--mint); }
+.ex-decide .is-iter { border-color: var(--wf); }
+.ex-decide .is-iter b { color: var(--wf); }
+.ex-decide .is-drop b { color: #b9c2bd; }
+
+/* ---------- Unit 9 · Cycles of improvement (.cy-*, .lv-*) ---------- */
+/* Recap copy of the framework: the original gradients sit in a hidden page, so point at the -b copies. */
+.framework.is-copy .cycle .disc { fill: url(#cyc-disc-b); }
+.framework.is-copy .cycle .core { fill: url(#cyc-core-b); }
+.framework.is-copy .cycle .arcs path { marker-end: url(#cyc-arrow-b); }
+
+/* Three nested rings: inner = runtime (mint), middle = experimental (lime), outer = operational (pale). */
+.cy-rings { position: absolute; left: 110px; top: 190px; width: 620px; height: 620px; }
+.cy-rings svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cy-rings .ring { fill: none; stroke-width: 5; stroke-linecap: round; animation: cycle-flow 1.6s linear infinite; }
+.cy-rings .ring.is-ops { stroke: #cfd8d3; stroke-dasharray: 3 16; opacity: .7; animation-duration: 4s; }
+.cy-rings .ring.is-exp { stroke: var(--wf); stroke-dasharray: 10 9; opacity: .8; animation-direction: reverse; animation-duration: 2.4s; }
+.cy-rings .ring.is-run { stroke: var(--mint); stroke-dasharray: 10 9; }
+.cy-rings .core { fill: #13261d; stroke: var(--mint); stroke-width: 2; }
+.cy-rings .link { fill: none; stroke-width: 3; marker-end: url(#cy-arr-w); }
+.cy-rings .link.is-ops { stroke: #e8ece9; }
+.cy-rings .link.is-exp { stroke: var(--wf); marker-end: url(#cy-arr-l); }
+.cy-rings .link.is-run { stroke: var(--mint); marker-end: url(#cy-arr-m); }
+.cy-rings .pill { position: absolute; left: 50%; transform: translate(-50%, -50%); padding: 5px 14px; border-radius: 999px; background: var(--night); border: 2px solid; font-family: var(--font-title); font-weight: 700; font-size: 18px; white-space: nowrap; }
+.cy-rings .pill.is-ops { border-color: #cfd8d3; color: #e8ece9; }
+.cy-rings .pill.is-exp { border-color: var(--wf); color: var(--wf); }
+.cy-rings .pill.is-run { border-color: var(--mint); color: var(--mint); }
+.cy-rings .core-txt { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; text-align: center; font-family: var(--font-title); font-weight: 700; font-size: 22px; line-height: 1.1; color: #fff; }
+.cy-rings .core-txt em { font-style: normal; color: var(--mint); }
+.cy-rings .note { position: absolute; transform: translate(-50%, -50%); padding: 2px 8px; background: var(--night); font-style: normal; font-family: var(--font-hand); font-size: 20px; color: var(--hand); white-space: nowrap; }
+
+.cy-legend { position: absolute; left: 820px; right: 94px; top: 220px; margin: 0; padding: 0; list-style: none; display: grid; gap: 30px; }
+.cy-legend li { padding-left: 24px; border-left: 4px solid var(--c); --c: var(--mint); }
+.cy-legend li.is-exp { --c: var(--wf); }
+.cy-legend li.is-ops { --c: #cfd8d3; }
+.cy-legend b { display: block; font-family: var(--font-title); font-weight: 700; font-size: 33px; line-height: 1.1; color: var(--c); }
+.cy-legend span { display: block; margin-top: 4px; font-size: 17px; letter-spacing: 0.1em; text-transform: uppercase; color: #9fb0a7; }
+.cy-legend p { margin: 8px 0 0; font-family: var(--font-serif); font-size: 25px; line-height: 1.35; color: #d6ddd8; }
+.cy-legend em { font-style: normal; color: #fff; }
+.cy-flow { position: absolute; left: 820px; right: 94px; bottom: 70px; margin: 0; padding: 14px 20px; border: 1.5px dashed #3f7a5c; border-radius: 12px; font-family: var(--font-serif); font-size: 21px; line-height: 1.4; color: #d6ddd8; }
+.cy-flow b { font-family: var(--font-title); color: var(--wf); }
+
+/* Cycle cards: each shows a three-step loop (.cy-mini) with a return arrow. */
+.cy-cards { position: absolute; left: 94px; right: 94px; top: 190px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; }
+.cy-cards > div { display: flex; flex-direction: column; min-height: 500px; padding: 22px 26px 24px; border-top: 3px solid var(--c); background: #161614; --c: var(--mint); }
+.cy-cards > .is-exp { --c: var(--wf); }
+.cy-cards > .is-ops { --c: #cfd8d3; }
+.cy-cards .tag { font-weight: 600; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: #9fb0a7; }
+.cy-cards b { margin-top: 6px; font-family: var(--font-title); font-weight: 700; font-size: 34px; line-height: 1.1; color: var(--c); }
+.cy-mini { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 22px 0 36px; }
+.cy-mini span { flex: 1; padding: 8px 6px; border: 2px solid var(--c); border-radius: 10px; text-align: center; font-size: 18px; color: #fff; }
+.cy-mini::before { content: ""; position: absolute; left: 12%; right: 12%; bottom: -24px; height: 18px; border: 2px dashed var(--c); border-top: 0; border-radius: 0 0 14px 14px; opacity: .7; }
+.cy-mini::after { content: "▲"; position: absolute; left: calc(12% - 7px); bottom: 0; font-size: 12px; color: var(--c); }
+.cy-cards .q { margin: 0; font-family: var(--font-serif); font-style: italic; font-size: 27px; line-height: 1.3; color: #fff; }
+.cy-cards p { margin: 14px 0 0; font-family: var(--font-serif); font-size: 23px; line-height: 1.4; color: #d6ddd8; }
+.cy-cards i { margin-top: auto; padding-top: 14px; border-top: 1px dashed #4a4a44; font-style: normal; font-family: var(--font-hand); font-size: 20px; line-height: 1.35; color: var(--hand); }
+@media (prefers-reduced-motion: reduce) { .cy-rings .ring { animation: none; } }
+
+/* Levels L0–L5: two groups of three, split by a rule after L2; each level colours its number with --c. */
+.lv-grid { position: absolute; left: 94px; right: 94px; top: 290px; display: grid; grid-template-columns: repeat(6, 1fr); column-gap: 34px; row-gap: 20px; }
+.lv-group { padding-bottom: 10px; border-bottom: 1px solid #34342e; font-size: 17px; letter-spacing: 0.12em; text-transform: uppercase; color: #9fb0a7; }
+.lv-grid > div b { display: block; font-family: var(--font-title); font-weight: 700; font-size: 96px; line-height: 1; letter-spacing: -0.03em; color: var(--c); }
+.lv-grid h2 { margin: 14px 0 0; font-family: var(--font-title); font-weight: 700; font-size: 27px; line-height: 1.12; color: #fff; }
+.lv-grid p { margin: 12px 0 0; font-family: var(--font-serif); font-size: 21px; line-height: 1.4; color: #b9c2bd; }
+.lv-grid .is-agents { position: relative; }
+.lv-grid .is-agents::before { content: ""; position: absolute; left: -18px; top: -40px; bottom: -10px; width: 1px; background: #34342e; }
+.lv-note { position: absolute; left: 94px; right: 94px; bottom: 96px; margin: 0; text-align: center; font-family: var(--font-title); font-weight: 700; font-size: 30px; color: #fff; }
+.lv-note em { font-style: normal; color: var(--mint); }
+
+/* ---------- Project (Unit 10) ---------- */
+.pj-limits { position: absolute; left: 94px; right: 94px; top: 290px; bottom: 210px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 28px; }
+.pj-limits > div { display: flex; flex-direction: column; padding: 22px 24px; border: 2px solid #34342e; border-top: 3px solid var(--mint); border-radius: 14px; background: #121612; }
+.pj-limits b { font-family: var(--font-title); font-weight: 700; font-size: 52px; line-height: 1; color: var(--mint); }
+.pj-limits h2 { margin: 14px 0 0; font-family: var(--font-title); font-weight: 700; font-size: 28px; line-height: 1.15; letter-spacing: -0.01em; color: #fff; text-wrap: balance; }
+.pj-limits p { margin: 12px 0 18px; font-family: var(--font-serif); font-style: italic; font-size: 23px; line-height: 1.4; color: #d6ddd8; }
+.pj-limits span { margin-top: auto; align-self: flex-start; padding: 5px 14px; border: 2px solid var(--mint); border-radius: 999px; background: #13201a; white-space: nowrap; font-size: 17px; font-weight: 600; color: var(--mint); }
+.pj-cols { position: absolute; left: 94px; right: 94px; top: 180px; display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 56px; }
+.pj-cols h2 { margin: 0 0 16px; padding-bottom: 14px; border-bottom: 2px solid var(--mint); font-family: var(--font-title); font-weight: 700; font-size: 34px; color: #fff; }
+.pj-cols ul, .pj-cols ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.pj-cols li { font-family: var(--font-serif); font-size: 22px; line-height: 1.35; color: #c9d2cd; }
+.pj-cols li b { display: block; font-family: var(--font-text); font-weight: 600; font-size: 25px; color: #fff; }
+.pj-cols ul li { padding-left: 40px; position: relative; }
+.pj-cols ul li::before { content: ""; position: absolute; left: 0; top: 5px; width: 20px; height: 20px; border: 2px solid var(--mint); border-radius: 4px; }
+.pj-cols ol { counter-reset: pj; }
+.pj-cols ol li { counter-increment: pj; padding-left: 44px; position: relative; }
+.pj-cols ol li::before { content: counter(pj); position: absolute; left: 0; top: 0; font-family: var(--font-title); font-weight: 700; font-size: 30px; line-height: 1.1; color: var(--mint); }
+.pj-cols .is-next { padding: 26px 28px; border-radius: 14px; background: #13201a; border: 2px solid var(--mint); align-self: start; }
+.pj-cols .is-next h2 { color: var(--mint); }

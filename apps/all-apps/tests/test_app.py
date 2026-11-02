@@ -152,7 +152,7 @@ def test_pages_link_red_until_served_and_html_by_existence(tmp_path) -> None:
 
 def test_repo_pages_include_course_notes() -> None:
     found = {page.name: page for page in pages()}
-    for name in ("context", "tools", "mcp", "guardrails", "evals"):
+    for name in ("context", "tools", "mcp", "guardrails", "evals", "observability", "experiments"):
         assert name in found and found[name].exists, name
 
 

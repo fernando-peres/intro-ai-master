@@ -48,7 +48,7 @@ Starting harness-content-api applies migrations and seeds dev users first. Stopp
 Links, with a dot: green when they'll open, red when they won't.
 
 - **deck-06**: green while the deck server answers (started here, or already holding port 8080). Clicking it while red selects the deck-06 service so `space` starts it.
-- **`html/*.html`**: standalone pages, opened straight from disk, so they need no server. Every `.html` in the repo's `html/` folder is listed (today: context, evals, guardrails, mcp, tools); red means the file is gone.
+- **`html/*.html`**: standalone pages, opened straight from disk, so they need no server. Every `.html` in the repo's `html/` folder is listed (today: context, evals, experiments, guardrails, mcp, observability, tools); red means the file is gone.
 
 ## Statuses
 

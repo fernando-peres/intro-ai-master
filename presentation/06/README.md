@@ -1,6 +1,6 @@
 # Presentation 06 — Build & Improving GenAI systems (harness deck)
 
-A 99-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
+A 132-page HTML deck built on the `class_06/` engine (same `deck.js` runtime, keys, TOC and HUD). No build step.
 
 ## Run
 
@@ -122,7 +122,40 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 96 | Evals · takeaways | `layout-dark-1` |
 | 97 | Next · Observability | `layout-statement-dark` |
 | 98 | Unit 7 · Observability | `layout-unit-v2` |
-| 99 | Unit 8 · Experiments | `layout-unit-v2` |
+| 99 | Unit 7 · One idea to keep | `layout-statement-dark` |
+| 100 | Lesson · Observability and continuous improvement | `layout-lesson` |
+| 101 | Observability · what and why | `layout-dark-1` |
+| 102 | Observability · traces (waterfall, logs vs. traces) | `layout-dark-1` |
+| 103 | Observability · four signals | `layout-dark-1` |
+| 104 | Observability · quality in production | `layout-dark-1` |
+| 105 | Observability · continuous improvement (loop, link to Unit 8) | `layout-dark-1` |
+| 106 | Observability · in action (links to `html/observability.html`) | `layout-dark-1` |
+| 107 | Observability · tools | `doc · doc-dark-bg-1` |
+| 108 | Observability · takeaways | `layout-dark-1` |
+| 109 | Next · Experiments | `layout-statement-dark` |
+| 110 | Unit 8 · Experiments | `layout-unit-v2` |
+| 111 | Unit 8 · One idea to keep | `layout-statement-dark` |
+| 112 | Lesson · Experiments: test before production | `layout-lesson` |
+| 113 | Experiments · what and why | `layout-dark-1` |
+| 114 | Experiments · anatomy (six steps, what stays fixed) | `layout-dark-1` |
+| 115 | Experiments · what you can test | `layout-dark-1` |
+| 116 | Experiments · offline to online (ladder) | `layout-dark-1` |
+| 117 | Experiments · datasets and evals | `layout-dark-1` |
+| 118 | Experiments · from results to insight | `layout-dark-1` |
+| 119 | Experiments · in action (links to `html/experiments.html`) | `layout-dark-1` |
+| 120 | Experiments · tools | `doc · doc-dark-bg-1` |
+| 121 | Experiments · takeaways | `layout-dark-1` |
+| 122 | Unit 9 · Bonus · Cycles of improvement | `layout-unit-v2` |
+| 123 | Unit 9 · One idea to keep | `layout-statement-dark` |
+| 124 | Recap · the four dimensions (copy of slide 18) | `layout-dark-1` |
+| 125 | Cycles · three cycles, one system (nested rings) | `layout-dark-1` |
+| 126 | Cycles · at a glance | `layout-dark-1` |
+| 127 | Cycles · takeaways | `layout-dark-1` |
+| 128 | Closing · the improvement loop | `layout-statement-dark` |
+| 129 | Levels of AI adoption · L0 to L5 | `layout-dark-1` |
+| 130 | Unit 10 · Project | `layout-unit-v2` |
+| 131 | Project · the brief and five limits | `layout-dark-1` |
+| 132 | Project · checklist, deliverables, next class | `layout-dark-1` |
 
 ## Templates: what changes in each instance
 
@@ -139,6 +172,12 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 - **Dark table** (`table.dark-table`): uppercase column headers, first column in the accent colour. Works inside `.layout-dark-1` (absolutely placed under the title) and inside `.doc-dark-1`. Add `.is-compare` for bold sentence-case headers.
 
 - **Unit 5 colour code** (`.wa-*` in `deck.css`): one colour per building block on every Unit 5 slide and in `apps/w-and-a`. Model = deep green, your code = mint, workflow = lime (`--wf`), agent = pink (`--agent`), tool = dashed grey, person = white. `.wa-legend` shows the key at the bottom of a slide.
+
+- **Unit 7 diagrams** (`.ob-*` in `deck.css`): `.ob-trace` is a trace waterfall (one `.row` per step; set each bar as `style="--s:<start %>;--w:<width %>"` of the whole trace), `.ob-logs` logs vs. traces, `.ob-signals` and `.ob-flow` the four signals, `.ob-online` / `.ob-compare` / `.ob-metrics` quality in production, and `.ob-loop` the improvement ring (node centres are inline px in its 560 px box).
+
+- **Unit 8 diagrams** (`.ex-*` in `deck.css`): `.ex-flow` the six experiment steps with the `.ex-fixed` bracket, `.ex-grid` what you can test, `.ex-ladder` offline to online (each rung sets its height with `style="--h:…px"`), `.ex-data` dataset sources → dataset → scorers (segment widths via `--w`), and `.ex-questions` / `.ex-decide` results to a decision.
+
+- **Unit 9 diagrams** (`.cy-*`, `.lv-*` in `deck.css`): `.cy-rings` the three nested cycles (runtime = mint, experimental = lime, operational = pale; link and note positions are inline px in its 620 px box), `.cy-cards` one card per cycle with a `.cy-mini` loop, and `.lv-grid` the L0–L5 levels (each level sets its number colour with `style="--c:…"`). Slide 124 copies the slide 18 framework with `.framework.is-copy` and `-b` SVG ids, because a gradient defined in a hidden page does not render.
 
 - **Bar chart** (`.cost-chart`): one `.row` per bar; set the value on the bar as `style="--v:191"` (the track spans 0–500). Put the sources in `.source` under the chart.
 

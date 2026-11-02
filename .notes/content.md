@@ -1,3 +1,17 @@
+text
+
+
+- Objective: Talk about cycles of improvement their role in genai systems
+- Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
+- Diagrams: make digrams / flows to represent these building blocks.
+- Search on line, review and validate. Keep succint
+
+- Objective: Talk about Experiments their role in genai systems
+- Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
+- Diagrams: make digrams / flows to represent these building blocks.
+- Search on line, review and validate. Keep succint
+
+
 # Unit 04. Tools and Integration
 
 unit 4 slide: Tool and Integration
@@ -169,16 +183,49 @@ make the chat like apps, show events like tool usage, tools resul, reasoning, et
 Create the slides of observability
 # 
 - Objective: Talk about observability their role in genai systems)
-Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
-Diagrams: make digrams / flows to represent these building blocks. use colors references to agenet, workflow,... in this way to keep consistence among slides of this unit.
+- Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
+- Diagrams: make digrams / flows to represent these building blocks. 
+- Search on line, review and validate. Keep succint
 
 # lesson: observability & traceability, continuous imprvement [review lesson's titla], create a small 
-what it is? Why we need?
-present concepts of traces, finops, ...
+what it is? Why we need? What is and why (observability, tracability,...)
 
-We can use evals, metrics, llm as judges
+Slide: present concepts of traces, finops, ...
+
+Slide: evals, metrics, llm as judges
+traces vs logs
+
+Slide: create a slide with a table of the main AI Observability tools like LangSmith, LangFUse, etc.
+
+SLide: main takeawys
+- Observe and measure what is happening (not feeling / data) [for production, dev tests]
+- Continuous improvement
+
+slide link obeservability and experiments (eval tools, agenst, promst - use evals and llms as a judge )
 
 
+---
+
+Create an html in html/observability.html
+
+create an example of traces, finops, evals, just to show the concepts of observability. Get a good example only. Provide explanation of the concepts. Objective show how observavility can help.
+
+good examples in langfuse, langsmith, 
+
+use other html in folder html/ as inpiration UI/colors etc.
+
+--- 
+some inspiration:""" AI systems require mechanisms to understand and improve behavior across executions, components, versions, and operational conditions. Whereas Experimentation and Validation evaluate candidate configurations and Execution Evaluation assesses individual Harness executions, Observability and Continuous Improvement concern the systematic collection and analysis of operational evidence needed to understand the broader AI system, diagnose recurring limitations and failure modes, and guide its evolution over time.
+
+Observability makes system behavior inspectable through traces, logs, metrics, execution trajectories, tool interactions, retrieval events, feedback records, and operational telemetry, providing visibility across models and their surrounding systems, including prompts and instructions, retrieval pipelines, memory mechanisms, tools, workflows, agents, Harness behavior, infrastructure, latency, cost, reliability, robustness, and security \citep{joshi_2025_genai_ops, gundu_2025_observability}. However, observability alone does not establish whether observed behavior is correct or acceptable; as discussed in Section~\ref{subsec35}, GenAI failures may remain operationally successful and linguistically plausible while being semantically incorrect or misaligned with task objectives. Operational telemetry must therefore be complemented by behavioral and semantic evaluation signals addressing factuality, relevance, faithfulness, coherence, instruction adherence, task completion, safety, and policy compliance.
+
+The combination of observability and evaluation supports diagnosis and root-cause analysis in compound AI systems. An observed failure may originate from the underlying model, instructions, context construction, retrieval quality, memory activation, tool outputs, orchestration decisions, infrastructure, or interactions among these components. Aggregated evidence, for example, may reveal that a retrieval component increasingly returns irrelevant information, that an agent repeatedly enters recovery loops, or that a prompt revision improves task completion while increasing tool usage and operational cost.
+
+Human participation provides complementary evidence throughout this lifecycle, through \textit{evaluation and annotation} (scoring, ranking, classification, critique, or correction of outputs and trajectories), \textit{expert diagnosis} (identifying failure causes, missing knowledge, inappropriate rules, or architectural deficiencies), \textit{improvement supervision} (design or approval of system changes), and \textit{adaptation signals} (demonstrations, corrections, preferences, and rankings supporting model or system adaptation). Human feedback should nevertheless be treated as potentially noisy and heterogeneous evidence whose consistency, representativeness, expertise requirements, and potential biases require explicit consideration.
+
+Continuous Improvement closes the feedback loop between operational evidence and system evolution. Traces, failure records, evaluation results, human feedback, and operational metrics may motivate changes to models, prompts and instructions, contextual strategies, knowledge sources, retrieval mechanisms, memory policies, tools, workflows, orchestration strategies, guardrails, or infrastructure. Proposed changes should return to Experimentation and Validation before broader deployment, forming a feedback cycle of observation, diagnosis, experimentation, validation, deployment, and reassessment.
+
+Observability should therefore not be treated solely as operational monitoring, nor continuous improvement as synonymous with model retraining. In compound AI systems, understanding behavior requires combining operational telemetry with semantic and behavioral evidence, while improvement may involve coordinated changes across multiple architectural layers. Observability and Continuous Improvement thus provide the evidence and feedback mechanisms through which operational experience is transformed into hypotheses, interventions, and validated system evolution."""
 
 ---
 
@@ -221,13 +268,7 @@ Types of agents
 
 ---
 
-# Unit 06. Observability
 
-What is and why (observability)
-
-traces
-
-evals and llms as judge
 
 ---
 
