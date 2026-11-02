@@ -380,13 +380,22 @@ body.toc-open #toc {
 .framework .tag { display: inline-block; margin: 14px 0 0; padding: 4px 14px; border: 1.5px solid var(--hand); border-radius: 999px; font-family: var(--font-hand); color: var(--hand); font-size: 20px; }
 .framework .cycle { position: absolute; left: 50%; top: 50%; width: 340px; height: 340px; transform: translate(-50%, -50%); }
 .framework .cycle svg { display: block; width: 100%; height: 100%; }
-.framework .cycle .disc { fill: #13201a; stroke: #2b4a3b; stroke-width: 2; }
+.framework .cycle svg { overflow: visible; }
+.framework .cycle .glow { fill: none; stroke: var(--mint); stroke-width: 10; opacity: .35; }
+.framework .cycle .disc { fill: url(#cyc-disc); stroke: #2f6d4f; stroke-width: 1.5; }
+.framework .cycle .track { fill: none; stroke: #2b4a3b; stroke-width: 10; opacity: .6; }
+.framework .cycle .comet { fill: none; stroke: #cdf3df; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 60 744; filter: drop-shadow(0 0 6px #6ee7a0); animation: cycle-comet 6s linear infinite; transform-origin: 170px 170px; }
+.framework .cycle .core { fill: url(#cyc-core); stroke: #9be3bc; stroke-width: 2; filter: drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+.framework .cycle .ticks line { stroke: #6ee7a0; stroke-width: 2; stroke-linecap: round; opacity: .55; }
+.framework .cycle .loop { fill: none; stroke: var(--mint); stroke-width: 3.5; stroke-linejoin: round; }
+.framework .cycle .nodes circle { stroke: #0d0c0a; stroke-width: 4; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); }
+@keyframes cycle-comet { to { stroke-dashoffset: -804; } }
 .framework .cycle .arcs path { fill: none; stroke: var(--mint); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 10 9; marker-end: url(#cyc-arrow); animation: cycle-flow 1.6s linear infinite; }
 .framework .cycle .nodes circle { fill: var(--mint); }
 .framework .cycle .nodes text { font-family: var(--font-title); font-weight: 700; font-size: 28px; fill: #0d1a12; text-anchor: middle; dominant-baseline: central; }
-.framework .cycle p { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; text-align: center; font-family: var(--font-text); font-weight: 600; font-size: 24px; line-height: 1.2; color: #fff; }
+.framework .cycle p { position: absolute; inset: 0; display: grid; place-items: center; padding-top: 38px; margin: 0; text-align: center; font-family: var(--font-title); font-weight: 700; font-size: 21px; line-height: 1.12; letter-spacing: -0.01em; color: #fff; }
 @keyframes cycle-flow { to { stroke-dashoffset: -19; } }
-@media (prefers-reduced-motion: reduce) { .framework .cycle .arcs path { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .framework .cycle .arcs path, .framework .cycle .comet { animation: none; } }
 
 /* Slide 15: four dimensions, 2×2 in the framework's quadrant order. */
 .dimensions { position: absolute; left: 94px; right: 94px; top: 214px; bottom: 70px; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; column-gap: 80px; counter-reset: dim; }
@@ -632,3 +641,8 @@ body.toc-open #toc {
 .context-diagram .d-label.is-window span { transition: color .4s; }
 .context-diagram .d-label.is-window span.is-new { color: var(--mint); font-weight: 600; }
 .context-diagram .d-label.is-ring { color: #e4e9e6; }
+.context-diagram .d-label.is-zone { font-size: 18px; letter-spacing: 0.14em; color: #10392a; font-weight: 700; }
+.context-diagram .d-label.is-zone.is-pale { color: #cdf3df; }
+.context-diagram .d-label.is-frontier { font-family: var(--font-hand); font-size: 18px; color: #fff; letter-spacing: 0; font-weight: 400; }
+.context-diagram .d-label.is-feed { font-family: var(--font-hand); font-size: 20px; color: var(--mint); }
+.context-diagram .d-label.is-model { font-size: 15px; color: #cdf3df; opacity: .9; }

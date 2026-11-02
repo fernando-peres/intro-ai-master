@@ -1,4 +1,4 @@
-// Context engineering as a planet system (slide 28).
+// Context engineering as a planet system (slide 28). Harness and context are zones on the rings.
 // The model is the planet; the harness layers are tilted rings around it. Five sources (Tools, Memory,
 // Agents, RAG, Knowledge) are moons on their own orbits. Each moon periodically sends a glowing packet to
 // the context window (a station on the near side), which then streams into the model. The user prompt
@@ -8,12 +8,17 @@ import { THREE, createStage, material } from "./lib.js";
 const P = new THREE.Vector3(1.6, -0.15, 0); // planet centre
 const WIN = new THREE.Vector3(-1.4, -0.6, 1.6); // context window station (near side)
 const PROMPT = new THREE.Vector3(-3.35, -0.6, 1.6);
+// Moons orbit in the ring plane, in the zone where each source lives:
+// harness (green) = agents, workflows · frontier = tools, MCP · context (pale) = memory, RAG, knowledge.
+const PLANE = -0.18; // same tilt as the rings
 const MOONS = [
-  { name: "Tools", col: 0xf2c94c, r: 2.55, tilt: 0.32, speed: 0.11, phase: 0.4, add: "+ tool result" },
-  { name: "Memory", col: 0x7fb3ff, r: 2.85, tilt: -0.22, speed: 0.085, phase: 2.1, add: "+ memory" },
-  { name: "Agents", col: 0xf08a7e, r: 2.35, tilt: 0.55, speed: 0.13, phase: 3.6, add: "+ agent output" },
-  { name: "RAG", col: 0x6ee7a0, r: 3.1, tilt: 0.12, speed: 0.07, phase: 5.0, add: "+ 4 chunks" },
-  { name: "Knowledge", col: 0xc3b6ff, r: 2.7, tilt: -0.48, speed: 0.095, phase: 1.2, add: "+ graph facts" },
+  { name: "Agents", col: 0xf08a7e, r: 1.55, speed: 0.16, phase: 0.6, add: "+ agent output", zone: "harness" },
+  { name: "Workflows", col: 0xffb86b, r: 1.55, speed: 0.16, phase: 3.74, add: "+ workflow step", zone: "harness" },
+  { name: "Tools", col: 0xf2c94c, r: 1.95, speed: 0.11, phase: 1.9, add: "+ tool result", zone: "frontier" },
+  { name: "MCP", col: 0x7fe0e8, r: 1.95, speed: 0.11, phase: 5.04, add: "+ MCP data", zone: "frontier" },
+  { name: "Memory", col: 0x7fb3ff, r: 2.45, speed: 0.075, phase: 0.2, add: "+ memory", zone: "context" },
+  { name: "RAG", col: 0x6ee7a0, r: 2.45, speed: 0.075, phase: 2.3, add: "+ 4 chunks", zone: "context" },
+  { name: "Knowledge", col: 0xc3b6ff, r: 2.45, speed: 0.075, phase: 4.4, add: "+ graph facts", zone: "context" },
 ];
 
 function dashed(points, color, dash = 0.1, gap = 0.08, opacity = 1) {
@@ -25,13 +30,13 @@ function dashed(points, color, dash = 0.1, gap = 0.08, opacity = 1) {
   return line;
 }
 const orbitPoint = (m, a) => {
-  // circle in XZ, tilted around X by m.tilt
+  // circle in the ring plane (XZ tilted around X)
   const x = Math.cos(a) * m.r, z = Math.sin(a) * m.r;
-  return new THREE.Vector3(P.x + x, P.y + z * Math.sin(m.tilt), P.z + z * Math.cos(m.tilt));
+  return new THREE.Vector3(P.x + x, P.y + z * Math.sin(PLANE), P.z + z * Math.cos(PLANE));
 };
 
 export function mount(el) {
-  const { root, tick, addLabel, controls } = createStage(el, { fov: 34, position: [0.5, 3.7, 10.9], target: [0.3, -0.25, 0], spin: false });
+  const { root, tick, addLabel, controls } = createStage(el, { fov: 34, position: [0.6, 5.6, 10.2], target: [0.4, -0.45, 0], spin: false });
   const anchor = (v) => { const o = new THREE.Object3D(); o.position.copy(v); root.add(o); return o; };
 
   // ---------- Planet (model) ----------
@@ -44,7 +49,7 @@ export function mount(el) {
   const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.1, 48, 32), new THREE.MeshBasicMaterial({ color: 0x6ee7a0, transparent: true, opacity: 0.12, side: THREE.BackSide }));
   atmo.position.copy(P);
   root.add(atmo);
-  addLabel("MODEL", anchor(P.clone().add(new THREE.Vector3(0, 1.3, -0.2))), { className: "is-ring" });
+  addLabel("MODEL", anchor(P.clone().add(new THREE.Vector3(0, 0, 1.2))), { className: "is-ring is-model" });
 
   // Harness layers as planetary rings (tilted discs).
   const ring = (rIn, rOut, color, opacity, tiltX) => {
@@ -54,21 +59,20 @@ export function mount(el) {
     root.add(m);
     return m;
   };
-  ring(1.3, 1.75, 0x5fca9b, 0.55, 0.18); // capabilities
-  ring(1.85, 2.1, 0xcdf3df, 0.35, 0.18); // context
-  const ctrl = ring(1.18, 1.22, 0x9be3bc, 0.9, 0.18); // adaptive control (thin)
+  ring(1.25, 1.85, 0x5fca9b, 0.5, 0.18); // harness
+  ring(2.05, 2.8, 0xcdf3df, 0.26, 0.18); // context
+  ring(1.93, 1.97, 0xffffff, 0.85, 0.18); // frontier between harness and context
+  const ctrl = ring(1.15, 1.18, 0x9be3bc, 0.9, 0.18); // adaptive control (thin)
   const onRing = (r, deg) => { const a = (deg * Math.PI) / 180, z = Math.sin(a) * r; return P.clone().add(new THREE.Vector3(Math.cos(a) * r, -z * Math.sin(0.18), z * Math.cos(0.18))); };
-  addLabel("CAPABILITIES", anchor(onRing(1.52, 62)), { className: "is-ring is-sm is-dark" });
-  addLabel("CONTEXT", anchor(onRing(1.98, 35)), { className: "is-ring is-sm is-dark" });
+  addLabel("HARNESS", anchor(onRing(1.55, 78)), { className: "is-ring is-zone" });
+  addLabel("CONTEXT", anchor(onRing(2.55, 58)), { className: "is-ring is-zone is-pale" });
+  addLabel("frontier", anchor(onRing(1.95, 4).add(new THREE.Vector3(0.42, 0, 0))), { className: "is-ring is-frontier" });
 
   // ---------- Moons (sources) ----------
   const moons = MOONS.map((m) => {
-    const pts = [];
-    for (let i = 0; i <= 160; i++) pts.push(orbitPoint(m, (i / 160) * Math.PI * 2));
-    root.add(dashed(pts, m.col, 0.08, 0.1, 0.45));
-    const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.22, 32, 24), material(m.col, { roughness: 0.35, emissive: m.col, emissiveIntensity: 0.35 }));
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(m.zone === "harness" ? 0.17 : 0.2, 32, 24), material(m.col, { roughness: 0.35, emissive: m.col, emissiveIntensity: 0.35 }));
     root.add(mesh);
-    const lab = addLabel(m.name, mesh, { className: "is-src", offset: [0, 0.42, 0] });
+    const lab = addLabel(m.name, mesh, { className: "is-src", offset: [0, 0.36, 0] });
     lab.style.setProperty("--moon", "#" + m.col.toString(16).padStart(6, "0"));
     return { ...m, mesh, packets: [] };
   });
@@ -96,7 +100,9 @@ export function mount(el) {
   lane(PROMPT.clone().add(new THREE.Vector3(0.8, 0, 0)), WIN.clone().add(new THREE.Vector3(-1.3, 0, 0)), 1, 0.0005);
   // window → planet stream
   const feed = new THREE.QuadraticBezierCurve3(WIN.clone().add(new THREE.Vector3(1.3, 0.1, 0)), new THREE.Vector3(0.6, 0.4, 1.4), P.clone().add(new THREE.Vector3(-0.85, 0.05, 0.45)));
-  root.add(dashed(feed.getPoints(40), 0x6ee7a0, 0.12, 0.08, 0.9));
+  root.add(new THREE.Mesh(new THREE.TubeGeometry(feed, 48, 0.07, 12), new THREE.MeshBasicMaterial({ color: 0x6ee7a0, transparent: true, opacity: 0.35 })));
+  root.add(new THREE.Mesh(new THREE.TubeGeometry(feed, 48, 0.025, 8), new THREE.MeshBasicMaterial({ color: 0xcdf3df })));
+  addLabel("feeds the model", anchor(feed.getPoint(0.3).add(new THREE.Vector3(0, -0.4, 0.2))), { className: "is-feed" });
   for (let j = 0; j < 3; j++) { const m = new THREE.Mesh(pGeo, white); root.add(m); lanes.push({ curve: feed, m, phase: j / 3, speed: 0.0006 }); }
 
   // ---------- Packets: moon → window, one moon at a time ----------
