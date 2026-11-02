@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context Engineering by Example · Interactive notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Graphite Console tokens: same set as tools.html and guardrails.html */
+:root {
+  --shell:#F2F1F3; --page:#FFFFFF; --raised:#FAFAFA; --sunken:#F4F4F5;
+  --border:#E4E4E7; --divider:#EDEDEF;
+  --text:#18181B; --ink2:#52525B; --ink3:#8A8A93;
+  --nav-bg:#EDE9F8; --nav-ink:#3B2E80; --row:#F4F1FC;
+  --primary:#3A3263; --accent:#6D5BD0; --on-solid:#FFFFFF;
+  --fail-tint:#F7DAD4; --fail-base:#C2614F; --fail-ink:#7C2D1C;
+  --warn-tint:#F5EDC8; --warn-base:#C2A52B; --warn-ink:#6B5A10;
+  --pass-tint:#D8EDD5; --pass-base:#4F9F52; --pass-ink:#22552B;
+  --done-tint:#D8E7F7; --done-base:#4C8FD6; --done-ink:#1E4C83;
+  --syn-kw:#5B48C2; --syn-str:#22552B; --syn-num:#9A4A16; --syn-key:#3B2E80; --syn-com:#8A8A93;
+  --shadow:0 1px 2px rgba(24,24,27,.04), 0 4px 16px rgba(24,24,27,.05);
+  --ui:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  --shell:#0C0C0E; --page:#121214; --raised:#171719; --sunken:#1C1C20;
+  --border:#2A2A2F; --divider:#232327;
+  --text:#FAFAFA; --ink2:#A1A1AA; --ink3:#71717A;
+  --nav-bg:#4A3C7D; --nav-ink:#FFFFFF; --row:#241F38;
+  --primary:#6D5BD0; --accent:#8B7FD4; --on-solid:#FFFFFF;
+  --fail-tint:#40201A; --fail-base:#D97A66; --fail-ink:#F0BDB2;
+  --warn-tint:#3B3313; --warn-base:#BFA33A; --warn-ink:#EADFA6;
+  --pass-tint:#16331B; --pass-base:#4CA050; --pass-ink:#A9D9AC;
+  --done-tint:#122844; --done-base:#4C8FD6; --done-ink:#A7CCEE;
+  --syn-kw:#B9B1DC; --syn-str:#A9D9AC; --syn-num:#F2C7A3; --syn-key:#C3BCDC; --syn-com:#71717A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin:0; background:var(--shell); color:var(--text); font:15px/1.6 var(--ui); -webkit-font-smoothing:antialiased; }
+code, pre, .mono { font-family: var(--mono); }
+::selection { background: var(--nav-bg); color: var(--nav-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { margin:0; letter-spacing:-.015em; }
+h2 { font-size:28px; font-weight:650; }
+h3 { font-size:16px; font-weight:600; }
+p { margin:0; }
+
+/* ---------- top bar ---------- */
+.topbar { position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--page) 86%, transparent); backdrop-filter:saturate(1.4) blur(10px); border-bottom:1px solid var(--border); }
+.topbar-inner { max-width:1200px; margin:0 auto; padding:10px 24px; display:flex; align-items:center; gap:18px; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:14px; white-space:nowrap; }
+.badge { font:500 10px/1 var(--mono); min-width:20px; height:20px; padding:0 5px; border-radius:5px; display:inline-flex; align-items:center; justify-content:center; background:var(--text); color:var(--page); }
+.spacer { flex:1; }
+.btn { font:500 13px var(--ui); color:var(--text); background:var(--page); border:1px solid var(--border); border-radius:8px; padding:6px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s, border-color .15s, color .15s; }
+.btn:hover { background:var(--sunken); }
+.btn.solid { background:var(--primary); border-color:var(--primary); color:var(--on-solid); }
+.btn.solid:hover { filter:brightness(1.12); }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
+.btn svg { width:15px; height:15px; }
+.btn[aria-pressed="true"] { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+
+/* ---------- layout ---------- */
+main { max-width:1200px; margin:0 auto; padding:28px 24px 80px; }
+.panel { background:var(--page); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); }
+.pad { padding:22px; }
+.lede { color:var(--ink2); max-width:760px; font-size:16px; }
+.kicker { font:500 12px var(--mono); color:var(--ink2); text-transform:uppercase; letter-spacing:.08em; }
+.fict { font:500 12px var(--mono); color:var(--ink2); letter-spacing:.04em; }
+
+/* ---------- hero ---------- */
+.hero { padding:34px 36px; background: radial-gradient(900px 300px at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%), var(--page); }
+.hero h1 { font-size:42px; line-height:1.08; font-weight:700; max-width:760px; }
+.hero h1 em { font-style:normal; color:var(--accent); }
+.hero .lede { margin-top:14px; }
+.hero .world { margin-top:18px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.chip { display:inline-flex; align-items:center; gap:8px; font-size:13px; padding:5px 12px; border-radius:999px; background:var(--row); color:var(--text); border:1px solid var(--border); }
+
+/* ---------- tabs ---------- */
+.tabs { display:flex; gap:6px; padding:6px; margin-top:22px; background:var(--page); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); position:sticky; top:52px; z-index:10; overflow-x:auto; scrollbar-width:none; }
+.tab { flex:1; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; border:0; background:transparent; color:var(--ink2); font:500 14px var(--ui); cursor:pointer; text-align:left; min-width:150px; }
+.tab:hover { background:var(--sunken); color:var(--text); }
+.tab .badge { background:var(--sunken); color:var(--ink2); border:1px solid var(--border); }
+.tab small { display:block; font:500 11px var(--mono); color:var(--ink3); }
+.tab[aria-selected="true"] { background:var(--nav-bg); color:var(--nav-ink); }
+.tab[aria-selected="true"] .badge { background:var(--primary); color:var(--on-solid); border-color:transparent; }
+.tab[aria-selected="true"] small { color:var(--nav-ink); opacity:.8; }
+.subtabs { display:inline-flex; gap:4px; padding:4px; background:var(--sunken); border:1px solid var(--border); border-radius:10px; margin:18px 0 0; }
+.subtab { border:0; background:transparent; color:var(--ink2); font:500 13px var(--ui); padding:6px 14px; border-radius:7px; cursor:pointer; }
+.subtab[aria-selected="true"] { background:var(--page); color:var(--text); box-shadow:var(--shadow); }
+[role="tabpanel"][hidden] { display:none; }
+
+/* ---------- concept blocks ---------- */
+.topic { margin-top:26px; }
+.topic-head { display:grid; grid-template-columns: 1fr minmax(260px, 380px); gap:24px; align-items:end; }
+.topic-head h2 { margin-top:6px; }
+.oneline { padding:14px 16px; border-radius:12px; background:var(--raised); border:1px solid var(--border); font-size:14px; color:var(--ink2); }
+.oneline b { display:block; font:600 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+.idea { margin-top:16px; display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+.idea .panel { padding:16px 18px; }
+.idea h3 { font-size:14px; }
+.idea p { margin-top:6px; font-size:14px; color:var(--ink2); }
+.case { margin-top:16px; }
+.case-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.keyidea { margin-top:16px; display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:12px; background:var(--nav-bg); color:var(--nav-ink); font-size:15px; }
+.keyidea b { white-space:nowrap; }
+.grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.grid2 > * { min-width:0; }
+.label { font:600 11.5px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink2); }
+.big { font-size:20px; font-weight:650; margin:6px 0 4px; }
+.big em { font-style:normal; color:var(--accent); }
+.muted { color:var(--ink2); font-size:14px; }
+
+/* ---------- tables, code ---------- */
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { text-align:left; font:600 11px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--ink3); padding:8px 10px; border-bottom:1px solid var(--border); }
+td { padding:8px 10px; border-bottom:1px solid var(--divider); vertical-align:top; }
+tr:last-child td { border-bottom:0; }
+td.num, th.num { text-align:right; font-variant-numeric: tabular-nums; font-family:var(--mono); }
+.tablewrap { overflow-x:auto; }
+pre.code { margin:0; padding:14px 16px; border-radius:10px; background:var(--sunken); border:1px solid var(--border); font-size:12.5px; line-height:1.6; overflow-x:auto; white-space:pre; }
+.k { color:var(--syn-key); } .s { color:var(--syn-str); } .n { color:var(--syn-num); } .c { color:var(--syn-com); } .kw { color:var(--syn-kw); }
+.pill { display:inline-block; font:500 11px var(--mono); padding:2px 8px; border-radius:999px; background:var(--sunken); color:var(--ink2); border:1px solid var(--border); white-space:nowrap; }
+.pill.pass { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
+.pill.fail { background:var(--fail-tint); color:var(--fail-ink); border-color:transparent; }
+.pill.warn { background:var(--warn-tint); color:var(--warn-ink); border-color:transparent; }
+.pill.done { background:var(--done-tint); color:var(--done-ink); border-color:transparent; }
+.pill.acc { background:var(--nav-bg); color:var(--nav-ink); border-color:transparent; }
+
+/* ---------- messages, states ---------- */
+.msg { border-radius:12px; padding:10px 14px; font-size:14px; border:1px solid transparent; }
+.msg .who { display:flex; align-items:center; gap:6px; font:600 11px var(--mono); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.msg.user { background:var(--sunken); border-color:var(--border); }
+.msg.user .who { color:var(--ink2); }
+.msg.pass { background:var(--pass-tint); color:var(--pass-ink); }
+.msg.fail { background:var(--fail-tint); color:var(--fail-ink); }
+.msg.warn { background:var(--warn-tint); color:var(--warn-ink); }
+.msg.done { background:var(--done-tint); color:var(--done-ink); }
+.dot { width:8px; height:8px; border-radius:50%; background:currentColor; display:inline-block; }
+.stack { display:grid; gap:10px; align-content:start; }
+
+/* ---------- step player ---------- */
+.player { display:grid; grid-template-columns: 260px 1fr; gap:0; overflow:hidden; }
+.steps { list-style:none; margin:0; padding:14px; border-right:1px solid var(--border); display:grid; gap:6px; align-content:start; }
+.steps li { display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border-radius:10px; font-size:13px; color:var(--ink2); cursor:pointer; }
+.steps li .badge { background:var(--sunken); color:var(--ink2); border:1px solid var(--border); flex:none; }
+.steps li.on { background:var(--nav-bg); color:var(--nav-ink); }
+.steps li.on .badge { background:var(--primary); color:var(--on-solid); border-color:transparent; }
+.steps li.done .badge { background:var(--pass-tint); color:var(--pass-ink); border-color:transparent; }
+.stage { padding:20px; display:grid; gap:14px; align-content:start; min-height:360px; }
+.stage-foot { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px 20px; border-top:1px solid var(--border); grid-column: 1 / -1; }
+.window { border:1.5px dashed var(--accent); border-radius:12px; padding:12px 14px; background:var(--raised); }
+.window .label { color:var(--accent); }
+.window ul { margin:6px 0 0; padding-left:18px; font-size:13px; }
+.diff-old { background:var(--fail-tint); color:var(--fail-ink); text-decoration:line-through; padding:0 4px; border-radius:4px; }
+.diff-new { background:var(--pass-tint); color:var(--pass-ink); padding:0 4px; border-radius:4px; }
+tr.hl td { background:var(--row); }
+
+/* ---------- knowledge graph ---------- */
+.kg { display:grid; grid-template-columns: 1fr 340px; gap:0; overflow:hidden; }
+.kg svg { width:100%; height:auto; display:block; }
+.kg .side { padding:18px; border-left:1px solid var(--border); display:grid; gap:12px; align-content:start; }
+.kg .qbtn { text-align:left; justify-content:flex-start; white-space:normal; }
+.edge { stroke:var(--border); stroke-width:2; fill:none; transition:stroke .25s, stroke-width .25s; }
+.edge.on { stroke:var(--accent); stroke-width:3.5; }
+.elabel { font:500 10.5px var(--mono); fill:var(--ink3); paint-order:stroke; stroke:var(--page); stroke-width:5px; stroke-linejoin:round; }
+.elabel.on { fill:var(--accent); font-weight:600; }
+.node rect { fill:var(--page); stroke:var(--border); stroke-width:1.5; transition:fill .25s, stroke .25s; }
+.node text { font:600 12.5px var(--ui); fill:var(--text); }
+.node .t2 { font:500 10px var(--mono); fill:var(--ink3); }
+.node.on rect { fill:var(--nav-bg); stroke:var(--accent); stroke-width:2; }
+.node.on text { fill:var(--nav-ink); }
+.node.on .t2 { fill:var(--nav-ink); }
+.facts { list-style:none; margin:0; padding:0; display:grid; gap:6px; font-size:13px; }
+.facts li { padding:8px 10px; border-radius:8px; background:var(--sunken); }
+
+/* ---------- context pack ---------- */
+.pack { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.items { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+.items label { display:grid; grid-template-columns: 22px 1fr auto; gap:10px; align-items:center; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--raised); cursor:pointer; font-size:14px; }
+.items label:hover { border-color:var(--accent); }
+.items input { accent-color: var(--primary); width:16px; height:16px; }
+.items small { display:block; color:var(--ink3); font-size:12px; }
+.items .tok { font:500 12px var(--mono); color:var(--ink2); }
+.req { font:600 10px var(--mono); color:var(--accent); letter-spacing:.06em; text-transform:uppercase; margin-left:6px; }
+.budget { height:26px; border-radius:8px; background:var(--sunken); border:1px solid var(--border); overflow:hidden; display:flex; position:relative; }
+.budget span { height:100%; transition:width .3s; }
+.budget .limit { position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--text); }
+.legend { display:flex; flex-wrap:wrap; gap:6px 12px; font-size:12px; color:var(--ink2); margin-top:8px; }
+.legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+
+/* ---------- plots ---------- */
+.plotwrap { display:grid; grid-template-columns: 1.1fr 1fr; gap:16px; }
+.plotwrap > * { min-width:0; }
+.plot svg { width:100%; height:auto; display:block; }
+.axis { stroke:var(--border); stroke-width:1; }
+.grid-l { stroke:var(--divider); stroke-width:1; }
+.pt { fill:var(--ink3); transition:fill .25s, r .25s; }
+.pt.top { fill:var(--accent); }
+.pt.out { fill:var(--border); }
+.ptlabel { font:500 10px var(--mono); fill:var(--ink2); }
+.ptlabel.top { fill:var(--accent); font-weight:600; }
+.qpt { fill:var(--fail-base); }
+.qlabel { font:600 11px var(--ui); fill:var(--fail-ink); }
+[data-theme="dark"] .qlabel { fill:var(--fail-base); }
+.ray { stroke:var(--accent); stroke-width:1.5; stroke-dasharray:4 4; opacity:.8; }
+.qbtns { display:flex; flex-wrap:wrap; gap:8px; }
+.rank td:first-child { font:600 12px var(--mono); color:var(--accent); }
+.formula { font:500 13px var(--mono); padding:10px 12px; border-radius:10px; background:var(--sunken); border:1px solid var(--border); }
+
+/* products */
+.products { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px; }
+.prod { border:1px solid var(--border); border-radius:12px; padding:10px; background:var(--raised); display:grid; gap:4px; position:relative; transition:opacity .2s, border-color .2s; }
+.prod svg { width:100%; height:70px; }
+.prod b { font-size:13px; }
+.prod small { font-size:11.5px; color:var(--ink2); }
+.prod .score { position:absolute; top:8px; right:8px; }
+.prod.top { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+.prod.out { opacity:.45; }
+.prod .why { font:500 10.5px var(--mono); color:var(--fail-ink); }
+[data-theme="dark"] .prod .why { color:var(--fail-base); }
+.filters { display:flex; flex-wrap:wrap; gap:14px; align-items:center; font-size:13px; }
+.filters label { display:flex; align-items:center; gap:8px; }
+.filters select, .filters input[type=range] { accent-color: var(--primary); font:inherit; color:var(--text); background:var(--page); border:1px solid var(--border); border-radius:8px; padding:4px 8px; }
+
+/* pipeline */
+.pipe { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; }
+.pipe .panel { padding:14px; }
+.pipe .badge { background:var(--primary); color:var(--on-solid); }
+.pipe h3 { margin-top:8px; font-size:14px; }
+.pipe p { font-size:13px; color:var(--ink2); margin-top:4px; }
+.bars { display:grid; gap:6px; }
+.bar { display:grid; grid-template-columns: 170px 1fr 56px; gap:10px; align-items:center; font-size:12.5px; }
+.bar .track { display:block; height:16px; border-radius:5px; background:var(--sunken); overflow:hidden; }
+.bar .fill { display:block; height:100%; background:var(--ink3); border-radius:5px; transition:width .35s; }
+.bar.top .fill { background:var(--accent); }
+.bar.rel .fill { background:var(--pass-base); }
+.bar.out { opacity:.45; }
+.bar .v { font:500 12px var(--mono); text-align:right; font-variant-numeric: tabular-nums; }
+.slider { display:flex; align-items:center; gap:10px; font-size:13px; }
+.slider input { flex:1; accent-color:var(--primary); }
+
+footer { max-width:1200px; margin:0 auto; padding:0 24px 40px; color:var(--ink2); font-size:12.5px; }
+
+@media (max-width: 980px) {
+  .topic-head, .idea, .grid2, .player, .kg, .pack, .plotwrap, .pipe { grid-template-columns: 1fr; }
+  .steps { border-right:0; border-bottom:1px solid var(--border); }
+  .kg .side { border-left:0; border-top:1px solid var(--border); }
+  .bar { grid-template-columns: 110px 1fr 50px; }
+  .hero h1 { font-size:32px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="badge">03</span><span>Context Engineering by Example</span></div>
+    <div class="spacer"></div>
+    <button class="btn" id="theme" title="Toggle light/dark theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="panel hero">
+    <span class="kicker">Interactive notes · for decision makers</span>
+    <h1>The model only knows what you put in front of it. <em>Here is how that gets built.</em></h1>
+    <p class="lede">Six building blocks of context engineering, each explained in two sentences and shown on one running case. Click through: every example is live.</p>
+    <div class="world">
+      <span class="chip"><b>Northbay Outdoor</b> · outdoor-gear retailer</span>
+      <span class="chip">Customer: Maria Costa</span>
+      <span class="chip">Order #4512 · Trail Shell jacket · €189 · delivered 12 Oct</span>
+      <span class="fict">All names, numbers and data on this page are fictional.</span>
+    </div>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Topics" id="tabs"></nav>
+  <div id="panels"></div>
+</main>
+
+<footer>Context engineering · interactive notes · Build &amp; Improving GenAI systems. Fictional data for teaching. Embeddings are shown in 2D for intuition; real ones have hundreds of dimensions.</footer>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const fmt = (x, d = 2) => (Math.round(x * 10 ** d) / 10 ** d).toFixed(d);
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- theme ---------- */
+try { const t = localStorage.getItem("ctx-notes-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+$("#theme").addEventListener("click", () => {
+  const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem("ctx-notes-theme", t); } catch {}
+});
+
+/* ---------- topic shell ---------- */
+const TOPICS = [
+  { id: "memory", n: 1, name: "Memory", hint: "schema vs. store" },
+  { id: "graph", n: 2, name: "Knowledge graph", hint: "facts that connect" },
+  { id: "entity", n: 3, name: "Entity schema", hint: "structured in & out" },
+  { id: "pack", n: 4, name: "Context pack", hint: "the task briefing" },
+  { id: "embed", n: 5, name: "Embeddings", hint: "meaning as numbers" },
+  { id: "rag", n: 6, name: "RAG", hint: "index, then retrieve" },
+];
+
+function topicHead(t, title, oneLine, ideas) {
+  return `<div class="topic-head">
+    <div><span class="kicker">${t.n} · ${t.name}</span><h2>${title}</h2></div>
+    <p class="oneline"><b>In one line</b>${oneLine}</p>
+  </div>
+  <div class="idea">${ideas.map(([h, p]) => `<div class="panel"><h3>${h}</h3><p>${p}</p></div>`).join("")}</div>`;
+}
+const why = (text) => `<p class="keyidea"><b>Why it matters ·</b><span>${text}</span></p>`;
+const subtabs = (group, list) =>
+  `<div class="subtabs" role="tablist" aria-label="${group}">${list.map((s, i) => `<button class="subtab" role="tab" aria-selected="${i === 0}" data-group="${group}" data-sub="${s[0]}">${s[1]}</button>`).join("")}</div>`;
+
+$("#tabs").innerHTML = TOPICS.map((t) =>
+  `<button class="tab" role="tab" id="tab-${t.id}" aria-controls="panel-${t.id}" aria-selected="false" data-topic="${t.id}"><span class="badge">${t.n}</span><span>${t.name}<small>${t.hint}</small></span></button>`).join("");
+
+/* =====================================================================
+   1 · MEMORY
+   ===================================================================== */
+const MEM_SCHEMA = [
+  ["preferred_channel", "email | sms | phone", "customer says so", "until changed"],
+  ["clothing_size", "XS … XL", "customer says so", "24 months"],
+  ["home_store", "store id", "customer says so", "24 months"],
+  ["open_issues[]", "list of short notes", "assistant, per case", "until resolved"],
+  ["loyalty_tier", "bronze | silver | gold", "CRM system only", "synced daily"],
+];
+const MEM_STORE = [
+  ["preferred_channel", "sms", "chat · 03 Feb", "2026-02-03"],
+  ["clothing_size", "M", "chat · 03 Feb", "2026-02-03"],
+  ["home_store", "Lisbon Chiado", "chat · 21 Jun", "2026-06-21"],
+  ["open_issues[]", "—", "—", "—"],
+  ["loyalty_tier", "silver", "CRM sync", "2026-11-01"],
+];
+function memoryPanel() {
+  return `${topicHead(TOPICS[0], "A blueprint and a filing cabinet",
+    "The schema decides <i>what</i> may be remembered; the store holds <i>what was</i> remembered, ready to be put back into context.",
+    [["The idea", "An assistant only “remembers” what the system saves for it between conversations."],
+     ["Memory schema", "The rules: which facts can be kept, in what format, who may change them, and for how long."],
+     ["Memory store", "The records themselves: Maria’s actual values, with when and where each one came from."]])}
+  ${subtabs("memory", [["schema", "Schema vs. store"], ["action", "Memory in action"]])}
+  <div class="case" data-group="memory" data-sub="schema" role="tabpanel">
+    <div class="grid2">
+      <div class="panel pad">
+        <span class="label">Memory schema · the blueprint</span>
+        <p class="big">What <em>may</em> be remembered</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Field</th><th>Allowed values</th><th>Who can set it</th><th>Kept</th></tr></thead>
+          <tbody>${MEM_SCHEMA.map((r) => `<tr><td class="mono">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</tbody>
+        </table></div>
+        <p class="msg fail" style="margin-top:12px"><span class="who"><span class="dot"></span>Never stored</span>Payment details, health information, anything not listed above.</p>
+      </div>
+      <div class="panel pad">
+        <span class="label">Memory store · the filing cabinet</span>
+        <p class="big">What <em>was</em> remembered about Maria</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Field</th><th>Value</th><th>Source</th><th>Updated</th></tr></thead>
+          <tbody>${MEM_STORE.map((r) => `<tr><td class="mono">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td class="mono">${r[3]}</td></tr>`).join("")}</tbody>
+        </table></div>
+        <p class="muted" style="margin-top:12px">One schema, millions of stores: every customer gets their own records in the same shape.</p>
+      </div>
+    </div>
+  </div>
+  <div class="case" data-group="memory" data-sub="action" role="tabpanel" hidden>
+    <div class="panel player" id="memPlayer">
+      <ol class="steps" id="memSteps"></ol>
+      <div class="stage" id="memStage" aria-live="polite"></div>
+      <div class="stage-foot"><span class="fict">Step <span id="memN">1</span> of 4</span><span style="display:flex;gap:8px"><button class="btn" id="memPrev">Back</button><button class="btn solid" id="memNext">Next step</button></span></div>
+    </div>
+  </div>
+  ${why("Personalisation without retraining, and with rules: you decide what the assistant may keep, so privacy and accuracy are designed in, not hoped for.")}`;
+}
+const MEM_STEPS = [
+  ["Maria writes", () => `
+    <div class="msg user"><span class="who"><span class="dot"></span>Maria · today 10:42</span>“Hi! I’m travelling next week, so please email me about my return, not SMS. Also, the jacket leaks at the shoulder.”</div>
+    <p class="muted">The assistant answers her, and in the background it also looks for facts worth remembering.</p>`],
+  ["The model proposes updates", () => `
+    <p class="muted">The model fills in the <b>schema</b>, nothing more. Each proposal is checked against the rules.</p>
+    <div class="stack">
+      <div class="msg pass"><span class="who"><span class="dot"></span>Accepted · in the schema</span><span class="mono">preferred_channel: "email"</span> (customer said so)</div>
+      <div class="msg pass"><span class="who"><span class="dot"></span>Accepted · in the schema</span><span class="mono">open_issues[]: "Trail Shell leaks at shoulder (#4512)"</span></div>
+      <div class="msg fail"><span class="who"><span class="dot"></span>Rejected · not in the schema</span>“Travelling next week”: personal plans are not a field, so they are not kept.</div>
+    </div>`],
+  ["Validated and written to the store", () => `
+    <p class="muted">Only validated values reach the <b>store</b>. Old values are replaced and the change is logged.</p>
+    <div class="tablewrap"><table><thead><tr><th>Field</th><th>Value</th><th>Source</th><th>Updated</th></tr></thead><tbody>
+      <tr class="hl"><td class="mono">preferred_channel</td><td><span class="diff-old">sms</span> <span class="diff-new">email</span></td><td>chat · today</td><td class="mono">2026-11-02</td></tr>
+      <tr><td class="mono">clothing_size</td><td>M</td><td>chat · 03 Feb</td><td class="mono">2026-02-03</td></tr>
+      <tr><td class="mono">home_store</td><td>Lisbon Chiado</td><td>chat · 21 Jun</td><td class="mono">2026-06-21</td></tr>
+      <tr class="hl"><td class="mono">open_issues[]</td><td><span class="diff-new">Trail Shell leaks at shoulder (#4512)</span></td><td>chat · today</td><td class="mono">2026-11-02</td></tr>
+      <tr><td class="mono">loyalty_tier</td><td>silver</td><td>CRM sync</td><td class="mono">2026-11-01</td></tr>
+    </tbody></table></div>`],
+  ["Next session: back into context", () => `
+    <p class="muted">Three days later Maria opens a new chat. Before the model answers, the harness reads her store and puts a short summary into the <b>context window</b>.</p>
+    <div class="window"><span class="label">Context window · memory section</span><ul>
+      <li>Customer: Maria Costa · silver · home store Lisbon Chiado · size M</li>
+      <li>Contact by <b>email</b> (updated 2 Nov)</li>
+      <li>Open issue: Trail Shell leaks at shoulder (#4512)</li></ul></div>
+    <div class="msg user"><span class="who"><span class="dot"></span>Maria</span>“Any news?”</div>
+    <div class="msg done"><span class="who"><span class="dot"></span>Assistant</span>“Yes, about your Trail Shell that leaks at the shoulder: a free return label is on its way to your email, as you asked.”</div>`],
+];
+function initMemory() {
+  let i = 0;
+  const steps = $("#memSteps"), stage = $("#memStage");
+  steps.innerHTML = MEM_STEPS.map((s, k) => `<li data-k="${k}"><span class="badge">${k + 1}</span><span>${s[0]}</span></li>`).join("");
+  const render = () => {
+    $$("li", steps).forEach((li, k) => { li.classList.toggle("on", k === i); li.classList.toggle("done", k < i); });
+    stage.innerHTML = MEM_STEPS[i][1]();
+    $("#memN").textContent = i + 1;
+    $("#memPrev").disabled = i === 0;
+    $("#memNext").textContent = i === MEM_STEPS.length - 1 ? "Start again" : "Next step";
+  };
+  $("#memNext").onclick = () => { i = (i + 1) % MEM_STEPS.length; render(); };
+  $("#memPrev").onclick = () => { if (i > 0) { i--; render(); } };
+  steps.onclick = (e) => { const li = e.target.closest("li"); if (li) { i = +li.dataset.k; render(); } };
+  render();
+}
+
+/* =====================================================================
+   2 · KNOWLEDGE GRAPH
+   ===================================================================== */
+const KG_NODES = {
+  maria: [90, 90, "Maria Costa", "customer"],
+  order: [300, 90, "Order #4512", "delivered 12 Oct"],
+  batch: [520, 90, "Batch B-19", "made Aug 2026"],
+  shell: [740, 90, "Trail Shell", "product"],
+  cat: [740, 250, "Rain jackets", "category"],
+  policy: [520, 250, "30-day returns", "policy"],
+  store: [90, 250, "Lisbon Chiado", "store"],
+  supplier: [740, 400, "Atlantic Textiles", "supplier"],
+  recall: [520, 400, "Recall R-17", "issued 20 Oct"],
+  batch22: [300, 400, "Batch B-22", "made Sep 2026"],
+};
+const KG_EDGES = [
+  ["maria", "order", "placed"], ["order", "batch", "contains"], ["batch", "shell", "unit of"],
+  ["shell", "cat", "is a"], ["cat", "policy", "covered by"], ["maria", "store", "home store"],
+  ["store", "policy", "accepts returns under"], ["shell", "supplier", "made by"],
+  ["supplier", "recall", "issued"], ["recall", "batch22", "affects"],
+];
+const KG_Q = [
+  { q: "Can Maria return her jacket?", path: ["maria", "order", "batch", "shell", "cat", "policy"],
+    facts: ["Maria placed order #4512, delivered 12 Oct", "It contains a Trail Shell (batch B-19)", "Trail Shells are rain jackets", "Rain jackets: 30-day returns"],
+    answer: "Yes. Her return window is open until <b>11 Nov</b>." },
+  { q: "Is her jacket affected by a recall?", path: ["order", "batch", "shell", "supplier", "recall", "batch22"],
+    facts: ["Her jacket is from batch B-19", "Trail Shell is made by Atlantic Textiles", "Atlantic Textiles issued recall R-17", "R-17 affects batch B-22 only"],
+    answer: "<b>No.</b> The recall covers batch B-22; hers is B-19." },
+  { q: "Can she return it in a shop?", path: ["maria", "store", "policy"],
+    facts: ["Maria’s home store is Lisbon Chiado", "Lisbon Chiado accepts returns under the 30-day policy"],
+    answer: "Yes, at <b>Lisbon Chiado</b>, her home store." },
+];
+function graphPanel() {
+  const W = 120, H = 46;
+  const edges = KG_EDGES.map(([a, b, l], k) => {
+    const [x1, y1] = KG_NODES[a], [x2, y2] = KG_NODES[b];
+    return `<line class="edge" data-e="${a}-${b}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>
+      <text class="elabel" data-e="${a}-${b}" x="${(x1 + x2) / 2 + (x1 === x2 ? 8 : 0)}" y="${(y1 + y2) / 2 + (x1 === x2 ? 4 : -7)}" text-anchor="${x1 === x2 ? "start" : "middle"}">${l}</text>`;
+  }).join("");
+  const nodes = Object.entries(KG_NODES).map(([id, [x, y, t, s]]) =>
+    `<g class="node" data-n="${id}"><rect x="${x - W / 2 - 14}" y="${y - H / 2}" width="${W + 28}" height="${H}" rx="10"/>
+      <text x="${x}" y="${y - 2}" text-anchor="middle">${t}</text><text class="t2" x="${x}" y="${y + 13}" text-anchor="middle">${s}</text></g>`).join("");
+  return `${topicHead(TOPICS[1], "Facts that know how they connect",
+    "A knowledge graph stores things and the relationships between them, so the system can follow a chain of facts to an answer and show its working.",
+    [["The idea", "Each fact is a link between two things: <i>Maria placed order #4512</i>; <i>order #4512 contains batch B-19</i>."],
+     ["How it’s used", "For a question, the system walks the links that matter and hands only those facts to the model."],
+     ["What it fixes", "Answers that need several hops (customer → order → product → policy) that a document search would miss."]])}
+  <div class="case"><div class="panel kg">
+    <svg viewBox="0 0 830 470" role="img" aria-label="Knowledge graph of Northbay Outdoor facts">${edges}${nodes}</svg>
+    <div class="side">
+      <span class="label">Ask the graph</span>
+      ${KG_Q.map((q, k) => `<button class="btn qbtn" data-q="${k}" aria-pressed="false">${q.q}</button>`).join("")}
+      <div id="kgOut"><p class="muted">Pick a question to see the path the system follows and the facts it sends to the model.</p></div>
+    </div>
+  </div></div>
+  ${why("Answers come with their evidence path, so they can be explained and audited, and one change (a new recall) updates every answer that depends on it.")}`;
+}
+function initGraph() {
+  const show = (k) => {
+    const q = KG_Q[k], on = new Set(q.path);
+    $$(".kg .qbtn").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.q === k)));
+    $$(".kg .node").forEach((n) => n.classList.toggle("on", on.has(n.dataset.n)));
+    const pairs = new Set(q.path.slice(1).map((n, i) => [q.path[i], n].sort().join("|")));
+    $$(".kg [data-e]").forEach((e) => e.classList.toggle("on", pairs.has(e.dataset.e.split("-").sort().join("|"))));
+    $("#kgOut").innerHTML = `<span class="label">Facts sent to the model</span>
+      <ol class="facts" style="margin-top:6px">${q.facts.map((f) => `<li>${f}</li>`).join("")}</ol>
+      <div class="msg done" style="margin-top:10px"><span class="who"><span class="dot"></span>Answer</span>${q.answer}</div>`;
+  };
+  $$(".kg .qbtn").forEach((b) => b.addEventListener("click", () => show(+b.dataset.q)));
+  show(0);
+}
+
+/* =====================================================================
+   3 · ENTITY SCHEMA
+   ===================================================================== */
+function entityPanel() {
+  return `${topicHead(TOPICS[2], "One agreed shape for business objects",
+    "An entity schema is the agreed format of a business object, so the model reads messy language into data your systems accept, and answers in a form they can process.",
+    [["The idea", "Define the fields of a <i>ReturnRequest</i> or a <i>ReturnDecision</i> once: names, types, allowed values."],
+     ["Input", "The model turns an email or chat into that structure. A validator checks it before anything happens."],
+     ["Output", "The model must answer in the agreed structure, so the refunds system can act on it automatically."]])}
+  ${subtabs("entity", [["input", "Input: text → entity"], ["output", "Output: decision → system"]])}
+  <div class="case" data-group="entity" data-sub="input" role="tabpanel">
+    <div class="grid2">
+      <div class="panel pad stack">
+        <span class="label">Customer email (unstructured)</span>
+        <div class="msg user"><span class="who"><span class="dot"></span>From: maria.costa@example.com</span>“Hi, it’s Maria Costa. The red Trail Shell from my order 4512 (came on the 12th of Oct) leaks at the shoulder after one hike. I’d like my money back, or a new one if that’s quicker. Thanks!”</div>
+        <span class="label" style="margin-top:6px">Entity schema · ReturnRequest</span>
+<pre class="code"><span class="k">customer_name</span>     text, required
+<span class="k">order_id</span>          4 digits, required
+<span class="k">product</span>           text, required
+<span class="k">delivered_on</span>      date YYYY-MM-DD
+<span class="k">reason</span>            defect | size | changed_mind
+<span class="k">wanted_outcome</span>    refund | replacement (list)</pre>
+      </div>
+      <div class="panel pad stack">
+        <div class="case-head"><span class="label">What the model extracted</span>
+          <span class="subtabs" style="margin:0"><button class="subtab" aria-pressed="true" data-ex="good">Good extraction</button><button class="subtab" data-ex="bad">Bad extraction</button></span></div>
+        <div id="entOut"></div>
+      </div>
+    </div>
+  </div>
+  <div class="case" data-group="entity" data-sub="output" role="tabpanel" hidden>
+    <div class="grid2">
+      <div class="panel pad stack">
+        <span class="label">Entity schema · ReturnDecision (what the refunds system accepts)</span>
+<pre class="code"><span class="k">decision</span>     approve_refund | approve_replacement | reject
+<span class="k">reason</span>       short text, required
+<span class="k">refund_eur</span>   number ≥ 0
+<span class="k">next_step</span>    send_return_label | book_pickup | none</pre>
+        <p class="muted">The schema goes into the model’s context as an instruction: “answer only in this format”.</p>
+      </div>
+      <div class="panel pad stack">
+        <div class="case-head"><span class="label">The model’s answer</span>
+          <span class="subtabs" style="margin:0"><button class="subtab" aria-pressed="true" data-out="good">Structured</button><button class="subtab" data-out="bad">Free text</button></span></div>
+        <div id="outOut"></div>
+      </div>
+    </div>
+  </div>
+  ${why("Structured in, structured out is what turns a chatbot into automation: the decision flows straight into your systems, and bad data is stopped at the door.")}`;
+}
+const ENT = {
+  good: `<pre class="code">{
+  <span class="k">"customer_name"</span>: <span class="s">"Maria Costa"</span>,
+  <span class="k">"order_id"</span>: <span class="s">"4512"</span>,
+  <span class="k">"product"</span>: <span class="s">"Trail Shell (red)"</span>,
+  <span class="k">"delivered_on"</span>: <span class="s">"2026-10-12"</span>,
+  <span class="k">"reason"</span>: <span class="s">"defect"</span>,
+  <span class="k">"wanted_outcome"</span>: [<span class="s">"replacement"</span>, <span class="s">"refund"</span>]
+}</pre><div class="msg pass"><span class="who"><span class="dot"></span>Valid</span>All required fields present and in the right format. The case is opened automatically.</div>`,
+  bad: `<pre class="code">{
+  <span class="k">"customer_name"</span>: <span class="s">"Maria"</span>,
+  <span class="k">"order_id"</span>: <span class="n">null</span>,
+  <span class="k">"product"</span>: <span class="s">"jacket"</span>,
+  <span class="k">"delivered_on"</span>: <span class="s">"12th of Oct"</span>,
+  <span class="k">"reason"</span>: <span class="s">"leaks after hike, wants money"</span>
+}</pre><div class="msg fail"><span class="who"><span class="dot"></span>Rejected by the validator</span>order_id is missing · delivered_on is not a date · reason is not an allowed value. The system asks the model to try again instead of opening a broken case.</div>`,
+};
+const OUT = {
+  good: `<pre class="code">{
+  <span class="k">"decision"</span>: <span class="s">"approve_replacement"</span>,
+  <span class="k">"reason"</span>: <span class="s">"Manufacturing defect, within 30 days"</span>,
+  <span class="k">"refund_eur"</span>: <span class="n">0</span>,
+  <span class="k">"next_step"</span>: <span class="s">"send_return_label"</span>
+}</pre><div class="msg pass"><span class="who"><span class="dot"></span>Processed</span>Replacement ordered and return label emailed, with no human copy-paste.</div>`,
+  bad: `<div class="msg user"><span class="who"><span class="dot"></span>Model</span>“Sure Maria! We’ll sort you out with a refund or a new jacket, whatever works best for you!”</div>
+  <div class="msg fail"><span class="who"><span class="dot"></span>Rejected</span>Friendly, but the refunds system can’t process it: no decision, no amount, no next step. Someone has to read and re-type it.</div>`,
+};
+function initEntity() {
+  const ex = (k) => { $("#entOut").innerHTML = ENT[k]; $$("[data-ex]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.ex === k))); $$("[data-ex]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.ex === k))); };
+  const out = (k) => { $("#outOut").innerHTML = OUT[k]; $$("[data-out]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.out === k))); };
+  $$("[data-ex]").forEach((b) => b.addEventListener("click", () => ex(b.dataset.ex)));
+  $$("[data-out]").forEach((b) => b.addEventListener("click", () => out(b.dataset.out)));
+  ex("good"); out("good");
+}
+
+/* =====================================================================
+   4 · CONTEXT PACK
+   ===================================================================== */
+const PACK = [
+  { id: "role", name: "Role & instructions", note: "tone, limits, escalation rules", tok: 350, req: true, on: true, col: "#6D5BD0" },
+  { id: "policy", name: "Return policy (excerpt)", note: "30 days, defects, cleaning fee", tok: 900, req: true, on: true, col: "#3A3263" },
+  { id: "memory", name: "Maria’s memory", note: "channel, size, open issue", tok: 120, on: true, col: "#4C8FD6" },
+  { id: "entity", name: "Order #4512 (entity)", note: "product, batch, delivery date", tok: 180, req: true, on: true, col: "#4F9F52" },
+  { id: "graph", name: "Graph facts", note: "recall status, home store", tok: 150, on: true, col: "#C2A52B" },
+  { id: "docs", name: "2 retrieved help articles", note: "found by RAG for this question", tok: 1400, on: true, col: "#D1763C" },
+  { id: "tools", name: "Allowed tools", note: "lookup_order, create_return_label", tok: 300, req: true, on: true, col: "#8A8A93" },
+  { id: "schema", name: "Output schema", note: "ReturnDecision format", tok: 200, req: true, on: true, col: "#C2614F" },
+  { id: "history", name: "Full chat history (2 years)", note: "every message Maria ever sent", tok: 6000, on: false, col: "#A1A1AA" },
+  { id: "catalog", name: "Entire product catalogue", note: "3,400 products", tok: 12000, on: false, col: "#D4D4D8" },
+];
+const BUDGET = 8000;
+function packPanel() {
+  return `${topicHead(TOPICS[3], "A briefing folder for one task",
+    "A context pack is the pre-assembled set of instructions, facts, tools and formats a task needs. It is put together the same way every time the task runs.",
+    [["The idea", "Like the folder a manager hands a new colleague: everything needed for <i>this</i> job, nothing else."],
+     ["What goes in", "Instructions, policies, the customer’s memory, the relevant records, retrieved documents, allowed tools, the answer format."],
+     ["The constraint", "The context window has a budget. A good pack is complete <i>and</i> small. More is not better."]])}
+  <div class="case"><div class="pack">
+    <div class="panel pad">
+      <div class="case-head"><span class="label">Pack · “Handle a return request”</span><span class="fict">tokens ≈ words × 1.3</span></div>
+      <ul class="items" id="packItems" style="margin-top:10px"></ul>
+    </div>
+    <div class="panel pad stack">
+      <span class="label">Context window budget</span>
+      <div class="budget" id="packBar"><i class="limit" id="packLimit"></i></div>
+      <div class="legend" id="packLegend"></div>
+      <p class="big" id="packTotal"></p>
+      <div id="packMsgs" class="stack"></div>
+    </div>
+  </div></div>
+  ${why("Consistency at scale: every return request gets the same complete, approved briefing, so quality doesn’t depend on luck or on who wrote the prompt.")}`;
+}
+function initPack() {
+  const list = $("#packItems");
+  list.innerHTML = PACK.map((p) => `<li><label><input type="checkbox" data-p="${p.id}" ${p.on ? "checked" : ""}/><span>${p.name}${p.req ? '<span class="req">required</span>' : ""}<small>${p.note}</small></span><span class="tok">${p.tok.toLocaleString("en")} tok</span></label></li>`).join("");
+  const render = () => {
+    const on = PACK.filter((p) => $(`[data-p="${p.id}"]`).checked);
+    const total = on.reduce((s, p) => s + p.tok, 0);
+    const scale = Math.max(total, BUDGET * 1.25);
+    $("#packBar").innerHTML = on.map((p) => `<span title="${p.name}" style="width:${(p.tok / scale) * 100}%;background:${p.col}"></span>`).join("") + `<i class="limit" style="left:${(BUDGET / scale) * 100}%"></i>`;
+    $("#packLegend").innerHTML = on.map((p) => `<span><i style="background:${p.col}"></i>${p.name}</span>`).join("") + `<span><i style="background:var(--text)"></i>budget ${BUDGET.toLocaleString("en")}</span>`;
+    $("#packTotal").innerHTML = `${total.toLocaleString("en")} <span class="muted">of ${BUDGET.toLocaleString("en")} tokens</span>`;
+    const missing = PACK.filter((p) => p.req && !on.includes(p));
+    const msgs = [];
+    if (total > BUDGET) msgs.push(`<div class="msg fail"><span class="who"><span class="dot"></span>Over budget</span>The window overflows: something important will be cut, and long contexts make the model less accurate.</div>`);
+    missing.forEach((p) => msgs.push(`<div class="msg warn"><span class="who"><span class="dot"></span>Missing · ${p.name}</span>${{
+      role: "Without instructions the assistant improvises its tone and limits.",
+      policy: "Without the policy the model will guess the return rules.",
+      entity: "Without the order record it can’t check dates or the batch.",
+      tools: "Without tools it can describe a return but can’t create one.",
+      schema: "Without the format its answer can’t be processed automatically." }[p.id]}</div>`));
+    if (!msgs.length) msgs.push(`<div class="msg pass"><span class="who"><span class="dot"></span>Ready</span>Complete and within budget. This is the pack every return request gets.</div>`);
+    $("#packMsgs").innerHTML = msgs.join("");
+  };
+  list.addEventListener("change", render);
+  render();
+}
+
+/* =====================================================================
+   5 · EMBEDDINGS
+   ===================================================================== */
+const SNIPS = [
+  ["R1", "Return unworn items within 30 days", [0.95, 0.25], "returns"],
+  ["R2", "Print a free return label", [0.86, 0.42], "returns"],
+  ["R3", "Refunds reach your card in 5–7 days", [0.8, 0.08], "returns"],
+  ["S1", "Standard delivery takes 2–4 working days", [0.3, 0.92], "shipping"],
+  ["S2", "Express orders before 2 pm ship today", [0.12, 0.97], "shipping"],
+  ["S3", "Track your parcel from the email link", [0.48, 0.8], "shipping"],
+  ["Z1", "Our jackets run small: size up", [-0.55, 0.76], "sizing"],
+  ["Z2", "Find your size on each product page", [-0.76, 0.55], "sizing"],
+  ["W1", "Trail Shell is rated 20,000 mm waterproof", [-0.86, -0.4], "waterproofing"],
+  ["W2", "Re-proof shells with spray each season", [-0.64, -0.7], "waterproofing"],
+  ["W3", "All seams are fully taped", [-0.93, -0.14], "waterproofing"],
+  ["G1", "2-year warranty on zips and seams", [0.24, -0.9], "warranty"],
+  ["G2", "Damaged items are repaired, not refunded", [0.68, -0.58], "warranty"],
+  ["G3", "Report a fault with photos for a fast repair", [0.45, -0.78], "warranty"],
+];
+const QUERIES = [
+  ["How do I send back my jacket?", [0.9, 0.36]],
+  ["Will my order arrive before Friday?", [0.22, 0.95]],
+  ["Is the shell jacket waterproof?", [-0.9, -0.3]],
+];
+const PRODUCTS = [
+  { n: "Trail Shell", col: "#C2453A", cat: "jackets", price: 189, stock: true, v: [0.93, 0.8] },
+  { n: "Storm Pro", col: "#B23A3A", cat: "jackets", price: 249, stock: true, v: [0.86, 0.88] },
+  { n: "Breeze windbreaker", col: "#E07A2E", cat: "jackets", price: 89, stock: false, v: [0.82, 0.58] },
+  { n: "Trail Shell", col: "#3B6FB6", cat: "jackets", price: 189, stock: true, v: [0.9, -0.7] },
+  { n: "Mini rain jacket (kids)", col: "#D2483C", cat: "kids", price: 59, stock: true, v: [0.72, 0.76] },
+  { n: "Red fleece", col: "#C8463F", cat: "fleece", price: 69, stock: true, v: [0.38, 0.86] },
+  { n: "Grey city jacket", col: "#8A8A93", cat: "jackets", price: 159, stock: false, v: [0.88, -0.08] },
+  { n: "Red hiking boots", col: "#B8403A", cat: "footwear", price: 139, stock: true, v: [-0.3, 0.82] },
+  { n: "Blue hiking boots", col: "#3A64A8", cat: "footwear", price: 129, stock: true, v: [-0.42, -0.74] },
+  { n: "Orange dome tent", col: "#E07A2E", cat: "camping", price: 299, stock: true, v: [-0.86, 0.52] },
+  { n: "Green dome tent", col: "#4F8F52", cat: "camping", price: 259, stock: true, v: [-0.9, -0.4] },
+  { n: "Red daypack", col: "#C2453A", cat: "bags", price: 99, stock: true, v: [0.08, 0.92] },
+];
+const SHAPES = {
+  jackets: (c) => `<path d="M40 14 L52 10 L60 18 L68 10 L80 14 L92 30 L82 38 L80 32 L80 64 L40 64 L40 32 L38 38 L28 30 Z" fill="${c}"/><path d="M60 18 L60 64" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>`,
+  kids: (c) => `<path d="M46 22 L55 19 L60 25 L65 19 L74 22 L83 34 L76 40 L74 36 L74 60 L46 60 L46 36 L44 40 L37 34 Z" fill="${c}"/>`,
+  fleece: (c) => `<path d="M40 14 L52 10 L60 16 L68 10 L80 14 L92 30 L82 38 L80 32 L80 64 L40 64 L40 32 L38 38 L28 30 Z" fill="${c}"/><path d="M42 48 H78 M42 56 H78" stroke="rgba(255,255,255,.35)" stroke-width="2"/>`,
+  footwear: (c) => `<path d="M40 20 H62 V44 L88 50 Q94 52 94 60 V64 H36 V24 Q36 20 40 20 Z" fill="${c}"/><path d="M36 60 H94" stroke="rgba(0,0,0,.3)" stroke-width="3"/>`,
+  camping: (c) => `<path d="M60 12 L96 64 H24 Z" fill="${c}"/><path d="M60 12 L60 64 M52 64 L60 40 L68 64" stroke="rgba(0,0,0,.25)" stroke-width="2" fill="none"/>`,
+  bags: (c) => `<rect x="42" y="18" width="36" height="46" rx="10" fill="${c}"/><rect x="48" y="40" width="24" height="14" rx="4" fill="rgba(0,0,0,.2)"/><path d="M50 18 Q60 6 70 18" stroke="${c}" stroke-width="4" fill="none"/>`,
+};
+const IMGQ = ["“red rain jacket”", [0.9, 0.84]];
+
+function plotSVG(points, q, topIds, outIds = new Set(), size = 420) {
+  const pad = 30, s = (size - 2 * pad) / 2.3, cx = size / 2, cy = size / 2;
+  const X = (x) => cx + x * s, Y = (y) => cy - y * s;
+  let g = `<line class="axis" x1="${pad}" y1="${cy}" x2="${size - pad}" y2="${cy}"/><line class="axis" x1="${cx}" y1="${pad}" x2="${cx}" y2="${size - pad}"/>`;
+  for (const t of [-1, -0.5, 0.5, 1]) g += `<line class="grid-l" x1="${X(t)}" y1="${pad}" x2="${X(t)}" y2="${size - pad}"/><line class="grid-l" x1="${pad}" y1="${Y(t)}" x2="${size - pad}" y2="${Y(t)}"/>`;
+  g += `<text class="ptlabel" x="${size - pad}" y="${cy - 6}" text-anchor="end">dim 1</text><text class="ptlabel" x="${cx + 6}" y="${pad + 8}">dim 2</text>`;
+  if (q) points.filter((p) => topIds.has(p.id)).forEach((p) => (g += `<line class="ray" x1="${X(q[0])}" y1="${Y(q[1])}" x2="${X(p.v[0])}" y2="${Y(p.v[1])}"/>`));
+  points.forEach((p) => {
+    const cls = topIds.has(p.id) ? "top" : outIds.has(p.id) ? "out" : "";
+    g += `<circle class="pt ${cls}" cx="${X(p.v[0])}" cy="${Y(p.v[1])}" r="${cls === "top" ? 7 : 5}"/><text class="ptlabel ${cls}" x="${X(p.v[0]) + 9}" y="${Y(p.v[1]) + 4}">${p.id}</text>`;
+  });
+  if (q) g += `<circle class="qpt" cx="${X(q[0])}" cy="${Y(q[1])}" r="8"/><text class="qlabel" x="${X(q[0]) - 10}" y="${Y(q[1]) - 12}" text-anchor="end">query</text>`;
+  return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="2D embedding plot">${g}</svg>`;
+}
+
+function embedPanel() {
+  return `${topicHead(TOPICS[4], "Meaning, turned into coordinates",
+    "An embedding turns a sentence or an image into a list of numbers so that similar meanings land close together. Search becomes: find the nearest points.",
+    [["The idea", "Each text gets a position. “Send back my jacket” lands near “Print a return label”, even with no words in common."],
+     ["How similarity is scored", "The <b>dot product</b>: multiply the matching coordinates and add them up. Pointing the same way gives a high score."],
+     ["Retrieval", "Score the question against every item and keep the <b>top k</b> (here k = 5). Those go into the context."]])}
+  ${subtabs("embed", [["text", "Text retrieval"], ["images", "Images + metadata"]])}
+  <div class="case" data-group="embed" data-sub="text" role="tabpanel">
+    <div class="panel pad stack">
+      <div class="case-head"><span class="label">Help-centre snippets in 2D · pick a customer question</span><span class="fict">2D for intuition; real embeddings have hundreds of dimensions</span></div>
+      <div class="qbtns" id="embQ">${QUERIES.map((q, k) => `<button class="btn" data-k="${k}" aria-pressed="false">${q[0]}</button>`).join("")}</div>
+      <div class="plotwrap">
+        <div class="plot" id="embPlot"></div>
+        <div class="stack">
+          <p class="formula">score = q · d = q₁·d₁ + q₂·d₂</p>
+          <div class="tablewrap"><table class="rank"><thead><tr><th>#</th><th>Snippet</th><th class="num">q · d</th><th class="num">score</th></tr></thead><tbody id="embRank"></tbody></table></div>
+          <p class="muted" id="embNote"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="case" data-group="embed" data-sub="images" role="tabpanel" hidden>
+    <div class="panel pad stack">
+      <div class="case-head"><span class="label">Catalogue images in the same space as text · query ${IMGQ[0]}</span><span class="fict">filter first, then rank · k = 5</span></div>
+      <div class="filters">
+        <label>Max price <input type="range" id="fPrice" min="60" max="300" step="10" value="300"/> <b class="mono" id="fPriceV">€300</b></label>
+        <label><input type="checkbox" id="fStock"/> In stock only</label>
+        <label>Category <select id="fCat"><option value="all">All</option><option value="jackets">Jackets</option><option value="kids">Kids</option><option value="footwear">Footwear</option><option value="bags">Bags</option></select></label>
+      </div>
+      <div class="plotwrap">
+        <div class="products" id="imgGrid"></div>
+        <div class="stack"><div class="plot" id="imgPlot"></div><p class="muted">Images and the text query are embedded by the same kind of model, so “red rain jacket” lands near red jacket <i>pictures</i>. Metadata (price, stock, category) is checked before ranking.</p></div>
+      </div>
+    </div>
+  </div>
+  ${why("Search by meaning, not keywords: customers find answers in their own words, and metadata filters keep results within business rules (in stock, in budget, in the right market).")}`;
+}
+function initEmbed() {
+  const pts = SNIPS.map(([id, t, v]) => ({ id, t, v }));
+  const show = (k) => {
+    const q = QUERIES[k][1];
+    $$("#embQ .btn").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.k === k)));
+    const ranked = pts.map((p) => ({ ...p, s: dot(q, p.v) })).sort((a, b) => b.s - a.s);
+    const top = new Set(ranked.slice(0, 5).map((p) => p.id));
+    $("#embPlot").innerHTML = plotSVG(pts, q, top);
+    $("#embRank").innerHTML = ranked.slice(0, 5).map((p, i) =>
+      `<tr><td>${i + 1}</td><td><b>${p.id}</b> · ${p.t}</td><td class="num">${fmt(q[0])}×${fmt(p.v[0])} + ${fmt(q[1])}×${fmt(p.v[1])}</td><td class="num"><b>${fmt(p.s)}</b></td></tr>`).join("");
+    const worst = ranked[ranked.length - 1];
+    $("#embNote").innerHTML = `Lowest score: <b>${worst.id}</b> “${worst.t}” (${fmt(worst.s)}), pointing the opposite way. The top 5 go into the context window; the rest stay out.`;
+  };
+  $$("#embQ .btn").forEach((b) => b.addEventListener("click", () => show(+b.dataset.k)));
+  show(0);
+
+  const prods = PRODUCTS.map((p, i) => ({ ...p, id: "P" + (i + 1) }));
+  const render = () => {
+    const max = +$("#fPrice").value, stock = $("#fStock").checked, cat = $("#fCat").value;
+    $("#fPriceV").textContent = "€" + max;
+    const why = (p) => (p.price > max ? `over €${max}` : stock && !p.stock ? "out of stock" : cat !== "all" && p.cat !== cat ? `not ${cat}` : "");
+    const allowed = prods.filter((p) => !why(p));
+    const ranked = allowed.map((p) => ({ ...p, s: dot(IMGQ[1], p.v) })).sort((a, b) => b.s - a.s);
+    const top = new Set(ranked.slice(0, 5).map((p) => p.id));
+    const rank = Object.fromEntries(ranked.map((p, i) => [p.id, i + 1]));
+    const order = [...prods].sort((a, b) => (rank[a.id] || 99) - (rank[b.id] || 99));
+    $("#imgGrid").innerHTML = order.map((p) => {
+      const w = why(p), s = dot(IMGQ[1], p.v);
+      return `<div class="prod ${top.has(p.id) ? "top" : ""} ${w ? "out" : ""}">
+        ${top.has(p.id) ? `<span class="pill acc score">#${rank[p.id]} · ${fmt(s)}</span>` : ""}
+        <svg viewBox="0 0 120 72" aria-hidden="true">${SHAPES[p.cat](p.col)}</svg>
+        <b>${p.n}</b><small>${p.id} · ${p.cat} · €${p.price} · ${p.stock ? "in stock" : "out of stock"}</small>
+        ${w ? `<span class="why">filtered: ${w}</span>` : ""}</div>`;
+    }).join("");
+    $("#imgPlot").innerHTML = plotSVG(prods, IMGQ[1], top, new Set(prods.filter((p) => why(p)).map((p) => p.id)), 360);
+  };
+  ["#fPrice", "#fStock", "#fCat"].forEach((s) => $(s).addEventListener("input", render));
+  render();
+}
+
+/* =====================================================================
+   6 · RAG
+   ===================================================================== */
+const CHUNKS = [
+  { id: "C1", src: "Returns policy §1", t: "Unworn items can be returned within 30 days of delivery.", v: [0.95, 0.25], lang: "en", upd: "2025-09" },
+  { id: "C2", src: "Returns policy §2", t: "Items worn outdoors once can be returned if undamaged and with tags; a €10 cleaning fee applies.", v: [0.8, -0.35], lang: "en", upd: "2025-09", rel: true },
+  { id: "C3", src: "Política de devoluções §2", t: "Artigos usados uma vez ao ar livre podem ser devolvidos…", v: [0.8, -0.33], lang: "pt", upd: "2025-09" },
+  { id: "C4", src: "Returns policy (old)", t: "Worn items cannot be returned.", v: [0.82, -0.3], lang: "en", upd: "2023-03" },
+  { id: "C5", src: "Product care guide", t: "Clean your shell after muddy hikes; machine wash at 30°.", v: [-0.55, -0.75], lang: "en", upd: "2025-06" },
+  { id: "C6", src: "Warranty", t: "Seams and zips are repaired free for 2 years.", v: [0.25, -0.92], lang: "en", upd: "2025-06" },
+  { id: "C7", src: "Shipping FAQ", t: "Return labels are free within Portugal.", v: [0.7, 0.55], lang: "en", upd: "2025-08" },
+  { id: "C8", src: "Shipping FAQ", t: "Standard delivery takes 2–4 working days.", v: [0.25, 0.95], lang: "en", upd: "2025-08" },
+];
+const RQ = { t: "Can I return a jacket I wore once on a hike?", v: [0.85, -0.3] };
+function ragPanel() {
+  return `${topicHead(TOPICS[5], "Look it up, then answer",
+    "Retrieval-augmented generation (RAG) prepares your documents once (indexing), then for each question fetches the few passages that matter and puts them in front of the model.",
+    [["Indexing (once)", "Split documents into short chunks, embed each one, store it with metadata like source, language and date."],
+     ["Retrieval (every question)", "Embed the question, filter by metadata, score by dot product, keep the top k (here k = 4)."],
+     ["Generation", "The model answers from those passages and cites them, so answers stay current without retraining."]])}
+  ${subtabs("rag", [["index", "1 · Indexing"], ["retrieve", "2 · Retrieval"]])}
+  <div class="case" data-group="rag" data-sub="index" role="tabpanel">
+    <div class="pipe">
+      <div class="panel"><span class="badge">1</span><h3>Documents</h3><p>Returns policy (EN, PT, old 2023 version), shipping FAQ, care guide, warranty.</p></div>
+      <div class="panel"><span class="badge">2</span><h3>Chunk</h3><p>Split into short passages that each answer one thing.</p></div>
+      <div class="panel"><span class="badge">3</span><h3>Embed</h3><p>Each chunk becomes a vector (here 2 numbers; really ~1,000).</p></div>
+      <div class="panel"><span class="badge">4</span><h3>Store + metadata</h3><p>Saved in a vector store with source, language and last-updated date.</p></div>
+    </div>
+    <div class="panel pad" style="margin-top:14px"><span class="label">The index · vector store contents</span>
+      <div class="tablewrap" style="margin-top:8px"><table><thead><tr><th>Chunk</th><th>Text</th><th>Vector</th><th>Source</th><th>Lang</th><th>Updated</th></tr></thead>
+      <tbody>${CHUNKS.map((c) => `<tr><td class="mono"><b>${c.id}</b></td><td>${c.t}</td><td class="mono">[${fmt(c.v[0])}, ${fmt(c.v[1])}]</td><td>${c.src}</td><td><span class="pill">${c.lang}</span></td><td class="mono">${c.upd}</td></tr>`).join("")}</tbody></table></div>
+    </div>
+  </div>
+  <div class="case" data-group="rag" data-sub="retrieve" role="tabpanel" hidden>
+    <div class="panel pad stack">
+      <div class="msg user"><span class="who"><span class="dot"></span>Maria asks</span>“${RQ.t}”  <span class="mono" style="margin-left:6px">→ embedded as [${fmt(RQ.v[0])}, ${fmt(RQ.v[1])}]</span></div>
+      <div class="grid2">
+        <div class="stack">
+          <span class="label">Step 1 · metadata filter: language = en, updated ≥ 2025</span>
+          <div class="bars" id="ragBars"></div>
+          <p class="muted">Step 2 · <b>dot product</b> for each remaining chunk; the <b>top k = 4</b> (purple) are kept. C3 (Portuguese) and C4 (outdated policy) never compete: the old rule “worn items cannot be returned” would have produced a wrong answer.</p>
+        </div>
+        <div class="stack">
+          <span class="label">Step 3 · how confident was the retriever? softmax → log loss</span>
+          <div class="slider"><span>Sharpness</span><input type="range" id="ragTemp" min="1" max="20" step="1" value="10"/><b class="mono" id="ragTempV">×10</b></div>
+          <div class="bars" id="ragProb"></div>
+          <div class="plot" id="ragLoss"></div>
+          <p class="muted" id="ragLossNote"></p>
+        </div>
+      </div>
+    </div>
+    <div class="panel pad stack" style="margin-top:14px">
+      <span class="label">Step 4 · into the model</span>
+      <div class="grid2">
+        <div class="window" id="ragWindow"></div>
+        <div class="stack">
+          <div class="msg done"><span class="who"><span class="dot"></span>Assistant</span>“Yes. A jacket worn once outdoors can be returned if it is undamaged and still has its tags. A €10 cleaning fee applies [Returns policy §2], and the return label is free within Portugal [Shipping FAQ].”</div>
+          <p class="muted">The answer quotes <b>today’s</b> policy, cites its sources, and needed no retraining when the policy changed in 2025.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  ${why("Your documents, not the model’s memory: answers are current, cited and auditable, and updating the knowledge means updating a document, not training a model.")}`;
+}
+function initRag() {
+  const ok = (c) => c.lang === "en" && c.upd >= "2025";
+  const scored = CHUNKS.map((c) => ({ ...c, s: dot(RQ.v, c.v), ok: ok(c) }));
+  const kept = scored.filter((c) => c.ok).sort((a, b) => b.s - a.s);
+  const top = new Set(kept.slice(0, 4).map((c) => c.id));
+  const maxS = Math.max(...scored.map((c) => c.s));
+  $("#ragBars").innerHTML = [...scored].sort((a, b) => b.s - a.s).map((c) => {
+    const w = Math.max(0, c.s) / maxS * 100;
+    return `<div class="bar ${!c.ok ? "out" : top.has(c.id) ? "top" : ""}"><span><b>${c.id}</b> ${c.src}${!c.ok ? ` <span class="pill fail">${c.lang !== "en" ? "lang" : "old"}</span>` : ""}</span><span class="track"><span class="fill" style="width:${w}%"></span></span><span class="v">${fmt(c.s)}</span></div>`;
+  }).join("");
+  $("#ragWindow").innerHTML = `<span class="label">Context window sent to the model</span><ul>
+    <li><b>Instructions:</b> answer only from the passages; cite sources; say if unsure.</li>
+    ${kept.slice(0, 4).map((c) => `<li><span class="pill acc">${c.id}</span> [${c.src}] ${c.t}</li>`).join("")}
+    <li><b>Question:</b> ${RQ.t}</li></ul>`;
+
+  const renderLoss = () => {
+    const T = +$("#ragTemp").value;
+    $("#ragTempV").textContent = "×" + T;
+    const ex = kept.map((c) => Math.exp(c.s * T)), Z = ex.reduce((a, b) => a + b, 0);
+    const probs = kept.map((c, i) => ({ ...c, p: ex[i] / Z }));
+    $("#ragProb").innerHTML = probs.map((c) => `<div class="bar ${c.rel ? "rel" : top.has(c.id) ? "top" : ""}"><span><b>${c.id}</b> ${c.rel ? "✓ relevant" : c.src}</span><span class="track"><span class="fill" style="width:${c.p * 100}%"></span></span><span class="v">${fmt(c.p * 100, 1)}%</span></div>`).join("");
+    const pRel = probs.find((c) => c.rel).p, loss = -Math.log(pRel);
+    // −ln(p) curve, p in (0.02, 1]
+    const W = 380, H = 190, pl = 40, pb = 28, pt = 12, pr = 12, ymax = 4;
+    const X = (p) => pl + p * (W - pl - pr), Y = (l) => pt + (1 - Math.min(l, ymax) / ymax) * (H - pt - pb);
+    let d = "";
+    for (let i = 2; i <= 100; i++) { const p = i / 100; d += `${i === 2 ? "M" : "L"}${X(p).toFixed(1)} ${Y(-Math.log(p)).toFixed(1)} `; }
+    let g = `<line class="axis" x1="${pl}" y1="${H - pb}" x2="${W - pr}" y2="${H - pb}"/><line class="axis" x1="${pl}" y1="${pt}" x2="${pl}" y2="${H - pb}"/>`;
+    [0, 0.25, 0.5, 0.75, 1].forEach((p) => (g += `<text class="ptlabel" x="${X(p)}" y="${H - 10}" text-anchor="middle">${p}</text>`));
+    [0, 1, 2, 3, 4].forEach((l) => (g += `<text class="ptlabel" x="${pl - 8}" y="${Y(l) + 3}" text-anchor="end">${l}</text><line class="grid-l" x1="${pl}" y1="${Y(l)}" x2="${W - pr}" y2="${Y(l)}"/>`));
+    g += `<path d="${d}" fill="none" stroke="var(--ink2)" stroke-width="2"/>`;
+    g += `<line class="ray" x1="${X(pRel)}" y1="${H - pb}" x2="${X(pRel)}" y2="${Y(loss)}"/><circle class="qpt" cx="${X(pRel)}" cy="${Y(loss)}" r="6"/>`;
+    g += `<text class="qlabel" x="${X(pRel) + (pRel > 0.7 ? -10 : 10)}" y="${Y(loss) - 10}" text-anchor="${pRel > 0.7 ? "end" : "start"}">C2: loss ${fmt(loss)}</text>`;
+    g += `<text class="ptlabel" x="${W - pr}" y="${pt + 10}" text-anchor="end">log loss = −ln(p)</text><text class="ptlabel" x="${(pl + W) / 2}" y="${H}" text-anchor="middle">p given to the relevant chunk</text>`;
+    $("#ragLoss").innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" role="img" aria-label="Log loss curve">${g}</svg>`;
+    $("#ragLossNote").innerHTML = `The retriever gives the truly relevant chunk (C2) <b>${fmt(pRel * 100, 1)}%</b> of the probability, a log loss of <b>${fmt(loss)}</b>. Lower is better: 0 means fully confident and right. Teams track this on test questions to tune and compare retrievers.`;
+  };
+  $("#ragTemp").addEventListener("input", renderLoss);
+  renderLoss();
+}
+
+/* ---------- mount ---------- */
+const BUILD = { memory: memoryPanel, graph: graphPanel, entity: entityPanel, pack: packPanel, embed: embedPanel, rag: ragPanel };
+const INIT = { memory: initMemory, graph: initGraph, entity: initEntity, pack: initPack, embed: initEmbed, rag: initRag };
+$("#panels").innerHTML = TOPICS.map((t) => `<section class="topic" role="tabpanel" id="panel-${t.id}" aria-labelledby="tab-${t.id}" hidden>${BUILD[t.id]()}</section>`).join("");
+TOPICS.forEach((t) => INIT[t.id]());
+
+// sub-tabs: buttons with data-group/data-sub switch sibling case panels
+document.addEventListener("click", (e) => {
+  const b = e.target.closest(".subtab[data-group]");
+  if (!b) return;
+  const g = b.dataset.group, root = b.closest(".topic");
+  $$(`.subtab[data-group="${g}"]`, root).forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+  $$(`.case[data-group="${g}"]`, root).forEach((c) => (c.hidden = c.dataset.sub !== b.dataset.sub));
+});
+// entity toggles share the subtab look
+$$("[data-ex],[data-out]").forEach((b) => b.setAttribute("aria-selected", String(b.getAttribute("aria-pressed") === "true")));
+
+const showTopic = (id) => {
+  if (!BUILD[id]) id = "memory";
+  $$("#tabs .tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.topic === id)));
+  $$(".topic").forEach((p) => (p.hidden = p.id !== "panel-" + id));
+  if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+};
+$("#tabs").addEventListener("click", (e) => { const t = e.target.closest(".tab"); if (t) showTopic(t.dataset.topic); });
+$("#tabs").addEventListener("keydown", (e) => {
+  if (!["ArrowRight", "ArrowLeft"].includes(e.key)) return;
+  const tabs = $$("#tabs .tab"), i = tabs.findIndex((t) => t.getAttribute("aria-selected") === "true");
+  const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+  n.focus(); showTopic(n.dataset.topic);
+});
+addEventListener("hashchange", () => showTopic(location.hash.slice(1)));
+showTopic(location.hash.slice(1));
+</script>
+</body>
+</html>
