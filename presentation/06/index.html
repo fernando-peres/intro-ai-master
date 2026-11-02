@@ -1034,16 +1034,29 @@
         <div class="layout-dark-1">
           <span class="eyebrow">RAG</span>
           <h1>RAG <em>in action</em></h1>
-          <a class="notes-link" href="../../html/context.html#rag" target="_blank" rel="noopener">Open the RAG notes <span aria-hidden="true">↗</span></a>
-          <div class="rag-ph">
-            <span class="tag">Interactive example · html/rag.html · in preparation</span>
-            <b>Index a small set of documents, ask a question, and watch what is retrieved, and why.</b>
-            <ol>
-              <li>Chunk and embed the documents</li>
-              <li>Ask: see the top-k passages and their scores</li>
-              <li>Change chunking, filters or k, and compare the answers</li>
-            </ol>
+          <a class="notes-link" href="http://localhost:8501" target="_blank" rel="noopener">Open the app <span aria-hidden="true">↗</span></a>
+          <p class="subtitle">An instructional simulation: a real RAG pipeline, run one visible step at a time.</p>
+          <div class="rag-app">
+            <div><b>Load</b><span>10 Markdown documents</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Chunk</b><span>6 strategies to compare</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Enrich</b><span>metadata on each chunk</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Embed</b><span>local MiniLM or OpenAI</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Store</b><span>a FAISS index</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div class="is-key"><b>Retrieve &amp; chat</b><span>dense, keyword or hybrid</span></div>
+            <svg class="ce-arrow" viewBox="0 0 70 24" aria-hidden="true"><use href="#flow-arrow"/></svg>
+            <div><b>Analytics</b><span>topics in support questions</span></div>
           </div>
+          <div class="example-cards rag-app-cards">
+            <div><span class="tag">What you see</span><b>The real data at each step</b><p>Chunks, metadata, vectors and scores, and exactly what reached the model.</p></div>
+            <div class="is-accent"><span class="tag">What you change</span><b>One choice at a time</b><p>Chunking, embedder, retrieval mode, top-k. Then compare the answers.</p></div>
+            <div><span class="tag">The data</span><b>A company that doesn’t exist</b><p>Nimbus Logistics, an invented courier. Its facts are fictional, so a correct answer must come from retrieval.</p></div>
+          </div>
+          <p class="flow-note rag-app-note">Run it from the repo root: <code>uv run rag-in-action</code>. The chat needs an OpenAI key; every other step works without one.</p>
         </div>
         <span class="page-num"></span>
       </div>

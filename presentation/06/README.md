@@ -64,7 +64,7 @@ Serve from the repo root, not from this folder: the deck loads fonts from `../fo
 | 38 | RAG · retrieval strategies | `layout-dark-1` |
 | 39 | RAG · semantic search | `layout-dark-1` |
 | 40 | RAG · metadata and hybrid search | `layout-dark-1` |
-| 41 | RAG · in action (example) | `layout-dark-1` |
+| 41 | RAG · in action (links to `apps/rag-in-action`) | `layout-dark-1` |
 | 42 | RAG · other types | `layout-dark-1` |
 | 43 | RAG · takeaways | `layout-dark-1` |
 | 44 | Unit 4 · Tools and Integration | `layout-unit-v2` |
