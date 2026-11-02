@@ -9,13 +9,14 @@ from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Footer, Static
 
-from all_apps.services import SERVICES, Service
+from all_apps.services import SERVICES, Page, Service, pages
 from all_apps.supervisor import Supervisor
-from all_apps.widgets import Details, ServiceRow, TabBar, TerminalView, is_active
+from all_apps.widgets import Details, Pages, ServiceRow, TabBar, TerminalView, is_active, is_serving
 
 _TICK_SECONDS = 1.0
 _REDRAW_SECONDS = 0.05
-_GROUPS = {"web": "Frontends", "api": "APIs", "db": "Databases"}
+_GROUPS = {"web": "Frontends", "static": "Presentation", "api": "APIs", "db": "Databases"}
+_DECK = "deck-06"
 
 
 class ConfirmQuit(ModalScreen[bool]):
@@ -38,6 +39,8 @@ class AllAppsApp(App[None]):
     CSS = """
     #left { width: 58; }
     #services { height: auto; border: round $primary; padding: 0 1; }
+    #pages { height: auto; border: round $primary; padding: 0 1; link-style: none; }
+    #pages { link-color: $text; link-background-hover: $boost; link-color-hover: $text; }
     #details { height: 1fr; border: round $primary; padding: 0 1; }
     .service-group { height: 1; color: $text-muted; text-style: bold; }
     .service-row { height: 1; }
@@ -63,8 +66,11 @@ class AllAppsApp(App[None]):
         Binding("q", "quit", "Quit"),
     ]
 
-    def __init__(self, services: Iterable[Service] = SERVICES):
+    def __init__(
+        self, services: Iterable[Service] = SERVICES, html_pages: tuple[Page, ...] | None = None
+    ):
         super().__init__()
+        self.html_pages = pages() if html_pages is None else html_pages
         self.supervisor = Supervisor(services, on_output=self._mark_dirty)
         self.selected = next(iter(self.supervisor.runtimes))
         self._dirty = False
@@ -81,6 +87,10 @@ class AllAppsApp(App[None]):
                             kind = rt.service.kind
                             yield Static(_GROUPS[kind], classes="service-group")
                         yield ServiceRow(rt)
+                deck = _DECK if _DECK in self.supervisor.runtimes else None
+                links = Pages(deck, self.html_pages, id="pages")
+                links.border_title = "Pages"
+                yield links
                 details = Details(id="details")
                 details.border_title = "Details"
                 yield details
@@ -119,6 +129,7 @@ class AllAppsApp(App[None]):
             row.refresh()
         self.query_one(Details).show(self.supervisor.runtimes[self.selected], self.supervisor)
         self.query_one(TabBar).show(self.supervisor, self.selected)
+        self.query_one(Pages).show(self.supervisor)
 
     def _run(self, coroutine) -> None:
         async def work() -> None:
@@ -160,11 +171,26 @@ class AllAppsApp(App[None]):
         self._run(self.supervisor.stop_all())
 
     def action_open(self) -> None:
-        url = self.supervisor.runtimes[self.selected].service.url
+        url = self.supervisor.runtimes[self.selected].service.open_url
         if url:
             webbrowser.open(url)
         else:
             self.notify(f"{self.selected} has no web address")
+
+    def action_open_deck(self) -> None:
+        rt = self.supervisor.runtimes[_DECK]
+        if is_serving(rt):
+            webbrowser.open(rt.service.open_url)
+        else:
+            self.action_select_service(_DECK)
+            self.notify(f"{_DECK} isn't serving; press space to start it")
+
+    def action_open_page(self, index: int) -> None:
+        page = self.html_pages[index]
+        if page.exists:
+            webbrowser.open(page.path.as_uri())
+        else:
+            self.notify(f"{page.path} is missing", severity="error")
 
     def action_type(self) -> None:
         self.query_one(TerminalView).focus()

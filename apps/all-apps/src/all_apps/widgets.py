@@ -12,15 +12,16 @@ from textual.widget import Widget
 from textual.widgets import Static
 
 from all_apps.monitor import format_bytes, format_uptime, process_name, sparkline
+from all_apps.services import Page
 from all_apps.supervisor import Runtime, Status, Supervisor
 
 STATUS_STYLE = {
-    Status.STOPPED: ("○", "bright_black"),
+    Status.STOPPED: ("○", "red"),
     Status.STARTING: ("◐", "yellow"),
     Status.RUNNING: ("●", "green"),
     Status.UNHEALTHY: ("●", "dark_orange"),
     Status.CRASHED: ("✖", "red"),
-    Status.PORT_BUSY: ("◆", "magenta"),
+    Status.PORT_BUSY: ("◆", "green"),
 }
 
 _KEY_BYTES = {
@@ -40,6 +41,11 @@ _KEY_BYTES = {
 }
 _PYTE_COLOR = {"brown": "yellow", "brightbrown": "bright_yellow"}
 _DETAILS_WIDTH = 54
+
+
+def is_serving(rt: Runtime) -> bool:
+    """Ours and passing its check, or someone else's server already on the port."""
+    return rt.status in (Status.RUNNING, Status.PORT_BUSY)
 
 
 def is_active(rt: Runtime) -> bool:
@@ -103,7 +109,7 @@ class Details(Static):
         text.append("\n")
         if rt.status is Status.PORT_BUSY:
             owner = f"{process_name(rt.owner_pid)} (PID {rt.owner_pid})"
-            text.append(f"Port held by {owner}, not started here\n", style="magenta")
+            text.append(f"Port held by {owner}, not started here\n", style="green")
         elif rt.process is not None and rt.started_at is not None:
             uptime = format_uptime(time.monotonic() - rt.started_at)
             text.append(f"PID {rt.process.pid} · up {uptime} · ")
@@ -135,6 +141,31 @@ class Details(Static):
             if event.note and room > 0:
                 text.append(f" {event.note[:room]}", style="dim")
         return text
+
+
+class Pages(Static):
+    """Links: the deck (green while its server answers) and the standalone HTML pages."""
+
+    def __init__(self, deck: str | None, pages: tuple[Page, ...], **kwargs):
+        super().__init__(**kwargs)
+        self.deck = deck
+        self.pages = pages
+
+    def show(self, supervisor: Supervisor) -> None:
+        lines = []
+        if self.deck:
+            rt = supervisor.runtimes[self.deck]
+            target = rt.service.open_url.removeprefix("http://")
+            lines.append(_link("app.open_deck", is_serving(rt), f"{self.deck:<20}", target))
+        for i, page in enumerate(self.pages):
+            path = page.path.parent.name + "/" + page.path.name
+            lines.append(_link(f"app.open_page({i})", page.exists, f"{page.name:<20}", path))
+        self.update("\n".join(lines) or "[dim]No pages[/]")
+
+
+def _link(action: str, ok: bool, name: str, target: str) -> str:
+    color = "green" if ok else "red"
+    return f"[{color}]●[/] [@click={action}]{name}[dim]{target}[/][/]"
 
 
 class TabBar(Static):

@@ -4,9 +4,9 @@ import sys
 from dataclasses import replace
 
 from all_apps.app import AllAppsApp
-from all_apps.services import Service
+from all_apps.services import Page, Service
 from all_apps.supervisor import Status
-from all_apps.widgets import ServiceRow, TerminalView
+from all_apps.widgets import Pages, ServiceRow, TerminalView
 
 _SERVE = "print('\\x1b[31mhello-{0}\\x1b[0m',flush=True);import time;time.sleep(60)"
 
@@ -126,5 +126,25 @@ def test_quit_asks_then_stops_everything() -> None:
             await pilot.press("y")
             await _until(pilot, lambda: one.process is None)
         assert not process.group_alive()
+
+    asyncio.run(scenario())
+
+
+def test_pages_link_red_until_served_and_html_by_existence(tmp_path) -> None:
+    async def scenario() -> None:
+        (tmp_path / "here.html").write_text("<p>hi</p>")
+        deck = replace(_services()[0], name="deck-06", kind="static")
+        pages = (Page(tmp_path / "here.html"), Page(tmp_path / "gone.html"))
+        app = AllAppsApp([deck], html_pages=pages)
+        async with app.run_test(size=(120, 30)) as pilot:
+            markup = str(app.query_one(Pages).content)
+            lines = markup.splitlines()
+            assert lines[0].startswith("[red]●") and "deck-06" in lines[0]
+            assert lines[1].startswith("[green]●") and "here" in lines[1]
+            assert lines[2].startswith("[red]●") and "gone" in lines[2]
+            app.supervisor.runtimes["deck-06"].status = Status.RUNNING
+            app._refresh_dashboard()
+            await pilot.pause()
+            assert str(app.query_one(Pages).content).startswith("[green]●")
 
     asyncio.run(scenario())

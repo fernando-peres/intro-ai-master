@@ -1,0 +1,255 @@
+asked,channel,customer_tier,question
+2026-01-05-15-47-59,chat,Enterprise,How do I schedule a ColdBox pickup in Madrid?
+2026-01-05-18-32-35,portal,Standard,How often does the ColdBox record temperature?
+2026-01-06-07-04-40,email,Standard,How long does the ColdBox battery last?
+2026-01-06-10-04-59,email,Standard,Do you transport live animals or insects?
+2026-01-06-11-08-47,chat,Standard,How do I return a ColdBox after delivery?
+2026-01-06-16-31-37,email,Standard,Can we get invoices in Spanish?
+2026-01-07-08-03-53,email,Enterprise,Can I book a Same-Day Chill pickup after 11:00?
+2026-01-07-10-18-32,chat,Standard,Do I need to return the ColdBox in its original packaging?
+2026-01-07-10-22-11,chat,Standard,How often does the ColdBox record temperature?
+2026-01-08-10-23-34,portal,Standard,"We want to move all our insulin to Frost, what changes?"
+2026-01-08-10-51-40,email,Standard,Why do Frost shipments take an extra day?
+2026-01-08-16-41-37,portal,Standard,Do you deliver to the Azores or Madeira?
+2026-01-08-18-41-19,chat,Standard,What are the delivery windows for each service?
+2026-01-08-18-48-57,portal,Enterprise,What is the cut-off time for Same-Day Chill pickup?
+2026-01-09-17-04-01,portal,Standard,Does every Frost parcel go through Seville?
+2026-01-09-17-27-46,email,Standard,Why didn't my Same-Day Chill delivery arrive by 20:00?
+2026-01-12-07-08-40,chat,Standard,Is Next-Day Chill available on Saturdays?
+2026-01-12-11-12-47,chat,Enterprise,Can I send berries with Frost to Lisbon?
+2026-01-12-14-56-52,chat,Standard,Does every Frost parcel go through Seville?
+2026-01-12-16-35-42,portal,Standard,"Our vaccines parcel spoiled, how do I file a claim?"
+2026-01-13-08-14-30,chat,Standard,How many days do we have to return the ColdBox sensor?
+2026-01-13-10-13-07,chat,Enterprise,Can Standard customers claim for a warm delivery of cheese?
+2026-01-13-12-48-00,portal,Enterprise,Can we send live fish for an aquarium?
+2026-01-13-14-01-17,email,Standard,What documents do I need for international cold shipping?
+2026-01-13-17-19-50,chat,Enterprise,Why is there a ColdBox fee on my invoice?
+2026-01-14-10-41-02,chat,Enterprise,"The ColdBox log shows the parcel went out of band, are we refunded?"
+2026-01-14-10-46-48,chat,Enterprise,"My frozen meals shipment missed the delivery window, what can I do?"
+2026-01-14-11-02-57,email,Standard,Does the ColdBox v2 record humidity?
+2026-01-15-07-18-29,chat,Standard,"My parcel to Seville is late, what is the delivery promise?"
+2026-01-15-08-50-25,email,Standard,Why do Frost shipments take an extra day?
+2026-01-15-12-39-32,email,Standard,What happens if we never send the ColdBox back?
+2026-01-15-13-04-15,chat,Standard,"We were charged €38 for a ColdBox, why?"
+2026-01-15-15-42-18,email,Enterprise,"ColdBox stopped logging after three weeks, is that normal?"
+2026-01-15-15-54-29,portal,Standard,"My parcel to Faro is late, what is the delivery promise?"
+2026-01-15-16-52-38,portal,Standard,Can I ship live lobsters?
+2026-01-15-17-31-34,portal,Standard,What is the difference between ColdBox v2 and v3?
+2026-01-16-14-31-48,portal,Standard,How do I get the ColdBox temperature log through the API?
+2026-01-16-14-39-11,portal,Standard,What temperature does Frost keep parcels at?
+2026-01-16-17-25-59,chat,Enterprise,Can we send live fish for an aquarium?
+2026-01-19-12-38-03,chat,Standard,"The ColdBox from our berries shipment is lost, do we pay for it?"
+2026-01-19-17-49-05,chat,Enterprise,How long do Enterprise customers have to claim a spoiled parcel?
+2026-01-19-18-22-57,chat,Standard,Who collects empty ColdBox units?
+2026-01-20-09-26-29,email,Enterprise,"We want to move all our berries to Frost, what changes?"
+2026-01-20-10-09-18,portal,Standard,Can I send ice cream with Frost to Faro?
+2026-01-20-11-28-00,chat,Enterprise,Does the ColdBox v2 record humidity?
+2026-01-20-14-39-46,chat,Standard,How do I return a ColdBox after delivery?
+2026-01-20-15-43-06,portal,Enterprise,Why didn't my Same-Day Chill delivery arrive by 20:00?
+2026-01-21-07-11-12,portal,Enterprise,"ColdBox stopped logging after three weeks, is that normal?"
+2026-01-21-10-56-24,chat,Standard,"Our ice cream parcel spoiled, how do I file a claim?"
+2026-01-21-15-45-16,portal,Standard,What documents do I need for international cold shipping?
+2026-01-22-10-31-10,email,Enterprise,"We are getting 429 errors from the Track API, why?"
+2026-01-22-10-51-09,portal,Enterprise,Can I ship live lobsters?
+2026-01-22-13-35-17,portal,Enterprise,"We were charged €38 for a ColdBox, why?"
+2026-01-22-17-21-05,portal,Enterprise,Why is there a ColdBox fee on my invoice?
+2026-01-23-10-15-05,chat,Standard,Do you deliver to Faro the same day?
+2026-01-23-11-37-27,portal,Standard,Can we get invoices in Spanish?
+2026-01-23-15-40-50,portal,Standard,Can I book a Same-Day Chill pickup after 11:00?
+2026-01-23-16-41-43,email,Standard,Can I drop the ColdBox at a Braga hub instead of waiting for pickup?
+2026-01-23-17-32-17,portal,Enterprise,Is Next-Day Chill available on Saturdays?
+2026-01-27-10-05-11,portal,Standard,Can we pay invoices by direct debit?
+2026-01-27-13-05-01,chat,Standard,Do you transport live animals or insects?
+2026-01-27-17-59-33,email,Standard,How much does Frost cost per parcel?
+2026-01-27-18-49-15,chat,Standard,"The ColdBox from our frozen meals shipment is lost, do we pay for it?"
+2026-01-28-07-38-46,email,Standard,Can Frost handle dry ice packaging?
+2026-01-28-10-53-56,email,Enterprise,"Our ColdBox battery died during a ice cream shipment, what now?"
+2026-01-28-12-30-31,chat,Enterprise,Which webhooks does the Track API send?
+2026-01-28-16-33-22,chat,Standard,How much does Same-Day Chill cost?
+2026-01-29-15-10-39,portal,Enterprise,How do I get the ColdBox temperature log through the API?
+2026-01-29-16-49-42,chat,Standard,Can you ship vaccines to France?
+2026-01-29-18-13-33,chat,Enterprise,What is the rate limit of the Nimbus Track API?
+2026-01-30-14-35-14,chat,Standard,What time do I need to book pickup for next-day delivery?
+2026-02-02-16-54-14,chat,Enterprise,"Our ColdBox battery died during a insulin shipment, what now?"
+2026-02-02-18-11-27,portal,Standard,What is the difference between ColdBox v2 and v3?
+2026-02-03-08-03-12,email,Enterprise,What is the cut-off for Frost pickup?
+2026-02-03-14-14-47,portal,Standard,"The ColdBox from our fresh fish shipment is lost, do we pay for it?"
+2026-02-03-17-27-59,chat,Standard,Can I book a Same-Day Chill pickup after 11:00?
+2026-02-04-16-17-23,chat,Standard,Why do Frost shipments take an extra day?
+2026-02-04-18-38-10,portal,Enterprise,Do you handle customs for shipments outside Iberia?
+2026-02-05-07-05-52,email,Standard,"We are getting 429 errors from the Track API, why?"
+2026-02-05-09-34-07,email,Standard,How many days do we have to return the ColdBox sensor?
+2026-02-05-10-52-08,chat,Standard,Which webhooks does the Track API send?
+2026-02-05-14-08-59,chat,Standard,What is the cut-off for Frost pickup?
+2026-02-05-15-20-12,email,Enterprise,When will my Next-Day Chill parcel to Madrid arrive?
+2026-02-06-17-08-49,portal,Standard,How do I get the ColdBox temperature log through the API?
+2026-02-06-17-27-43,email,Standard,How do I prove a temperature excursion for a claim?
+2026-02-09-13-24-55,email,Standard,What are the delivery windows for each service?
+2026-02-09-13-59-25,portal,Enterprise,What is the difference between Standard and Enterprise?
+2026-02-09-17-23-21,chat,Standard,What is the rate limit of the Nimbus Track API?
+2026-02-10-11-16-27,portal,Standard,How much is Next-Day Chill on the Enterprise tier?
+2026-02-10-12-45-19,chat,Enterprise,How do I subscribe to the out_of_band webhook?
+2026-02-10-18-14-11,chat,Standard,Can I ship live lobsters?
+2026-02-10-18-48-05,chat,Standard,Do you deliver to the Azores or Madeira?
+2026-02-11-08-46-23,chat,Standard,How long does the ColdBox battery last?
+2026-02-11-16-12-56,chat,Enterprise,"My ice cream shipment missed the delivery window, what can I do?"
+2026-02-12-08-31-44,email,Standard,Can Standard customers claim for a warm delivery of vaccines?
+2026-02-12-08-59-12,email,Enterprise,"My lab samples shipment missed the delivery window, what can I do?"
+2026-02-12-09-06-00,chat,Standard,Is Frost available for same-day delivery?
+2026-02-12-10-00-51,chat,Enterprise,Why do Frost shipments take an extra day?
+2026-02-12-10-09-05,chat,Standard,What happens if we never send the ColdBox back?
+2026-02-12-18-36-31,email,Enterprise,How do I subscribe to the out_of_band webhook?
+2026-02-13-07-16-47,email,Standard,What temperature does Frost keep parcels at?
+2026-02-13-09-28-38,chat,Enterprise,How much does Frost cost per parcel?
+2026-02-13-13-59-58,chat,Standard,How long does the ColdBox battery last?
+2026-02-13-18-28-30,email,Standard,Can we send parcels to Morocco?
+2026-02-16-07-43-42,chat,Enterprise,Can we send parcels to Morocco?
+2026-02-16-08-16-39,chat,Standard,Can Frost handle dry ice packaging?
+2026-02-16-08-52-34,chat,Standard,How do I return a ColdBox after delivery?
+2026-02-16-09-40-23,email,Standard,Can the API tell me when a parcel is delivered?
+2026-02-16-10-01-38,chat,Standard,Does every Frost parcel go through Seville?
+2026-02-16-14-58-43,chat,Standard,What are the delivery windows for each service?
+2026-02-16-18-10-10,portal,Standard,"The ColdBox from our berries shipment is lost, do we pay for it?"
+2026-02-17-10-04-37,chat,Enterprise,Why didn't my Same-Day Chill delivery arrive by 20:00?
+2026-02-17-10-26-04,email,Standard,Is Frost available for same-day delivery?
+2026-02-17-10-33-31,chat,Standard,"We were charged €38 for a ColdBox, why?"
+2026-02-17-11-54-27,chat,Standard,How much does Same-Day Chill cost?
+2026-02-18-07-22-16,portal,Standard,How long do Enterprise customers have to claim a spoiled parcel?
+2026-02-18-09-39-19,chat,Standard,"We want to move all our lab samples to Frost, what changes?"
+2026-02-18-10-32-33,chat,Enterprise,What temperature does Frost keep parcels at?
+2026-02-18-13-16-35,chat,Standard,Which webhooks does the Track API send?
+2026-02-18-13-18-42,chat,Enterprise,Can I send fresh fish with Frost to Porto?
+2026-02-18-15-17-55,email,Enterprise,"We are getting 429 errors from the Track API, why?"
+2026-02-18-15-39-18,email,Standard,"ColdBox stopped logging after three weeks, is that normal?"
+2026-02-19-07-00-25,portal,Standard,How do we upgrade to Enterprise?
+2026-02-19-07-55-49,portal,Standard,What temperature does Frost keep parcels at?
+2026-02-19-08-30-40,chat,Standard,Why is there a ColdBox fee on my invoice?
+2026-02-19-10-43-11,chat,Enterprise,Are there surcharges for remote areas like Braga?
+2026-02-19-17-28-27,portal,Enterprise,When will my Next-Day Chill parcel to Valencia arrive?
+2026-02-19-18-56-20,email,Enterprise,What is the cut-off for Frost pickup?
+2026-02-19-18-58-29,chat,Enterprise,What is the maximum claim payout for a temperature excursion?
+2026-02-20-07-25-01,chat,Enterprise,What is the cut-off time for Same-Day Chill pickup?
+2026-02-20-08-22-30,email,Standard,"The ColdBox log shows the parcel went out of band, are we refunded?"
+2026-02-20-13-34-36,chat,Standard,Can the API tell me when a parcel is delivered?
+2026-02-20-15-57-16,portal,Standard,Why is VAT charged twice on my invoice?
+2026-02-20-18-58-25,chat,Standard,Can you ship insulin to France?
+2026-02-23-07-46-44,chat,Standard,Who collects empty ColdBox units?
+2026-02-23-09-06-50,email,Standard,"Our frozen meals parcel spoiled, how do I file a claim?"
+2026-02-23-09-16-38,email,Standard,Are there surcharges for remote areas like Seville?
+2026-02-23-14-17-43,chat,Standard,When will my Next-Day Chill parcel to Madrid arrive?
+2026-02-24-09-08-59,email,Enterprise,How much does Same-Day Chill cost?
+2026-02-24-11-49-52,chat,Standard,Can I send ice cream with Frost to Porto?
+2026-02-24-12-21-48,chat,Standard,Why was the March outage credit 100%?
+2026-02-24-13-07-25,chat,Standard,Can I drop the ColdBox at a Valencia hub instead of waiting for pickup?
+2026-02-24-15-38-48,email,Enterprise,How do we upgrade to Enterprise?
+2026-02-25-08-09-06,email,Enterprise,Do I need to return the ColdBox in its original packaging?
+2026-02-25-10-44-38,portal,Standard,What happens if we never send the ColdBox back?
+2026-02-25-12-41-53,portal,Standard,"My frozen meals shipment missed the delivery window, what can I do?"
+2026-02-25-14-49-10,chat,Standard,How much credit do we get for the March 2026 incident?
+2026-02-26-07-10-00,portal,Enterprise,What time do I need to book pickup for next-day delivery?
+2026-02-26-07-42-04,email,Standard,How do I schedule a ColdBox pickup in Braga?
+2026-02-26-12-18-19,chat,Enterprise,Why didn't my Same-Day Chill delivery arrive by 20:00?
+2026-02-26-15-06-05,email,Standard,Do you handle customs for shipments outside Iberia?
+2026-02-26-18-49-16,email,Standard,Do you offer volume discounts?
+2026-02-27-09-16-18,chat,Standard,How many days do we have to return the ColdBox sensor?
+2026-02-27-13-49-20,chat,Enterprise,Why is there a ColdBox fee on my invoice?
+2026-02-27-17-11-17,chat,Standard,Does the ColdBox v2 record humidity?
+2026-03-02-07-03-34,chat,Standard,Why was the March outage credit 100%?
+2026-03-02-07-16-50,email,Enterprise,Do you transport live animals or insects?
+2026-03-02-07-27-46,chat,Enterprise,How long do Enterprise customers have to claim a spoiled parcel?
+2026-03-02-07-50-08,chat,Enterprise,Is Next-Day Chill available on Saturdays?
+2026-03-02-10-12-17,chat,Standard,"We were charged €38 for a ColdBox, why?"
+2026-03-02-10-33-23,chat,Standard,Who collects empty ColdBox units?
+2026-03-02-14-20-03,email,Enterprise,When will the March incident credits show on our invoice?
+2026-03-02-16-31-29,chat,Enterprise,How much credit do we get for the March 2026 incident?
+2026-03-02-17-09-55,email,Standard,How much credit do we get for the March 2026 incident?
+2026-03-03-08-59-46,chat,Enterprise,Why was the March outage credit 100%?
+2026-03-03-09-18-39,email,Standard,What caused the March 2026 outage?
+2026-03-03-09-25-10,email,Standard,Will we get credits for the March outage?
+2026-03-03-09-45-50,portal,Standard,How much is Next-Day Chill on the Enterprise tier?
+2026-03-03-10-02-59,portal,Standard,How do I download past invoices?
+2026-03-03-10-32-49,chat,Standard,When will my Next-Day Chill parcel to Faro arrive?
+2026-03-03-11-19-48,email,Enterprise,Is there a minimum monthly volume for Enterprise?
+2026-03-03-13-22-49,portal,Enterprise,Can Frost handle dry ice packaging?
+2026-03-03-15-32-01,portal,Enterprise,Can I keep a ColdBox for repeat shipments?
+2026-03-04-08-49-33,chat,Enterprise,How much credit do we get for the March 2026 incident?
+2026-03-04-16-10-18,portal,Enterprise,"Our lab samples parcel spoiled, how do I file a claim?"
+2026-03-05-10-39-41,chat,Standard,Do I need to request the outage credit or is it automatic?
+2026-03-05-11-51-58,email,Enterprise,What caused the March 2026 outage?
+2026-03-05-12-34-05,email,Standard,How do I download past invoices?
+2026-03-05-15-10-24,chat,Standard,Do I need to request the outage credit or is it automatic?
+2026-03-06-09-59-04,chat,Standard,Why was the March outage credit 100%?
+2026-03-06-10-24-16,chat,Enterprise,Do you deliver to Porto the same day?
+2026-03-06-12-34-14,chat,Standard,"Our frozen meals spoiled during the March outage, what can we claim?"
+2026-03-06-12-38-41,email,Enterprise,"Our deliveries failed in March, are we compensated?"
+2026-03-06-14-32-15,email,Enterprise,How many days do we have to return the ColdBox sensor?
+2026-03-06-15-21-40,chat,Enterprise,How do I return a ColdBox after delivery?
+2026-03-06-16-59-23,email,Standard,"Our deliveries failed in March, are we compensated?"
+2026-03-09-08-55-13,email,Standard,Is the €38 ColdBox charge refundable if we return it late?
+2026-03-09-11-53-09,portal,Enterprise,Can we pay invoices by direct debit?
+2026-03-09-13-29-34,chat,Enterprise,Can we get invoices in Spanish?
+2026-03-09-16-09-54,chat,Enterprise,Can the API tell me when a parcel is delivered?
+2026-03-10-07-27-57,chat,Standard,Will we get credits for the March outage?
+2026-03-10-12-09-44,chat,Standard,"The ColdBox log shows the parcel went out of band, are we refunded?"
+2026-03-10-12-16-41,email,Standard,Can I book a Same-Day Chill pickup after 11:00?
+2026-03-10-12-55-20,chat,Enterprise,How much does Frost cost per parcel?
+2026-03-10-14-18-44,chat,Standard,Why is VAT charged twice on my invoice?
+2026-03-10-15-19-04,chat,Standard,How long do Enterprise customers have to claim a spoiled parcel?
+2026-03-10-17-05-58,email,Standard,Can I ship live plants that need cool temperatures?
+2026-03-10-17-55-18,chat,Enterprise,"My parcel to Bilbao is late, what is the delivery promise?"
+2026-03-11-09-27-00,email,Standard,How do I prove a temperature excursion for a claim?
+2026-03-11-11-17-03,email,Enterprise,How do I change the VAT number on our invoices?
+2026-03-11-14-07-07,portal,Enterprise,How do I schedule a ColdBox pickup in Valencia?
+2026-03-11-15-09-55,portal,Enterprise,Are there surcharges for remote areas like Lisbon?
+2026-03-12-15-13-45,chat,Standard,How do we upgrade to Enterprise?
+2026-03-13-08-36-58,chat,Standard,What is the maximum claim payout for a temperature excursion?
+2026-03-13-10-27-24,email,Standard,Will we get credits for the March outage?
+2026-03-13-11-10-20,portal,Standard,Do I need to request the outage credit or is it automatic?
+2026-03-13-14-10-08,chat,Enterprise,Will we get credits for the March outage?
+2026-03-13-14-13-37,chat,Standard,"Our fresh fish spoiled during the March outage, what can we claim?"
+2026-03-13-14-42-59,chat,Standard,Is the €38 ColdBox charge refundable if we return it late?
+2026-03-13-14-54-18,email,Standard,What is the maximum claim payout for a temperature excursion?
+2026-03-13-17-12-23,chat,Enterprise,Can I drop the ColdBox at a Madrid hub instead of waiting for pickup?
+2026-03-13-17-54-25,email,Standard,"Our deliveries failed in March, are we compensated?"
+2026-03-16-11-17-24,chat,Standard,Do you offer volume discounts?
+2026-03-16-14-20-23,chat,Standard,Can I ship live plants that need cool temperatures?
+2026-03-16-14-27-20,chat,Enterprise,Is there a minimum monthly volume for Enterprise?
+2026-03-16-17-34-43,chat,Standard,What time do I need to book pickup for next-day delivery?
+2026-03-16-17-53-20,chat,Standard,"Our vaccines spoiled during the March outage, what can we claim?"
+2026-03-16-18-54-16,email,Enterprise,Can I keep a ColdBox for repeat shipments?
+2026-03-17-07-26-49,chat,Enterprise,Can we send parcels to Morocco?
+2026-03-17-08-56-32,chat,Standard,Can Standard customers claim for a warm delivery of frozen meals?
+2026-03-17-09-45-27,portal,Standard,Is the €38 ColdBox charge refundable if we return it late?
+2026-03-17-11-30-35,email,Standard,Is Next-Day Chill available on Saturdays?
+2026-03-17-17-51-26,chat,Enterprise,What documents do I need for international cold shipping?
+2026-03-18-07-24-53,chat,Enterprise,What is the difference between Standard and Enterprise?
+2026-03-18-07-45-02,chat,Standard,Can you ship berries to France?
+2026-03-18-11-40-55,email,Enterprise,When will the March incident credits show on our invoice?
+2026-03-18-13-09-34,portal,Standard,How often does the ColdBox record temperature?
+2026-03-18-15-40-27,email,Standard,What time do I need to book pickup for next-day delivery?
+2026-03-18-16-16-06,chat,Enterprise,Is there a minimum monthly volume for Enterprise?
+2026-03-18-17-05-53,email,Enterprise,Can I drop the ColdBox at a Lisbon hub instead of waiting for pickup?
+2026-03-19-08-04-08,chat,Standard,"Our deliveries failed in March, are we compensated?"
+2026-03-19-08-09-20,email,Standard,How do I change the VAT number on our invoices?
+2026-03-19-15-35-13,email,Standard,What is the cut-off time for Same-Day Chill pickup?
+2026-03-19-17-50-08,chat,Standard,When will the March incident credits show on our invoice?
+2026-03-20-07-36-37,chat,Enterprise,What happens if we never send the ColdBox back?
+2026-03-20-07-42-00,chat,Standard,How do I subscribe to the out_of_band webhook?
+2026-03-20-13-48-20,email,Standard,"My parcel to Porto is late, what is the delivery promise?"
+2026-03-20-17-05-13,chat,Enterprise,Do you handle customs for shipments outside Iberia?
+2026-03-20-18-14-52,portal,Standard,What is the difference between Standard and Enterprise?
+2026-03-20-18-39-22,chat,Standard,Is Frost available for same-day delivery?
+2026-03-23-08-54-37,email,Standard,How do I prove a temperature excursion for a claim?
+2026-03-23-09-42-06,chat,Standard,What is the difference between Standard and Enterprise?
+2026-03-24-11-38-03,email,Standard,How do I change the VAT number on our invoices?
+2026-03-24-13-22-24,chat,Enterprise,Do you deliver to Bilbao the same day?
+2026-03-24-16-25-39,portal,Enterprise,What caused the March 2026 outage?
+2026-03-25-13-17-12,chat,Enterprise,How much is Next-Day Chill on the Enterprise tier?
+2026-03-25-16-31-37,email,Standard,Do I need to return the ColdBox in its original packaging?
+2026-03-26-11-38-04,chat,Standard,Is the €38 ColdBox charge refundable if we return it late?
+2026-03-26-17-16-27,email,Standard,What is the rate limit of the Nimbus Track API?
+2026-03-26-17-22-01,portal,Standard,Can I keep a ColdBox for repeat shipments?
+2026-03-27-10-24-17,chat,Standard,What are the delivery windows for each service?
+2026-03-27-11-29-29,chat,Standard,What is the cut-off time for Same-Day Chill pickup?
+2026-03-27-15-05-42,email,Enterprise,Do you deliver to Faro the same day?
+2026-03-27-16-47-41,chat,Standard,Do you offer volume discounts?

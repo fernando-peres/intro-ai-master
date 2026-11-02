@@ -1,3 +1,96 @@
+# Unit 04. Tools and Integration
+
+unit 4 slide: Tool and Integration
+get slide 4 of class_06/ - add as 27 [update other units to be like this, prepare the text]
+get slide 11 of class_06/ - add as 28
+
+get slide 12 of class_06/ - add as 29
+get slide 13 of class_06/ - add as 30
+get slide 14 of class_06/ - add as 31
+get slide 15 of class_06/ - add as 32 [add a linto to html/tools.html]
+get slide 16 of class_06/ - add as 33 [as doc]
+get slide 17 of class_06/ - add as 34
+
+
+What is a tool and why
+
+Tolls
+APIs
+MCPs
+...
+
+
+# in slide 48:
+remove the text "Notebook notebooks/llm_tools_01.ipynb asks the same question twice: once to a model on its own, once to a model with tools."
+
+add a link to html/tools.html
+
+
+# add one or two slides after current 58
+
+Warning message about tools and integration (including MCPs/APIs)
+[search in the web and write the following warnings/alerts - create a template to alert, but with professional design it is for executives]
+
+1- If you are using third party tools, attention to security and malicious behavior...
+
+2- If your are creating tools and mcp, attention to good practices and security...
+
+# Create evals.html (html/evals.html) based on the notebooks/evals_*.ipynb like you did for other html file in folder html/ 
+
+# new unit/section Guards and Evals (rename for a proper unit)
+
+Objective: approach evals and guradrails in genAI systems
+Directive: keep it simple, language for executives/non-tech . Keep succint, the main ideas
+
+Structure:
+- Unit cover slide: Guards and Evals (rename for a proper unit)
+- Lesson 1 slides: Guardrails Overview
+    - what is and why
+    - categories and for each category types (diclaimer (It is not an echasutive list , create for intruction objectives))
+    - example explanation to call html/guardrails.html
+    - accelerators (one slide/doc only very succint) [are there accelerator/framworks /tools for Guardrails and polices]
+    - main take aways
+
+- Lesson 2 slides: Evals Overview
+    - what is and why
+    - categories and for each category types (diclaimer (It is not an echasutive list , create for intruction objectives))
+    - example explanation to call html/evals.html
+    -  accelerators (one slide/doc only very succint) [are there accelerator/framworks /tools for Evals and LLMs as a Judge, ...]
+    - main take aways
+    create slide to link to Observability the next topic.
+
+## Impact: it changes the Table of Contents slide:
+
+**from**:
+01. What is a Harness?
+02. The Mindset for Building and Continuously Improving GenAI Systems
+03. Context
+04. Tools and Integration
+05. Workflows and Agents
+06. Observability
+07. Experiments
+
+**to**:
+
+01. What is a Harness?
+02. The Mindset for GenAI Systems
+03. Context & Context Engineering
+04. Tools and Integration
+05. Workflows and Agents
+06. Guards & Evals [Think in a better title. keep succint, one row only] 
+07. Observability
+08. Experiments
+
+# create a unit slide for remaining units
+06. Guards & Evals [Think in a better title. keep succint, one row only] 
+07. Observability
+08. Experiments
+
+
+
+
+
+
 
 
 
@@ -20,14 +113,7 @@ What is context engineering
 Difference COntext Engineering and Prompt Engineering
 Elements of a context
 
-# Unit 04. Tools and Integration
 
-What is a tool and why
-
-Tolls
-APIs
-MCPs
-...
 
 
 # Unit 05. Workflows and Agents
