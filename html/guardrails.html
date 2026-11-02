@@ -552,6 +552,54 @@ mark.zw { background:var(--fail-base); color:#fff; font-size:10px; padding:0 3px
   .subnav { padding:0 14px 8px; }
 }
 .tabs { position:static; }
+/* ---------- side by side: without vs with ---------- */
+.duel-wrap { width:min(1520px, calc(100vw - 32px)); position:relative; left:50%; transform:translateX(-50%); }
+.duel-ctrl { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+.duel-ctrl .hint { margin-left:auto; font:500 12px var(--mono); color:var(--ink3); }
+.duel { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
+.dcol { padding:0; overflow:hidden; display:flex; flex-direction:column; }
+.dcol .dh { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--border); font-weight:650; }
+.dcol .dh .ico { width:24px; height:24px; border-radius:50%; display:grid; place-items:center; color:#fff; flex:none; }
+.dcol .dh .ico svg { width:14px; height:14px; }
+.dcol.without .dh { background:var(--fail-tint); color:var(--fail-ink); } .dcol.without .dh .ico { background:var(--fail-base); }
+.dcol.with .dh { background:var(--pass-tint); color:var(--pass-ink); } .dcol.with .dh .ico { background:var(--pass-base); }
+.dcol .dh .scenes { margin-left:auto; }
+.dcol .dh .cnt2 { font:600 11px var(--mono); opacity:.8; margin-left:auto; }
+.dcol .scenes + .cnt2 { margin-left:8px; }
+.dcol .svgbox { padding:10px 12px 0; }
+.dcol .svgbox svg { width:100%; height:auto; display:block; }
+.dcol .caption { margin:10px 12px 0; min-height:96px; }
+.dcol .caption .payload { max-height:130px; }
+.final { margin:12px; padding:12px 14px; border-radius:12px; border:2px dashed var(--border); background:var(--raised); transition:all .3s; }
+.final .fl { display:flex; align-items:center; gap:8px; font:600 11px var(--mono); letter-spacing:.07em; text-transform:uppercase; color:var(--ink3); }
+.final .fl svg { width:14px; height:14px; }
+.final .fb { margin-top:6px; font-size:14px; white-space:pre-wrap; max-height:180px; overflow:auto; color:var(--ink3); }
+.final.shown { border-style:solid; }
+.final.shown .fb { color:var(--text); }
+.final.shown.fail { border-color:var(--fail-base); background:var(--fail-tint); } .final.shown.fail .fl { color:var(--fail-ink); }
+.final.shown.pass { border-color:var(--pass-base); background:var(--pass-tint); } .final.shown.pass .fl { color:var(--pass-ink); }
+.final.shown.warn { border-color:var(--warn-base); background:var(--warn-tint); } .final.shown.warn .fl { color:var(--warn-ink); }
+.concl { margin:0 12px 14px; padding:12px 14px; border-radius:12px; background:var(--page); border:1px solid var(--border); }
+.concl .fl { font:600 11px var(--mono); letter-spacing:.07em; text-transform:uppercase; color:var(--ink2); margin-bottom:6px; }
+.concl ul { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
+.concl li { display:grid; grid-template-columns:20px 1fr; gap:6px; font-size:13.5px; line-height:1.45; }
+.concl li i { font-style:normal; font-weight:700; text-align:center; }
+.concl li.fail i, .concl li.block i { color:var(--fail-base); } .concl li.pass i { color:var(--pass-base); } .concl li.warn i { color:var(--warn-base); } .concl li.tool i { color:var(--done-base); }
+.concl li b { font-weight:600; }
+.concl li span { color:var(--ink2); font-family:var(--mono); font-size:12px; }
+/* glossary */
+.term { display:flex; gap:12px; align-items:flex-start; margin-top:14px; padding:12px 16px; border-radius:12px; background:var(--nav-bg); color:var(--nav-ink); font-size:14.5px; }
+.term .tk-n { flex:none; font:600 11px var(--mono); letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:6px; background:var(--primary); color:var(--on-solid); margin-top:2px; }
+.term strong { color:inherit; }
+.glossary { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px; }
+.glossary div { padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:var(--page); }
+.glossary b { display:block; font-size:14px; }
+.glossary small { display:block; font:500 11px var(--mono); color:var(--accent); margin:2px 0 4px; }
+.glossary p { margin:0; font-size:13px; color:var(--ink2); }
+details.more { margin-top:8px; }
+details.more > summary { cursor:pointer; font:500 12px var(--mono); color:var(--accent); }
+details.more .md { margin-top:8px; }
+@media (max-width: 980px) { .duel { grid-template-columns:1fr; } .duel-wrap { width:auto; left:0; transform:none; } }
 .hero > * { min-width:0; }
 .teaser .score { overflow-x:auto; }
 .teaser .vtable td, .teaser .vtable th { padding:7px 8px; }
@@ -950,6 +998,128 @@ function makePlayer(host, b, cfg) {
   root.addEventListener("focusin", () => (hoverPlayer = P));
   players.add(P);
   setScene(0);
+  return P;
+}
+/* ---------- glossary: the safety terms each guardrail implements ---------- */
+const GLOSSARY = {
+  guardrail: ["Guardrail", "", "A check in your code, before, during or after the model, that allows, changes, blocks or escalates. It holds whatever the model says."],
+  pii: ["PII redaction", "Personally Identifiable Information redaction", "Replace personal data (name, email, card number, address) with placeholders such as [CARD] before the text leaves your system."],
+  validation: ["Input validation", "", "Plain code checks on the raw message: length limits and invisible (zero-width) characters. Fast, free and deterministic."],
+  injection: ["Prompt injection", "", "A message written to override the assistant's instructions (“ignore your rules…”). Detected with patterns (a heuristic) or a small classifier model."],
+  scope: ["Scope filtering", "", "A classifier asks “is this our job?”. Off-topic requests get a fixed reply instead of a model answer."],
+  moderation: ["Content moderation", "", "A dedicated model scores text for harm categories (violence, harassment, self-harm) so it can be blocked or routed to a person."],
+  privilege: ["Least privilege", "role-based access", "Each role sees only the tools it needs. A tool the model never sees can't be misused."],
+  rules: ["Argument & business-rule validation", "", "Check the meaning of a tool call in code before it runs: is this your order? Is the amount within the limit?"],
+  approval: ["Human approval", "human in the loop", "Risky actions pause until a person approves or declines. The model proposes; a person decides."],
+  budget: ["Budgets", "rate and cost limits", "Hard limits on tool calls, turns or tokens, so a looping agent can't run up cost."],
+  indirect: ["Indirect prompt injection", "", "The attack hides in data the agent reads (a web page, an email, a tool result), not in the user's message."],
+  schema: ["Schema validation", "with retry", "The reply must match an agreed structure (e.g. JSON with fixed fields). If not, ask again with the error message."],
+  leak: ["Data-leak filter", "", "Scan the answer for secrets, internal codes or other people's data before anyone sees it."],
+  grounded: ["Groundedness check", "anti-hallucination", "A grounded answer says only what its sources say. Unsupported claims are flagged by exact checks or an LLM judge."],
+  policy: ["Policy check", "", "Stops answers that create obligations: promising refunds, admitting fault, making legal commitments."],
+  fallback: ["Safe fallback", "", "When a guard fires and a repair fails, send a fixed, human-written message, not an error or the bad answer."],
+  classifier: ["Classifier", "", "A small, cheap model call that answers one narrow question (is this an attack? off-topic?) with a fixed label."],
+  judge: ["LLM judge", "", "A second model call that grades the answer against written criteria and explains why."],
+};
+const TERM_OF = { overview: { Input: "pii", Execution: "rules", Output: "leak" }, input: { Validation: "validation", "PII redaction": "pii", Injection: "injection", Scope: "scope", Moderation: "moderation" },
+  execution: { "Least privilege": "privilege", "Arguments & rules": "rules", "Human approval": "approval", Budgets: "budget", "Indirect injection": "indirect" },
+  output: { "Schema + retry": "schema", "Leak filter": "leak", Groundedness: "grounded", "Policy check": "policy", "Safe fallback": "fallback" } };
+const termHtml = k => { const g = GLOSSARY[k]; return g ? `<div class="term"><span class="tk-n">Safety</span><div><strong>${esc(g[0])}</strong>${g[1] ? ` (${esc(g[1])})` : ""}: ${esc(g[2])}</div></div>` : ""; };
+const glossaryHtml = keys => `<div class="glossary">${keys.map(k => GLOSSARY[k]).filter(Boolean).map(g => `<div><b>${esc(g[0])}</b>${g[1] ? `<small>${esc(g[1])}</small>` : ""}<p>${esc(g[2])}</p></div>`).join("")}</div>`;
+
+/* ---------- side by side: without (left) vs with (right, one or more variants) ---------- */
+const TONE_ICON = { fail: "✗", block: "⛔", pass: "✓", warn: "!", tool: "→" };
+const isFinal = h => ((!h.self && (h.to === "u" || h.to === "app") && !h.stop) || h.self === "app") && !/^\s*\d+ of \d+\s*$/.test(h.payload || "");
+function finalOf(sc) {
+  for (let k = sc.hops.length - 1; k >= 0; k--) if (isFinal(sc.hops[k])) return { k: k + 1, h: sc.hops[k] };
+  return null;
+}
+/* Main conclusions of a run: the toned steps, with short saved results. */
+function conclusions(sc) {
+  if (sc.points) return sc.points.map(t => ({ tone: "", t }));
+  const out = [], seen = new Set();
+  sc.hops.forEach(h => {
+    if (!h.tone || isFinal(h)) return;
+    const t = h.title || h.label, pl = oneLine(h.payload || "");
+    if (seen.has(t)) return; seen.add(t);
+    out.push({ tone: h.tone, t, v: h.self && pl && pl.length <= 90 ? pl : "" });
+  });
+  const f = finalOf(sc);
+  if (f) out.push({ tone: f.h.tone || (sc.tone === "fail" ? "fail" : "pass"), t: f.h.tone === "fail" || f.h.tone === "warn" ? "The user receives this answer, unchecked" : sc.tone === "fail" ? "The user receives the model's answer" : "The user receives a checked, safe answer" });
+  else out.push(sc.hops.some(h => h.tone === "block") ? { tone: "pass", t: "Blocked: no unsafe answer reaches the user" } : { tone: "warn", t: "No answer reaches the user in this scene" });
+  return out.slice(-5);
+}
+function captionHtml(h, n, sc) {
+  if (!h) return `<div class="t">${esc(sc.label)}: ${sc.hops.length} step${sc.hops.length === 1 ? "" : "s"}</div><p>${sc.intro ? md(sc.intro) : "Press Play to run both sides together."}</p>`;
+  const pl = h.payload ?? "", isJson = /^\s*[[{]/.test(pl) && !h.marks;
+  const color = h.tone ? `var(--${h.tone === "block" ? "fail" : h.tone === "tool" ? "done" : h.tone}-base)` : "var(--accent)";
+  return `<div class="t"><span class="badge" style="background:${color};color:#fff">${n}</span>${esc(h.title || h.label)}</div>
+    ${h.text ? `<p>${md(firstSentence(h.text))}</p>` : ""}
+    ${h.diff ? `<div class="diff"><span class="payload-lbl">before → after the guard</span><pre class="payload">${markText(h.diff[1], [{ re: /\[[A-Z]+\]/g, cls: "ok" }])}</pre></div>` : ""}
+    ${pl !== "" && !isFinal(h) ? `<span class="payload-lbl">${esc(h.plbl || (h.self ? "saved output" : "payload"))}</span><pre class="payload">${isJson ? hlJson(pl) : markText(pl, h.marks || [])}</pre>` : ""}`;
+}
+function makeDuel(host, b, cfg) {
+  const id = "dl" + (++PID), [wo, ...wis] = cfg.scenes;
+  const col = (cls, title, scenes) => `<div class="panel dcol ${cls}" data-col="${cls}">
+    <div class="dh"><span class="ico">${cls === "without" ? ICON.x : ICON.check}</span>${esc(title)}
+      ${scenes.length > 1 ? `<div class="scenes">${scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${esc(s.label.replace(/^With\s*·\s*/, ""))}</button>`).join("")}</div>` : ""}<span class="cnt2"></span></div>
+    <div class="svgbox loop static" data-step="0"></div><div class="caption"></div>
+    <div class="final"><div class="fl">${ICON.user.replace("<svg", '<svg width="14" height="14"')} What the user sees</div><div class="fb">Press Play: the final output appears here and stays.</div></div>
+    <div class="concl"><div class="fl">Main conclusions</div><ul></ul></div></div>`;
+  host.innerHTML = `<div class="duel-wrap"><div class="duel-ctrl">
+      <button class="btn solid play">${ICON.play}<span>Play both</span></button><button class="btn backb">← Back</button><button class="btn stepb">Step →</button><button class="btn resetb">Reset</button>
+      <span class="hint">Same request, same model: only the guardrail differs.</span></div>
+    <div class="duel">${col("without", wo.label, [wo])}${col("with", wis.length > 1 ? "With guardrail" : wis[0].label, wis)}</div></div>`;
+  const root = host.firstElementChild, P = { root, n: 0, timer: null, wi: 0 };
+  const sides = () => [["without", wo], ["with", wis[P.wi]]];
+  function draw() {
+    sides().forEach(([c, sc]) => {
+      const el = $(`[data-col="${c}"]`, root);
+      $(".svgbox", el).innerHTML = seqSvg(sc, id + c);
+      $(".concl ul", el).innerHTML = conclusions(sc).map(x => `<li class="${x.tone}"><i>${TONE_ICON[x.tone] || "•"}</i><div><b>${esc(x.t)}</b>${x.v ? `<br><span>${esc(x.v)}</span>` : ""}</div></li>`).join("");
+    });
+    $$(".dcol.with .scene", root).forEach(bt => bt.classList.toggle("cur", +bt.dataset.i === P.wi));
+    set(P.n);
+  }
+  const maxLen = () => Math.max(wo.hops.length, wis[P.wi].hops.length);
+  function set(n) {
+    P.n = n;
+    sides().forEach(([c, sc]) => {
+      const el = $(`[data-col="${c}"]`, root), k = Math.min(n, sc.hops.length), h = sc.hops[k - 1], box = $(".svgbox", el);
+      box.dataset.step = k;
+      $$(".hop", box).forEach(g => {
+        const s = +g.dataset.step, hop = sc.hops[s - 1];
+        g.classList.toggle("on", s === k); g.classList.toggle("past", k > 0 && s < k);
+        const mkr = s !== k ? "dim" : TONE_MK[hop.tone] || "on";
+        g.querySelectorAll("line").forEach(l => l.setAttribute("marker-end", `url(#${id + c}-${mkr})`));
+      });
+      $(".cnt2", el).textContent = n === 0 ? `${sc.hops.length} steps` : k >= sc.hops.length ? "done" : `${k}/${sc.hops.length}`;
+      $(".caption", el).innerHTML = captionHtml(h, k, sc);
+      const f = finalOf(sc), fin = $(".final", el), shown = f && k >= f.k;
+      fin.className = `final${shown ? ` shown ${f.h.tone === "block" ? "pass" : f.h.tone || (c === "without" ? "fail" : "pass")}` : ""}`;
+      $(".fb", fin).innerHTML = shown ? esc(f.h.payload || f.h.title || f.h.label) : f ? "Press Play: the final output appears here and stays." : k >= sc.hops.length && sc.hops.some(x => x.tone === "block") ? "Blocked by the guardrail: nothing unsafe is sent." : "No model answer reaches the user in this scene.";
+    });
+  }
+  P.stop = () => { clearInterval(P.timer); P.timer = null; $(".play span", root).textContent = "Play both"; };
+  P.play = () => {
+    if (P.timer) return P.stop();
+    if (P.n >= maxLen()) set(0);
+    $(".play span", root).textContent = "Pause";
+    set(P.n + 1);
+    P.timer = setInterval(() => { if (P.n >= maxLen()) return P.stop(); set(P.n + 1); if (P.n >= maxLen()) P.stop(); }, 2400);
+  };
+  P.fwd = () => { P.stop(); set(P.n >= maxLen() ? 0 : P.n + 1); };
+  P.back = () => { P.stop(); set(Math.max(0, P.n - 1)); };
+  P.scene_ = i => { if (i < wis.length && i !== P.wi) { P.stop(); P.wi = i; P.n = 0; draw(); } };
+  $(".play", root).addEventListener("click", P.play);
+  $(".stepb", root).addEventListener("click", P.fwd);
+  $(".backb", root).addEventListener("click", P.back);
+  $(".resetb", root).addEventListener("click", () => { P.stop(); set(0); });
+  $$(".dcol.with .scene", root).forEach(bt => bt.addEventListener("click", () => P.scene_(+bt.dataset.i)));
+  root.addEventListener("mouseenter", () => (hoverPlayer = P));
+  root.addEventListener("mouseleave", () => { if (hoverPlayer === P) hoverPlayer = null; });
+  players.add(P);
+  draw();
   return P;
 }
 function stopPlayers() { players.forEach(p => { p.stop(); if (!p.root.isConnected) players.delete(p); }); }
@@ -1598,6 +1768,8 @@ function renderBook(key) {
     const tbl = b.cells[stagesCell].split("\n").filter(l => /^\|\s*\*\*\d/.test(l)).map(l => l.split("|").slice(1, -1).map(c => c.trim()));
     html += `<section id="${id("concepts")}"><div class="section-head"><span class="kicker">01 · Concepts</span></div><h2>What guardrails are</h2>
       <div class="panel pad md">${mdBlock(what)}</div>
+      <div class="subhead">Key safety terms used on this page</div>
+      ${glossaryHtml(["guardrail", "pii", "injection", "indirect", "moderation", "privilege", "approval", "budget", "schema", "leak", "grounded", "fallback", "classifier", "judge"])}
       <div class="subhead">The three stages</div>
       <div class="panel loop" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)">
         <div class="loop-diagram"><div class="pipe-anim" data-step="0">${pipelineSvg(null, { anim: true, link: true })}</div>
@@ -1612,6 +1784,8 @@ function renderBook(key) {
         <div class="pad md">${mdBlock(what, { fences: false })}</div>
         <div class="pipe-wrap" style="border-left:1px solid var(--border)">${pipelineSvg(spec.stage, { link: true })}<div class="flow-cap" style="margin-top:8px">This notebook covers the highlighted stage. Click another stage to open its notebook.</div></div>
       </div>
+      <div class="subhead">The safety terms in this notebook</div>
+      ${glossaryHtml(secs.map(s => (TERM_OF[key] || {})[s.short]).filter(Boolean))}
       <div class="subhead">The techniques in this notebook</div>
       <div class="chainrow">${spec.stage === "input" ? '<span class="node">User message</span><span class="arr">→</span>' : spec.stage === "execution" ? '<span class="node model">Model wants a tool</span><span class="arr">→</span>' : '<span class="node model">Model draft</span><span class="arr">→</span>'}
         ${secs.map((s, i) => `<span class="node guard" data-sec="${i}">${esc(s.short)}</span>`).join('<span class="arr">→</span>')}
@@ -1702,30 +1876,22 @@ function selectSection(key, i, { scroll = false } = {}) {
     applyCodeAll(); return;
   }
   const exp = bullets(b, s.part.explain);
-  const [wo, wi] = built.scenes;
-  const woLast = [...wo.hops].reverse().find(h => h.payload), wiLast = [...wi.hops].reverse().find(h => h.payload);
-  const li = h => `<li><b>${esc(h.label)}</b>${h.title && h.title !== h.label ? `: ${esc(trunc(h.title, 70))}` : ""}</li>`;
+  const introParas = s.part.intro.split(/\n\s*\n/), lead = introParas[0], rest = introParas.slice(1).join("\n\n");
   panel.innerHTML = `<div class="ex" role="tabpanel">
     <div class="ex-head"><div><span class="gap-tag">${ICON.shield.replace("<svg", '<svg width="13" height="13"')} ${spec(key).stage ? `${spec(key).title} guardrail` : `Stage ${i + 1}`}</span>
       <h2 style="margin-top:10px">${esc(s.part.title)}</h2></div></div>
-    <div class="ex-intro md">${mdBlock(s.part.intro)}</div>
-    ${built.request ? `<div class="panel question"><span class="q-ic">${ICON.user}</span><span>${markText(trunc(built.request, 420))}</span></div>` : ""}
-    <div class="subhead">Run it step by step</div>
+    ${termHtml((TERM_OF[key] || {})[s.short])}
+    <div class="ex-intro md">${mdBlock(lead)}${rest.trim() ? `<details class="more"><summary>More detail</summary><div class="md">${mdBlock(rest)}</div></details>` : ""}</div>
+    ${built.request ? `<div class="panel question"><span class="q-ic">${ICON.user}</span><span>${markText(trunc(built.request, 300))}</span></div>` : ""}
+    <div class="subhead">Without vs. with the guardrail</div>
     <div id="${key}-player"></div>
-    <details class="compare panel">
-      <summary><span class="badge">⇆</span><span class="label">Compare: without vs with</span><span class="toggle">${ICON.chev}<span class="show-t">Show</span><span class="hide-t">Hide</span></span></summary>
-      <div class="cmp-grid">
-        <div class="cmp-col without"><div class="cmp-head"><span class="ico">${ICON.x}</span>${esc(wo.label)}</div><div class="loop static" data-step="0">${seqSvg(wo, "cmp" + (++PID))}</div><ul>${wo.hops.slice(0, 4).map(li).join("")}</ul></div>
-        <div class="cmp-col with"><div class="cmp-head"><span class="ico">${ICON.check}</span>${esc(wi.label)}</div><div class="loop static" data-step="0">${seqSvg(wi, "cmp" + (++PID))}</div><ul>${wi.hops.slice(0, 4).map(li).join("")}</ul></div>
-      </div>
-    </details>
     <div class="subhead">What the run shows</div>
     ${built.visual}
     <div class="subhead">The code</div>
     ${built.code.map(([c, l]) => codeBlock(b, c, l)).join("")}
     ${exp.length ? `<div class="subhead">Explain</div><div class="explain">${exp.map((t, k) => `<div class="panel item"><span class="badge">${i + 1}${"abcdefghij"[k]}</span><p>${md(t)}</p></div>`).join("")}</div>` : ""}
   </div>`;
-  makePlayer($(`#${key}-player`), b, built);
+  makeDuel($(`#${key}-player`), b, built);
   applyCodeAll();
   requestAnimationFrame(() => requestAnimationFrame(() => $$("[data-w]", panel).forEach(el => (el.style.width = el.dataset.w + "%"))));
   history.replaceState(null, "", `#${key}/${s.key}`);
