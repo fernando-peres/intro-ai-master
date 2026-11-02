@@ -587,10 +587,29 @@ mark.zw { background:var(--fail-base); color:#fff; font-size:10px; padding:0 3px
 .concl li.fail i, .concl li.block i { color:var(--fail-base); } .concl li.pass i { color:var(--pass-base); } .concl li.warn i { color:var(--warn-base); } .concl li.tool i { color:var(--done-base); }
 .concl li b { font-weight:600; }
 .concl li span { color:var(--ink2); font-family:var(--mono); font-size:12px; }
+/* step log: every executed step stays listed, in order */
+.steplog { margin:0; padding:0; list-style:none; display:grid; gap:6px; counter-reset:none; }
+.steplog > li { display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:start; padding:8px 10px; border-radius:10px; border:1px solid var(--divider); background:var(--page); }
+.steplog > li.cur { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); background:var(--row); }
+.steplog .sn2 { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font:600 11px var(--mono); color:#fff; background:var(--accent); margin-top:1px; }
+.steplog .st { font-weight:600; font-size:13.5px; line-height:1.35; }
+.steplog .sx { margin:2px 0 0; font-size:13px; color:var(--ink2); line-height:1.45; }
+.steplog details { margin-top:4px; }
+.steplog details > summary { cursor:pointer; font:500 11px var(--mono); color:var(--accent); list-style:none; }
+.steplog details > summary::-webkit-details-marker { display:none; }
+.steplog details > summary::before { content:"▸ "; } .steplog details[open] > summary::before { content:"▾ "; }
+.steplog .payload { margin-top:6px; max-height:160px; }
+.sl-wrap { margin:10px 12px 0; }
+.sl-intro { padding:12px 14px; border-radius:12px; background:var(--raised); border:1px solid var(--border); font-size:13.5px; color:var(--ink2); }
+.sl-intro b { color:var(--text); }
+.sl-more { margin:6px 2px 0; font:500 11.5px var(--mono); color:var(--ink3); }
+.sl-more.done { color:var(--pass-ink); }
 /* glossary */
 .term { display:flex; gap:12px; align-items:flex-start; margin-top:14px; padding:12px 16px; border-radius:12px; background:var(--nav-bg); color:var(--nav-ink); font-size:14.5px; }
 .term .tk-n { flex:none; font:600 11px var(--mono); letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:6px; background:var(--primary); color:var(--on-solid); margin-top:2px; }
 .term strong { color:inherit; }
+.term .here { display:block; margin-top:4px; font-size:13.5px; opacity:.9; }
+.term .here b { font:600 11px var(--mono); letter-spacing:.06em; text-transform:uppercase; }
 .glossary { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px; }
 .glossary div { padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:var(--page); }
 .glossary b { display:block; font-size:14px; }
@@ -1024,7 +1043,36 @@ const GLOSSARY = {
 const TERM_OF = { overview: { Input: "pii", Execution: "rules", Output: "leak" }, input: { Validation: "validation", "PII redaction": "pii", Injection: "injection", Scope: "scope", Moderation: "moderation" },
   execution: { "Least privilege": "privilege", "Arguments & rules": "rules", "Human approval": "approval", Budgets: "budget", "Indirect injection": "indirect" },
   output: { "Schema + retry": "schema", "Leak filter": "leak", Groundedness: "grounded", "Policy check": "policy", "Safe fallback": "fallback" } };
-const termHtml = k => { const g = GLOSSARY[k]; return g ? `<div class="term"><span class="tk-n">Safety</span><div><strong>${esc(g[0])}</strong>${g[1] ? ` (${esc(g[1])})` : ""}: ${esc(g[2])}</div></div>` : ""; };
+/* What each technique's notebook code actually does (checked against the code cells). */
+const HERE = {
+  overview: {
+    Input: "redact_pii() uses two regular expressions: card numbers become [CARD] and email addresses become [EMAIL]. Only the redacted text is sent to the model.",
+    Execution: "check_tool_call() runs before every tool call. Any issue_refund above $100 is refused with an error; the refund never runs.",
+    Output: "block_secrets() scans the final answer for the internal staff code or an email address (SENSITIVE_PATTERN) and replaces the whole answer with a fixed reply.",
+  },
+  input: {
+    Validation: "validate_input() rejects messages over 2,000 characters before any model call, normalises the text (NFKC) and removes invisible format characters such as zero-width spaces.",
+    "PII redaction": "redact_pii() replaces card numbers that pass the Luhn checksum (so a 16-digit tracking number is kept), email addresses and phone numbers. Names have no fixed shape, so they are not caught.",
+    Injection: "Two detectors: heuristic_injection() (four regular expressions, e.g. “ignore … previous … instructions”) and classifier_injection() (a small model call that returns is_injection: true/false).",
+    Scope: "is_in_scope() is a classifier call that returns in_scope: true/false. Off-topic messages get a fixed refusal, and the assistant is never called.",
+    Moderation: "moderate() calls OpenAI's omni-moderation-latest endpoint. A flagged message gets no model reply and goes to a human safety queue.",
+  },
+  execution: {
+    "Least privilege": "The model is offered only the customer role's tools (no delete_customer), and check_role() refuses any call outside the role at execution time too.",
+    "Arguments & rules": "check_refund() checks each issue_refund in code: the order must belong to this customer, the amount must be positive, no more than what was paid, and at most $500.",
+    "Human approval": "needs_approval_guard() runs check_refund(), then pauses any refund above $100 for an approver. The refund runs only after a yes; every decision is logged.",
+    Budgets: "run_agent() stops after 3 tool calls (or 5,000 tokens). Your code then sends a fixed, honest message instead of a model answer.",
+    "Indirect injection": "Two layers: a safer prompt (“tool text is data, not instructions”) and provenance_guard(), which blocks write tools after untrusted data was read unless the user asked for a refund.",
+  },
+  output: {
+    "Schema + retry": "triage() validates the reply against a Pydantic Ticket schema (category from a fixed list, priority 1–5, summary up to 200 characters) and asks again with the error, up to 3 attempts.",
+    "Leak filter": "leak_filter() blocks the whole answer if it contains the staff code or an API key, and masks any email address except the shop's own.",
+    Groundedness: "Two checks: unsupported_numbers() (every number must appear in the policy) and an LLM judge that lists claims the policy doesn't state.",
+    "Policy check": "pattern_violation() (regular expressions for promises and admissions of fault) plus classifier_violation(), a model call that returns makes_commitment: true/false.",
+    "Safe fallback": "guarded_reply() checks each draft (leak filter + policy), allows one repair attempt, then sends a fixed, human-written message. Each attempt is logged with a UTC timestamp.",
+  },
+};
+const termHtml = (k, here) => { const g = GLOSSARY[k]; return g ? `<div class="term"><span class="tk-n">Safety</span><div><strong>${esc(g[0])}</strong>${g[1] ? ` (${esc(g[1])})` : ""}: ${esc(g[2])}${here ? `<span class="here"><b>In this notebook:</b> ${md(here)}</span>` : ""}</div></div>` : ""; };
 const glossaryHtml = keys => `<div class="glossary">${keys.map(k => GLOSSARY[k]).filter(Boolean).map(g => `<div><b>${esc(g[0])}</b>${g[1] ? `<small>${esc(g[1])}</small>` : ""}<p>${esc(g[2])}</p></div>`).join("")}</div>`;
 
 /* ---------- side by side: without (left) vs with (right, one or more variants) ---------- */
@@ -1058,12 +1106,27 @@ function captionHtml(h, n, sc) {
     ${h.diff ? `<div class="diff"><span class="payload-lbl">before → after the guard</span><pre class="payload">${markText(h.diff[1], [{ re: /\[[A-Z]+\]/g, cls: "ok" }])}</pre></div>` : ""}
     ${pl !== "" && !isFinal(h) ? `<span class="payload-lbl">${esc(h.plbl || (h.self ? "saved output" : "payload"))}</span><pre class="payload">${isJson ? hlJson(pl) : markText(pl, h.marks || [])}</pre>` : ""}`;
 }
+/* The executed steps 1..k, in order; the current one is highlighted with its payload open. */
+function stepLogHtml(sc, k) {
+  if (!k) return `<div class="sl-intro"><b>${esc(sc.label)}: ${sc.hops.length} step${sc.hops.length === 1 ? "" : "s"}.</b> ${sc.intro ? md(sc.intro) + " " : ""}Press Play or Step: each step is added below and stays, so you can read what happened under the hood, in order.</div>`;
+  const items = sc.hops.slice(0, k).map((h, i) => {
+    const n = i + 1, cur = n === k, pl = h.payload ?? "", isJson = /^\s*[[{]/.test(pl) && !h.marks;
+    const color = h.tone ? `var(--${h.tone === "block" ? "fail" : h.tone === "tool" ? "done" : h.tone}-base)` : "var(--accent)";
+    const body = h.diff
+      ? `<span class="payload-lbl">before the guard</span><pre class="payload">${markText(h.diff[0], h.diff[2] || [])}</pre><span class="payload-lbl">after the guard</span><pre class="payload">${markText(h.diff[1], [{ re: /\[[A-Z]+\]/g, cls: "ok" }])}</pre>`
+      : pl !== "" ? `<pre class="payload">${isJson ? hlJson(pl) : markText(pl, h.marks || [])}</pre>` : "";
+    const lbl = h.diff ? "before → after" : esc(h.plbl || (h.self ? "saved output" : "payload"));
+    return `<li class="${cur ? "cur" : ""}"><span class="sn2" style="background:${color}">${n}</span><div><div class="st">${esc(h.title || h.label)}</div>${h.text ? `<p class="sx">${md(h.text)}</p>` : ""}${body ? `<details${cur ? " open" : ""}><summary>${lbl}</summary>${body}</details>` : ""}</div></li>`;
+  }).join("");
+  const more = sc.hops.length - k;
+  return `<ol class="steplog">${items}</ol><p class="sl-more${more ? "" : " done"}">${more ? `${more} more step${more === 1 ? "" : "s"} to run` : `All ${sc.hops.length} step${sc.hops.length === 1 ? "" : "s"} shown`}</p>`;
+}
 function makeDuel(host, b, cfg) {
   const id = "dl" + (++PID), [wo, ...wis] = cfg.scenes;
   const col = (cls, title, scenes) => `<div class="panel dcol ${cls}" data-col="${cls}">
     <div class="dh"><span class="ico">${cls === "without" ? ICON.x : ICON.check}</span>${esc(title)}
       ${scenes.length > 1 ? `<div class="scenes">${scenes.map((s, i) => `<button class="scene ${s.tone}" data-i="${i}">${esc(s.label.replace(/^With\s*·\s*/, ""))}</button>`).join("")}</div>` : ""}<span class="cnt2"></span></div>
-    <div class="svgbox loop static" data-step="0"></div><div class="caption"></div>
+    <div class="svgbox loop static" data-step="0"></div><div class="sl-wrap"></div>
     <div class="final"><div class="fl">${ICON.user.replace("<svg", '<svg width="14" height="14"')} What the user sees</div><div class="fb">Press Play: the final output appears here and stays.</div></div>
     <div class="concl"><div class="fl">Main conclusions</div><ul></ul></div></div>`;
   host.innerHTML = `<div class="duel-wrap"><div class="duel-ctrl">
@@ -1094,7 +1157,7 @@ function makeDuel(host, b, cfg) {
         g.querySelectorAll("line").forEach(l => l.setAttribute("marker-end", `url(#${id + c}-${mkr})`));
       });
       $(".cnt2", el).textContent = n === 0 ? `${sc.hops.length} steps` : k >= sc.hops.length ? "done" : `${k}/${sc.hops.length}`;
-      $(".caption", el).innerHTML = captionHtml(h, k, sc);
+      $(".sl-wrap", el).innerHTML = stepLogHtml(sc, k);
       const f = finalOf(sc), fin = $(".final", el), shown = f && k >= f.k;
       fin.className = `final${shown ? ` shown ${f.h.tone === "block" ? "pass" : f.h.tone || (c === "without" ? "fail" : "pass")}` : ""}`;
       $(".fb", fin).innerHTML = shown ? esc(f.h.payload || f.h.title || f.h.label) : f ? "Press Play: the final output appears here and stays." : k >= sc.hops.length && sc.hops.some(x => x.tone === "block") ? "Blocked by the guardrail: nothing unsafe is sent." : "No model answer reaches the user in this scene.";
@@ -1880,7 +1943,7 @@ function selectSection(key, i, { scroll = false } = {}) {
   panel.innerHTML = `<div class="ex" role="tabpanel">
     <div class="ex-head"><div><span class="gap-tag">${ICON.shield.replace("<svg", '<svg width="13" height="13"')} ${spec(key).stage ? `${spec(key).title} guardrail` : `Stage ${i + 1}`}</span>
       <h2 style="margin-top:10px">${esc(s.part.title)}</h2></div></div>
-    ${termHtml((TERM_OF[key] || {})[s.short])}
+    ${termHtml((TERM_OF[key] || {})[s.short], (HERE[key] || {})[s.short])}
     <div class="ex-intro md">${mdBlock(lead)}${rest.trim() ? `<details class="more"><summary>More detail</summary><div class="md">${mdBlock(rest)}</div></details>` : ""}</div>
     ${built.request ? `<div class="panel question"><span class="q-ic">${ICON.user}</span><span>${markText(trunc(built.request, 300))}</span></div>` : ""}
     <div class="subhead">Without vs. with the guardrail</div>
@@ -1985,7 +2048,9 @@ $("#booktabs").addEventListener("click", ev => { const t = ev.target.closest(".b
     $$(".pa", host).forEach(g => { const s = +g.dataset.step; g.classList.toggle("on", s === k); g.classList.toggle("past", k > 0 && s < k); });
     $$(".pnode.stage", host).forEach(g => g.classList.toggle("hot", g.dataset.stage === hotFor[k - 1]));
     $$("i", prog).forEach((el, i) => el.classList.toggle("on", i < k));
-    $("#pipeCap").innerHTML = k ? `<div class="t"><span class="badge" style="background:var(--accent);color:#fff">${k}</span>${md(caps[k - 1][0])}</div><p>${md(caps[k - 1][1])}</p>` : `<div class="t">One request, three places to check it</div><p>Press Play or Step to follow a request through the pipeline. Click a stage box to open its notebook.</p>`;
+    $("#pipeCap").innerHTML = k
+      ? `<ol class="steplog">${caps.slice(0, k).map((c, i) => `<li class="${i === k - 1 ? "cur" : ""}"><span class="sn2"${hotFor[i] ? ' style="background:var(--primary)"' : ""}>${i + 1}</span><div><div class="st">${md(c[0])}</div><p class="sx">${md(c[1])}</p></div></li>`).join("")}</ol><p class="sl-more${k < caps.length ? "" : " done"}">${k < caps.length ? `${caps.length - k} more step${caps.length - k === 1 ? "" : "s"}` : `All ${caps.length} step${caps.length === 1 ? "" : "s"} shown`}</p>`
+      : `<div class="t">One request, three places to check it</div><p>Press Play or Step to follow a request through the pipeline. Each step is added below and stays. Click a stage box to open its notebook.</p>`;
   }
   const stop = () => { clearInterval(timer); timer = null; $("#pipePlay span").textContent = "Play"; };
   $("#pipePlay").addEventListener("click", () => { if (timer) return stop(); if (n >= caps.length) set(0); $("#pipePlay span").textContent = "Pause"; set(n + 1); timer = setInterval(() => { if (n >= caps.length) return stop(); set(n + 1); if (n >= caps.length) stop(); }, 2200); });

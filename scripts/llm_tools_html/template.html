@@ -163,6 +163,21 @@ h3 { font-size:17px; font-weight:600; }
 .caption { min-height:84px; padding:14px 16px; border-radius:12px; background:var(--raised); border:1px solid var(--border); }
 .caption .t { font-weight:600; display:flex; align-items:center; gap:8px; }
 .caption p { margin:4px 0 0; font-size:14px; color:var(--ink2); }
+/* step log: every executed step stays listed, in order */
+.caption.has-log { padding:10px; }
+.steplog { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
+.steplog > li { display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:start; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--page); }
+.steplog > li.cur { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+.steplog .sn2 { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font:600 11px var(--mono); color:#fff; margin-top:1px; }
+.steplog .st { font-weight:600; font-size:13.5px; line-height:1.35; }
+.caption .steplog .sx { margin:2px 0 0; font-size:13px; line-height:1.45; }
+.steplog details { margin-top:4px; }
+.steplog details > summary { cursor:pointer; font:500 11px var(--mono); color:var(--accent); list-style:none; }
+.steplog details > summary::-webkit-details-marker { display:none; }
+.steplog details > summary::before { content:"▸ "; } .steplog details[open] > summary::before { content:"▾ "; }
+.steplog .payload { margin-top:6px; max-height:160px; }
+.sl-more { margin:6px 2px 0 !important; font:500 11.5px var(--mono) !important; color:var(--ink3) !important; }
+.sl-more.done { color:var(--pass-ink) !important; }
 .loop-code { background:var(--raised); display:flex; flex-direction:column; min-width:0; }
 .loop-code .bar { display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:1px solid var(--border); font:500 12px var(--mono); color:var(--ink2); }
 .loop-code pre { margin:0; padding:12px 0; font-size:12px; line-height:1.6; overflow:auto; flex:1; }
@@ -1136,13 +1151,19 @@ function makePlayer(host, cfg) {
     });
     root.querySelectorAll(".prog i").forEach((el, i) => el.classList.toggle("on", i < n));
     const cap = $(".caption", root);
+    cap.classList.toggle("has-log", !!h);
     if (!h) {
       cap.innerHTML = `<div class="t">${esc(sc.label)}: ${sc.hops.length} steps</div><p>Press Play to run <em>this</em> scene only, or step through it with the buttons or the ← → keys. Each scene keeps its own place, so you can switch back and forth while explaining. Every payload shown comes from the saved notebook run.</p>`;
     } else {
-      const isJson = /^[[{]/.test(h.payload);
-      cap.innerHTML = `<div class="t"><span class="badge" style="background:${h.kind === "run" ? "var(--done-base)" : h.kind === "mem" ? `var(--${h.tone}-base)` : "var(--accent)"};color:#fff">${n}</span>${esc(h.title)}</div>
-        <p>${md(h.text)}</p><span class="payload-lbl">${h.kind === "run" ? "returned by the function" : h.final ? "text shown to the user" : "payload on this arrow"}</span>
-        <pre class="payload">${isJson ? hlJson(h.payload) : esc(h.payload)}</pre>`;
+      /* every executed step stays listed, in order; the current one has its payload open */
+      const items = sc.hops.slice(0, n).map((x, i) => {
+        const k = i + 1, cur = k === n, isJson = /^[[{]/.test(x.payload);
+        const color = x.kind === "run" ? "var(--done-base)" : x.kind === "mem" ? `var(--${x.tone}-base)` : "var(--accent)";
+        const lbl = x.kind === "run" ? "returned by the function" : x.final ? "text shown to the user" : "payload on this arrow";
+        return `<li class="${cur ? "cur" : ""}"><span class="sn2" style="background:${color}">${k}</span><div><div class="st">${esc(x.title)}</div><p class="sx">${md(x.text)}</p>${x.payload ? `<details${cur ? " open" : ""}><summary>${lbl}</summary><pre class="payload">${isJson ? hlJson(x.payload) : esc(x.payload)}</pre></details>` : ""}</div></li>`;
+      }).join("");
+      const more = sc.hops.length - n;
+      cap.innerHTML = `<ol class="steplog">${items}</ol><p class="sl-more${more ? "" : " done"}">${more ? `${more} more step${more === 1 ? "" : "s"} to run` : `All ${sc.hops.length} step${sc.hops.length === 1 ? "" : "s"} shown`}</p>`;
     }
     if (h && h.kind === "run") {
       const c = TOOL_CELL[h.tool];

@@ -270,6 +270,18 @@ tr.hl td { background:var(--row); }
 .simsteps li { display:flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; font-size:13px; color:var(--ink2); background:var(--sunken); cursor:pointer; }
 .simsteps li .badge { background:var(--page); color:var(--ink2); border:1px solid var(--border); }
 .simsteps li.on { background:var(--nav-bg); color:var(--nav-ink); }
+/* step log: what happens under the hood, step by step; executed steps stay listed */
+.hood { margin-top:12px; }
+.hood > .lbl { display:block; margin-bottom:6px; font:600 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); }
+.steplog { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
+.steplog > li { display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:start; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--page); }
+.steplog > li.cur { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); background:var(--row); }
+.steplog .sn2 { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font:600 11px var(--mono); color:#fff; background:var(--accent); margin-top:1px; }
+.steplog .st { font-weight:600; font-size:13.5px; line-height:1.35; }
+.steplog .sx { margin:2px 0 0; font-size:13px; line-height:1.45; color:var(--ink2); }
+.sl-more { margin:6px 2px 0; font:500 11.5px var(--mono); color:var(--ink3); }
+.sl-more.done { color:var(--pass-ink); }
+
 .simsteps li.on .badge, .simsteps li.done .badge { background:var(--primary); color:var(--on-solid); border-color:transparent; }
 .lanes { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .lane { display:grid; gap:10px; align-content:start; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--raised); }
@@ -1024,6 +1036,19 @@ function flow(id) {
    RAG · 3 WITHOUT vs WITH RAG (context-window simulation)
    ===================================================================== */
 const SIM_STEPS = ["Question arrives", "Context window is assembled", "Retrieval adds passages", "The model answers"];
+const SIM_HOOD = [
+  "The app receives Maria's question. Nothing has been sent to the model yet, so both context windows are empty.",
+  "Your code builds the prompt: system instructions plus the question. Up to here both sides are identical.",
+  "The only difference. With RAG, the question is embedded, the closest policy chunks (C2, C1) are retrieved and inserted with their source labels. Without RAG, nothing about Northbay's policy is added.",
+  "Same model, different context. With the passages it answers from today's policy and cites it; without them it can only fall back on training memory.",
+];
+/* The executed steps 1..i+1, in order, each with what happens under the hood. */
+function hoodLog(titles, texts, i) {
+  const items = titles.slice(0, i + 1).map((t, k) => `<li class="${k === i ? "cur" : ""}"><span class="sn2">${k + 1}</span><div><div class="st">${t}</div><p class="sx">${texts[k]}</p></div></li>`).join("");
+  const more = titles.length - i - 1;
+  return `<span class="lbl">Under the hood</span><ol class="steplog">${items}</ol><p class="sl-more${more ? "" : " done"}">${more ? `${more} more step${more === 1 ? "" : "s"}` : `All ${titles.length} step${titles.length === 1 ? "" : "s"} shown`}</p>`;
+}
+
 function ragComparePanel() {
   return `<div class="case" data-group="rag" data-sub="compare" role="tabpanel" hidden>
     <div class="panel pad stack">
@@ -1035,6 +1060,7 @@ function ragComparePanel() {
         <div class="lane" id="laneNo"></div>
         <div class="lane is-rag" id="laneRag"></div>
       </div>
+      <div class="hood" id="simHood"></div>
       <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span id="simN">1</span> of 4 · token counts are illustrative</span><span style="display:flex;gap:8px"><button class="btn" id="simPrev">Back</button><button class="btn solid" id="simNext">Next step</button></span></div>
     </div>
   </div>`;
@@ -1068,6 +1094,7 @@ function initRagCompare() {
     $("#laneNo").innerHTML = lane(false, i, fresh);
     $("#laneRag").innerHTML = lane(true, i, fresh);
     $$("#simSteps li").forEach((li, k) => { li.classList.toggle("on", k === i); li.classList.toggle("done", k < i); });
+    $("#simHood").innerHTML = hoodLog(SIM_STEPS, SIM_HOOD, i);
     $("#simN").textContent = i + 1;
     $("#simPrev").disabled = i === 0;
     $("#simNext").textContent = i === 3 ? "Start again" : "Next step";
@@ -1436,6 +1463,7 @@ function actCase(group) {
       <div class="msg user"><span class="who"><span class="dot"></span>${c.ask[0]}</span>${c.ask[1]}</div>
       <ol class="simsteps">${ACT_STEPS.map((s, i) => `<li data-k="${i}"><span class="badge">${i + 1}</span>${i === 2 ? `${c.block[0].toUpperCase() + c.block.slice(1)} adds its part` : s}</li>`).join("")}</ol>
       <div class="lanes"><div class="lane"></div><div class="lane is-rag"></div></div>
+      <div class="hood act-hood"></div>
       <p class="keyidea act-how" hidden><b>How ${c.block} instructed the model ·</b><span>${c.how}</span></p>
       <div class="stage-foot" style="padding:12px 0 0;border-top:1px solid var(--border)"><span class="fict">Step <span class="act-n">1</span> of 4 · token counts are illustrative</span><span style="display:flex;gap:8px"><button class="btn act-prev">Back</button><button class="btn solid act-next">Next step</button></span></div>
     </div>
@@ -1466,6 +1494,13 @@ function initAct(group) {
     lanes[0].innerHTML = lane("without", i, fresh);
     lanes[1].innerHTML = lane("with", i, fresh);
     $$(".simsteps li", root).forEach((li, k) => { li.classList.toggle("on", k === i); li.classList.toggle("done", k < i); });
+    const blk = c.block[0].toUpperCase() + c.block.slice(1);
+    $(".act-hood", root).innerHTML = hoodLog(ACT_STEPS.map((t, k) => (k === 2 ? `${blk} adds its part` : t)), [
+      "The app receives the request. Nothing has been sent to the model yet, so both context windows are empty.",
+      "Your code puts the request into the context window. Up to here both sides are identical.",
+      `The only difference. With ${c.block}, your code adds the context it found (highlighted). Without it, nothing useful is added, or only noise.`,
+      "The model reads only its context window. Same model, same request: compare the two outputs and the scores.",
+    ], i);
     $(".act-n", root).textContent = i + 1;
     $(".act-prev", root).disabled = i === 0;
     $(".act-next", root).textContent = i === 3 ? "Start again" : "Next step";

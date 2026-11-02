@@ -641,6 +641,19 @@ svg.loopsvg { width:100%; height:auto; display:block; }
 .loopsvg .larr.on text { fill:var(--text); font-weight:600; }
 .loopsvg .mk { fill:var(--ink3); }
 .loopsvg .pulse { fill:var(--accent); }
+/* step log: every executed step stays listed */
+.steplog { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
+.steplog > li { display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:start; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--page); }
+.steplog > li.cur { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); background:var(--row); }
+.steplog .sn2 { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font:600 11px var(--mono); color:#fff; background:var(--accent); margin-top:1px; }
+.steplog .st { font-weight:600; font-size:13.5px; line-height:1.35; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.steplog details { margin-top:6px; }
+.steplog details > summary { cursor:pointer; font:500 11px var(--mono); color:var(--accent); list-style:none; }
+.steplog details > summary::-webkit-details-marker { display:none; }
+.steplog details > summary::before { content:"▸ "; } .steplog details[open] > summary::before { content:"▾ "; }
+.steplog details > :not(summary) { margin-top:6px; }
+.sl-more { margin:4px 2px 0; font:500 11.5px var(--mono); color:var(--ink3); }
+.sl-more.done { color:var(--pass-ink); }
 .draft { padding:10px 12px; border-radius:10px; background:var(--sunken); font-size:13.5px; white-space:pre-wrap; max-height:220px; overflow:auto; }
 
 /* experiment (notebook 04) */
@@ -1127,7 +1140,10 @@ function wireLoop(p) {
     $$(".lnode", root).forEach(g => g.classList.toggle("on", s.n.includes(g.dataset.n)));
     $$(".larr", root).forEach(g => g.classList.toggle("on", s.a.includes(g.dataset.a)));
     $$(".lprog i", root).forEach((el, i) => el.classList.toggle("on", i <= k));
-    $(".cap", root).innerHTML = `<div class="t"><span class="badge">${k + 1}</span>${esc(s.t)}${s.tone ? " " + vchip(s.tone === "pass" ? "pass" : "fail") : ""}</div>${s.body || ""}`;
+    /* every executed step stays listed, in order; earlier details fold, the current one is open */
+    const items = p.steps.slice(0, k + 1).map((x, i) => `<li class="${i === k ? "cur" : ""}"><span class="sn2"${x.tone ? ` style="background:var(--${x.tone === "pass" ? "pass" : "fail"}-base)"` : ""}>${i + 1}</span><div><div class="st">${esc(x.t)}${x.tone ? " " + vchip(x.tone === "pass" ? "pass" : "fail") : ""}</div>${x.body ? `<details${i === k ? " open" : ""}><summary>details</summary>${x.body}</details>` : ""}</div></li>`).join("");
+    const more = p.steps.length - k - 1;
+    $(".cap", root).innerHTML = `<ol class="steplog">${items}</ol><p class="sl-more${more ? "" : " done"}">${more ? `${more} more step${more === 1 ? "" : "s"} to run` : `All ${p.steps.length} step${p.steps.length === 1 ? "" : "s"} shown`}</p>`;
   };
   const stop = () => { clearInterval(timer); timer = null; $("[data-lp=play] span", root).textContent = "Play"; };
   root.addEventListener("click", ev => {
