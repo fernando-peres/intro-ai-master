@@ -1048,6 +1048,43 @@
       </div>
     </section>
 
+    <!-- template: layout-dark-1 · five cards -->
+    <section class="page" data-type="slide" data-title="RAG · other types">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG</span>
+          <h1>Beyond basic RAG: <em>other types</em></h1>
+          <p class="subtitle is-wide">Same idea, look it up before answering, with smarter ways to find and check.</p>
+          <div class="rag-types">
+            <div><span class="tag">Agentic RAG</span><b>An agent decides</b><p>It plans, picks sources, searches again if the first results aren’t enough.</p><span class="ex">“Compare our 2025 and 2026 return policies” → two searches, then a comparison.</span></div>
+            <div><span class="tag">Graph RAG</span><b>Facts that connect</b><p>Retrieves from a knowledge graph: entities and their relations, not just passages.</p><span class="ex">“Is my jacket in the recall?” → order → batch → supplier → recall.</span></div>
+            <div><span class="tag">Multimodal RAG</span><b>Beyond text</b><p>Indexes images, tables, audio and video alongside text.</p><span class="ex">A photo of a damaged zip finds the matching repair guide.</span></div>
+            <div><span class="tag">Corrective / Self-RAG</span><b>It checks itself</b><p>Grades what it retrieved; if it’s weak, it searches elsewhere or says so.</p><span class="ex">No good passage found → falls back to the web, or answers “I don’t know”.</span></div>
+            <div><span class="tag">Structured RAG</span><b>Ask the database</b><p>Turns the question into a query (e.g. SQL) over tables.</p><span class="ex">“How many returns in October?” → a query, not a passage.</span></div>
+          </div>
+          <p class="rag-disc rag-types-disc">Not exhaustive: the most prominent variants, and they are often combined.</p>
+          <p class="source">Sources: Asai et al., <i>Self-RAG</i> (2023); Yan et al., <i>Corrective RAG</i> (2024); Edge et al., <i>From Local to Global: A Graph RAG Approach</i>, Microsoft (2024).</p>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
+    <!-- template: layout-dark-1 · three takeaways -->
+    <section class="page" data-type="slide" data-title="RAG · takeaways">
+      <div class="stage is-night">
+        <div class="layout-dark-1">
+          <span class="eyebrow">RAG · Takeaways</span>
+          <h1>Main <em>takeaways</em></h1>
+          <ol class="points rag-tk">
+            <li><b>RAG gives the model your knowledge without retraining it.</b> Current, private and citable, at question time.</li>
+            <li><b>The answer is only as good as what is retrieved.</b> Most RAG quality is decided in indexing and retrieval, not in the model.</li>
+            <li><b>Every step is a design choice: measure it.</b> Chunking, search, filters and permissions should be tested on your real questions.</li>
+          </ol>
+        </div>
+        <span class="page-num"></span>
+      </div>
+    </section>
+
   </div>
 
   <!-- ============ UNIT 4 · TOOLS AND INTEGRATION ============ -->
