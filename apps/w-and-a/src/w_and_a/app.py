@@ -1,14 +1,20 @@
 """Streamlit entry: the header and navigation in the sidebar, the selected page on the right."""
 
-import streamlit as st
+import sys
+from pathlib import Path
 
-from w_and_a.engine.llm import live_llm, model_name
-from w_and_a.ui import render
-from w_and_a.views.chat import chat_page
-from w_and_a.views.compare import compare_page
-from w_and_a.views.notes import notes_page
-from w_and_a.views.registry import PAGES
-from w_and_a.views.tools import tools_page
+# Streamlit Cloud runs this file without installing the package.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import streamlit as st  # noqa: E402
+
+from w_and_a.engine.llm import live_llm, model_name  # noqa: E402
+from w_and_a.ui import auth, render  # noqa: E402
+from w_and_a.views.chat import chat_page  # noqa: E402
+from w_and_a.views.compare import compare_page  # noqa: E402
+from w_and_a.views.notes import notes_page  # noqa: E402
+from w_and_a.views.registry import PAGES  # noqa: E402
+from w_and_a.views.tools import tools_page  # noqa: E402
 
 st.set_page_config(
     page_title="Workflows and agents",
@@ -17,6 +23,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 render.inject_css()
+auth.require_login("Workflows and agents")
 LLM = live_llm()
 
 
@@ -65,4 +72,5 @@ with st.sidebar:
         st.html(f'<p class="wa-nav-section">{section}</p>')
         for k in keys:
             st.page_link(PAGES[k], width="stretch")
+    st.button("Log out", icon=":material/logout:", on_click=auth.logout, width="stretch")
 current.run()

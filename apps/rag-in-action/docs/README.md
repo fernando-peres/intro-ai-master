@@ -7,6 +7,10 @@
 
 Show every stage of RAG on real intermediate data, so a class can watch how chunking, enrichment, embedding and retrieval choices change what reaches the model and how it answers.
 
+## Access
+
+Every page sits behind a login page (`ui/auth.py`); deep links land on it too. Credentials default to `student` / `novaims` and are overridden by `APP_USER` / `APP_PASSWORD` (environment or Streamlit Cloud secrets). The session stays logged in until the browser tab closes.
+
 ## Behavior
 
 Each stage is a page. The stepper rail locks a page until every earlier stage is done (Analytics excepted), and finishing a stage again clears every later one (and the chat).

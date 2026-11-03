@@ -8,6 +8,10 @@
 
 Show, on the same question, who decides each step in a GenAI system: a person (chatbot, single prompt), our code (scripted chatbot, workflow) or the model (agent, agentic system). The audience is executives, so each chat states this in one line and draws its flow in the unit's colours.
 
+## Access
+
+Every page sits behind a login page (`ui/auth.py`); deep links land on it too. Credentials default to `student` / `novaims` and are overridden by `APP_USER` / `APP_PASSWORD` (environment or Streamlit Cloud secrets). The session stays logged in until the browser tab closes or **Log out** (sidebar bottom) is pressed.
+
 ## Pages
 
 The sidebar shows the header (title, legend, Live/Offline status), then hand-drawn navigation (`st.navigation` is hidden so the header can sit above it):

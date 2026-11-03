@@ -1,12 +1,19 @@
 """Streamlit entry: one page per pipeline stage, gated by the stepper rail."""
 
-import streamlit as st
+import sys
+from pathlib import Path
 
-from rag_in_action.ui import state
-from rag_in_action.ui.components import inject_css
-from rag_in_action.ui.stepper import rail
-from rag_in_action.views import analytics, chat, chunk, embed, enrich, load, overview, store
-from rag_in_action.views.registry import PAGES
+# Streamlit Cloud runs this file without installing the app or the `genai` workspace package.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "packages" / "genai" / "src"))
+
+import streamlit as st  # noqa: E402
+
+from rag_in_action.ui import auth, state  # noqa: E402
+from rag_in_action.ui.components import inject_css  # noqa: E402
+from rag_in_action.ui.stepper import rail  # noqa: E402
+from rag_in_action.views import analytics, chat, chunk, embed, enrich, load, overview, store  # noqa: E402
+from rag_in_action.views.registry import PAGES  # noqa: E402
 
 st.set_page_config(
     page_title="RAG in action",
@@ -15,6 +22,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 inject_css()
+auth.require_login("RAG in action")
 
 _VIEWS = {
     "overview": overview,

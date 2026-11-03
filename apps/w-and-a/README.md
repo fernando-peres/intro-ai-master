@@ -18,6 +18,8 @@ uv sync --all-packages --all-groups
 
 Live runs read `OPENAI_API_KEY` (and optionally `OPENAI_MODEL`, default `gpt-5.4-mini`) from the repo-root `.env`. Without a key the app stays usable: the scripted chatbot and the tools page need no model, and the five preset questions replay recorded runs, marked **Recorded run**.
 
+Every page is behind a login: user `student`, password `novaims`.
+
 ## Run
 
 ```bash
@@ -26,6 +28,24 @@ uv run w-and-a-record     # re-record the offline runs (needs a key; billed)
 ```
 
 It is also listed in `uv run all-apps`.
+
+## Deploy to Streamlit Community Cloud
+
+1. On [share.streamlit.io](https://share.streamlit.io): **Create app** → repo `fernando-peres/intro-ai-master`, branch `main`, main file path `apps/w-and-a/src/w_and_a/app.py`.
+2. **Advanced settings**: Python 3.14. Secrets (top-level keys become environment variables):
+
+   ```toml
+   OPENAI_API_KEY = "sk-..."   # optional: without it the app runs offline
+   # APP_USER = "student"      # optional: override the login
+   # APP_PASSWORD = "novaims"
+   ```
+
+Cloud runs from the repo root without installing the package: `app.py` puts `src/` on `sys.path`, the theme comes from the root `.streamlit/config.toml`, and dependencies from `src/w_and_a/requirements.txt`, which takes precedence over the root `uv.lock`. Regenerate it after changing dependencies:
+
+```bash
+uv export --package w-and-a --no-dev --no-hashes --no-emit-workspace --no-header --no-annotate --frozen \
+  -o apps/w-and-a/src/w_and_a/requirements.txt
+```
 
 ## Layout
 

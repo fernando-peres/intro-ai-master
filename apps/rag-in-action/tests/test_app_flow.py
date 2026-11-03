@@ -16,7 +16,9 @@ def _button(at: AppTest, label: str):
 def test_full_pipeline_flow(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr("rag_in_action.ui.state.api_key", lambda: None)
-    at = AppTest.from_file(APP, default_timeout=120).run()
+    at = AppTest.from_file(APP, default_timeout=120)
+    at.session_state["authenticated"] = True
+    at.run()
     assert not at.exception
     steps = [
         ("Start with step 1", None),
@@ -45,7 +47,9 @@ def test_full_pipeline_flow(monkeypatch):
 @pytest.mark.slow
 def test_analytics_opens_without_running_the_pipeline(monkeypatch):
     monkeypatch.setattr("rag_in_action.ui.state.api_key", lambda: None)
-    at = AppTest.from_file(APP, default_timeout=180).run()
+    at = AppTest.from_file(APP, default_timeout=180)
+    at.session_state["authenticated"] = True
+    at.run()
     _button(at, "Jump to Analytics").click().run()
     assert not at.exception, at.exception
     assert any("default index" in c.value for c in at.caption)

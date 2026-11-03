@@ -1,0 +1,57 @@
+# Streamlit Community Cloud reads only this root config; local runs use apps/<app>/.streamlit/.
+[server]
+enableStaticServing = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+
+# ai-intro's default dark theme (apps/ai-intro/src/index.css, --ae-* tokens).
+[theme]
+base = "dark"
+primaryColor = "#df753e"
+backgroundColor = "#0d0a06"
+secondaryBackgroundColor = "#20150d"
+textColor = "#f5ece0"
+linkColor = "#f39973"
+borderColor = "#554c42"
+baseRadius = "8px"
+baseFontSize = 17
+font = "IBM Plex Mono, ui-monospace, monospace"
+headingFont = "Cormorant Garamond, ui-serif, Georgia, serif"
+codeFont = "IBM Plex Mono, ui-monospace, monospace"
+codeBackgroundColor = "#140d08"
+codeTextColor = "#f39973"
+# Success is the app's blue, not green (docs/branding.md, semantic bucket).
+greenColor = "#5b8def"
+greenBackgroundColor = "#131b2b"
+greenTextColor = "#9db8f5"
+redColor = "#f87171"
+chartCategoricalColors = ["#d9742e", "#d9cac1", "#8c8378", "#fbbf24"]
+
+[[theme.fontFaces]]
+family = "IBM Plex Mono"
+url = "app/static/fonts/ibm-plex-mono-latin-400-normal.woff2"
+weight = 400
+
+[[theme.fontFaces]]
+family = "IBM Plex Mono"
+url = "app/static/fonts/ibm-plex-mono-latin-500-normal.woff2"
+weight = 500
+
+[[theme.fontFaces]]
+family = "IBM Plex Mono"
+url = "app/static/fonts/ibm-plex-mono-latin-600-normal.woff2"
+weight = 600
+
+[[theme.fontFaces]]
+family = "Cormorant Garamond"
+url = "app/static/fonts/cormorant-garamond-latin-400-normal.woff2"
+weight = 400
+
+[[theme.fontFaces]]
+family = "Cormorant Garamond"
+url = "app/static/fonts/cormorant-garamond-latin-500-normal.woff2"
+weight = 500

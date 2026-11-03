@@ -10,6 +10,7 @@ APP = str(Path(__file__).resolve().parents[1] / "src" / "w_and_a" / "app.py")
 def app(monkeypatch) -> AppTest:
     monkeypatch.setenv("OPENAI_API_KEY", "")  # offline: no network in tests
     at = AppTest.from_file(APP, default_timeout=60)
+    at.session_state["authenticated"] = True
     at.run()
     assert not at.exception
     return at
