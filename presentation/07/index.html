@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GenAI System Mindset — summary</title>
+  <link rel="stylesheet" href="../fonts/fonts.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" />
+  <link rel="stylesheet" href="deck.css" />
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+
+<!--
+  Authoring (see README.md for the templates)
+  - Each <section class="page"> is one step, in order.
+  - data-type="slide": 16:9 stage (1600×900) scaled to fit. Put content in <div class="stage">.
+  - data-type="doc": a scrolling document page. Use <section class="page is-night" data-type="doc"> + <article class="doc-dark-1">.
+  - Wrap pages in <div class="unit" data-title="…"> to group them under a unit.
+  - <span class="page-num"></span> is filled with the page number by deck.js.
+-->
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="flow-arrow" viewBox="0 0 70 24"><path d="M2 12H62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6"/><path d="M56 4l10 8-10 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5V12l3.6 2.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="pixels" viewBox="0 0 220 540">
+    <rect x="0" y="56" width="27.4" height="21.8"/>
+    <rect x="27" y="77.3" width="85.8" height="43.2"/>
+    <rect x="112.4" y="120.1" width="43.1" height="43.1"/>
+    <rect x="0" y="141.4" width="70.1" height="43.2"/>
+    <rect x="155.1" y="162.8" width="43.1" height="64.5"/>
+    <rect x="69.7" y="184.1" width="43.1" height="43.2"/>
+    <rect x="112.4" y="226.8" width="85.8" height="21.8"/>
+    <rect x="112.4" y="248.2" width="43.1" height="43.1"/>
+    <rect x="197.8" y="248.2" width="21.8" height="43.1"/>
+    <rect x="112.4" y="290.9" width="85.8" height="21.8"/>
+    <rect x="69.7" y="312.2" width="43.1" height="43.2"/>
+    <rect x="155.1" y="312.2" width="43.1" height="64.4"/>
+    <rect x="0" y="354.9" width="70.1" height="43.1"/>
+    <rect x="112.4" y="376.2" width="43.1" height="43.2"/>
+    <rect x="27" y="419" width="85.8" height="43.1"/>
+    <rect x="0" y="461.7" width="27.4" height="21.8"/>
+  </symbol>
+</svg>
+
+<main id="deck">
+
+  <!-- ============ COVER ============ -->
+  <section class="page" data-type="slide" data-title="Cover">
+    <div class="stage is-green cover">
+      <svg class="pixels" viewBox="0 0 960 540" preserveAspectRatio="xMinYMin meet" aria-hidden="true">
+        <rect x="0" y="56" width="27.4" height="21.8"/>
+        <rect x="27" y="77.3" width="85.8" height="43.2"/>
+        <rect x="112.4" y="120.1" width="43.1" height="43.1"/>
+        <rect x="0" y="141.4" width="70.1" height="43.2"/>
+        <rect x="155.1" y="162.8" width="43.1" height="64.5"/>
+        <rect x="69.7" y="184.1" width="43.1" height="43.2"/>
+        <rect x="112.4" y="226.8" width="85.8" height="21.8"/>
+        <rect x="112.4" y="248.2" width="43.1" height="43.1"/>
+        <rect x="197.8" y="248.2" width="21.8" height="43.1"/>
+        <rect x="112.4" y="290.9" width="85.8" height="21.8"/>
+        <rect x="69.7" y="312.2" width="43.1" height="43.2"/>
+        <rect x="155.1" y="312.2" width="43.1" height="64.4"/>
+        <rect x="0" y="354.9" width="70.1" height="43.1"/>
+        <rect x="112.4" y="376.2" width="43.1" height="43.2"/>
+        <rect x="27" y="419" width="85.8" height="43.1"/>
+        <rect x="0" y="461.7" width="27.4" height="21.8"/>
+      </svg>
+
+      <div class="content">
+        <span class="badge">Class 7 - <b>04 November 2026</b></span>
+        <h1>GenAI System Mindset<br />— summary</h1>
+        <p class="course">Introduction to AI and Machine Learning</p>
+        <p class="program">Executive Master in Artificial Intelligence for Business</p>
+        <p class="authors">Roberto Henriques · Fernando Peres</p>
+      </div>
+
+      <img class="logo" src="../nova-ims-logo.svg" alt="NOVA IMS Information Management School" />
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · building-block cards (left) + Three.js system diagram (right) -->
+  <section class="page" data-type="slide" data-title="Building blocks of a GenAI system">
+    <div class="stage is-night">
+      <div class="layout-dark-1">
+        <span class="eyebrow">GenAI system</span>
+        <h1>The <em>building blocks</em> of a GenAI system</h1>
+        <div class="blk-groups">
+          <div class="blk-card" style="--c:#7fb3ff"><span class="blk-badge" data-blk="C">C</span><h2>Context</h2><p>“What the model needs to know, when it needs to know it, and how to provide it effectively.”</p></div>
+          <div class="blk-card" style="--c:#f2c94c"><span class="blk-badge" data-blk="T">T</span><h2>Tools &amp; integrations</h2><p>Extend model capabilities through external information and actions.</p></div>
+          <div class="blk-card is-full is-flows" style="--c:var(--wf)">
+            <h2>Flows</h2>
+            <p>Coordinate multiple steps and actions to accomplish a goal.</p>
+            <div class="blk-subs">
+              <span style="--c:var(--wf)"><span class="blk-badge" data-blk="W">W</span>Workflow</span>
+              <span style="--c:var(--agent)"><span class="blk-badge" data-blk="A">A</span>Agents</span>
+            </div>
+          </div>
+          <div class="blk-card" style="--c:#f08a7e"><span class="blk-badge" data-blk="G">G</span><h2>Guardrails</h2><p>Validate and constrain system behavior.</p></div>
+          <div class="blk-card" style="--c:#7fe0e8"><span class="blk-badge" data-blk="E">E</span><h2>Evals</h2><p>Assess quality, correctness, safety, and task success.</p></div>
+          <div class="blk-card" style="--c:#c3b6ff"><span class="blk-badge" data-blk="X">X</span><h2>Experiments</h2><p>Systematically test and compare models, prompts, tools, context strategies, workflows, and agents.</p></div>
+          <div class="blk-card" style="--c:#cfd8d3"><span class="blk-badge" data-blk="O">O</span><h2>Observability</h2><p>Monitor and trace system execution, performance, and costs.</p></div>
+        </div>
+        <p class="blk-note"><span class="blk-badge" data-blk="O" style="--c:#cfd8d3">O</span><span><b>In the animation, O is a satellite:</b> it orbits the observability ring, collecting traces, metrics and costs from every harness component.</span></p>
+        <div class="content">
+          <div class="diagram blocks-diagram" data-module="diagrams/blocks.js"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · building block 1 of 6 (definition, idea, spectrum, details) + focus diagram -->
+  <section class="page" data-type="slide" data-title="Building blocks · Context">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:#7fb3ff">
+        <span class="eyebrow"><span class="blk-badge" data-blk="C" style="--c:#7fb3ff">C</span>Building blocks · 1 of 6</span>
+        <h1><em>Context</em>: what the model needs to know</h1>
+        <div class="bb-left">
+          <p class="bb-def">What the model needs to know, and how to provide it: business context, rules and knowledge. <b>When</b> it arrives is the harness’s job.</p>
+          <div class="bb-idea"><span>One idea to keep</span><p>A model can only be as good as what it sees. <em>Context is where your data, rules and know-how enter the system.</em></p></div>
+          <div class="bb-spectrum" style="--n:2"><div class="bb-stop"><b>Context engineering</b><span>the discipline: decide what the model should see</span></div><div class="bb-stop"><b>Context</b><span>the runtime asset the harness draws on</span></div></div>
+          <div class="bb-pairs"><div><h3>What you have</h3><p>Curate it: documents, databases, policies, the team’s know-how.</p></div><div><h3>What you define</h3><p>Engineer it: entity, memory and input/output schemas, rules, prompts and skills, how to retrieve.</p></div></div>
+          <ul class="bb-chips"><li>Documents</li><li>RAG</li><li>Knowledge graphs</li><li>Memory schema</li><li>Entity schemas</li><li>Ontologies</li></ul>
+        </div>
+        <div class="content">
+          <div class="diagram blocks-diagram focus-diagram" data-module="diagrams/focus.js" data-focus="C"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · building block 2 of 6 (definition, idea, spectrum, details) + focus diagram -->
+  <section class="page" data-type="slide" data-title="Building blocks · Tools & integrations">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:#f2c94c">
+        <span class="eyebrow"><span class="blk-badge" data-blk="T" style="--c:#f2c94c">T</span>Building blocks · 2 of 6</span>
+        <h1><em>Tools</em>: extend what the model can do</h1>
+        <div class="bb-left">
+          <p class="bb-def">Extend model capabilities: process data, fetch information and take actions in other systems.</p>
+          <div class="bb-idea"><span>One idea to keep</span><p>Connecting a model to tools does not make it smarter. It <em>changes its reach</em>, and with it, what can go wrong.</p></div>
+          <div class="bb-spectrum" style="--n:2"><div class="bb-stop"><b>Tool</b><span>1 capability: one function, one job</span></div><div class="bb-stop"><b>API · MCP server</b><span>1–n capabilities: a reusable wrapper or proxy around tools</span></div></div>
+          <div class="bb-pairs"><div><h3>Read vs. act</h3><p>Fetching data is low risk. Changing something, a refund or an email, needs limits.</p></div><div><h3>Built-in vs. connected</h3><p>Your own functions, or a server many apps reuse: N + M integrations, not N × M.</p></div></div>
+        </div>
+        <div class="content">
+          <div class="diagram blocks-diagram focus-diagram" data-module="diagrams/focus.js" data-focus="T"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · building block 3 of 6 (definition, idea, spectrum, details) + focus diagram -->
+  <section class="page" data-type="slide" data-title="Building blocks · Workflows">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:var(--wf)">
+        <span class="eyebrow"><span class="blk-badge" data-blk="W" style="--c:var(--wf)">W</span>Building blocks · Flows · 3 of 6</span>
+        <h1><em>Workflows</em>: the same path, every time</h1>
+        <div class="bb-left">
+          <p class="bb-def">Coordinate multiple steps and actions to accomplish a goal. In a workflow, <b>your code</b> fixes the order of the steps; the model does the language inside them.</p>
+          <div class="bb-idea"><span>One idea to keep</span><p>A workflow follows <em>the path you drew</em>. Same input, same steps: easy to test, easy to explain.</p></div>
+          <div class="bb-spectrum" style="--n:2"><div class="bb-stop is-here" style="--c:var(--wf)"><b>Workflow</b><span>follows steps: code decides the path</span></div><div class="bb-stop" style="--c:var(--agent)"><b>Agent</b><span>autonomy: the model decides the path</span></div></div>
+          <div class="bb-pairs"><div><h3>When to use</h3><p>Known, repeatable tasks: classify, route, extract, draft then check.</p></div><div><h3>Five common patterns</h3><p>Chaining, routing, parallel, orchestrator-workers, evaluator-optimizer.</p></div></div>
+          <p class="bb-foot">Patterns from Anthropic, <i>Building effective agents</i> (2024).</p>
+        </div>
+        <div class="content">
+          <div class="diagram blocks-diagram focus-diagram" data-module="diagrams/focus.js" data-focus="W"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · building block 4 of 6 (definition, idea, spectrum, details) + focus diagram -->
+  <section class="page" data-type="slide" data-title="Building blocks · Agents">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:var(--agent)">
+        <span class="eyebrow"><span class="blk-badge" data-blk="A" style="--c:var(--agent)">A</span>Building blocks · Flows · 4 of 6</span>
+        <h1><em>Agents</em>: the model chooses the path</h1>
+        <div class="bb-left">
+          <p class="bb-def">Coordinate multiple steps and actions to accomplish a goal. An agent works in a loop, <b>think → act → observe</b>, and decides the next step itself.</p>
+          <div class="bb-idea"><span>One idea to keep</span><p>An agent <em>chooses its own path</em>. More reach for open-ended tasks, and more to check.</p></div>
+          <div class="bb-spectrum" style="--n:2"><div class="bb-stop" style="--c:var(--wf)"><b>Workflow</b><span>follows steps: code decides the path</span></div><div class="bb-stop is-here" style="--c:var(--agent)"><b>Agent</b><span>autonomy: the model decides the path</span></div></div>
+          <div class="bb-pairs"><div><h3>Agent vs. agentic</h3><p>An <b>agent</b> is one loop that plans, uses tools and checks results. <b>Agentic</b> describes a whole system: agents and workflows with shared memory and controls.</p></div><div><h3>Single- vs. multi-agent</h3><p>One loop with a few tools: start here. Several specialists, coordinated by a lead or by handoffs, when one is not enough.</p></div></div>
+        </div>
+        <div class="content">
+          <div class="diagram blocks-diagram focus-diagram" data-module="diagrams/focus.js" data-focus="A"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · building block 5 of 6 (definition, idea, spectrum, details) + focus diagram -->
+  <section class="page" data-type="slide" data-title="Building blocks · Guardrails">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:#f08a7e">
+        <span class="eyebrow"><span class="blk-badge" data-blk="G" style="--c:#f08a7e">G</span>Building blocks · 5 of 6</span>
+        <h1><em>Guardrails</em>: checks in code around the model</h1>
+        <div class="bb-left">
+          <p class="bb-def">Validate and constrain system behavior: rules that run on every request, before, during and after the model.</p>
+          <div class="bb-idea"><span>One idea to keep</span><p>Asking the model to behave is not a control. <em>Guardrails in code enforce the rule, whatever the model does.</em></p></div>
+          <div class="bb-spectrum" style="--n:3"><div class="bb-stop"><b>Input</b><span>what is allowed in</span></div><div class="bb-stop"><b>Execution</b><span>what it is allowed to do</span></div><div class="bb-stop"><b>Output</b><span>what is allowed out</span></div></div>
+          <ul class="bb-chips"><li>Personal-data redaction</li><li>Prompt-injection detection</li><li>Tool access by role</li><li>Approval thresholds</li><li>Groundedness</li><li>Secret filter</li></ul>
+            <p class="bb-foot">Every guardrail has a cost: latency, false alarms and upkeep. Test them like the rest of the system.</p>
+        </div>
+        <div class="content">
+          <div class="diagram blocks-diagram focus-diagram" data-module="diagrams/focus.js" data-focus="G"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · building block 6 of 6 (definition, idea, spectrum, details) + focus diagram -->
+  <section class="page" data-type="slide" data-title="Building blocks · Evals">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:#7fe0e8">
+        <span class="eyebrow"><span class="blk-badge" data-blk="E" style="--c:#7fe0e8">E</span>Building blocks · 6 of 6</span>
+        <h1><em>Evals</em>: evidence, not impressions</h1>
+        <div class="bb-left">
+          <p class="bb-def">Assess quality, correctness, safety and task success: repeatable checks whose results you can compare over time.</p>
+          <div class="bb-idea"><span>One idea to keep</span><p>No eval, no evidence. <em>Evals decide whether a change ships</em>, which model to use, and whether a guardrail works.</p></div>
+          <div class="bb-spectrum" style="--n:3"><div class="bb-stop"><b>Code checks</b><span>fast and exact</span></div><div class="bb-stop"><b>LLM as a judge</b><span>reads like a person</span></div><div class="bb-stop"><b>Human review</b><span>the reference</span></div></div>
+          <div class="bb-pairs"><div><h3>Before release</h3><p>Regression tests and experiments on fixed cases, against a baseline.</p></div><div><h3>In production</h3><p>Samples of live traffic, judged and spot-checked by people.</p></div></div>
+            <p class="bb-foot">Code first, a judge second, people to calibrate the judge.</p>
+        </div>
+        <div class="content">
+          <div class="diagram blocks-diagram focus-diagram" data-module="diagrams/focus.js" data-focus="E"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · slide 2 diagram (data-view="obs") + four live signals -->
+  <section class="page" data-type="slide" data-title="Improving the system · Observability">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:#cfd8d3">
+        <span class="eyebrow"><span class="blk-badge" data-blk="O" style="--c:#cfd8d3">O</span>Improving the system · 1 of 2</span>
+        <h1><em>Observability</em>: what happened, how well, at what cost</h1>
+        <div class="content">
+          <div class="diagram blocks-diagram is-wide" data-module="diagrams/blocks.js" data-view="obs"></div>
+        </div>
+        <div class="ob-live">
+          <div class="ob-col is-trace"><h3>Traces <span>what happened?</span></h3><div class="ob-wf" data-ob="wf"></div><small data-ob="id"></small></div>
+          <div class="ob-col"><h3>Speed &amp; errors <span>is it working?</span></h3><dl><dt>latency</dt><dd data-ob="lat">–</dd><dt>p95</dt><dd data-ob="p95">–</dd><dt>errors</dt><dd data-ob="err">0</dd></dl></div>
+          <div class="ob-col"><h3>Cost <span>what does it cost?</span></h3><dl><dt>tokens</dt><dd data-ob="tok">–</dd><dt>per request</dt><dd data-ob="eur">–</dd><dt>total</dt><dd data-ob="total">€0.000</dd></dl></div>
+          <div class="ob-col is-quality"><h3>Quality <span>is it right?</span></h3><dl><dt>eval score</dt><dd data-ob="score">–</dd><dt>👍</dt><dd data-ob="up">41</dd><dt>👎</dt><dd data-ob="down">6</dd></dl></div>
+        </div>
+        <p class="ob-foot">Signals → dashboards → people decide what to fix → <b>ideas to test</b> → <em>Experiments</em>. Running is not the same as right: only <b>quality</b> shows it is right.</p>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-dark-1 · slide 2 diagram (data-view="exp") + experiments lab (rows promote into the harness) -->
+  <section class="page" data-type="slide" data-title="Improving the system · Experiments">
+    <div class="stage is-night">
+      <div class="layout-dark-1 bb" style="--c:#c3b6ff">
+        <span class="eyebrow"><span class="blk-badge" data-blk="X" style="--c:#c3b6ff">X</span>Improving the system · 2 of 2</span>
+        <h1><em>Experiments</em>: compare before you ship</h1>
+        <div class="content">
+          <div class="diagram blocks-diagram is-wide" data-module="diagrams/blocks.js" data-view="exp"></div>
+        </div>
+        <div class="ex-link" aria-hidden="true">
+          <svg viewBox="0 0 160 70"><path class="up" d="M60 66 V8" /><path class="up-head" d="M52 16 L60 4 L68 16" /><path class="down" d="M70 10 C 110 0, 120 30, 112 62" /><path class="down-head" d="M104 54 L112 66 L120 54" /></svg>
+          <span class="is-up">validated → harness</span><span class="is-down">ideas to test, from observability</span>
+        </div>
+        <div class="ex-lab">
+          <div class="ex-lab-left">
+            <p class="ex-q">How do you systematically compare prompts, models, tools and agents <em>before deployment</em>?</p>
+            <ol class="ex-lab-steps"><li>Hypothesis</li><li>Dataset</li><li>Variants</li><li>Run</li><li>Evals</li><li>Decide</li></ol>
+            <small>Kept fixed: cases, settings, judge and metrics. Keep a change only if it is better.</small>
+          </div>
+          <div class="ex-lab-rows" data-ex="rows"></div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- copied from deck 06 · Unit 9 statement -->
+  <section class="page" data-type="slide" data-title="Unit 9 · One idea to keep">
+    <div class="stage is-night">
+      <div class="layout-statement-dark">
+        <span class="label">One idea to keep</span>
+        <p class="statement">A GenAI system improves through <em>loops, not launches</em>.</p>
+        <p class="statement-source">Observability finds what to change; experiments prove it; the harness keeps it.</p>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- copied from deck 06 · recap of the four-part framework (SVG ids suffixed -b) -->
+  <section class="page" data-type="slide" data-title="Recap · the four dimensions">
+    <div class="stage is-night">
+      <div class="layout-dark-1">
+        <span class="eyebrow">Recap · Class 6</span>
+        <h1>Improving the <em>Performance</em> of GenAI Systems</h1>
+        <p class="subtitle is-wide">The four dimensions don’t work alone: they connect through <em>three feedback cycles</em>.</p>
+        <div class="framework is-copy">
+          <div class="quad is-tl"><h2><span>1</span>Model Training and Adaptation</h2><ul><li>Pre-training <small>(and continued pre-training)</small></li><li>Post-training <small>(RLHF and other post-training techniques)</small></li></ul><p class="tag">Parametric memory</p></div>
+          <div class="quad is-tr"><span class="blk-row"><span class="blk-badge" data-blk="C" style="--c:#7fb3ff">C</span><span class="blk-badge" data-blk="T" style="--c:#f2c94c">T</span><span class="blk-badge" data-blk="W" style="--c:var(--wf)">W</span><span class="blk-badge" data-blk="A" style="--c:var(--agent)">A</span><span class="blk-badge" data-blk="G" style="--c:#f08a7e">G</span></span><h2><span>2</span>Harness and Capability Extension</h2><ul><li>Memory systems and artifacts</li><li>Context and knowledge integration</li><li>Capabilities and tools</li><li>Orchestration and control</li><li>Execution and evaluation</li></ul></div>
+          <div class="quad is-bl"><span class="blk-row"><span class="blk-badge" data-blk="X" style="--c:#c3b6ff">X</span><span class="blk-badge" data-blk="E" style="--c:#7fe0e8">E</span></span><h2><span>3</span>Experiments and Validation <small>(offline)</small></h2><ul><li>Benchmarks</li><li>Datasets</li><li>Test cases</li><li>Metrics</li><li>Evaluations</li></ul></div>
+          <div class="quad is-br"><span class="blk-row"><span class="blk-badge" data-blk="O" style="--c:#cfd8d3">O</span><span class="blk-badge" data-blk="E" style="--c:#7fe0e8">E</span></span><h2><span>4</span>Observability and Continuous Improvement</h2><ul><li>Telemetry</li><li>Traces</li><li>Metrics and evaluators</li><li>User feedback</li></ul></div>
+          <div class="cycle" aria-hidden="true">
+            <svg viewBox="0 0 340 340">
+              <defs>
+                <marker id="cyc-arrow-b" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6ee7a0" /></marker>
+                <radialGradient id="cyc-disc-b" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#1d4a37"/><stop offset=".55" stop-color="#11281e"/><stop offset="1" stop-color="#0b1510"/></radialGradient>
+                <radialGradient id="cyc-core-b" cx="50%" cy="38%" r="60%"><stop offset="0" stop-color="#2f7d5f"/><stop offset="1" stop-color="#0f4a35"/></radialGradient>
+                <filter id="cyc-glow-b" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
+              </defs>
+              <circle class="glow" cx="170" cy="170" r="160" filter="url(#cyc-glow-b)" />
+              <circle class="disc" cx="170" cy="170" r="164" />
+              <circle class="track" cx="170" cy="170" r="128" />
+              <circle class="comet" cx="170" cy="170" r="128" />
+              <g class="arcs">
+                <path d="M113.9 55.0 A128 128 0 0 1 222.1 53.1" />
+                <path d="M285.0 113.9 A128 128 0 0 1 286.9 222.1" />
+                <path d="M226.1 285.0 A128 128 0 0 1 117.9 286.9" />
+                <path d="M55.0 226.1 A128 128 0 0 1 53.1 117.9" />
+              </g>
+              <circle class="core" cx="170" cy="170" r="94" />
+              <g class="ticks"><line x1="170" y1="62" x2="170" y2="70" transform="rotate(0 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(30 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(60 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(90 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(120 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(150 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(180 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(210 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(240 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(270 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(300 170 170)"/><line x1="170" y1="62" x2="170" y2="70" transform="rotate(330 170 170)"/></g>
+              <path class="loop" d="M152 128 c-10 -12 -26 -12 -26 0 s16 12 26 0 l12 -12 c10 -12 26 -12 26 0 s-16 12 -26 0 z" transform="translate(14 0)" />
+              <g class="nodes">
+                <circle cx="79.5" cy="79.5" r="27" /><text x="79.5" y="80">1</text>
+                <circle cx="260.5" cy="79.5" r="27" /><text x="260.5" y="80">2</text>
+                <circle cx="260.5" cy="260.5" r="27" /><text x="260.5" y="261">4</text>
+                <circle cx="79.5" cy="260.5" r="27" /><text x="79.5" y="261">3</text>
+              </g>
+            </svg>
+            <p>Continuous<br />improvement</p>
+          </div>
+        </div>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- copied from deck 06 · three nested cycles + legend -->
+  <section class="page" data-type="slide" data-title="Cycles · three cycles, one system">
+    <div class="stage is-night">
+      <div class="layout-dark-1">
+        <span class="eyebrow">Cycles of improvement</span>
+        <h1>Three cycles, <em>one system</em></h1>
+        <div class="cy-rings" aria-hidden="true">
+          <svg viewBox="0 0 620 620">
+            <defs>
+              <marker id="cy-arr-w" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#e8ece9" /></marker>
+              <marker id="cy-arr-l" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#e6f57a" /></marker>
+              <marker id="cy-arr-m" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6ee7a0" /></marker>
+            </defs>
+            <circle class="ring is-ops" cx="310" cy="310" r="290" />
+            <circle class="ring is-exp" cx="310" cy="310" r="205" />
+            <circle class="ring is-run" cx="310" cy="310" r="120" />
+            <circle class="core" cx="310" cy="310" r="66" />
+            <path class="link is-ops" d="M570 401 L507 378" />
+            <path class="link is-exp" d="M455 455 L364 364" />
+            <path class="link is-run" d="M207 238 L80 149" />
+          </svg>
+          <span class="pill is-ops" style="top:20px">3 · Operational learning</span>
+          <span class="pill is-exp" style="top:105px">2 · Experimental learning</span>
+          <span class="pill is-run" style="top:190px">1 · Runtime feedback</span>
+          <p class="core-txt">Model<br /><em>+ harness</em></p>
+          <i class="note" style="left:560px;top:430px">ideas to test</i>
+          <i class="note" style="left:430px;top:500px">proven changes</i>
+          <i class="note" style="left:-10px;top:200px">real-world evidence</i>
+        </div>
+        <ol class="cy-legend">
+          <li class="is-run"><span class="blk-row"><span class="blk-badge" data-blk="G" style="--c:#f08a7e">G</span><span class="blk-badge" data-blk="E" style="--c:#7fe0e8">E</span></span><b>Runtime feedback</b><span>One task · seconds</span><p>Checks and corrects the work <em>while it runs</em>.</p></li>
+          <li class="is-exp"><span class="blk-row"><span class="blk-badge" data-blk="X" style="--c:#c3b6ff">X</span><span class="blk-badge" data-blk="E" style="--c:#7fe0e8">E</span></span><b>Experimental learning</b><span>One change · days</span><p>Tests a change and keeps it <em>only if it is better</em>.</p></li>
+          <li class="is-ops"><span class="blk-row"><span class="blk-badge" data-blk="O" style="--c:#cfd8d3">O</span></span><b>Operational learning</b><span>Whole system · weeks</span><p>Finds patterns in real use and <em>sets what to fix next</em>.</p></li>
+        </ol>
+        <p class="cy-flow">Real use → <b>ideas to test</b> → experiments → <b>proven changes</b> → model or harness → new evidence → …</p>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- copied from deck 06 · closing statement -->
+  <section class="page" data-type="slide" data-title="Closing · the improvement loop">
+    <div class="stage is-night">
+      <div class="layout-statement-dark">
+        <span class="label">Remember</span>
+        <p class="statement">Observe in production, experiment before release: <em>that loop is how GenAI systems improve</em>.</p>
+        <p class="statement-source">Evidence in, validated change out, again and again.</p>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- copied from deck 06 · six levels in two groups -->
+  <section class="page" data-type="slide" data-title="Levels of AI adoption · L0 to L5">
+    <div class="stage is-night">
+      <div class="layout-dark-1">
+        <span class="eyebrow">Where you are</span>
+        <h1>Six levels, <em>L0 to L5</em></h1>
+        <p class="subtitle is-wide">AI adoption isn’t binary. Like self-driving cars, it moves in levels, and the higher you go, the more the <em>improvement cycles</em> must run on their own.</p>
+        <div class="lv-grid">
+          <span class="lv-group" style="grid-column:1 / 4">Automating workflows</span>
+          <span class="lv-group" style="grid-column:4 / 7">Agents in your org</span>
+          <div style="--c:#8f96a3"><b>L0</b><h2>AI as a Tool</h2><p>Personal convenience; nothing reorganizes.</p></div>
+          <div style="--c:#7fbf9a"><b>L1</b><h2>Individual Automation</h2><p>One person automates their own work.</p></div>
+          <div style="--c:#5fd48f"><b>L2</b><h2>Team Automation</h2><p>A team shares the workflow.</p></div>
+          <div class="is-agents" style="--c:var(--mint)"><b>L3</b><h2>Directed Autonomy</h2><p>You point an agent across the company.</p></div>
+          <div style="--c:#b6f2cf"><b>L4</b><h2>Self-Directed Autonomy</h2><p>The agent notices and proposes.</p></div>
+          <div style="--c:#fff"><b>L5</b><h2>Self-Driving Enterprise</h2><p>The agent acts; humans govern.</p></div>
+        </div>
+        <p class="lv-note">No fully self-driving organization <em>exists yet</em>.</p>
+        <p class="source">Adapted from Ann Miura-Ko (Floodgate), six levels of enterprise AI adoption, modelled on the SAE levels of driving automation.</p>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+  <!-- template: layout-statement-dark · closing statement -->
+  <section class="page" data-type="slide" data-title="To close · a system that learns">
+    <div class="stage is-night">
+      <div class="layout-statement-dark">
+        <span class="label">To close</span>
+        <p class="statement">A GenAI system is never finished. <em>It learns from experience</em>: every interaction is evidence, and every validated change makes it better.</p>
+        <p class="statement-source">Models are trained once. Systems keep learning.</p>
+      </div>
+      <span class="page-num"></span>
+    </div>
+  </section>
+
+</main>
+
+<div id="progress" class="hud"><span></span></div>
+<div id="counter" class="hud" aria-live="polite">
+  <span class="unit"></span><span class="type"></span><span class="step"></span><span class="pct"></span>
+</div>
+
+<nav id="toc" aria-label="Table of contents">
+  <header>
+    <strong>GenAI System Mindset — summary</strong>
+    <small>Class 7 · 04 November 2026</small>
+  </header>
+  <ol></ol>
+  <footer>
+    <kbd>t</kbd> contents · <kbd>i</kbd> progress · <kbd>←</kbd> <kbd>→</kbd> step<br />
+    <kbd>Home</kbd> / <kbd>End</kbd> first / last · <kbd>Esc</kbd> close
+  </footer>
+</nav>
+
+<script src="deck.js"></script>
+</body>
+</html>

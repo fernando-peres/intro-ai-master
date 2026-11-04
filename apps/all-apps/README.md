@@ -36,7 +36,9 @@ Defined in `src/all_apps/services.py`.
 | harness-content | http://localhost:5174 | harness-content-api |
 | rag-in-action | http://localhost:8501 | `OPENAI_API_KEY`, for chat answers only |
 | w-and-a | http://localhost:8502 | `OPENAI_API_KEY` for live runs; without it, recorded runs |
+| blocks | http://localhost:8503 | none |
 | deck-06 | http://localhost:8080/presentation/06/ | `just`; runs `just serve 8080` |
+| deck-07 | http://localhost:8081/presentation/07/ | `just`; runs `just serve 8081` |
 | algo-server | http://localhost:8000 | |
 | harness-content-api | http://localhost:8001 | postgres |
 | postgres | localhost:5433 | Docker running |
@@ -48,7 +50,7 @@ Starting harness-content-api applies migrations and seeds dev users first. Stopp
 Links, with a dot: green when they'll open, red when they won't.
 
 - **deck-06**: green while the deck server answers (started here, or already holding port 8080). Clicking it while red selects the deck-06 service so `space` starts it.
-- **`html/*.html`**: standalone pages, opened straight from disk, so they need no server. Every `.html` in the repo's `html/` folder is listed (today: context, evals, experiments, guardrails, mcp, observability, tools); red means the file is gone.
+- **`apps/blocks/src/blocks/html/*.html`**: standalone pages, opened straight from disk, so they need no server. Every `.html` in that folder is listed (today: context, evals, experiments, guardrails, mcp, observability, tools); red means the file is gone.
 
 ## Statuses
 
@@ -56,7 +58,7 @@ Links, with a dot: green when they'll open, red when they won't.
 |---|---|
 | `stopped` | Not running (red) |
 | `starting` | Launched or waiting on a dependency; its check isn't passing yet |
-| `running` | Check passing: `/health` for APIs, `/` for frontends, `/presentation/06/` for the deck, a TCP connect for postgres (green) |
+| `running` | Check passing: `/health` for APIs, `/` for frontends, `/presentation/06/` or `/presentation/07/` for the decks, a TCP connect for postgres (green) |
 | `unhealthy` | Was running, and the check now fails |
 | `crashed` | Exited on its own; Details shows the exit code |
 | `port busy` | Something this CLI didn't start holds the port, usually the same app started by hand (green ◆); Details names it. It's never killed; stop it yourself and the status clears |

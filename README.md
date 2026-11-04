@@ -28,6 +28,7 @@ This opens a terminal dashboard. Press `space` to run or stop the selected servi
 | `apps/algo-server` | FastAPI service behind `ai-intro` | 8000 | [README](apps/algo-server/README.md) |
 | `apps/harness-content-api` | FastAPI service behind `harness-content` | 8001 | [README](apps/harness-content-api/README.md) |
 | `apps/w-and-a` | Streamlit app: workflows and agents, in action | 8502 | [README](apps/w-and-a/README.md) |
+| `apps/blocks` | Streamlit app: the interactive HTML notes, one per building block | 8503 | [README](apps/blocks/README.md) |
 | PostgreSQL | `harness-content-api` database | 5433 | |
 | `apps/all-apps` | The terminal dashboard | | [README](apps/all-apps/README.md) |
 | `packages/algo` | Python package | | [README](packages/algo/README.md) |

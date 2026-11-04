@@ -53,7 +53,10 @@ class Page:
         return self.path.is_file()
 
 
-def pages(directory: Path = REPO_ROOT / "html") -> tuple[Page, ...]:
+HTML_DIR = REPO_ROOT / "apps" / "blocks" / "src" / "blocks" / "html"
+
+
+def pages(directory: Path = HTML_DIR) -> tuple[Page, ...]:
     return tuple(Page(path) for path in sorted(directory.glob("*.html")))
 
 
@@ -101,12 +104,27 @@ SERVICES: tuple[Service, ...] = (
         check_path="/_stcore/health",
     ),
     Service(
+        name="blocks",
+        kind="web",
+        port=8503,
+        command=("uv", "run", "blocks"),
+        check_path="/_stcore/health",
+    ),
+    Service(
         name="deck-06",
         kind="static",
         port=8080,
         command=("just", "serve", "8080"),
         check_path="/presentation/06/",
         open_path="/presentation/06/",
+    ),
+    Service(
+        name="deck-07",
+        kind="static",
+        port=8081,
+        command=("just", "serve", "8081"),
+        check_path="/presentation/07/",
+        open_path="/presentation/07/",
     ),
     Service(
         name="algo-server",
