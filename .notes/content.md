@@ -1,3 +1,88 @@
+
+❯
+
+/plan 
+
+add slides by category of building blocks 
+- objective: show essential messages of each one
+- review texts
+
+slide 3: context
+
+> What model needs to know and how to provide (the "when" is defined by harness): 
+> Business context, rules, knowledge, ... 
+
+contex engineering->contex
+
+One idea to keep
+A model can only be as good as what it sees. Context is where your data, rules and know-how enter the system.
+
+What knowledge you have vs what you need to define
+
+Examples:
+Documents,
+RAG
+Knowledge Graphs, Memory Schema, Entity Schemas, ...
+
+simplified diagram of slide 2 focused on what context bring to genAI system/harness
+
+---
+
+slide 4 : Tools & Integrations
+
+> Extend model capabilities 
+> processing, getting data, ...
+
+One idea to keep
+Connecting a model to tools does not make it smarter. It changes its reach, and with it, what can go wrong.
+
+simplified diagram of slide 2 focused on what tools can bring to genAI system/harness
+
+[Tool]             [MCP]
+                   [API]       
+*----------------------------->
+1 capacity      1-n capacities
+                wrapper/proxy of tools that can be reused
+
+
+---
+
+Slide 5: FLOWS OF TASKS
+
+> Coordinate multiple steps and actions to accomplish a goal.
+
+One idea to keep
+A workflow follows the path you drew. An agent chooses its own path.
+
+[Workflow]         [Agent]
+----------------------------->
+follow steps         autonomy
+
+Agents x Agentic
+
+Single-agent x Multi-aggent
+
+simplified diagram of slide 2 focused on what workfflows and agents can bring to genAI system/harness
+
+Slide 6: Guardrails
+the same structure of slides 3,4,5, however about guardrails
+you can get info in deck-06
+
+slide 7: Evals
+the same structure of slides 3,4,5, however about guardrails
+you can get info in deck-06
+
+
+
+
+
+
+
+
+
+
+
+
 text
 
 
