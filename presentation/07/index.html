@@ -83,7 +83,7 @@
   </section>
 
   <!-- template: layout-dark-1 · building-block cards (left) + Three.js system diagram (right) -->
-  <section class="page" data-type="slide" data-title="Building blocks of a GenAI system">
+  <section class="page" data-type="slide" data-title="Building blocks of a GenAI system" data-duration="26">
     <div class="stage is-night">
       <div class="layout-dark-1">
         <span class="eyebrow">GenAI system</span>
@@ -238,7 +238,7 @@
   </section>
 
   <!-- template: layout-dark-1 · slide 2 diagram (data-view="obs") + four live signals -->
-  <section class="page" data-type="slide" data-title="Improving the system · Observability">
+  <section class="page" data-type="slide" data-title="Improving the system · Observability" data-duration="30">
     <div class="stage is-night">
       <div class="layout-dark-1 bb" style="--c:#cfd8d3">
         <span class="eyebrow"><span class="blk-badge" data-blk="O" style="--c:#cfd8d3">O</span>Improving the system · 1 of 2</span>
@@ -259,7 +259,7 @@
   </section>
 
   <!-- template: layout-dark-1 · slide 2 diagram (data-view="exp") + experiments lab (rows promote into the harness) -->
-  <section class="page" data-type="slide" data-title="Improving the system · Experiments">
+  <section class="page" data-type="slide" data-title="Improving the system · Experiments" data-duration="30">
     <div class="stage is-night">
       <div class="layout-dark-1 bb" style="--c:#c3b6ff">
         <span class="eyebrow"><span class="blk-badge" data-blk="X" style="--c:#c3b6ff">X</span>Improving the system · 2 of 2</span>
@@ -434,6 +434,13 @@
 
 </main>
 
+<div id="controls" aria-label="Slide controls">
+  <button data-act="prev" aria-label="Previous slide (←)"><svg class="ico" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button data-act="play" aria-label="Play or pause autoplay (a)"><svg class="ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16"/></svg><svg class="ico is-fill i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg><svg class="ico is-fill i-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+  <button data-act="next" aria-label="Next slide (→)"><svg class="ico" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  <button data-act="full" aria-label="Fullscreen (f)"><svg class="ico" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</div>
+
 <div id="progress" class="hud"><span></span></div>
 <div id="counter" class="hud" aria-live="polite">
   <span class="unit"></span><span class="type"></span><span class="step"></span><span class="pct"></span>
@@ -447,7 +454,8 @@
   <ol></ol>
   <footer>
     <kbd>t</kbd> contents · <kbd>i</kbd> progress · <kbd>←</kbd> <kbd>→</kbd> step<br />
-    <kbd>Home</kbd> / <kbd>End</kbd> first / last · <kbd>Esc</kbd> close
+    <kbd>Home</kbd> / <kbd>End</kbd> first / last · <kbd>Esc</kbd> close<br />
+    <kbd>a</kbd> autoplay · <kbd>f</kbd> fullscreen · <code>?autoplay</code> in the URL plays on its own
   </footer>
 </nav>
 

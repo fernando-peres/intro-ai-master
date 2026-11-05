@@ -231,3 +231,6 @@ node_modules/
 # Licensed font: its webfont licence does not allow publishing the files.
 apps/harness-content/src/assets/fonts/borna/*.woff2
 apps/harness-content/src/assets/fonts/borna/*.pdf
+
+# Deck 07 exports (PDF, MP4): kept locally, never committed
+presentation/07/export/

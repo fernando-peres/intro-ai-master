@@ -47,8 +47,9 @@ flowchart LR
 
 | Deliverable | What it is | Size | Guide |
 | --- | --- | --- | --- |
-| **Project deck (PRD)** | The full design: what, for whom, why, and how each use case works | 6–10 pages | `template-project-deck.md`, `template-use-cases.md` |
+| **Project deck (PRD)** | The full design: what, for whom, why, and how each use case works | 5–10 pages | `template-project-deck.md`, `template-use-cases.md` |
 | **Pitch** | The project deck's story for a decision maker | 5 slides | `template-project-deck.md` (Pitch section) |
+| **Use Cases** | List and detail some use cases | 4–10 pages | `template-use-cases.md` |
 | **One-pager** | The high-level solution a sponsor reads in two minutes | 1 page | `template-one-pager.md` |
 | **Prototype** | A toy that proves one or two key concepts on the riskiest use case | — | — |
 
@@ -66,7 +67,7 @@ Write the project deck first; the pitch and the one-pager select from it. Verify
 - **Subject:** `[AI-intro-project] [group name]`
 - **Attachment:** one zip file with the project deck, the use cases and the one-pager.
 
-**Prototype:** do **not** send it. You will demonstrate it live at the presentations on 17 November. You can include screenshots of it in the project deck.
+> ⚠️ **Prototype:** do **not** send it. You will demonstrate it live at the presentations on 17 November. You can include screenshots of it in the project deck.
 
 ## Rationale
 

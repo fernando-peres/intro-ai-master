@@ -12,6 +12,13 @@ just serve
 
 Then open http://localhost:8000/presentation/07/. Serve from the repo root, not from this folder, because the deck loads fonts from `../fonts/`.
 
+## Present, autoplay and record
+
+- **Navigate:** ← / → (or swipe), or the on-screen ◀ ▶ buttons, which hide after a few idle seconds. `t` opens the contents, `f` toggles fullscreen.
+- **Autoplay:** add `?autoplay` to the URL (for example `http://localhost:8000/presentation/07/?autoplay`), or press `a` / ⏯. Each page stays up for its `data-duration` in seconds, otherwise a default for its template: cover 7, statement 9, diagram or doc 20, other 15. Arrows restart the current page's timer; opening the contents pauses. `&loop` starts over after the last page.
+- **Record mode:** `?record` hides the HUD, the controls and the cursor.
+- **Video:** `just record 07` writes an MP4 (1920×1080, 30 fps, no audio) to `export/`, named after the PDF there. It opens Google Chrome and plays the deck once; keep that window open until it finishes. The recorder lives in `presentation/tools/` with its own `package.json` (`playwright-core`), outside the pnpm workspace.
+
 ## Slides
 
 | # | Slide | Template |

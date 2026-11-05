@@ -1,0 +1,9 @@
+{
+  "name": "presentation-tools",
+  "private": true,
+  "type": "module",
+  "description": "Records a deck to MP4 (record-deck.mjs). Installed on its own, outside the pnpm workspace.",
+  "dependencies": {
+    "playwright-core": "^1.56.0"
+  }
+}

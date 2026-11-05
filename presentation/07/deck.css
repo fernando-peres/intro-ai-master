@@ -1569,3 +1569,30 @@ body.toc-open #toc {
 .ex-row.is-lose { opacity: 0.55; }
 .ex-row.is-promoted .ex-name b::after { content: " ↑ promoted"; font-family: var(--font-hand); font-weight: 400; font-size: 15px; color: #ffb86b; }
 .cy-legend .blk-row .blk-badge { display: inline-grid; margin: 0; letter-spacing: 0; text-transform: none; font-size: 13px; color: var(--c); }
+
+/* ---------- Page transitions (deck.js keeps the old page as .is-leaving for 650 ms) ---------- */
+.page.is-active { z-index: 2; animation: page-in 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+#deck[data-dir="prev"] .page.is-active { animation-name: page-in-prev; }
+.page.is-leaving { display: block; z-index: 1; pointer-events: none; animation: page-out 600ms ease both; }
+@keyframes page-in { from { opacity: 0; transform: translateX(2.5%); } to { opacity: 1; transform: none; } }
+@keyframes page-in-prev { from { opacity: 0; transform: translateX(-2.5%); } to { opacity: 1; transform: none; } }
+@keyframes page-out { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .page.is-active, .page.is-leaving { animation: none; }
+  .page.is-leaving { display: none; }
+}
+
+/* ---------- On-screen controls: ◀ ⏯ ▶ ⛶, bottom centre; hidden when idle and in ?record ---------- */
+#controls { position: fixed; left: 50%; bottom: 18px; z-index: 50; transform: translateX(-50%); display: flex; gap: 6px; padding: 6px 8px; border-radius: 999px; background: rgba(20, 20, 18, 0.82); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); transition: opacity 300ms ease, transform 300ms ease; }
+body.controls-idle #controls { opacity: 0; transform: translate(-50%, 8px); pointer-events: none; }
+#controls button { position: relative; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #e4e9e6; cursor: pointer; }
+#controls button:hover, #controls button:focus-visible { background: rgba(255, 255, 255, 0.1); outline: none; }
+#controls svg.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+#controls svg.ico.is-fill { fill: currentColor; stroke: none; }
+#controls .ring { position: absolute; inset: 2px; width: 40px; height: 40px; transform: rotate(-90deg); }
+#controls .ring circle { fill: none; stroke: var(--mint); stroke-width: 2.5; stroke-dasharray: 100.5; stroke-dashoffset: calc(100.5 * (1 - var(--p, 0))); opacity: 0; transition: opacity 200ms; }
+body.is-playing #controls .ring circle { opacity: 1; }
+#controls .i-pause, body.is-playing #controls .i-play { display: none; }
+body.is-playing #controls .i-pause { display: block; }
+body.is-record .hud, body.is-record #controls { display: none !important; }
+body.is-record, body.is-record * { cursor: none !important; }
