@@ -1,0 +1,78 @@
+# 01 · MMs: project review
+
+> Scale 0–4 · criteria and formula in [instructions.md](instructions.md)
+
+| Member | Student number |
+| --- | --- |
+| Marco Sato | 20261299 |
+| Marina Moeser | 20261254 |
+
+**Project:** An AI agent that triages inbound B2B orders and complaints for a food and beverage distributor. It classifies each message, extracts the order data, checks it against policy, drafts a reply and escalates risky cases to a person.
+
+**Reviewer:**  ·  **Date:** 2026-11-17
+
+## A. Problem & Solution (25%)
+
+| ID | Criterion | Score (0–4) | Notes |
+| --- | --- | :--: | --- |
+| A1 | Bounded business problem |  |  |
+| A2 | Success metrics: baseline → target, method |  |  |
+| A3 | Solution hypothesis & big picture |  |  |
+| | **Subtotal** | **/12** | |
+
+## B. GenAI Usage & System Design (35%)
+
+| ID | Criterion | Score (0–4) | Notes |
+| --- | --- | :--: | --- |
+| B1 | Right AI for each task |  |  |
+| B2 | Context & tools |  |  |
+| B3 | Guardrails & accountability |  |  |
+| B4 | Evals & observability |  |  |
+| | **Subtotal** | **/16** | |
+
+## C. Use Cases (25%)
+
+| ID | Criterion | Score (0–4) | Notes |
+| --- | --- | :--: | --- |
+| C1 | Portfolio: prioritised, riskiest ★ |  |  |
+| C2 | Story & flow |  |  |
+| C3 | Component catalog & consistency |  |  |
+| | **Subtotal** | **/12** | |
+
+## D. Presentation & Prototype (15%)
+
+| ID | Criterion | Score (0–4) | Notes |
+| --- | --- | :--: | --- |
+| D1 | Pitch & one-pager |  |  |
+| D2 | Prototype |  |  |
+| | **Subtotal** | **/8** | |
+
+## Summary
+
+| Section | Weight | Points | % | Weighted |
+| --- | :--: | :--: | :--: | :--: |
+| A. Problem & Solution | 25% | /12 |  |  |
+| B. GenAI Usage & System Design | 35% | /16 |  |  |
+| C. Use Cases | 25% | /12 |  |  |
+| D. Presentation & Prototype | 15% | /8 |  |  |
+| **Total** | **100%** | **/48** | | **%** |
+
+**Grade:** ____ /20
+
+## Strengths
+
+- 
+
+## Improvements
+
+- 
+
+## Q&A notes
+
+| Question asked | Answer quality / notes |
+| --- | --- |
+|  |  |
+
+## Final comment
+
+ 

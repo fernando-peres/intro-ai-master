@@ -1,3 +1,8 @@
+---
+metadata:
+  update: false
+---
+
 # GenAI & Foundation Models — Executive Decision-Making Quiz (Revised)
 
 **Course:** Introduction to AI and Machine Learning — Executive Master in Artificial Intelligence for Business  

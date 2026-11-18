@@ -35,7 +35,7 @@ An operations team uses GenAI to summarize weekly incident reports. The summarie
 - **A.** Use a standardized prompt template with explicit sections, constraints, and a few representative examples; then test the outputs.
 - **B.** Apply supervised fine-tuning with examples of correctly formatted incident summaries.
 - **C.** Increase the context window and submit more historical incident reports with each request.
-- **D.** Retrieve additional company documents through RAG to improve access to operational knowledge.
+- **D.** Retrieve additional company documents through retrieval-augmented generation (RAG) to improve access to operational knowledge.
 
 ### Q3 — Matching Capabilities to the Task
 
@@ -57,61 +57,61 @@ A company's HR assistant must answer questions from **frequently updated interna
 - **C.** Fine-tune the assistant on approved policy Q&A examples and ask it to include citations in its responses.
 - **D.** Use RAG with document metadata, access-controlled retrieval, and source-backed responses.
 
-### Q5 — Continuity Across Sessions
+### Q5 — Memory Across Sessions
 
-A customer-service assistant should remember a client's **explicitly approved contact preference** in later sessions. The company also needs to **correct or delete that preference** without retraining the model. Which approach best satisfies both requirements?
+A customer-service assistant needs **persistent memory across sessions** to remember a client's **explicitly approved contact preference**. The company also needs to **correct or delete that preference** without retraining the model. Which approach best satisfies both requirements?
 
 - **A.** Include the preference in the current conversation and rely on the model's context window to preserve it for future sessions.
-- **B.** Store the preference in an external memory record with update/deletion controls and retrieve it when relevant.
+- **B.** Store the preference in an external memory record with update/deletion controls and retrieve it when relevant and add to the context windows.
 - **C.** Add the preference to the model through periodic fine-tuning on conversation histories.
 - **D.** Keep every conversation transcript indefinitely and paste the full history into every new request.
 
-### Q6 — When Model Adaptation Is Justified
+### Q6 — Comparing Supplier Costs
 
-A company has tested prompt templates and RAG for an existing model. It has reliable labeled examples of its required **input–output behavior**, but the model still **consistently fails to follow a specialized response protocol**. The company is willing to update model weights. Which training approach most directly targets this problem?
+A procurement team wants an AI assistant to recommend the cheapest supplier for a planned purchase. The assistant must check **stock levels in the company's database**, find **current prices on supplier websites**, and **calculate the total cost, including shipping and discounts**. What should the company add to enable this task?
 
-- **A.** Continued pretraining on a broad collection of unlabeled industry reports.
-- **B.** Training a brand-new foundation model from random initialization.
-- **C.** Supervised fine-tuning on curated examples of the required input–output behavior.
-- **D.** Expanding the retrieval index with more reference documents, without changing the model.
+- **A.** Detailed rules in the prompt explaining where to find stock and prices and how to calculate the total cost.
+- **B.** An LLM as a judge to review the recommendation and score whether its prices and calculations look correct.
+- **C.** Develop Tools for database queries, web searches, and calculations, connected directly or through Model Context Protocol (MCP) servers.
+- **D.** Fine-tuning on past purchases so the model learns typical stock levels, supplier prices, and total costs.
 
-### Q7 — Safely Executing Actions
+### Q7 — Input Guardrails
 
-A procurement assistant can read supplier prices and prepare purchase orders. Management wants it to **recommend an order autonomously**, but **no order above €10,000 may be submitted without human approval**. Which implementation best enforces this requirement?
+A customer-support company uses an external LLM to summarize customer messages. The messages may contain **personal identifiers, such as email addresses and national identification numbers**, which are unnecessary for the summaries. Company policy requires removing these identifiers **before sending the messages to the external LLM**. Which control best meets this requirement?
 
-- **A.** Let the model call the ordering API, but instruct it in its prompt to seek approval for large orders.
-- **B.** Allow the model to draft and submit orders; review the logs afterward and reverse any noncompliant purchase.
-- **C.** Use a capable reasoning model with the full ordering API; evaluate its compliance before production.
-- **D.** Allow the model to prepare orders, but enforce the €10,000 approval threshold in the application before any submission tool executes.
+- **A.** Send the messages with a system prompt instructing the LLM to ignore personal identifiers when summarizing.
+- **B.** Apply an output filter that removes personal identifiers from each summary before an employee sees it.
+- **C.** Audit a sample of messages and summaries each week, and investigate any personal identifiers found.
+- **D.** Apply an input guardrail that detects and redacts personal identifiers before transmission, blocking or routing requests for internal review if sanitization fails.
 
-### Q8 — Context Quality vs. Context Quantity
+### Q8 — When to Use an LLM as a Judge
 
-An internal analyst assistant receives hundreds of retrieved documents, including **outdated procedures and contradictory versions**. Despite fitting within the model's context window, its answers have become inconsistent. Which intervention most directly addresses the failure?
+A company uses AI to draft customer-service replies. It wants to check whether thousands of replies are **clear, polite, and answer the customer's question**. Reviewing every reply manually would take too long. Which approach best fits this quality check?
 
-- **A.** Retrieve and prioritize relevant, authoritative, current passages using metadata and filtering; then test answer quality.
-- **B.** Increase the context-window limit so the assistant can receive even more material.
-- **C.** Fine-tune the model on the entire document collection before assessing which documents are authoritative.
-- **D.** Increase generation randomness to encourage the model to explore different interpretations.
+- **A.** Use an LLM as a judge to assess each question and reply against clear criteria, and have people check a sample of its ratings.
+- **B.** Check whether each reply contains polite words such as “please” and “thank you.”
+- **C.** Measure how quickly the AI writes each reply and how much it costs.
+- **D.** Compare each reply word for word with one approved answer, accepting only exact matches.
 
 ## Hard (Questions 9–10)
 
-### Q9 — Choosing an Orchestration Design
+### Q9 — Agent vs. Workflow
 
-An insurance company is automating claims handling. **Every claim must pass the same mandatory eligibility, fraud, and payment-approval checks in a fixed, auditable order.** For a small subset of unusual claims, the system must also **choose which additional evidence to request and which investigation tool to use based on intermediate findings**. What is the most appropriate design?
+A retailer is designing two customer-service processes. (1) **Routine returns must follow predefined classification, order-lookup, and approval rules**, including branches for different return types. (2) For **unusual delivery problems**, the required investigation cannot be fully specified in advance: the model must choose which tool to use next based on what it discovers. Which design best matches both needs?
 
-- **A.** An end-to-end agent chooses the order of all checks, including mandatory approval checks, to maximize flexibility.
-- **B.** A fixed workflow performs all checks and uses the same additional evidence requests for every unusual claim.
-- **C.** A workflow enforces mandatory stages and approvals, while a bounded agent can select investigative steps inside a controlled exception branch.
-- **D.** A multi-agent system assigns every mandatory control to a different agent, and the agents decide collectively whether a claim may proceed.
+- **A.** Use an agent to choose the steps for routine returns, and a predefined workflow with fixed investigation paths for unusual delivery problems.
+- **B.** Use predefined workflows for both, requiring every delivery investigation to follow one of the paths specified before deployment.
+- **C.** Use a workflow for routine returns and a bounded agent for delivery investigations, with tool permissions and step, time, or cost limits.
+- **D.** Use agents for both, letting the model decide the return-approval rules and the investigation steps separately for each case.
 
-### Q10 — Diagnosing and Improving a GenAI System
+### Q10 — Deciding What to Improve
 
-A GenAI financial assistant combines internal RAG, database tools, and an investigation agent. In a pilot, users report **plausible but incorrect numbers**, occasional **unauthorized tool requests**, and **inconsistent outcomes on similar cases**. Management needs a **measurable improvement plan before scaling**. Which proposal is strongest?
+A new company's customer-service assistant is **taking longer to reply, costing more, and sometimes giving wrong answers**. The team does not know why and **where the problems occur**. What should the team do first?
 
-- **A.** Upgrade to a more capable model, compare overall user satisfaction, and keep the current tool permissions and retrieval pipeline unchanged.
-- **B.** Add a stronger system prompt and more retrieved documents, then monitor whether complaints decline after deployment.
-- **C.** Fine-tune on corrected responses, while postponing tool-permission changes and systematic tracing until after launch.
-- **D.** Build representative test cases and metrics, inspect retrieval and execution traces, verify figures, enforce tool permissions, and iterate based on measured failure modes.
+- **A.** Use its intuition about what is missing and add more tools so the assistant can access more information.
+- **B.** Use its knowledge of AI and add an agent to give the assistant more flexibility in solving customer problems.
+- **C.** Create guardrails to block incorrect replies and limit spending, then check whether complaints decrease.
+- **D.** Add observability: record the steps behind each reply, including information retrieved, model and tool calls, retries, versions, time, and cost. Link these records to results and user feedback while protecting sensitive data.
 
 ---
 
@@ -126,11 +126,11 @@ A GenAI financial assistant combines internal RAG, database tools, and an invest
 | Q3 | Easy | **C** | Match multimodal capabilities to the actual input/output requirements |
 | Q4 | Medium | **D** | RAG, permissions, freshness, and source grounding |
 | Q5 | Medium | **B** | Persistent memory with governance and deletion |
-| Q6 | Medium | **C** | When supervised fine-tuning is warranted |
-| Q7 | Medium | **D** | External enforcement of action authorization |
-| Q8 | Medium | **A** | Context engineering: relevance and authority over volume |
-| Q9 | Hard | **C** | Hybrid workflow and bounded agent orchestration |
-| Q10 | Hard | **D** | Evidence-driven, system-level evaluation and improvement |
+| Q6 | Medium | **C** | Recognize when a task needs external tools, connected directly or through MCP |
+| Q7 | Medium | **D** | Input guardrails that redact sensitive data before model access |
+| Q8 | Medium | **A** | When to use an LLM judge for language-quality evaluation |
+| Q9 | Hard | **C** | Match predefined processes to workflows and adaptive investigation to agents |
+| Q10 | Hard | **D** | Observability through traces, operational metrics, and feedback |
 
 ## Q1 — Validation: B
 
@@ -169,7 +169,7 @@ A GenAI financial assistant combines internal RAG, database tools, and an invest
 **Why D is correct:** RAG can retrieve current policies without updating model weights. Metadata and access-controlled retrieval support policy versioning and permissions, while source-backed answers support verification.
 
 - **A:** Continued pretraining can teach domain patterns but does not efficiently reflect each policy update or by itself guarantee source-backed answers.
-- **B:** A static, large prompt is hard to maintain, risks including unauthorized content, and poorly handles growing document collections.
+- **B:** Updating the prompt can keep policies current, but including all policies for every employee does not enforce differentiated access rights or explicitly provide source identification.
 - **C:** SFT can improve instruction following but does not guarantee updated policy details, permissions, or genuine citations.
 
 **Uniqueness check:** The combined requirements are **frequent updates, differentiated access, verifiable sources, and no recurring retraining**. **Only D explicitly satisfies all four.** RAG itself is not an authorization system; permissions must be enforced in retrieval and surrounding code.
@@ -186,53 +186,53 @@ A GenAI financial assistant combines internal RAG, database tools, and an invest
 
 ## Q6 — Validation: C
 
-**Why C is correct:** The organization has reliable labeled examples of desired input–output behavior and wants to modify weights to improve consistent protocol adherence. That is the direct use case for SFT.
+**Why C is correct:** The task needs access to information outside the model and reliable calculations. Database and web tools retrieve stock levels and current prices; a calculation tool applies shipping and discounts. These tools can be connected directly or exposed through MCP servers, with appropriate access permissions.
 
-- **A:** Continued pretraining generally learns from unlabeled domain material and is not as directly targeted at labeled response behavior.
-- **B:** Building a foundation model from scratch is unnecessary and disproportionate to adapting an existing model.
-- **D:** More documents may aid factual grounding but do not directly train consistent adherence to a response protocol, especially after RAG has already been evaluated.
+- **A:** Instructions describe what to do but do not give the assistant access to the database or websites, or provide a calculation capability.
+- **B:** An LLM judge can help evaluate a recommendation, but judging whether figures look correct does not retrieve current data or independently verify the arithmetic.
+- **D:** Historical examples do not provide current stock or prices and cannot replace calculations using the actual purchase details.
 
-**Uniqueness check:** The scenario explicitly establishes that **prompting and RAG were tested**, labeled **behavior examples** exist, and **weight updates are allowed**. **Only C directly targets this residual problem.**
+**Uniqueness check:** The scenario requires **database access, current web information, and calculations**. **Only C provides the capabilities needed for all three.** MCP is one way to connect tools, not a requirement for every tool call.
 
 ## Q7 — Validation: D
 
-**Why D is correct:** The application can let the assistant draft orders but must enforce the financial threshold and approval before executing a write action. This is an external authorization control rather than a promise made by the model.
+**Why D is correct:** An input guardrail processes the message before the external model receives it. Redaction removes the unnecessary identifiers, while blocking or internal review provides a fallback when sanitization fails. Detection and redaction must be tested; a guardrail is not a guarantee that every sensitive value will be recognized.
 
-- **A:** Prompt instructions alone cannot reliably enforce an authorization boundary.
-- **B:** Post-hoc logging is valuable for auditing but does not prevent an unauthorized purchase.
-- **C:** Better model capability and predeployment evaluation can reduce errors but do not replace mandatory transaction controls.
+- **A:** The external LLM has already received the identifiers by the time it can follow the instruction to ignore them.
+- **B:** Output filtering protects what employees see but does not prevent the original identifiers from reaching the external LLM.
+- **C:** Auditing can reveal incidents after transmission but does not remove identifiers before they are sent.
 
-**Uniqueness check:** The requirement is that **no order above the threshold may be submitted without approval**. **Only D places enforcement before execution.**
+**Uniqueness check:** The requirement is **removal before transmission to the external LLM**. **Only D places the control at that boundary.** The input guardrail must run within the company's approved processing environment, not send the unredacted message to the external LLM for sanitization.
 
 ## Q8 — Validation: A
 
-**Why A is correct:** Selecting, filtering, and ranking authoritative current passages directly addresses contradictory and outdated context. Measuring output quality validates the intervention.
+**Why A is correct:** An LLM judge is useful for quality checks that require interpreting language, such as clarity, tone, and whether a reply addresses a question. Clear criteria guide its ratings, and human spot checks help identify mistakes or bias in the judge.
 
-- **B:** Larger windows may admit more irrelevant or conflicting information rather than resolve authority conflicts.
-- **C:** Training on unfiltered contradictory documents can reproduce the same ambiguity and adds unnecessary cost.
-- **D:** Higher randomness changes output variation, not the reliability or authority of evidence.
+- **B:** Polite keywords alone do not establish that a reply is clear, respectful, or answers the question.
+- **C:** Speed and cost are useful operational metrics, but they do not measure the requested reply quality.
+- **D:** Different wording can produce equally good replies, so exact matching would reject valid answers.
 
-**Uniqueness check:** The problem is **context quality despite sufficient capacity**, not window size. **Only A directly resolves relevance, version authority, and evidence quality.**
+**Uniqueness check:** The company needs to assess **meaning and tone across many replies**. **Only A addresses all the stated quality criteria at scale, with human oversight.** An LLM judge supports evaluation; its ratings are not guaranteed to be correct.
 
 ## Q9 — Validation: C
 
-**Why C is correct:** Code-defined workflow stages preserve compulsory checks and an auditable order. Within a bounded exception branch, one agent can choose additional investigation steps based on observations. Multi-agent execution is not a requirement for agentic behavior.
+**Why C is correct:** A workflow keeps routine returns under predefined rules, including conditional branches. A bounded agent can choose investigation tools and subsequent steps based on intermediate findings when the path cannot be fully specified in advance. Application-enforced permissions and limits constrain its autonomy.
 
-- **A:** End-to-end agent control conflicts with the mandated fixed order of checks and approvals.
-- **B:** A strictly uniform exception path cannot select evidence and tools dynamically as the scenario requires.
-- **D:** Multiple agents do not inherently guarantee fixed ordering, auditability, or mandatory human/governance controls; collective agent decisions cannot substitute for those requirements.
+- **A:** This reverses the fit: routine returns need predefined control, while the unusual investigations require adaptive tool selection beyond fixed paths.
+- **B:** Workflows can branch, but limiting every investigation to paths specified before deployment conflicts with the stated need for model-selected next steps that cannot all be anticipated.
+- **D:** Letting an agent decide return-approval rules for each case conflicts with the requirement to follow predefined rules.
 
-**Uniqueness check:** There are **two simultaneous constraints**—mandatory deterministic controls and flexible exception investigation. **Only C explicitly preserves both.**
+**Uniqueness check:** The scenario combines **predefined return rules** with **model-directed investigation based on findings**. **Only C explicitly matches both.** A workflow can use LLMs and tools; their presence alone does not make it an agent. The key distinction is who determines the next step.
 
 ## Q10 — Validation: D
 
-**Why D is correct:** A measurable system-improvement process distinguishes causes using representative evaluations and execution traces; source and calculation checks address wrong figures; permissions constrain unsafe actions; repeatable tests assess consistency.
+**Why D is correct:** Observability lets the team see what happened behind each reply. These records, called request-level traces, help locate slow or expensive steps and investigate wrong answers. Linking them to system versions and user feedback helps the team choose improvements based on evidence. Sensitive data should be redacted or excluded, with appropriate access and retention controls.
 
-- **A:** Better model capability is a possible experiment, but a model upgrade alone leaves retrieval and authorization flaws untreated and measures too narrow an outcome.
-- **B:** Prompts and more documents might help selected issues, but can worsen context quality and do not enforce permissions or establish a rigorous evaluation baseline.
-- **C:** SFT could help some response patterns, but deferring permission enforcement and trace-based diagnosis leaves known operational risks unresolved before scaling.
+- **A:** More tools may help if missing information is the cause, but intuition alone does not establish that. Extra tools can also increase time and cost.
+- **B:** An agent may help tasks that need flexible investigation, but adding one does not explain the current problems and can introduce more steps and expense.
+- **C:** Guardrails can enforce limits and check replies, but adding them alone does not reveal where the existing problems originate. They may be part of the solution after investigation.
 
-**Uniqueness check:** The pilot has **three distinct failure classes**, and management explicitly requires **measurable evidence before scaling**. **Only D combines diagnostics, controls, and evaluation across all three.**
+**Uniqueness check:** Management wants **evidence of where problems occur before investing in changes**. **Only D directly provides that evidence.** Observability shows what happened; evaluations and human review assess whether answers were correct. Traces support investigation rather than proving the cause on their own.
 
 ---
 
@@ -247,13 +247,13 @@ A GenAI financial assistant combines internal RAG, database tools, and an invest
 | Q3 | Image understanding vs. adjacent modalities | Only one alternative handles the complete image+text input requirement |
 | Q4 | Freshness vs. trainability vs. access | Only access-controlled RAG explicitly handles all requirements together |
 | Q5 | Current context vs. persistent governed memory | Only external managed memory provides editable and deletable records across sessions |
-| Q6 | SFT vs. continued pretraining vs. RAG | Only SFT directly learns from labeled desired response behavior |
-| Q7 | Model assurances vs. preventive authorization | Only application-side gating prevents forbidden submissions |
-| Q8 | Volume vs. authoritative context | Only selection/filtering addresses outdated contradictory sources |
-| Q9 | Mandatory sequence vs. adaptive investigation | Only hybrid orchestration offers both fixed controls and dynamic investigation |
-| Q10 | Single-point optimization vs. observed system failures | Only system-level tests, traces, validation and permissions cover all named failures |
+| Q6 | Instructions and evaluation vs. access and execution | Only tools provide database access, current web information, and calculation capability |
+| Q7 | Prevention before transmission vs. checks afterward | Only the input guardrail removes identifiers before the external LLM receives them |
+| Q8 | Language-quality judgment vs. simple automated checks | Only an LLM judge with clear criteria and human oversight assesses meaning and tone at scale |
+| Q9 | Predefined rules vs. model-selected investigation steps | Only C matches workflow control to routine returns and bounded autonomy to unusual investigations |
+| Q10 | Evidence before changes vs. adding capabilities or controls | Only observability reveals the steps behind replies to guide investigation before choosing a fix |
 
-**Difficulty note:** Difficulty is qualitative rather than psychometrically calibrated. Q1–Q3 establish fundamental judgment, Q4–Q8 require selecting among adjacent interventions, and Q9–Q10 require multi-constraint architecture and governance decisions. Pilot the quiz with a small group if statistical calibration is needed.
+**Difficulty note:** Difficulty is qualitative rather than psychometrically calibrated. Q1–Q3 establish fundamental judgment, Q4–Q8 require selecting among adjacent interventions, and Q9–Q10 require matching orchestration to business constraints and diagnosing production behavior. Pilot the quiz with a small group if statistical calibration is needed.
 
 **Source alignment (course slides):** Class 4 covers Foundation Models, transfer learning, pretraining and post-training; Class 5 covers prompt engineering, multimodality, memory, tool calling, context and limitations; Class 6 covers harnesses, context engineering, RAG, tool execution, orchestration, guardrails, evaluations and observability.
 
